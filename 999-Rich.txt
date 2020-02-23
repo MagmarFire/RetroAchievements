@@ -1,0 +1,3 @@
+Display:
+?0x206352=0xfff0?Exploring the ship
+Seeking a way out!
