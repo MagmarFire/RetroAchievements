@@ -1,3 +1,21 @@
+Lookup:Location
+0x3294=the third-class cabin
+0x7c6e=the first-class cabin
+0xc6d2=the torture room
+0xc6d1=the confinement room
+0xc648=the shower room
+0x331e=the kitchen
+0x331d=the second-class cabins
+0x7d81=the cargo room
+0x33a6=the operating room
+0x342f=the wheelhouse
+0x3430=the captain’s quarters
+0x34b8=the library
+0x34b9=the study
+0x7c6f=the casino
+0x7cf7=the laboratory
+0x7d80=the engine room
+
 Display:
-?0x206352=0xfff0?Exploring the ship
-Seeking a way out!
+?0x206352=0xfff0?Exploring the ship...
+Seeking a way out of @Location(0x1e06c4)!

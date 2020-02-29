@@ -9,7 +9,7 @@ Lookup:Status
 0x1021=Fighting in
 
 Lookup:Chapter
-0=Chapter 1 - Serdian War
+0=Chapter 1 - The Serdian War
 1=Chapter 2 - Platinum Shadow
 2=Chapter 3 - Fate and Soul
 3=Chapter 4 - Moon and Fate
