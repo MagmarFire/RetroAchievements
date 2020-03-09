@@ -95,14 +95,14 @@ levelCodesToLevelInfo = {
     "1-3": { "id": 0x2, "name": "Shoutin’ Lava Lava Lava", "timeLimit": 48 },
     "1-B1": { "id": 0x3, "name": "Lair of the Feeble", "timeLimit": 0 },
     "1-S1": { "id": 0x4, "name": "The Curvy Caverns", "timeLimit": 85 },
-    "1-4": { "id": 0x5, "name": "The Tumbling Dantini", "timeLimit": 52 },//time limit needs testing
-    "1-5": { "id": 0x6, "name": "Cave Fear", "timeLimit": 48 },//time limit needs testing
-    "1-6": { "id": 0x7, "name": "Darkness Descends", "timeLimit": 65 },//time limit needs testing
+    "1-4": { "id": 0x5, "name": "The Tumbling Dantini", "timeLimit": 52 },
+    "1-5": { "id": 0x6, "name": "Cave Fear", "timeLimit": 48 },
+    "1-6": { "id": 0x7, "name": "Darkness Descends", "timeLimit": 65 },
     "1-B2": { "id": 0x8, "name": "Fight Night with Flibby", "timeLimit": 0 },
-    "1-S2": { "id": 0x9, "name": "The Twisty Tunnels", "timeLimit": 64 },//time limit needs testing
-    "2-1": { "id": 0xa, "name": "The Ice of Life", "timeLimit": 0 },//time limit needs testing
-    "2-2": { "id": 0xb, "name": "Be Wheely Careful", "timeLimit": 0 },//time limit needs testing
-    "2-3": { "id": 0xc, "name": "Riot Brrrrr", "timeLimit": 0 },//time limit needs testing
+    "1-S2": { "id": 0x9, "name": "The Twisty Tunnels", "timeLimit": 65 },
+    "2-1": { "id": 0xa, "name": "The Ice of Life", "timeLimit": 66 },
+    "2-2": { "id": 0xb, "name": "Be Wheely Careful", "timeLimit": 83 },//time limit needs testing
+    "2-3": { "id": 0xc, "name": "Riot Brrrrr", "timeLimit": 92 },//time limit needs testing
     "2-B1": { "id": 0xd, "name": "Chumly’s Snow Den", "timeLimit": 0 },
     "2-S1": { "id": 0xe, "name": "Clouds of Ice", "timeLimit": 0 },//time limit needs testing
     "2-4": { "id": 0xf, "name": "I Snow Him So Well", "timeLimit": 0 },//time limit needs testing
@@ -189,7 +189,7 @@ for levelCode in levelCodesToLevelInfo
     {
         achievement(title = "Speed Demon! (" + levelCode + ")", description = "Complete Level " + levelCode + " within " + timeLimit + " seconds.",
         points = 10, trigger =
-            isLevelComplete && isLevelCheckpointValid // Core
+            isLevelComplete && isLevelCheckpointValid && never(selectedLevel() != levelId) // Core
             && (
             always_false() // Alt 1
     
@@ -257,7 +257,7 @@ function TotalGobbosRescuedHighScore()
 
 function HasGobboScoreChangedForLevel(levelCode)
 {
-    return once(Delta(GobbosRescuedHighScoreInLevel(levelCode)) != GobbosRescuedHighScoreInLevel(levelCode))
+    return once(Delta(GobbosRescuedHighScoreInLevel(levelCode)) != GobbosRescuedHighScoreInLevel(levelCode)) && IsInLevel()
 }
 
 for threshold in gobboAchievementThresholds
