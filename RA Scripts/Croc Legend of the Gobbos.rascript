@@ -33,9 +33,11 @@ function gameState() => byte(0x0748EC)
 
 function IsInLevel() => gameState() == 0x4
 
-function PasswordWasUsed() => once(prior(gameState()) == 0xd && gameState() == 0x5)
+function IsOnWorldMap() => gameState() == 0x5
 
-function JustLoadedFromSave() => prior(gameState()) == 0x9 && gameState() == 0x5
+function PasswordWasUsed() => once(prior(gameState()) == 0xd && IsOnWorldMap())
+
+function JustLoadedFromSave() => prior(gameState()) == 0x9 && IsOnWorldMap()
 
 // $074904: Pause state:
 //          
@@ -90,51 +92,51 @@ function IsInLevelWithId(levelId) => selectedLevel() == levelId && IsInLevel()
 function IsLevelWithIdComplete(levelId) => IsInLevelWithId(levelId) && IsLevelComplete()
 
 levelCodesToLevelInfo = {
-    "1-1": { "id": 0x0, "name": "And So the Adventure Begins", "timeLimit": 39 },
-    "1-2": { "id": 0x1, "name": "Underground Overground", "timeLimit": 41 },
-    "1-3": { "id": 0x2, "name": "Shoutin’ Lava Lava Lava", "timeLimit": 48 },
-    "1-B1": { "id": 0x3, "name": "Lair of the Feeble", "timeLimit": 0 },
-    "1-S1": { "id": 0x4, "name": "The Curvy Caverns", "timeLimit": 85 },
-    "1-4": { "id": 0x5, "name": "The Tumbling Dantini", "timeLimit": 52 },
-    "1-5": { "id": 0x6, "name": "Cave Fear", "timeLimit": 48 },
-    "1-6": { "id": 0x7, "name": "Darkness Descends", "timeLimit": 65 },
-    "1-B2": { "id": 0x8, "name": "Fight Night with Flibby", "timeLimit": 0 },
-    "1-S2": { "id": 0x9, "name": "The Twisty Tunnels", "timeLimit": 65 },
-    "2-1": { "id": 0xa, "name": "The Ice of Life", "timeLimit": 66 },
-    "2-2": { "id": 0xb, "name": "Be Wheely Careful", "timeLimit": 83 },//time limit needs testing
-    "2-3": { "id": 0xc, "name": "Riot Brrrrr", "timeLimit": 92 },//time limit needs testing
-    "2-B1": { "id": 0xd, "name": "Chumly’s Snow Den", "timeLimit": 0 },
-    "2-S1": { "id": 0xe, "name": "Clouds of Ice", "timeLimit": 0 },//time limit needs testing
-    "2-4": { "id": 0xf, "name": "I Snow Him So Well", "timeLimit": 0 },//time limit needs testing
-    "2-5": { "id": 0x10, "name": "Say No Snow", "timeLimit": 0 },//time limit needs testing
-    "2-6": { "id": 0x11, "name": "License to Chill", "timeLimit": 0 },//time limit needs testing
-    "2-B2": { "id": 0x12, "name": "Demon Itsy’s Ice Palace", "timeLimit": 0 },
-    "2-S2": { "id": 0x13, "name": "Ice Bridge to Eternity", "timeLimit": 0 },//time limit needs testing
-    "3-1": { "id": 0x14, "name": "Lights, Camel, Action!", "timeLimit": 0 },//time limit needs testing
-    "3-2": { "id": 0x15, "name": "Mud Pit Mania", "timeLimit": 0 },//time limit needs testing
-    "3-3": { "id": 0x16, "name": "Goin’ Underground", "timeLimit": 0 },//time limit needs testing
-    "3-B1": { "id": 0x17, "name": "The Deadly Tank of Neptuna", "timeLimit": 0 },
-    "3-S1": { "id": 0x18, "name": "Arabian Heights", "timeLimit": 0 },//time limit needs testing
-    "3-4": { "id": 0x19, "name": "Sand and Freedom", "timeLimit": 0 },//time limit needs testing
-    "3-5": { "id": 0x1a, "name": "Leap of Faith", "timeLimit": 0 },//time limit needs testing
-    "3-6": { "id": 0x1b, "name": "Life’s a Beach", "timeLimit": 0 },//time limit needs testing
-    "3-B2": { "id": 0x1c, "name": "Cactus Jack’s Ranch", "timeLimit": 0 },
-    "3-S2": { "id": 0x1d, "name": "Defeato Burrito", "timeLimit": 0 },//time limit needs testing
-    "4-1": { "id": 0x1e, "name": "The Tower of Power", "timeLimit": 0 },//time limit needs testing
-    "4-2": { "id": 0x1f, "name": "Hassle in the Castle", "timeLimit": 0 },//time limit needs testing
-    "4-3": { "id": 0x20, "name": "Dungeon of Defright", "timeLimit": 0 },//time limit needs testing
-    "4-B1": { "id": 0x21, "name": "Fosley’s Freaky Donut", "timeLimit": 0 },
-    "4-S1": { "id": 0x22, "name": "Smash and See", "timeLimit": 0 },//time limit needs testing
-    "4-4": { "id": 0x23, "name": "Ballistic Meg’s Fairway", "timeLimit": 0 },//time limit needs testing
-    "4-5": { "id": 0x24, "name": "Swipe Swiftly’s Wicked Ride", "timeLimit": 0 },//time limit needs testing
-    "4-6": { "id": 0x25, "name": "Panic and Platform Pete’s Lair", "timeLimit": 0 },//time limit needs testing
-    "4-B2": { "id": 0x26, "name": "Baron Dante’s Funky Inferno", "timeLimit": 0 },
-    "4-S2": { "id": 0x27, "name": "Jailhouse Croc", "timeLimit": 0 },//time limit needs testing
-    "5-1": { "id": 0x28, "name": "And So the Adventure Returns", "timeLimit": 0 },//time limit needs testing
-    "5-2": { "id": 0x29, "name": "Diet Brrrrr", "timeLimit": 0 },//time limit needs testing
-    "5-3": { "id": 0x2a, "name": "Trial on the Nile", "timeLimit": 0 },//time limit needs testing
-    "5-4": { "id": 0x2b, "name": "Crox Interactive", "timeLimit": 0 },//time limit needs testing
-    "5-B": { "id": 0x2c, "name": "Secret Sentinel", "timeLimit": 0 },
+    "1-1": { "id": 0x0, "name": "And So the Adventure Begins", "timeLimit": 39, "hasGobbos": 1 },
+    "1-2": { "id": 0x1, "name": "Underground Overground", "timeLimit": 41, "hasGobbos": 1 },
+    "1-3": { "id": 0x2, "name": "Shoutin’ Lava Lava Lava", "timeLimit": 48, "hasGobbos": 1 },
+    "1-B1": { "id": 0x3, "name": "Lair of the Feeble", "timeLimit": 0, "hasGobbos": 0 },
+    "1-S1": { "id": 0x4, "name": "The Curvy Caverns", "timeLimit": 85, "hasGobbos": 0 },
+    "1-4": { "id": 0x5, "name": "The Tumbling Dantini", "timeLimit": 52, "hasGobbos": 1 },
+    "1-5": { "id": 0x6, "name": "Cave Fear", "timeLimit": 48, "hasGobbos": 1 },
+    "1-6": { "id": 0x7, "name": "Darkness Descends", "timeLimit": 65, "hasGobbos": 1 },
+    "1-B2": { "id": 0x8, "name": "Fight Night with Flibby", "timeLimit": 0, "hasGobbos": 0 },
+    "1-S2": { "id": 0x9, "name": "The Twisty Tunnels", "timeLimit": 65, "hasGobbos": 0 },
+    "2-1": { "id": 0xa, "name": "The Ice of Life", "timeLimit": 66, "hasGobbos": 1 },
+    "2-2": { "id": 0xb, "name": "Be Wheely Careful", "timeLimit": 83, "hasGobbos": 1 },//time limit needs testing
+    "2-3": { "id": 0xc, "name": "Riot Brrrrr", "timeLimit": 92, "hasGobbos": 1 },//time limit needs testing
+    "2-B1": { "id": 0xd, "name": "Chumly’s Snow Den", "timeLimit": 0, "hasGobbos": 0 },
+    "2-S1": { "id": 0xe, "name": "Clouds of Ice", "timeLimit": 0, "hasGobbos": 0 },//time limit needs testing
+    "2-4": { "id": 0xf, "name": "I Snow Him So Well", "timeLimit": 0, "hasGobbos": 1 },//time limit needs testing
+    "2-5": { "id": 0x10, "name": "Say No Snow", "timeLimit": 0, "hasGobbos": 1 },//time limit needs testing
+    "2-6": { "id": 0x11, "name": "License to Chill", "timeLimit": 0, "hasGobbos": 1 },//time limit needs testing
+    "2-B2": { "id": 0x12, "name": "Demon Itsy’s Ice Palace", "timeLimit": 0, "hasGobbos": 0 },
+    "2-S2": { "id": 0x13, "name": "Ice Bridge to Eternity", "timeLimit": 0, "hasGobbos": 0 },//time limit needs testing
+    "3-1": { "id": 0x14, "name": "Lights, Camel, Action!", "timeLimit": 0, "hasGobbos": 1 },//time limit needs testing
+    "3-2": { "id": 0x15, "name": "Mud Pit Mania", "timeLimit": 0, "hasGobbos": 1 },//time limit needs testing
+    "3-3": { "id": 0x16, "name": "Goin’ Underground", "timeLimit": 0, "hasGobbos": 1 },//time limit needs testing
+    "3-B1": { "id": 0x17, "name": "The Deadly Tank of Neptuna", "timeLimit": 0, "hasGobbos": 0 },
+    "3-S1": { "id": 0x18, "name": "Arabian Heights", "timeLimit": 0, "hasGobbos": 0 },//time limit needs testing
+    "3-4": { "id": 0x19, "name": "Sand and Freedom", "timeLimit": 0, "hasGobbos": 1 },//time limit needs testing
+    "3-5": { "id": 0x1a, "name": "Leap of Faith", "timeLimit": 0, "hasGobbos": 1 },//time limit needs testing
+    "3-6": { "id": 0x1b, "name": "Life’s a Beach", "timeLimit": 0, "hasGobbos": 1 },//time limit needs testing
+    "3-B2": { "id": 0x1c, "name": "Cactus Jack’s Ranch", "timeLimit": 0, "hasGobbos": 0 },
+    "3-S2": { "id": 0x1d, "name": "Defeato Burrito", "timeLimit": 0, "hasGobbos": 0 },//time limit needs testing
+    "4-1": { "id": 0x1e, "name": "The Tower of Power", "timeLimit": 0, "hasGobbos": 1 },//time limit needs testing
+    "4-2": { "id": 0x1f, "name": "Hassle in the Castle", "timeLimit": 0, "hasGobbos": 1 },//time limit needs testing
+    "4-3": { "id": 0x20, "name": "Dungeon of Defright", "timeLimit": 0, "hasGobbos": 1 },//time limit needs testing
+    "4-B1": { "id": 0x21, "name": "Fosley’s Freaky Donut", "timeLimit": 0, "hasGobbos": 0 },
+    "4-S1": { "id": 0x22, "name": "Smash and See", "timeLimit": 0, "hasGobbos": 0 },//time limit needs testing
+    "4-4": { "id": 0x23, "name": "Ballistic Meg’s Fairway", "timeLimit": 0, "hasGobbos": 1 },//time limit needs testing
+    "4-5": { "id": 0x24, "name": "Swipe Swiftly’s Wicked Ride", "timeLimit": 0, "hasGobbos": 1 },//time limit needs testing
+    "4-6": { "id": 0x25, "name": "Panic and Platform Pete’s Lair", "timeLimit": 0, "hasGobbos": 1 },//time limit needs testing
+    "4-B2": { "id": 0x26, "name": "Baron Dante’s Funky Inferno", "timeLimit": 0, "hasGobbos": 0 },
+    "4-S2": { "id": 0x27, "name": "Jailhouse Croc", "timeLimit": 0, "hasGobbos": 0 },//time limit needs testing
+    "5-1": { "id": 0x28, "name": "And So the Adventure Returns", "timeLimit": 0, "hasGobbos": 0 },//time limit needs testing
+    "5-2": { "id": 0x29, "name": "Diet Brrrrr", "timeLimit": 0, "hasGobbos": 0 },//time limit needs testing
+    "5-3": { "id": 0x2a, "name": "Trial on the Nile", "timeLimit": 0, "hasGobbos": 0 },//time limit needs testing
+    "5-4": { "id": 0x2b, "name": "Crox Interactive", "timeLimit": 0, "hasGobbos": 0 },//time limit needs testing
+    "5-B": { "id": 0x2c, "name": "Secret Sentinel", "timeLimit": 0, "hasGobbos": 0 },
 }
 
 function GetLevelCodeFromId(levelId)
@@ -199,7 +201,7 @@ for levelCode in levelCodesToLevelInfo
         
         leaderboard(title = "Time Trial: " + levelCode + " - " + levelCodesToLevelInfo[levelCode]["name"],
             description = "Ring the gong in the fastest time you can!",
-            start = isLevelCheckpointValid && IsInLevel(),
+            start = isLevelCheckpointValid && IsInLevel() && never(selectedLevel() != Delta(selectedLevel())),
             cancel = !IsInLevel(),
             submit = isLevelComplete && isLevelCheckpointValid,
             value = measured(frameIncremented()),
@@ -235,22 +237,25 @@ function GobbosRescuedHighScoreInLevel(levelCode)
     return byte(gobbosRescuedIn1_1Addr() + levelOffset)
 }
 
-function GobbosRescuedHighScoreInWorld(worldId)
+function GobbosRescuedHighScoreInWorldExceptForLevel(worldId, inLevelCode)
 {
     total = 0
     for levelCode in worldsToGobboLevels[worldId]
     {
-        total = total + GobbosRescuedHighScoreInLevel(levelCode)
+        if (levelCode != inLevelCode)
+        {
+            total = total + GobbosRescuedHighScoreInLevel(levelCode)
+        }
     }
     return total
 }
 
-function TotalGobbosRescuedHighScore()
+function TotalGobbosRescuedHighScoreExceptForLevel(levelCode)
 {
     total = 0
     for worldId in worldsToGobboLevels
     {
-        total = total + GobbosRescuedHighScoreInWorld(worldId)
+        total = total + GobbosRescuedHighScoreInWorldExceptForLevel(worldId, levelCode)
     }
     return total
 }
@@ -268,13 +273,14 @@ for threshold in gobboAchievementThresholds
     
     // We need to check if any level's current score will
     // increase after we leave the Level Complete screen.
-    for worldId in worldsToGobboLevels
+    for levelCode in levelCodesToLevelInfo
     {
-        for levelCode in worldsToGobboLevels[worldId]
+        if (levelCodesToLevelInfo[levelCode]["hasGobbos"] == 1)
         {
-            alt = alt || HasGobboScoreChangedForLevel(levelCode)
-                && TotalGobbosRescuedHighScore() >= count && GobbosRescuedHighScoreInLevel(levelCode) <= 6
-        }
+            alt = alt ||
+                (TotalGobbosRescuedHighScoreExceptForLevel(levelCode) + currentLevelGobbosResults() >= count)
+                && currentLevelGobbosResults() <= 6 && currentLevelGobbosResults() > GobbosRescuedHighScoreInLevel(levelCode)
+        }   
     }
     
     if (description == "")
@@ -283,7 +289,7 @@ for threshold in gobboAchievementThresholds
     }
     
     achievement(title = threshold["name"], description = description, points = threshold["points"], trigger =
-        IsLevelComplete() && unless(PasswordWasUsed()) && never(JustLoadedFromSave()) && // Core
+        IsLevelComplete() && never(JustLoadedFromSave()) && // Core
         (
             alt
         )
@@ -303,8 +309,12 @@ for worldId in worldIdToData
     
     for levelCode in worldsToGobboLevels[worldId]
     {
-        alt = alt || HasGobboScoreChangedForLevel(levelCode)
-            && GobbosRescuedHighScoreInWorld(worldId) == 36 && GobbosRescuedHighScoreInLevel(levelCode) == 6
+        levelId = levelCodesToLevelInfo[levelCode]["id"]
+        isLevelCheckpointValid = IsInLevelWithId(levelId) && once(IsLevelLoading())
+        
+        alt = alt ||
+            (GobbosRescuedHighScoreInWorldExceptForLevel(worldId, levelCode) + currentLevelGobbosResults() <= 6) == 36
+            && currentLevelGobbosResults() <= 6 && currentLevelGobbosResults() > GobbosRescuedHighScoreInLevel(levelCode)
     }
     
     achievement(title = worldIdToData[worldId], description = "Rescue all Gobbos in World " + worldId + ".",
