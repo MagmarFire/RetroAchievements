@@ -29,6 +29,7 @@ function SecondsToFrames(seconds) => seconds * 60 // Assuming a 60 FPS framerate
 //          0xb = Save Menu
 //          0xc = Level Password screen
 //          0xd = Password Input screen
+//          0xe = Game Over
 function gameState() => byte(0x0748EC)
 
 function IsInLevel() => gameState() == 0x4
@@ -369,4 +370,78 @@ for levelCode in levelsWithJigsawPiecesToIndex
 
 achievement(title = "Master Puzzler", description = "Collect all eight Jigsaw Pieces.", points = 10, trigger =
     masterPuzzlerCore && masterPuzzlerAlt
+)
+
+
+// RICH PRESENCE
+statesToNames = {
+    0: "At the Title Screen",
+    1: "At the Main Menu",
+    2: "Watching the intro...",
+    3: "Watching a demo...",
+    4: "In level",
+    5: "On the World Map",
+    6: "Defeated...",
+    8: "In the Options Menu",
+    9: "On the Load Screen",
+    0xb: "On the Save Screen",
+    0xc: "On the Level Password Screen",
+    0xd: "Inputting a password...",
+    0xe: "Continue?"
+}
+
+levelIdsToNames = {
+    0x0: "1-1 - And So the Adventure Begins",
+    0x1: "1-2 - Underground Overground",
+    0x2: "1-3 - Shoutin’ Lava Lava Lava",
+    0x3: "1-B1 - Lair of the Feeble",
+    0x4: "1-S1 - The Curvy Caverns",
+    0x5: "1-4 - The Tumbling Dantini",
+    0x6: "1-5 - Cave Fear",
+    0x7: "1-6 - Darkness Descends",
+    0x8: "1-B2 - Fight Night with Flibby",
+    0x9: "1-S2 - The Twisty Tunnels",
+    0xa: "2-1 - The Ice of Life",
+    0xb: "2-2 - Be Wheely Careful",
+    0xc: "2-3 - Riot Brrrrr",
+    0xd: "2-B1 - Chumly’s Snow Den",
+    0xe: "2-S1 - Clouds of Ice",
+    0xf: "2-4 - I Snow Him So Well",
+    0x10: "2-5 - Say No Snow",
+    0x11: "2-6 - License to Chill",
+    0x12: "2-B2 - Demon Itsy’s Ice Palace",
+    0x13: "2-S2 - Ice Bridge to Eternity",
+    0x14: "3-1 - Lights, Camel, Action!",
+    0x15: "3-2 - Mud Pit Mania",
+    0x16: "3-3 - Goin’ Underground",
+    0x17: "3-B1 - The Deadly Tank of Neptuna",
+    0x18: "3-S1 - Arabian Heights",
+    0x19: "3-4 - Sand and Freedom",
+    0x1a: "3-5 - Leap of Faith",
+    0x1b: "3-6 - Life’s a Beach",
+    0x1c: "3-B2 - Cactus Jack’s Ranch",
+    0x1d: "3-S2 - Defeato Burrito",
+    0x1e: "4-1 - The Tower of Power",
+    0x1f: "4-2 - Hassle in the Castle",
+    0x20: "4-3 - Dungeon of Defright",
+    0x21: "4-B1 - Fosley’s Freaky Donut",
+    0x22: "4-S1 - Smash and See",
+    0x23: "4-4 - Ballistic Meg’s Fairway",
+    0x24: "4-5 - Swipe Swiftly’s Wicked Ride",
+    0x25: "4-6 - Panic and Platform Pete’s Lair",
+    0x26: "4-B2 - Baron Dante’s Funky Inferno",
+    0x27: "4-S2 - Jailhouse Croc",
+    0x28: "5-1 - And So the Adventure Returns",
+    0x29: "5-2 - Diet Brrrrr",
+    0x2a: "5-3 - Trial on the Nile",
+    0x2b: "5-4 - Crox Interactive",
+    0x2c: "5-B - Secret Sentinel",
+}
+
+rich_presence_display("{0}",
+    rich_presence_lookup("State", gameState(), statesToNames)
+)
+rich_presence_conditional_display(IsLevelComplete(), "Viewing level results...")
+rich_presence_conditional_display(gameState() == 4, "Running through Level {0}",
+    rich_presence_lookup("Level", selectedLevel(), levelIdsToNames)
 )
