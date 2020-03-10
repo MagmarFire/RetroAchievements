@@ -92,6 +92,8 @@ function IsInLevelWithId(levelId) => selectedLevel() == levelId && IsInLevel()
 
 function IsLevelWithIdComplete(levelId) => IsInLevelWithId(levelId) && IsLevelComplete()
 
+function LevelHasLoadedAndIdHasNotChanged() => once(IsLevelLoading()) && never(Delta(selectedLevel()) != selectedLevel())
+
 levelCodesToLevelInfo = {
     "1-1": { "id": 0x0, "name": "And So the Adventure Begins", "timeLimit": 39, "hasGobbos": 1 },
     "1-2": { "id": 0x1, "name": "Underground Overground", "timeLimit": 41, "hasGobbos": 1 },
@@ -290,7 +292,8 @@ for threshold in gobboAchievementThresholds
     }
     
     achievement(title = threshold["name"], description = description, points = threshold["points"], trigger =
-        IsLevelComplete() && never(JustLoadedFromSave()) && // Core
+        IsLevelComplete() && never(JustLoadedFromSave()) &&
+        LevelHasLoadedAndIdHasNotChanged() && // Core
         (
             alt
         )
@@ -311,7 +314,6 @@ for worldId in worldIdToData
     for levelCode in worldsToGobboLevels[worldId]
     {
         levelId = levelCodesToLevelInfo[levelCode]["id"]
-        isLevelCheckpointValid = IsInLevelWithId(levelId) && once(IsLevelLoading())
         
         alt = alt ||
             (GobbosRescuedHighScoreInWorldExceptForLevel(worldId, levelCode) + currentLevelGobbosResults() <= 6) == 36
@@ -320,7 +322,8 @@ for worldId in worldIdToData
     
     achievement(title = worldIdToData[worldId], description = "Rescue all Gobbos in World " + worldId + ".",
             points = 5, trigger =
-                IsLevelComplete() && unless(PasswordWasUsed()) && never(JustLoadedFromSave()) && // Core
+                IsLevelComplete() && unless(PasswordWasUsed()) && never(JustLoadedFromSave()) &&
+                LevelHasLoadedAndIdHasNotChanged() && // Core
                 (
                     alt
                 )
