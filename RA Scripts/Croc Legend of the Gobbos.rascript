@@ -376,6 +376,22 @@ achievement(title = "Master Puzzler", description = "Collect all eight Jigsaw Pi
 )
 
 
+// POP GOES THE GOBBO
+// $0x0862ea: Popping game score location
+function poppingGameScore() => byte(0x0862ea)
+
+achievement(title = "Pop Goes the Gobbo",
+    description = "Get a perfect score in the Popping Game in Level 1-3, 2-6, or 4-3.",
+    points = 5, trigger = 
+        once(poppingGameScore() == 0) && poppingGameScore() == 32 && never(IsLevelLoading()) && // Core
+        (
+            IsInLevelWithId(levelCodesToLevelInfo["1-3"]["id"]) ||
+            IsInLevelWithId(levelCodesToLevelInfo["2-6"]["id"]) ||
+            IsInLevelWithId(levelCodesToLevelInfo["4-3"]["id"])
+        )
+)
+
+
 // RICH PRESENCE
 statesToNames = {
     0: "At the Title Screen",
