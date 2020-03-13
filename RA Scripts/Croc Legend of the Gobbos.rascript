@@ -83,7 +83,7 @@ function levelCompleteType() => byte(0x074E78)
 function IsLevelLoading() => byte(0x074F70) == 0x1
 
 // $074FDC: Lives Count (Value = Amount + 1)
-function currentLives() => byte(0x074FDC) + 1
+function currentLives() => byte(0x074FDC)
 
 // $0751D4: Selected level on the World Map
 function selectedLevel() => byte(0x0751D4)
@@ -97,7 +97,7 @@ function LevelHasLoadedAndIdHasNotChanged() => once(IsLevelLoading()) && never(D
 levelCodesToLevelInfo = {
     "1-1": { "id": 0x0, "name": "And So the Adventure Begins", "timeLimit": 39, "hasGobbos": 1 },
     "1-2": { "id": 0x1, "name": "Underground Overground", "timeLimit": 41, "hasGobbos": 1 },
-    "1-3": { "id": 0x2, "name": "Shoutin’ Lava Lava Lava", "timeLimit": 48, "hasGobbos": 1 },
+    "1-3": { "id": 0x2, "name": "Shoutin’ Lava Lava Lava", "timeLimit": 49, "hasGobbos": 1 },
     "1-B1": { "id": 0x3, "name": "Lair of the Feeble", "timeLimit": 0, "hasGobbos": 0 },
     "1-S1": { "id": 0x4, "name": "The Curvy Caverns", "timeLimit": 85, "hasGobbos": 0 },
     "1-4": { "id": 0x5, "name": "The Tumbling Dantini", "timeLimit": 52, "hasGobbos": 1 },
@@ -163,7 +163,7 @@ function stepFlipper() => byte(0x07C0A8)
 function timesLanded() => byte(0x07C0B6)
 
 // $07C22E: Blinking time remaining after taking damage (32-bit)
-function invincibilityTimeRemaining() => dword(0x07C22E)
+function invincibilityTimeRemaining() => word(0x07c22e)
 
 function IsRecoveringFromDamage() => invincibilityTimeRemaining() > 0
 
@@ -193,7 +193,7 @@ for levelCode in levelCodesToLevelInfo
     if (timeLimit > 0)
     {
         achievement(title = "Speed Demon! (" + levelCode + ")", description = "Complete Level " + levelCode + " within " + timeLimit + " seconds.",
-        points = 10, trigger =
+        points = 5, trigger =
             isLevelComplete && isLevelCheckpointValid && never(selectedLevel() != levelId) // Core
             && (
             always_false() // Alt 1
@@ -292,7 +292,7 @@ for threshold in gobboAchievementThresholds
     }
     
     achievement(title = threshold["name"], description = description, points = threshold["points"], trigger =
-        IsLevelComplete() && never(JustLoadedFromSave()) &&
+        IsLevelComplete() && unless(PasswordWasUsed()) && never(JustLoadedFromSave()) &&
         LevelHasLoadedAndIdHasNotChanged() && // Core
         (
             alt
@@ -321,13 +321,13 @@ for worldId in worldIdToData
     }
     
     achievement(title = worldIdToData[worldId], description = "Rescue all Gobbos in World " + worldId + ".",
-            points = 5, trigger =
-                IsLevelComplete() && unless(PasswordWasUsed()) && never(JustLoadedFromSave()) &&
-                LevelHasLoadedAndIdHasNotChanged() && // Core
-                (
-                    alt
-                )
+        points = 10, trigger =
+            IsLevelComplete() && unless(PasswordWasUsed()) && never(JustLoadedFromSave()) &&
+            LevelHasLoadedAndIdHasNotChanged() && // Core
+            (
+                alt
             )
+        )
 }
 
 // Puzzler Achievements
@@ -382,7 +382,7 @@ function poppingGameScore() => byte(0x0862ea)
 
 achievement(title = "Pop Goes the Gobbo",
     description = "Get a perfect score in the Popping Game in Level 1-3, 2-6, or 4-3.",
-    points = 5, trigger = 
+    points = 10, trigger = 
         once(poppingGameScore() == 0) && poppingGameScore() == 32 && never(IsLevelLoading()) && // Core
         (
             IsInLevelWithId(levelCodesToLevelInfo["1-3"]["id"]) ||
@@ -390,6 +390,29 @@ achievement(title = "Pop Goes the Gobbo",
             IsInLevelWithId(levelCodesToLevelInfo["4-3"]["id"])
         )
 )
+
+// MR. PERFECT ACHIEVEMENTS
+
+achievementInfo = {
+    "1-B1": { "title": "Not So Feeble", "description": "Defeat Tooty the Feeble without taking damage.",
+        "points": 3, "addr": byte(0x07f30a) },
+    "1-B2": { "title": "You Can't See Me", "description": "Defeat Flibby without taking damage.",
+        "points": 5, "addr": byte(0x07ae1a) },
+    "2-B1": { "title": "I Think It's Gonna Be a Long, Long Time",
+        "description": "Defeat Chumly without taking damage.", "points": 1, "addr": byte(0x085eae) },
+    //"2-B2": { "title": "The Abominable Snow Goat", "points": 5, "addr" }
+}
+
+for levelCode in achievementInfo
+{
+    info = achievementInfo[levelCode]
+    achievement(title = info["title"], description = info["description"], points = info["points"],
+        trigger =
+            once(Delta(info["addr"]) != 3 && info["addr"] == 3 || Delta(currentLives()) != currentLives())
+            && never(IsRecoveringFromDamage()) && never(currentLives() == 0) && IsLevelComplete() && IsInLevel() &&
+            info["addr"] == 0 && once(selectedLevel() == (levelCodesToLevelInfo[levelCode]["id"]))
+    )
+}
 
 
 // RICH PRESENCE
