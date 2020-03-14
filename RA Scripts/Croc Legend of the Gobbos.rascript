@@ -97,48 +97,48 @@ function LevelHasLoadedAndIdHasNotChanged() => once(IsLevelLoading()) && never(D
 levelCodesToLevelInfo = {
     "1-1": { "id": 0x0, "name": "And So the Adventure Begins", "timeLimit": 39, "hasGobbos": 1 },
     "1-2": { "id": 0x1, "name": "Underground Overground", "timeLimit": 41, "hasGobbos": 1 },
-    "1-3": { "id": 0x2, "name": "Shoutin’ Lava Lava Lava", "timeLimit": 49, "hasGobbos": 1 },
+    "1-3": { "id": 0x2, "name": "Shoutin’ Lava Lava Lava", "timeLimit": 48, "hasGobbos": 1 },
     "1-B1": { "id": 0x3, "name": "Lair of the Feeble", "timeLimit": 0, "hasGobbos": 0 },
     "1-S1": { "id": 0x4, "name": "The Curvy Caverns", "timeLimit": 85, "hasGobbos": 0 },
     "1-4": { "id": 0x5, "name": "The Tumbling Dantini", "timeLimit": 52, "hasGobbos": 1 },
-    "1-5": { "id": 0x6, "name": "Cave Fear", "timeLimit": 48, "hasGobbos": 1 },
-    "1-6": { "id": 0x7, "name": "Darkness Descends", "timeLimit": 65, "hasGobbos": 1 },
+    "1-5": { "id": 0x6, "name": "Cave Fear", "timeLimit": 45, "hasGobbos": 1 },
+    "1-6": { "id": 0x7, "name": "Darkness Descends", "timeLimit": 66, "hasGobbos": 1 },
     "1-B2": { "id": 0x8, "name": "Fight Night with Flibby", "timeLimit": 0, "hasGobbos": 0 },
     "1-S2": { "id": 0x9, "name": "The Twisty Tunnels", "timeLimit": 65, "hasGobbos": 0 },
     "2-1": { "id": 0xa, "name": "The Ice of Life", "timeLimit": 66, "hasGobbos": 1 },
-    "2-2": { "id": 0xb, "name": "Be Wheely Careful", "timeLimit": 83, "hasGobbos": 1 },//time limit needs testing
-    "2-3": { "id": 0xc, "name": "Riot Brrrrr", "timeLimit": 92, "hasGobbos": 1 },//time limit needs testing
+    "2-2": { "id": 0xb, "name": "Be Wheely Careful", "timeLimit": 83, "hasGobbos": 1 },
+    "2-3": { "id": 0xc, "name": "Riot Brrrrr", "timeLimit": 92, "hasGobbos": 1 },
     "2-B1": { "id": 0xd, "name": "Chumly’s Snow Den", "timeLimit": 0, "hasGobbos": 0 },
-    "2-S1": { "id": 0xe, "name": "Clouds of Ice", "timeLimit": 0, "hasGobbos": 0 },//time limit needs testing
-    "2-4": { "id": 0xf, "name": "I Snow Him So Well", "timeLimit": 0, "hasGobbos": 1 },//time limit needs testing
-    "2-5": { "id": 0x10, "name": "Say No Snow", "timeLimit": 0, "hasGobbos": 1 },//time limit needs testing
-    "2-6": { "id": 0x11, "name": "License to Chill", "timeLimit": 0, "hasGobbos": 1 },//time limit needs testing
+    "2-S1": { "id": 0xe, "name": "Clouds of Ice", "timeLimit": 1, "hasGobbos": 0 },//time limit needs testing
+    "2-4": { "id": 0xf, "name": "I Snow Him So Well", "timeLimit": 1, "hasGobbos": 1 },//time limit needs testing
+    "2-5": { "id": 0x10, "name": "Say No Snow", "timeLimit": 1, "hasGobbos": 1 },//time limit needs testing
+    "2-6": { "id": 0x11, "name": "License to Chill", "timeLimit": 1, "hasGobbos": 1 },//time limit needs testing
     "2-B2": { "id": 0x12, "name": "Demon Itsy’s Ice Palace", "timeLimit": 0, "hasGobbos": 0 },
-    "2-S2": { "id": 0x13, "name": "Ice Bridge to Eternity", "timeLimit": 0, "hasGobbos": 0 },//time limit needs testing
-    "3-1": { "id": 0x14, "name": "Lights, Camel, Action!", "timeLimit": 0, "hasGobbos": 1 },//time limit needs testing
-    "3-2": { "id": 0x15, "name": "Mud Pit Mania", "timeLimit": 0, "hasGobbos": 1 },//time limit needs testing
-    "3-3": { "id": 0x16, "name": "Goin’ Underground", "timeLimit": 0, "hasGobbos": 1 },//time limit needs testing
+    "2-S2": { "id": 0x13, "name": "Ice Bridge to Eternity", "timeLimit": 1, "hasGobbos": 0 },//time limit needs testing
+    "3-1": { "id": 0x14, "name": "Lights, Camel, Action!", "timeLimit": 1, "hasGobbos": 1 },//time limit needs testing
+    "3-2": { "id": 0x15, "name": "Mud Pit Mania", "timeLimit": 1, "hasGobbos": 1 },//time limit needs testing
+    "3-3": { "id": 0x16, "name": "Goin’ Underground", "timeLimit": 1, "hasGobbos": 1 },//time limit needs testing
     "3-B1": { "id": 0x17, "name": "The Deadly Tank of Neptuna", "timeLimit": 0, "hasGobbos": 0 },
-    "3-S1": { "id": 0x18, "name": "Arabian Heights", "timeLimit": 0, "hasGobbos": 0 },//time limit needs testing
-    "3-4": { "id": 0x19, "name": "Sand and Freedom", "timeLimit": 0, "hasGobbos": 1 },//time limit needs testing
-    "3-5": { "id": 0x1a, "name": "Leap of Faith", "timeLimit": 0, "hasGobbos": 1 },//time limit needs testing
-    "3-6": { "id": 0x1b, "name": "Life’s a Beach", "timeLimit": 0, "hasGobbos": 1 },//time limit needs testing
+    "3-S1": { "id": 0x18, "name": "Arabian Heights", "timeLimit": 1, "hasGobbos": 0 },//time limit needs testing
+    "3-4": { "id": 0x19, "name": "Sand and Freedom", "timeLimit": 1, "hasGobbos": 1 },//time limit needs testing
+    "3-5": { "id": 0x1a, "name": "Leap of Faith", "timeLimit": 1, "hasGobbos": 1 },//time limit needs testing
+    "3-6": { "id": 0x1b, "name": "Life’s a Beach", "timeLimit": 1, "hasGobbos": 1 },//time limit needs testing
     "3-B2": { "id": 0x1c, "name": "Cactus Jack’s Ranch", "timeLimit": 0, "hasGobbos": 0 },
-    "3-S2": { "id": 0x1d, "name": "Defeato Burrito", "timeLimit": 0, "hasGobbos": 0 },//time limit needs testing
-    "4-1": { "id": 0x1e, "name": "The Tower of Power", "timeLimit": 0, "hasGobbos": 1 },//time limit needs testing
-    "4-2": { "id": 0x1f, "name": "Hassle in the Castle", "timeLimit": 0, "hasGobbos": 1 },//time limit needs testing
-    "4-3": { "id": 0x20, "name": "Dungeon of Defright", "timeLimit": 0, "hasGobbos": 1 },//time limit needs testing
+    "3-S2": { "id": 0x1d, "name": "Defeato Burrito", "timeLimit": 1, "hasGobbos": 0 },//time limit needs testing
+    "4-1": { "id": 0x1e, "name": "The Tower of Power", "timeLimit": 1, "hasGobbos": 1 },//time limit needs testing
+    "4-2": { "id": 0x1f, "name": "Hassle in the Castle", "timeLimit": 1, "hasGobbos": 1 },//time limit needs testing
+    "4-3": { "id": 0x20, "name": "Dungeon of Defright", "timeLimit": 1, "hasGobbos": 1 },//time limit needs testing
     "4-B1": { "id": 0x21, "name": "Fosley’s Freaky Donut", "timeLimit": 0, "hasGobbos": 0 },
-    "4-S1": { "id": 0x22, "name": "Smash and See", "timeLimit": 0, "hasGobbos": 0 },//time limit needs testing
-    "4-4": { "id": 0x23, "name": "Ballistic Meg’s Fairway", "timeLimit": 0, "hasGobbos": 1 },//time limit needs testing
-    "4-5": { "id": 0x24, "name": "Swipe Swiftly’s Wicked Ride", "timeLimit": 0, "hasGobbos": 1 },//time limit needs testing
-    "4-6": { "id": 0x25, "name": "Panic and Platform Pete’s Lair", "timeLimit": 0, "hasGobbos": 1 },//time limit needs testing
+    "4-S1": { "id": 0x22, "name": "Smash and See", "timeLimit": 1, "hasGobbos": 0 },//time limit needs testing
+    "4-4": { "id": 0x23, "name": "Ballistic Meg’s Fairway", "timeLimit": 1, "hasGobbos": 1 },//time limit needs testing
+    "4-5": { "id": 0x24, "name": "Swipe Swiftly’s Wicked Ride", "timeLimit": 1, "hasGobbos": 1 },//time limit needs testing
+    "4-6": { "id": 0x25, "name": "Panic and Platform Pete’s Lair", "timeLimit": 1, "hasGobbos": 1 },//time limit needs testing
     "4-B2": { "id": 0x26, "name": "Baron Dante’s Funky Inferno", "timeLimit": 0, "hasGobbos": 0 },
-    "4-S2": { "id": 0x27, "name": "Jailhouse Croc", "timeLimit": 0, "hasGobbos": 0 },//time limit needs testing
-    "5-1": { "id": 0x28, "name": "And So the Adventure Returns", "timeLimit": 0, "hasGobbos": 0 },//time limit needs testing
-    "5-2": { "id": 0x29, "name": "Diet Brrrrr", "timeLimit": 0, "hasGobbos": 0 },//time limit needs testing
-    "5-3": { "id": 0x2a, "name": "Trial on the Nile", "timeLimit": 0, "hasGobbos": 0 },//time limit needs testing
-    "5-4": { "id": 0x2b, "name": "Crox Interactive", "timeLimit": 0, "hasGobbos": 0 },//time limit needs testing
+    "4-S2": { "id": 0x27, "name": "Jailhouse Croc", "timeLimit": 1, "hasGobbos": 0 },//time limit needs testing
+    "5-1": { "id": 0x28, "name": "And So the Adventure Returns", "timeLimit": 1, "hasGobbos": 0 },//time limit needs testing
+    "5-2": { "id": 0x29, "name": "Diet Brrrrr", "timeLimit": 1, "hasGobbos": 0 },//time limit needs testing
+    "5-3": { "id": 0x2a, "name": "Trial on the Nile", "timeLimit": 1, "hasGobbos": 0 },//time limit needs testing
+    "5-4": { "id": 0x2b, "name": "Crox Interactive", "timeLimit": 1, "hasGobbos": 0 },//time limit needs testing
     "5-B": { "id": 0x2c, "name": "Secret Sentinel", "timeLimit": 0, "hasGobbos": 0 },
 }
 
@@ -410,7 +410,7 @@ for levelCode in achievementInfo
         trigger =
             once(Delta(info["addr"]) != 3 && info["addr"] == 3 || Delta(currentLives()) != currentLives())
             && never(IsRecoveringFromDamage()) && never(currentLives() == 0) && IsLevelComplete() && IsInLevel() &&
-            info["addr"] == 0 && once(selectedLevel() == (levelCodesToLevelInfo[levelCode]["id"]))
+            info["addr"] == 0 && once(selectedLevel() == (levelCodesToLevelInfo[levelCode]["id"]) && IsLevelLoading())
     )
 }
 
