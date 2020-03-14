@@ -9,6 +9,16 @@ function Delta(addr)
     return prev(addr)
 }
 
+function SecondsToFormat(value)
+{
+    leadingZero = ""
+    if (value % 60 < 10)
+    {
+        leadingZero = "0"
+    }
+    return value / 60 + ":" + leadingZero + value % 60
+}
+
 // $073AC0: (32-bit) System timer. Increments by one every frame.
 function framesCounter() => dword(0x073AC0)
 
@@ -94,12 +104,14 @@ function IsLevelWithIdComplete(levelId) => IsInLevelWithId(levelId) && IsLevelCo
 
 function LevelHasLoadedAndIdHasNotChanged() => once(IsLevelLoading()) && never(Delta(selectedLevel()) != selectedLevel())
 
+function IsLevelCheckpointValid(levelId) => IsInLevelWithId(levelId) && once(IsLevelLoading())
+
 levelCodesToLevelInfo = {
     "1-1": { "id": 0x0, "name": "And So the Adventure Begins", "timeLimit": 39, "hasGobbos": 1 },
     "1-2": { "id": 0x1, "name": "Underground Overground", "timeLimit": 41, "hasGobbos": 1 },
     "1-3": { "id": 0x2, "name": "Shoutin’ Lava Lava Lava", "timeLimit": 48, "hasGobbos": 1 },
     "1-B1": { "id": 0x3, "name": "Lair of the Feeble", "timeLimit": 0, "hasGobbos": 0 },
-    "1-S1": { "id": 0x4, "name": "The Curvy Caverns", "timeLimit": 85, "hasGobbos": 0 },
+    "1-S1": { "id": 0x4, "name": "The Curvy Caverns", "timeLimit": 84, "hasGobbos": 0 },
     "1-4": { "id": 0x5, "name": "The Tumbling Dantini", "timeLimit": 52, "hasGobbos": 1 },
     "1-5": { "id": 0x6, "name": "Cave Fear", "timeLimit": 45, "hasGobbos": 1 },
     "1-6": { "id": 0x7, "name": "Darkness Descends", "timeLimit": 66, "hasGobbos": 1 },
@@ -109,10 +121,10 @@ levelCodesToLevelInfo = {
     "2-2": { "id": 0xb, "name": "Be Wheely Careful", "timeLimit": 83, "hasGobbos": 1 },
     "2-3": { "id": 0xc, "name": "Riot Brrrrr", "timeLimit": 92, "hasGobbos": 1 },
     "2-B1": { "id": 0xd, "name": "Chumly’s Snow Den", "timeLimit": 0, "hasGobbos": 0 },
-    "2-S1": { "id": 0xe, "name": "Clouds of Ice", "timeLimit": 1, "hasGobbos": 0 },//time limit needs testing
-    "2-4": { "id": 0xf, "name": "I Snow Him So Well", "timeLimit": 1, "hasGobbos": 1 },//time limit needs testing
-    "2-5": { "id": 0x10, "name": "Say No Snow", "timeLimit": 1, "hasGobbos": 1 },//time limit needs testing
-    "2-6": { "id": 0x11, "name": "License to Chill", "timeLimit": 1, "hasGobbos": 1 },//time limit needs testing
+    "2-S1": { "id": 0xe, "name": "Clouds of Ice", "timeLimit": 83, "hasGobbos": 0 },
+    "2-4": { "id": 0xf, "name": "I Snow Him So Well", "timeLimit": 122, "hasGobbos": 1 },
+    "2-5": { "id": 0x10, "name": "Say No Snow", "timeLimit": 104, "hasGobbos": 1 },
+    "2-6": { "id": 0x11, "name": "License to Chill", "timeLimit": 82, "hasGobbos": 1 },
     "2-B2": { "id": 0x12, "name": "Demon Itsy’s Ice Palace", "timeLimit": 0, "hasGobbos": 0 },
     "2-S2": { "id": 0x13, "name": "Ice Bridge to Eternity", "timeLimit": 1, "hasGobbos": 0 },//time limit needs testing
     "3-1": { "id": 0x14, "name": "Lights, Camel, Action!", "timeLimit": 1, "hasGobbos": 1 },//time limit needs testing
@@ -181,32 +193,49 @@ function isStomping() => word(0x07C24A)
 
 // Speed Demon! Achievements and Leaderboards
 
+function GetScoreFromTime(time)
+{
+    if (time < 60)
+    {
+        return 3
+    }
+    else if (time >= 60 && time < 90)
+    {
+        return 5
+    }
+    else if (time >= 90)
+    {
+        return 10
+    }
+}
+
 for levelCode in levelCodesToLevelInfo
 {
     levelId = levelCodesToLevelInfo[levelCode]["id"]
     timeLimit = levelCodesToLevelInfo[levelCode]["timeLimit"]
+    levelName = levelCodesToLevelInfo[levelCode]["name"]
     isLevelComplete = IsLevelWithIdComplete(levelId)
-    isLevelCheckpointValid = IsInLevelWithId(levelId) && once(IsLevelLoading())
     frameLimit = SecondsToFrames(timeLimit)
     
     // Only compile the achievements and leaderboards if there is an actual time limit greater than zero.
     if (timeLimit > 0)
     {
-        achievement(title = "Speed Demon! (" + levelCode + ")", description = "Complete Level " + levelCode + " within " + timeLimit + " seconds.",
-        points = 5, trigger =
-            isLevelComplete && isLevelCheckpointValid && never(selectedLevel() != levelId) // Core
-            && (
-            always_false() // Alt 1
+        achievement(title = "Speed Demon! (" + levelCode + ")",
+            description = "Complete ’" + levelName + "’ within " + SecondsToFormat(timeLimit) + ".",
+            points = GetScoreFromTime(timeLimit), trigger =
+                isLevelComplete && IsLevelCheckpointValid(levelId) && never(selectedLevel() != levelId) // Core
+                && (
+                always_false() // Alt 1
     
-            || never(repeated(frameLimit, frameIncremented())) // Alt 2
-                && never(!IsInLevel()) && unless(IsPaused())
-        ))
+                || never(repeated(frameLimit, frameIncremented())) // Alt 2
+                    && never(!IsInLevel()) && unless(IsPaused())
+            ))
         
         leaderboard(title = "Time Trial: " + levelCode + " - " + levelCodesToLevelInfo[levelCode]["name"],
             description = "Ring the gong in the fastest time you can!",
-            start = isLevelCheckpointValid && IsInLevel() && never(selectedLevel() != Delta(selectedLevel())),
+            start = IsLevelCheckpointValid(levelId) && IsInLevel() && never(selectedLevel() != Delta(selectedLevel())),
             cancel = !IsInLevel(),
-            submit = isLevelComplete && isLevelCheckpointValid,
+            submit = isLevelComplete && IsLevelCheckpointValid(levelId),
             value = measured(frameIncremented()),
             format = "FRAMES")
     }
@@ -358,17 +387,21 @@ masterPuzzlerAlt = always_false()
 
 for levelCode in levelsWithJigsawPiecesToIndex
 {
+    levelId = levelCodesToLevelInfo[levelCode]["id"]
+
     achievement(title = "Puzzler (" + levelCode + ")", description = "Collect the Jigsaw Piece hidden in Level " + levelCode + ".",
         points = 5, trigger =
             DidCollectJigsawPieceInCurrentLevel() &&
-            once(Delta(PuzzlePieceStatusInLevel(levelCode)) != PuzzlePieceStatusInLevel(levelCode))
-            && PuzzlePieceStatusInLevel(levelCode) > 0 && never(!IsInLevel())
+            PuzzlePieceStatusInLevel(levelCode) > 0 &&
+            once(IsLevelCheckpointValid(levelId) && PuzzlePieceStatusInLevel(levelCode) == 0) &&
+            PuzzlePieceStatusInLevel(levelCode) > 0 && never(!IsInLevel())
     )
     
     masterPuzzlerAlt = masterPuzzlerAlt ||
-        once(Delta(PuzzlePieceStatusInLevel(levelCode)) != PuzzlePieceStatusInLevel(levelCode)) && never(!IsInLevel())
+        once(Delta(PuzzlePieceStatusInLevel(levelCode)) != PuzzlePieceStatusInLevel(levelCode))
+        && once(IsLevelCheckpointValid(levelId) && PuzzlePieceStatusInLevel(levelCode) == 0)
     
-    masterPuzzlerCore = masterPuzzlerCore && PuzzlePieceStatusInLevel(levelCode) > 0
+    masterPuzzlerCore = masterPuzzlerCore && PuzzlePieceStatusInLevel(levelCode) > 0 && never(!IsInLevel())
 }
 
 achievement(title = "Master Puzzler", description = "Collect all eight Jigsaw Pieces.", points = 10, trigger =
@@ -487,3 +520,4 @@ rich_presence_conditional_display(IsLevelComplete(), "Viewing level results...")
 rich_presence_conditional_display(gameState() == 4, "Running through Level {0}",
     rich_presence_lookup("Level", selectedLevel(), levelIdsToNames)
 )
+
