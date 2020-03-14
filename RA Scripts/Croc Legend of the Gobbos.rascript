@@ -392,7 +392,6 @@ for levelCode in levelsWithJigsawPiecesToIndex
     achievement(title = "Puzzler (" + levelCode + ")", description = "Collect the Jigsaw Piece hidden in Level " + levelCode + ".",
         points = 5, trigger =
             DidCollectJigsawPieceInCurrentLevel() &&
-            PuzzlePieceStatusInLevel(levelCode) > 0 &&
             once(IsLevelCheckpointValid(levelId) && PuzzlePieceStatusInLevel(levelCode) == 0) &&
             PuzzlePieceStatusInLevel(levelCode) > 0 && never(!IsInLevel())
     )
@@ -427,13 +426,14 @@ achievement(title = "Pop Goes the Gobbo",
 // MR. PERFECT ACHIEVEMENTS
 
 achievementInfo = {
-    "1-B1": { "title": "Not So Feeble", "description": "Defeat Tooty the Feeble without taking damage.",
+    "1-B1": { "title": "Not So Feeble", "description": "Complete Level 1-B1 without taking damage.",
         "points": 3, "addr": byte(0x07f30a) },
-    "1-B2": { "title": "You Can't See Me", "description": "Defeat Flibby without taking damage.",
+    "1-B2": { "title": "You Can't See Me", "description": "Complete Level 1-B2 without taking damage.",
         "points": 5, "addr": byte(0x07ae1a) },
     "2-B1": { "title": "I Think It's Gonna Be a Long, Long Time",
-        "description": "Defeat Chumly without taking damage.", "points": 1, "addr": byte(0x085eae) },
-    //"2-B2": { "title": "The Abominable Snow Goat", "points": 5, "addr" }
+        "description": "Complete Level 2-B1 without taking damage.", "points": 1, "addr": byte(0x085eae) },
+    "3-B1": { "title": "A Fish Called Neptuna", "description": "Complete Level 3-B1 without taking damage.",
+        "points": 10, "addr": byte(0x085ea2) }
 }
 
 for levelCode in achievementInfo
@@ -441,9 +441,8 @@ for levelCode in achievementInfo
     info = achievementInfo[levelCode]
     achievement(title = info["title"], description = info["description"], points = info["points"],
         trigger =
-            once(Delta(info["addr"]) != 3 && info["addr"] == 3 || Delta(currentLives()) != currentLives())
-            && never(IsRecoveringFromDamage()) && never(currentLives() == 0) && IsLevelComplete() && IsInLevel() &&
-            info["addr"] == 0 && once(selectedLevel() == (levelCodesToLevelInfo[levelCode]["id"]) && IsLevelLoading())
+            never(IsRecoveringFromDamage()) && never(Delta(currentLives()) > currentLives()) && IsLevelComplete()
+            && never(!IsInLevel()) && info["addr"] == 0 && once(IsLevelCheckpointValid(levelCodesToLevelInfo[levelCode]["id"])) 
     )
 }
 
