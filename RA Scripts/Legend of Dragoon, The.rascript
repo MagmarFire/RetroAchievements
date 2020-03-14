@@ -1,6 +1,24 @@
 // Legend of Dragoon, The
 // #ID = 11264
 
+// Utilities
+function Delta(addr) => prev(addr)
+
+// $052C30: Map ID - 16-bit
+function mapId() => word(0x052C30)
+
+// $0BB0F4: Battlefield ID
+function battlefieldId() => word(0x0BB0F4)
+
+// $0BB0F8: Enemy ID
+function enemyId() => word(0x0BB0F8)
+
+// $0BC920: Gold Prize (32-bit)
+function goldPrize() => word(0x0BC920)
+
+// $0BC95C: EXP Prize (32-bit)
+function expPrize() => word(0x0BC95C)
+
 achievement(
     title = "Just One More!", description = "Perform your first Addition.", points = 1,
     id = 94789, badge = "107881", published = "1/15/2020 11:23:20 PM", modified = "2/13/2020 5:18:17 AM",
@@ -401,16 +419,15 @@ achievement(
     trigger = word(0x0BB0F8) == 0x0183 && word(0x0BC95C) == 0x07D0
 )
 
-// Ticket 25700: This triggered upon me losing the battle
-//               
-//               Rich Presence at time of trigger:
-//               Chapter 1 - The Serdian War | Fighting in Kazas | Play Time: 24h02:52.68<br>MD5:
-//               58b2b8f4c62c1d31346802f60e9b415f
+// To make sure the achievement doesn't trigger during a game over while still letting it trigger during the
+// transition from the cutscene to the results screen, we're checking to make sure that the map ID changes
+// for about a half second before triggering--because, OF COURSE, the map ID changes to the next one for
+// a little under a half second before changing back after a game over.
 achievement(
     title = "The War's End", description = "Defeat Emperor Doel and finally put an end to the Serdian Civil War.", points = 5,
     id = 94803, badge = "106744", published = "1/15/2020 11:26:43 PM", modified = "2/3/2020 2:30:33 AM",
-    trigger = word(0x0BB0F8) == 0x0186 && word(0x0BB0F4) == 0x0016 && word(0x052C30) == 0x00C8 && 
-              prior(word(0x052C30)) == 0x0294 && word(0x0BC95C) == 0x0BB8 && word(0x0BC920) == 0x00C8
+    trigger = enemyId() == 0x0186 && battlefieldId() == 0x0016 && repeated(30, mapId() == 0x00C8) && 
+              expPrize() == 0x0BB8 && goldPrize() == 0x00C8 && never(mapId() != 0x00C8)
 )
 
 achievement(
