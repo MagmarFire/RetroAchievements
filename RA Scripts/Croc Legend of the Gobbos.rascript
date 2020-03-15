@@ -126,10 +126,10 @@ levelCodesToLevelInfo = {
     "2-5": { "id": 0x10, "name": "Say No Snow", "timeLimit": 104, "hasGobbos": 1 },
     "2-6": { "id": 0x11, "name": "License to Chill", "timeLimit": 82, "hasGobbos": 1 },
     "2-B2": { "id": 0x12, "name": "Demon Itsy’s Ice Palace", "timeLimit": 0, "hasGobbos": 0 },
-    "2-S2": { "id": 0x13, "name": "Ice Bridge to Eternity", "timeLimit": 1, "hasGobbos": 0 },//time limit needs testing
-    "3-1": { "id": 0x14, "name": "Lights, Camel, Action!", "timeLimit": 1, "hasGobbos": 1 },//time limit needs testing
-    "3-2": { "id": 0x15, "name": "Mud Pit Mania", "timeLimit": 1, "hasGobbos": 1 },//time limit needs testing
-    "3-3": { "id": 0x16, "name": "Goin’ Underground", "timeLimit": 1, "hasGobbos": 1 },//time limit needs testing
+    "2-S2": { "id": 0x13, "name": "Ice Bridge to Eternity", "timeLimit": 91, "hasGobbos": 0 },
+    "3-1": { "id": 0x14, "name": "Lights, Camel, Action!", "timeLimit": 74, "hasGobbos": 1 },
+    "3-2": { "id": 0x15, "name": "Mud Pit Mania", "timeLimit": 108, "hasGobbos": 1 },
+    "3-3": { "id": 0x16, "name": "Goin’ Underground", "timeLimit": 142, "hasGobbos": 1 },
     "3-B1": { "id": 0x17, "name": "The Deadly Tank of Neptuna", "timeLimit": 0, "hasGobbos": 0 },
     "3-S1": { "id": 0x18, "name": "Arabian Heights", "timeLimit": 1, "hasGobbos": 0 },//time limit needs testing
     "3-4": { "id": 0x19, "name": "Sand and Freedom", "timeLimit": 1, "hasGobbos": 1 },//time limit needs testing
@@ -144,7 +144,7 @@ levelCodesToLevelInfo = {
     "4-S1": { "id": 0x22, "name": "Smash and See", "timeLimit": 1, "hasGobbos": 0 },//time limit needs testing
     "4-4": { "id": 0x23, "name": "Ballistic Meg’s Fairway", "timeLimit": 1, "hasGobbos": 1 },//time limit needs testing
     "4-5": { "id": 0x24, "name": "Swipe Swiftly’s Wicked Ride", "timeLimit": 1, "hasGobbos": 1 },//time limit needs testing
-    "4-6": { "id": 0x25, "name": "Panic and Platform Pete’s Lair", "timeLimit": 1, "hasGobbos": 1 },//time limit needs testing
+    "4-6": { "id": 0x25, "name": "Panic at Platform Pete’s Lair", "timeLimit": 1, "hasGobbos": 1 },//time limit needs testing
     "4-B2": { "id": 0x26, "name": "Baron Dante’s Funky Inferno", "timeLimit": 0, "hasGobbos": 0 },
     "4-S2": { "id": 0x27, "name": "Jailhouse Croc", "timeLimit": 1, "hasGobbos": 0 },//time limit needs testing
     "5-1": { "id": 0x28, "name": "And So the Adventure Returns", "timeLimit": 1, "hasGobbos": 0 },//time limit needs testing
