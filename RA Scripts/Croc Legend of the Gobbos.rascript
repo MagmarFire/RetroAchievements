@@ -493,10 +493,10 @@ achievement(title = "A Perfect Heist", description = "Defeat Crystal Dante witho
         IsLevelCompleteWithoutTakingDamageOrLosingALife(levelCodesToLevelInfo["5-B"]["id"])
 )
 
-// Baron Dante is a special beast. He has an individual HP address for each phase, and the final phase's HP never drops to 0
-// when you land the final blow. As such, the previous Mr. Perfect algorithm will not work. Fortunately, the value for the
-// current level does not change if you win, so we can simply check for the Level Complete screen without having to check
-// for HP anyway, fortunately.
+// Like Itsy above, Baron Dante is a special beast. He has an individual HP address for each phase,
+// and the final phase's HP never drops to 0 when you land the final blow. As such, the previous Mr. Perfect algorithm
+// will not work. Fortunately, the value for the current level does not change if you win, so we can simply check for
+// the Level Complete screen without having to check for HP anyway, fortunately.
 
 achievement(title = "No Sorcery Required", description = "Complete Level 4-B2 without taking damage.", points = 25,
     trigger =
