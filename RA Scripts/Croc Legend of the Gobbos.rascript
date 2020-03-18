@@ -34,6 +34,7 @@ function SecondsToFrames(seconds) => seconds * 60 // Assuming a 60 FPS framerate
 //          0x3 = Demo Mode
 //          0x4 = in-level
 //          0x5 = on the World Map
+//          0x7 = Credits
 //          0x8 = Options Menu
 //          0x9 = Load Menu
 //          0xb = Save Menu
@@ -46,9 +47,15 @@ function IsInLevel() => gameState() == 0x4
 
 function IsOnWorldMap() => gameState() == 0x5
 
+function IsInCredits() => gameState() == 0x7
+
 function PasswordWasUsed() => once(prior(gameState()) == 0xd && IsOnWorldMap())
 
 function JustLoadedFromSave() => prior(gameState()) == 0x9 && IsOnWorldMap()
+
+// $0748e0: 0x0 = Normal credits
+//          0x1 = Credits for Secret Sentinel
+function creditsType() => byte(0x0748e0)
 
 // $074904: Pause state:
 //          
@@ -141,16 +148,16 @@ levelCodesToLevelInfo = {
     "4-2": { "id": 0x1f, "name": "Hassle in the Castle", "timeLimit": 153, "hasGobbos": 1, "difficultyBonus": 0 },
     "4-3": { "id": 0x20, "name": "Dungeon of Defright", "timeLimit": 89, "hasGobbos": 1, "difficultyBonus": 0 },
     "4-B1": { "id": 0x21, "name": "Fosley’s Freaky Donut", "timeLimit": 0, "hasGobbos": 0, "difficultyBonus": 0 },
-    "4-S1": { "id": 0x22, "name": "Smash and See", "timeLimit": 1, "hasGobbos": 0, "difficultyBonus": 0 },//time limit needs testing
-    "4-4": { "id": 0x23, "name": "Ballistic Meg’s Fairway", "timeLimit": 1, "hasGobbos": 1, "difficultyBonus": 0 },//time limit needs testing
-    "4-5": { "id": 0x24, "name": "Swipe Swiftly’s Wicked Ride", "timeLimit": 1, "hasGobbos": 1, "difficultyBonus": 0 },//time limit needs testing
-    "4-6": { "id": 0x25, "name": "Panic at Platform Pete’s Lair", "timeLimit": 1, "hasGobbos": 1, "difficultyBonus": 0 },//time limit needs testing
+    "4-S1": { "id": 0x22, "name": "Smash and See", "timeLimit": 175, "hasGobbos": 0, "difficultyBonus": 0 },
+    "4-4": { "id": 0x23, "name": "Ballistic Meg’s Fairway", "timeLimit": 178, "hasGobbos": 1, "difficultyBonus": 0 },
+    "4-5": { "id": 0x24, "name": "Swipe Swiftly’s Wicked Ride", "timeLimit": 180, "hasGobbos": 1, "difficultyBonus": 0 },
+    "4-6": { "id": 0x25, "name": "Panic at Platform Pete’s Lair", "timeLimit": 214, "hasGobbos": 1, "difficultyBonus": 0 },
     "4-B2": { "id": 0x26, "name": "Baron Dante’s Funky Inferno", "timeLimit": 0, "hasGobbos": 0, "difficultyBonus": 0 },
-    "4-S2": { "id": 0x27, "name": "Jailhouse Croc", "timeLimit": 1, "hasGobbos": 0, "difficultyBonus": 0 },//time limit needs testing
-    "5-1": { "id": 0x28, "name": "And So the Adventure Returns", "timeLimit": 1, "hasGobbos": 0, "difficultyBonus": 0 },//time limit needs testing
-    "5-2": { "id": 0x29, "name": "Diet Brrrrr", "timeLimit": 1, "hasGobbos": 0, "difficultyBonus": 0 },//time limit needs testing
-    "5-3": { "id": 0x2a, "name": "Trial on the Nile", "timeLimit": 1, "hasGobbos": 0, "difficultyBonus": 0 },//time limit needs testing
-    "5-4": { "id": 0x2b, "name": "Crox Interactive", "timeLimit": 1, "hasGobbos": 0, "difficultyBonus": 0 },//time limit needs testing
+    "4-S2": { "id": 0x27, "name": "Jailhouse Croc", "timeLimit": 98, "hasGobbos": 0, "difficultyBonus": 0 },
+    "5-1": { "id": 0x28, "name": "And So the Adventure Returns", "timeLimit": 118, "hasGobbos": 0, "difficultyBonus": 1 },
+    "5-2": { "id": 0x29, "name": "Diet Brrrrr", "timeLimit": 205, "hasGobbos": 0, "difficultyBonus": 1 },
+    "5-3": { "id": 0x2a, "name": "Trial on the Nile", "timeLimit": 163, "hasGobbos": 0, "difficultyBonus": 2 },
+    "5-4": { "id": 0x2b, "name": "Crox Interactive", "timeLimit": 119, "hasGobbos": 0, "difficultyBonus": 0 },
     "5-B": { "id": 0x2c, "name": "Secret Sentinel", "timeLimit": 0, "hasGobbos": 0, "difficultyBonus": 0 },
 }
 
@@ -457,15 +464,54 @@ achievementInfo = {
         "points": 1, "addr": byte(0x085ea6) }
 }
 
+function IsLevelCompleteWithoutTakingDamageOrLosingALife(levelId)
+{
+    return never(IsRecoveringFromDamage()) && never(Delta(currentLives()) > currentLives()) && IsLevelComplete()
+            && never(!IsInLevel()) && once(IsLevelCheckpointValid(levelId))
+}
+
 for levelCode in achievementInfo
 {
     info = achievementInfo[levelCode]
     achievement(title = info["title"], description = info["description"], points = info["points"],
         trigger =
-            never(IsRecoveringFromDamage()) && never(Delta(currentLives()) > currentLives()) && IsLevelComplete()
-            && never(!IsInLevel()) && info["addr"] == 0 && once(IsLevelCheckpointValid(levelCodesToLevelInfo[levelCode]["id"])) 
+            info["addr"] == 0 && IsLevelCompleteWithoutTakingDamageOrLosingALife(levelCodesToLevelInfo[levelCode]["id"]) 
     )
 }
+
+// Itsy is an exception to the algorithm detailed above, since he doesn't have standard HP like other bosses do. However,
+// unlike other bosses' levels, the value that holds the level ID doesn't change until after the player presses X on the
+// Level Complete screen. Therefore, all we gotta do is check to see if the Level Complete screen was active.
+
+achievement(title = "The Abominable Snow Goat", description = "Complete Level 2-B2 without taking damage.", points = 5,
+    trigger =
+        IsLevelCompleteWithoutTakingDamageOrLosingALife(levelCodesToLevelInfo["2-B2"]["id"])
+)
+
+achievement(title = "A Perfect Heist", description = "Defeat Crystal Dante without taking damage.", points = 5,
+    trigger =
+        IsLevelCompleteWithoutTakingDamageOrLosingALife(levelCodesToLevelInfo["5-B"]["id"])
+)
+
+// Baron Dante is a special beast. He has an individual HP address for each phase, and the final phase's HP never drops to 0
+// when you land the final blow. As such, the previous Mr. Perfect algorithm will not work. Fortunately, the value for the
+// current level does not change if you win, so we can simply check for the Level Complete screen without having to check
+// for HP anyway, fortunately.
+
+achievement(title = "No Sorcery Required", description = "Complete Level 4-B2 without taking damage.", points = 25,
+    trigger =
+        IsLevelCompleteWithoutTakingDamageOrLosingALife(levelCodesToLevelInfo["4-B2"]["id"])
+)
+
+achievement(title = "Savior of the Archipelago", description = "Defeat Baron Dante and save King Rufus.", points = 10,
+    trigger =
+        repeated(240, IsInCredits()) && creditsType() == 0 && never(!IsInCredits())
+)
+
+achievement(title = "The Crystalline Impostor", description = "Defeat Crystal Dante and attain 100% completion.", points = 25,
+    trigger =
+        repeated(240, IsInCredits()) && creditsType() == 1 && never(!IsInCredits())
+)
 
 
 // RICH PRESENCE
@@ -477,6 +523,7 @@ statesToNames = {
     4: "In level",
     5: "On the World Map",
     6: "Defeated...",
+    7: "Watching the credits...",
     8: "In the Options Menu",
     9: "On the Load Screen",
     0xb: "On the Save Screen",
@@ -523,7 +570,7 @@ levelIdsToNames = {
     0x22: "4-S1 - Smash and See",
     0x23: "4-4 - Ballistic Meg’s Fairway",
     0x24: "4-5 - Swipe Swiftly’s Wicked Ride",
-    0x25: "4-6 - Panic and Platform Pete’s Lair",
+    0x25: "4-6 - Panic at Platform Pete’s Lair",
     0x26: "4-B2 - Baron Dante’s Funky Inferno",
     0x27: "4-S2 - Jailhouse Croc",
     0x28: "5-1 - And So the Adventure Returns",
