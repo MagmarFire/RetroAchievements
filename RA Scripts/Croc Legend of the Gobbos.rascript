@@ -116,7 +116,7 @@ function IsLevelCheckpointValid(levelId) => IsInLevelWithId(levelId) && once(IsL
 levelCodesToLevelInfo = {
     "1-1": { "id": 0x0, "name": "And So the Adventure Begins", "timeLimit": 39, "hasGobbos": 1, "difficultyBonus": 0 },
     "1-2": { "id": 0x1, "name": "Underground Overground", "timeLimit": 41, "hasGobbos": 1, "difficultyBonus": 0 },
-    "1-3": { "id": 0x2, "name": "Shoutin’ Lava Lava Lava", "timeLimit": 48, "hasGobbos": 1, "difficultyBonus": 0 },
+    "1-3": { "id": 0x2, "name": "Shoutin\" Lava Lava Lava", "timeLimit": 48, "hasGobbos": 1, "difficultyBonus": 0 },
     "1-B1": { "id": 0x3, "name": "Lair of the Feeble", "timeLimit": 0, "hasGobbos": 0, "difficultyBonus": 0 },
     "1-S1": { "id": 0x4, "name": "The Curvy Caverns", "timeLimit": 84, "hasGobbos": 0, "difficultyBonus": 0 },
     "1-4": { "id": 0x5, "name": "The Tumbling Dantini", "timeLimit": 52, "hasGobbos": 1, "difficultyBonus": 0 },
@@ -127,32 +127,32 @@ levelCodesToLevelInfo = {
     "2-1": { "id": 0xa, "name": "The Ice of Life", "timeLimit": 66, "hasGobbos": 1, "difficultyBonus": 0 },
     "2-2": { "id": 0xb, "name": "Be Wheely Careful", "timeLimit": 83, "hasGobbos": 1, "difficultyBonus": 0 },
     "2-3": { "id": 0xc, "name": "Riot Brrrrr", "timeLimit": 92, "hasGobbos": 1, "difficultyBonus": 0 },
-    "2-B1": { "id": 0xd, "name": "Chumly’s Snow Den", "timeLimit": 0, "hasGobbos": 0, "difficultyBonus": 0 },
+    "2-B1": { "id": 0xd, "name": "Chumly\"s Snow Den", "timeLimit": 0, "hasGobbos": 0, "difficultyBonus": 0 },
     "2-S1": { "id": 0xe, "name": "Clouds of Ice", "timeLimit": 83, "hasGobbos": 0, "difficultyBonus": 0 },
     "2-4": { "id": 0xf, "name": "I Snow Him So Well", "timeLimit": 122, "hasGobbos": 1, "difficultyBonus": 0 },
     "2-5": { "id": 0x10, "name": "Say No Snow", "timeLimit": 104, "hasGobbos": 1, "difficultyBonus": 0 },
     "2-6": { "id": 0x11, "name": "License to Chill", "timeLimit": 82, "hasGobbos": 1, "difficultyBonus": 0 },
-    "2-B2": { "id": 0x12, "name": "Demon Itsy’s Ice Palace", "timeLimit": 0, "hasGobbos": 0, "difficultyBonus": 0 },
+    "2-B2": { "id": 0x12, "name": "Demon Itsy\"s Ice Palace", "timeLimit": 0, "hasGobbos": 0, "difficultyBonus": 0 },
     "2-S2": { "id": 0x13, "name": "Ice Bridge to Eternity", "timeLimit": 91, "hasGobbos": 0, "difficultyBonus": 0 },
     "3-1": { "id": 0x14, "name": "Lights, Camel, Action!", "timeLimit": 74, "hasGobbos": 1, "difficultyBonus": 0 },
     "3-2": { "id": 0x15, "name": "Mud Pit Mania", "timeLimit": 108, "hasGobbos": 1, "difficultyBonus": 0 },
-    "3-3": { "id": 0x16, "name": "Goin’ Underground", "timeLimit": 142, "hasGobbos": 1, "difficultyBonus": 0 },
+    "3-3": { "id": 0x16, "name": "Goin\" Underground", "timeLimit": 142, "hasGobbos": 1, "difficultyBonus": 0 },
     "3-B1": { "id": 0x17, "name": "The Deadly Tank of Neptuna", "timeLimit": 0, "hasGobbos": 0, "difficultyBonus": 0 },
     "3-S1": { "id": 0x18, "name": "Arabian Heights", "timeLimit": 123, "hasGobbos": 0, "difficultyBonus": 1 },
     "3-4": { "id": 0x19, "name": "Sand and Freedom", "timeLimit": 203, "hasGobbos": 1, "difficultyBonus": 1 },
     "3-5": { "id": 0x1a, "name": "Leap of Faith", "timeLimit": 199, "hasGobbos": 1, "difficultyBonus": 1 },
-    "3-6": { "id": 0x1b, "name": "Life’s a Beach", "timeLimit": 133, "hasGobbos": 1, "difficultyBonus": 1 },
-    "3-B2": { "id": 0x1c, "name": "Cactus Jack’s Ranch", "timeLimit": 0, "hasGobbos": 0, "difficultyBonus": 0 },
+    "3-6": { "id": 0x1b, "name": "Life\"s a Beach", "timeLimit": 133, "hasGobbos": 1, "difficultyBonus": 1 },
+    "3-B2": { "id": 0x1c, "name": "Cactus Jack\"s Ranch", "timeLimit": 0, "hasGobbos": 0, "difficultyBonus": 0 },
     "3-S2": { "id": 0x1d, "name": "Defeato Burrito", "timeLimit": 116, "hasGobbos": 0, "difficultyBonus": 0 },
     "4-1": { "id": 0x1e, "name": "The Tower of Power", "timeLimit": 200, "hasGobbos": 1, "difficultyBonus": 1 },
     "4-2": { "id": 0x1f, "name": "Hassle in the Castle", "timeLimit": 153, "hasGobbos": 1, "difficultyBonus": 0 },
     "4-3": { "id": 0x20, "name": "Dungeon of Defright", "timeLimit": 89, "hasGobbos": 1, "difficultyBonus": 0 },
-    "4-B1": { "id": 0x21, "name": "Fosley’s Freaky Donut", "timeLimit": 0, "hasGobbos": 0, "difficultyBonus": 0 },
+    "4-B1": { "id": 0x21, "name": "Fosley\"s Freaky Donut", "timeLimit": 0, "hasGobbos": 0, "difficultyBonus": 0 },
     "4-S1": { "id": 0x22, "name": "Smash and See", "timeLimit": 175, "hasGobbos": 0, "difficultyBonus": 0 },
-    "4-4": { "id": 0x23, "name": "Ballistic Meg’s Fairway", "timeLimit": 178, "hasGobbos": 1, "difficultyBonus": 0 },
-    "4-5": { "id": 0x24, "name": "Swipe Swiftly’s Wicked Ride", "timeLimit": 180, "hasGobbos": 1, "difficultyBonus": 0 },
-    "4-6": { "id": 0x25, "name": "Panic at Platform Pete’s Lair", "timeLimit": 214, "hasGobbos": 1, "difficultyBonus": 0 },
-    "4-B2": { "id": 0x26, "name": "Baron Dante’s Funky Inferno", "timeLimit": 0, "hasGobbos": 0, "difficultyBonus": 0 },
+    "4-4": { "id": 0x23, "name": "Ballistic Meg\"s Fairway", "timeLimit": 178, "hasGobbos": 1, "difficultyBonus": 0 },
+    "4-5": { "id": 0x24, "name": "Swipe Swiftly\"s Wicked Ride", "timeLimit": 180, "hasGobbos": 1, "difficultyBonus": 0 },
+    "4-6": { "id": 0x25, "name": "Panic at Platform Pete\"s Lair", "timeLimit": 214, "hasGobbos": 1, "difficultyBonus": 0 },
+    "4-B2": { "id": 0x26, "name": "Baron Dante\"s Funky Inferno", "timeLimit": 0, "hasGobbos": 0, "difficultyBonus": 0 },
     "4-S2": { "id": 0x27, "name": "Jailhouse Croc", "timeLimit": 98, "hasGobbos": 0, "difficultyBonus": 0 },
     "5-1": { "id": 0x28, "name": "And So the Adventure Returns", "timeLimit": 118, "hasGobbos": 0, "difficultyBonus": 1 },
     "5-2": { "id": 0x29, "name": "Diet Brrrrr", "timeLimit": 205, "hasGobbos": 0, "difficultyBonus": 1 },
@@ -200,7 +200,7 @@ function isStomping() => word(0x07C24A)
 
 // Speed Demon! Achievements and Leaderboards
 
-function GetScoreFromTime(time, difficultyBonus)
+function GetScore(time, difficultyBonus)
 {
     stage = 1
     if (time >= 60 && time < 90)
@@ -245,8 +245,8 @@ for levelCode in levelCodesToLevelInfo
     if (timeLimit > 0)
     {
         achievement(title = "Speed Demon! (" + levelCode + ")",
-            description = "Complete ’" + levelName + "’ within " + SecondsToFormat(timeLimit) + ".",
-            points = GetScoreFromTime(timeLimit, difficultyBonus), trigger =
+            description = "Complete \"" + levelName + "\" within " + SecondsToFormat(timeLimit) + ".",
+            points = GetScore(timeLimit, difficultyBonus), trigger =
                 isLevelComplete && IsLevelCheckpointValid(levelId) && never(selectedLevel() != levelId) // Core
                 && (
                 always_false() // Alt 1
@@ -280,7 +280,7 @@ worldsToGobboLevels = {
 
 gobboAchievementThresholds = [
     { "name": "Rookie Rescuer", "threshold": 6, "description": "", "points": 1 },
-    { "name": "Trainee Rescuer", "threshold": 18, "description": "", "points": 5 },
+    { "name": "Trainee Rescuer", "threshold": 18, "description": "", "points": 3 },
     { "name": "Regular Rescuer", "threshold": 36, "description": "", "points": 5 },
     { "name": "Veteran Rescuer", "threshold": 72, "description": "", "points": 10 },
     { "name": "Legendary Rescuer", "threshold": 144, "description": "Rescue all Gobbos.", "points": 25 }
