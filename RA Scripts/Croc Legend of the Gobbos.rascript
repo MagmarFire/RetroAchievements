@@ -155,7 +155,7 @@ levelCodesToLevelInfo = {
     "4-B2": { "id": 0x26, "name": "Baron Dante's Funky Inferno", "timeLimit": 0, "hasGobbos": 0, "difficultyBonus": 0 },
     "4-S2": { "id": 0x27, "name": "Jailhouse Croc", "timeLimit": 98, "hasGobbos": 0, "difficultyBonus": 0 },
     "5-1": { "id": 0x28, "name": "And So the Adventure Returns", "timeLimit": 118, "hasGobbos": 0, "difficultyBonus": 1 },
-    "5-2": { "id": 0x29, "name": "Diet Brrrrr", "timeLimit": 205, "hasGobbos": 0, "difficultyBonus": 1 },
+    "5-2": { "id": 0x29, "name": "Diet Brrrrr", "timeLimit": 126, "hasGobbos": 0, "difficultyBonus": 1 },
     "5-3": { "id": 0x2a, "name": "Trial on the Nile", "timeLimit": 163, "hasGobbos": 0, "difficultyBonus": 2 },
     "5-4": { "id": 0x2b, "name": "Crox Interactive", "timeLimit": 119, "hasGobbos": 0, "difficultyBonus": 0 },
     "5-B": { "id": 0x2c, "name": "Secret Sentinel", "timeLimit": 0, "hasGobbos": 0, "difficultyBonus": 0 },
@@ -183,8 +183,6 @@ function timesLanded() => byte(0x07C0B6)
 
 // $07C22E: Blinking time remaining after taking damage (32-bit)
 function invincibilityTimeRemaining() => word(0x07c22e)
-
-function IsRecoveringFromDamage() => invincibilityTimeRemaining() > 0
 
 // $07C246: Jumping state:
 //          
@@ -469,8 +467,8 @@ achievementInfo = {
 
 function IsLevelCompleteWithoutTakingDamageOrLosingALife(levelId)
 {
-    return never(IsRecoveringFromDamage()) && never(Delta(currentLives()) > currentLives()) && IsLevelComplete()
-            && never(!IsInLevel()) && once(IsLevelCheckpointValid(levelId))
+    return never(Delta(currentLevelCrystals()) > currentLevelCrystals()) && never(Delta(currentLives()) > currentLives())
+        && IsLevelComplete() && never(!IsInLevel()) && once(IsLevelCheckpointValid(levelId))
 }
 
 for levelCode in achievementInfo
