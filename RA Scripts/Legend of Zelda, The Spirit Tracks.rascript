@@ -53,7 +53,10 @@ function currentlyEquippedItem() => byte(0x2648F8)
 //          Bit 3: Bow
 //          Bit 4: Bombs
 //          Bit 5: Sand Wand
-// $264902: Bit 7: Spirit Flute
+// $264902: Bit 1: Recruit's Sword
+//          Bit 7: Spirit Flute
+
+function hasRecruitSword() => bit1(0x264902)
 
 // $264908: Rupees
 function rupees() => word(0x264908)
@@ -111,6 +114,15 @@ function wasPostmanIntroducedForTheFirstTime() => bit0(0x264CFB)
 // $2685FE: Regal Ring count
 // $2C3B00: Rupees (display)
 
+// $264cf6: Bit 4: Trained with the captain
+//          Bit 5: Cole appears for the first time
+//          Bit 6: Zelda's guard is out of the way
+//          Bit 7: Cole has let the guard pass and is at the ceremony
+function trainedWithTheRoyalGuard() => bit4(0x264cf6)
+
+// $04a04c: 0x1 = transitioning into game mode after clicking Adventure or Battle
+function isLoadingSaveFile() => byte(0x04a04c) != 0
+
 // ACHIEVEMENTS
 
 // "Extra Credit"
@@ -122,4 +134,11 @@ achievement(title = "Extra Credit", description = "Pass your final exam with at 
         && never(timeRemainingInFinalExam() < 128)
         && currentLocation() == castleTown["id"]
         && unless(timeRemainingInFinalExam() == 0)
+        && never(wasPostmanIntroducedForTheFirstTime() == 1)
+)
+
+achievement(title = "Fresh from the Academy",
+    description = "Acquire the Recruit's Sword and train under Russell, the Captain of the Guard.", points = 1,
+    trigger = once(Delta(trainedWithTheRoyalGuard()) != trainedWithTheRoyalGuard() && trainedWithTheRoyalGuard() == 1)
+        && never(isLoadingSaveFile())
 )
