@@ -5,6 +5,12 @@
 
 function Delta(addr) => prev(addr)
 
+function WasBitflagSetInGame(bit)
+{
+    return once(Delta(bit) != bit && bit == 1)
+        && never(isLoadingSaveFile())
+}
+
 // $065B68: Max Rupees
 // $0B5308: >0x0 = air is being blown into the mic
 
@@ -77,7 +83,10 @@ function rupees() => word(0x264908)
 //          Bit 5: Snow Temple
 //          Bit 6: Ocean Temple
 //          Bit 7: Fire Temple
-// $264CF5: Bit 7: Railmap
+
+// $264CF5: Bit 7: Forest Railmap
+function hasForestRailmap() => bit7(0x264CF5)
+
 // $264CF7: Bit 0: Engineer Certificate
 
 // $264CFB: Bit 0: Postman introduction (first time)
@@ -123,6 +132,9 @@ function trainedWithTheRoyalGuard() => bit4(0x264cf6)
 // $04a04c: 0x1 = transitioning into game mode after clicking Adventure or Battle
 function isLoadingSaveFile() => byte(0x04a04c) != 0
 
+// $264d06: Bit 1: Zelda possessed a Phantom for the first time
+function possessedAPhantomForTheFirstTime() => bit1(0x264d06)
+
 // ACHIEVEMENTS
 
 // "Extra Credit"
@@ -137,8 +149,20 @@ achievement(title = "Extra Credit", description = "Pass your final exam with at 
         && never(wasPostmanIntroducedForTheFirstTime() == 1)
 )
 
+// "Fresh from the Academy"
 achievement(title = "Fresh from the Academy",
     description = "Acquire the Recruit's Sword and train under Russell, the Captain of the Guard.", points = 1,
-    trigger = once(Delta(trainedWithTheRoyalGuard()) != trainedWithTheRoyalGuard() && trainedWithTheRoyalGuard() == 1)
-        && never(isLoadingSaveFile())
+    trigger = WasBitflagSetInGame(trainedWithTheRoyalGuard())
+)
+
+// Teamwork Makes the Dream Work
+achievement(title = "Teamwork Makes the Dream Work",
+    description = "Have Zelda possess a Phantom for the first time.", points = 1,
+    trigger = WasBitflagSetInGame(possessedAPhantomForTheFirstTime())
+)
+
+// Forest Mapper
+achievement(title = "Forest Mapper",
+    description = "Obtain the Forest Railmap.", points = 3,
+    trigger = WasBitflagSetInGame(hasForestRailmap())
 )
