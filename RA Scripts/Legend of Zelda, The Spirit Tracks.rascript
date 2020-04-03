@@ -21,12 +21,25 @@ function timeRemainingInFinalExam() => word(0x0BB584)
 function currentLocation() => word(0x261640)
 
 locationInfo = {
-    0x2f: { "id": 0x2f, "name": "Agoda Village", "code": "Agoda", }, 
-    0x8: { "id": 0x8, "name": "Hyrule Field (Forest Realm)", "code": "ForestField", }, 
-    0x29: { "id": 0x29, "name": "Castle Town", "code": "CastleTown", }, 
+    0x2f: { "id": 0x2f, "name": "Agoda Village", "code": "Agoda", },
+    0x8: { "id": 0x8, "name": "Hyrule Field (Forest Realm)", "code": "ForestField", },
+    0x29: { "id": 0x29, "name": "Castle Town", "code": "CastleTown", },
+    0x28: { "id": 0x28, "name": "Hyrule Castle", "code": "Castle", },
+    0x50: { "id": 0x50, "name": "Watching a cutscene…", "code": "Cutscene", },
+    0x18: { "id": 0x18, "name": "Tunnel to the Tower", "code": "Tunnel", },
+    0x14: { "id": 0x14, "name": "the Tower of Spirits", "code": "Tower", },
+    0x17: { "id": 0x17, "name": "the Spiral Staircase", "code": "Staircase", },
+    0x13: { "id": 0x13, "name": "the Tower of Spirits, 1F", "code": "TowerDungeon", },
+    0x4: { "id": 0x4, "name": "Hyrule Field (Forest Realm)", "code": "ForestField2", },
+    0x2a: { "id": 0x2a, "name": "Whittleton", "code": "Whittleton", },
+    0x38: { "id": 0x38, "name": "the wilds outside Whittleton", "code": "WhittletonWilds", },
+    0x9: { "id": 0x9, "name": "the Lost Woods", "code": "LostWoods", },
+    0x30: { "id": 0x30, "name": "the Forest Sanctuary", "code": "ForestSanctuary", },
+    0x19: { "id": 0x19, "name": "the Forest Temple", "code": "ForestTemple", },
+    0x1e: { "id": 0x1e, "name": "in Stagnox’s lair…", "code": "Stagnox", },
 }
 
-function GetCurrentLocationByCode(code)
+function GetLocationByCode(code)
 {
     for id in locationInfo
     {
@@ -35,7 +48,12 @@ function GetCurrentLocationByCode(code)
             return locationInfo[id]
         }
     }
-    
+}
+
+function IsInLocationWithCode(code)
+{
+    location = GetLocationByCode(code)
+    return currentLocation() == location["id"]
 }
 
 // $261654: Current location (US) (changes when level is done loading)
@@ -83,8 +101,15 @@ function rupees() => word(0x264908)
 //          Bit 5: Snow Temple
 //          Bit 6: Ocean Temple
 //          Bit 7: Fire Temple
+function forestTempleClear() => bit4(0x264CF4)
 
-// $264CF5: Bit 7: Forest Railmap
+// $264d0a: Bit 4: Started duet with Gage
+// $264CF5: Bit 0: Completed duet with Gage
+//          Bit 7: Forest Railmap
+function startedDuetWithGage() => bit4(0x264d0a)
+
+function completedDuetWithGage() => bit0(0x264CF5)
+
 function hasForestRailmap() => bit7(0x264CF5)
 
 // $264CF7: Bit 0: Engineer Certificate
@@ -135,12 +160,24 @@ function isLoadingSaveFile() => byte(0x04a04c) != 0
 // $264d06: Bit 1: Zelda possessed a Phantom for the first time
 function possessedAPhantomForTheFirstTime() => bit1(0x264d06)
 
+// $268590: Bit 0: Song of Awakening
+//          Bit 1: Song of Healing
+//          Bit 2: Song of Birds
+//          Bit 3: Song of Light
+//          Bit 4: Song of Discovery
+songAddr = 0x268590
+function learnedSongOfAwakening() => bit0(songAddr)
+function learnedSongOfHealing() => bit1(songAddr)
+function learnedSongOfBirds() => bit2(songAddr)
+function learnedSongOfLight() => bit3(songAddr)
+function learnedSongOfDiscovery() => bit4(songAddr)
+
 // ACHIEVEMENTS
 
 // "Extra Credit"
-hyruleField = GetCurrentLocationByCode("ForestField")
-castleTown = GetCurrentLocationByCode("CastleTown")
-agoda = GetCurrentLocationByCode("Agoda")
+hyruleField = GetLocationByCode("ForestField")
+castleTown = GetLocationByCode("CastleTown")
+agoda = GetLocationByCode("Agoda")
 achievement(title = "Extra Credit", description = "Pass your final exam with at least 128 seconds left on the clock.", points = 1,
     trigger = once(Delta(currentLocation()) == agoda["id"] && currentLocation() == hyruleField["id"])
         && never(timeRemainingInFinalExam() < 128)
@@ -153,16 +190,84 @@ achievement(title = "Extra Credit", description = "Pass your final exam with at 
 achievement(title = "Fresh from the Academy",
     description = "Acquire the Recruit's Sword and train under Russell, the Captain of the Guard.", points = 1,
     trigger = WasBitflagSetInGame(trainedWithTheRoyalGuard())
+        && IsInLocationWithCode("Castle")
 )
 
 // Teamwork Makes the Dream Work
 achievement(title = "Teamwork Makes the Dream Work",
     description = "Have Zelda possess a Phantom for the first time.", points = 1,
     trigger = WasBitflagSetInGame(possessedAPhantomForTheFirstTime())
+        && IsInLocationWithCode("TowerDungeon")
 )
 
 // Forest Mapper
 achievement(title = "Forest Mapper",
     description = "Obtain the Forest Railmap.", points = 3,
     trigger = WasBitflagSetInGame(hasForestRailmap())
+        && IsInLocationWithCode("TowerDungeon")
+)
+
+// "Up-and-Coming Musician"
+achievement(title = "Up-and-Coming Musician",
+    description = "Learn a song on the Spirit Flute.", points = 1,
+    trigger = WasBitflagSetInGame(learnedSongOfAwakening())
+        || WasBitflagSetInGame(learnedSongOfHealing())
+        || WasBitflagSetInGame(learnedSongOfBirds())
+        || WasBitflagSetInGame(learnedSongOfLight())
+        || WasBitflagSetInGame(learnedSongOfDiscovery())
+)
+
+// "Duet with the Cellist"
+achievement(title = "Duet with the Cellist",
+    description = "Complete your duet with Gage and open the path to the Forest Temple.",
+    points = 3,
+    trigger = WasBitflagSetInGame(startedDuetWithGage())
+        && WasBitflagSetInGame(completedDuetWithGage())
+        && IsInLocationWithCode("ForestSanctuary")
+)
+
+// "Shoo, Fly, Shoo"
+function IsStagnoxDying() => byte(0x31f538) == 0x15
+
+function stagnoxHP() => byte(0x31f534)
+
+achievement(title = "Shoo, Fly, Shoo",
+    description = "Defeat Stagnox without taking damage.", points = 10,
+    trigger = never(!IsInLocationWithCode("Stagnox"))
+        && once(IsStagnoxDying())
+        && once(stagnoxHP() == 0x30)
+        && never(Delta(currentHP()) > currentHP())
+)
+
+// "Yet More Shackles Remain"
+achievement(title = "Yet More Shackles Remain", points = 5,
+    description = "Clear the Forest Temple.",
+    trigger = WasBitflagSetInGame(forestTempleClear())
+        && IsInLocationWithCode("Stagnox")
+)
+
+// "Syrinx Sage"
+songTrigger = always_false()
+
+for i in range(0, 4) // 0-4 maps to each Spirit Flute song.
+{
+    alt = always_true()
+    for j in range(0, 4)
+    {
+        if (j != i) // We want each alt to deal with each song.
+        {
+            alt = alt && bit(j, songAddr) == 1
+        }
+        else
+        {
+            alt = alt && WasBitflagSetInGame(bit(j, songAddr))
+        }
+    }
+    
+    songTrigger = songTrigger || alt
+}
+
+achievement(title = "Syrinx Sage",
+    description = "Learn all five songs on the Spirit Flute.", points = 5,
+    trigger = songTrigger
 )
