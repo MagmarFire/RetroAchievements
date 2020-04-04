@@ -37,6 +37,7 @@ locationInfo = {
     0x30: { "id": 0x30, "name": "the Forest Sanctuary", "code": "ForestSanctuary", },
     0x19: { "id": 0x19, "name": "the Forest Temple", "code": "ForestTemple", },
     0x1e: { "id": 0x1e, "name": "in Stagnox’s lair…", "code": "Stagnox", },
+    0xff00: { "id": 0xff00, "name": "On the title screen…", "code": "Title", },
 }
 
 function GetLocationByCode(code)
@@ -148,10 +149,13 @@ function wasPostmanIntroducedForTheFirstTime() => bit0(0x264CFB)
 // $2685FE: Regal Ring count
 // $2C3B00: Rupees (display)
 
-// $264cf6: Bit 4: Trained with the captain
+// $264cf6: Bit 0: Snow Railmap
+//          Bit 4: Trained with the captain
 //          Bit 5: Cole appears for the first time
 //          Bit 6: Zelda's guard is out of the way
 //          Bit 7: Cole has let the guard pass and is at the ceremony
+function hasSnowRailmap() => bit0(0x264cf6)
+
 function trainedWithTheRoyalGuard() => bit4(0x264cf6)
 
 // $04a04c: 0x1 = transitioning into game mode after clicking Adventure or Battle
@@ -207,14 +211,22 @@ achievement(title = "Forest Mapper",
         && IsInLocationWithCode("TowerDungeon")
 )
 
+// Snow Mapper
+achievement(title = "Snow Mapper",
+    description = "Obtain the Snow Railmap.", points = 3,
+    trigger = WasBitflagSetInGame(hasSnowRailmap())
+        && IsInLocationWithCode("TowerDungeon")
+)
+
 // "Up-and-Coming Musician"
 achievement(title = "Up-and-Coming Musician",
     description = "Learn a song on the Spirit Flute.", points = 1,
-    trigger = WasBitflagSetInGame(learnedSongOfAwakening())
+    trigger = never(IsInLocationWithCode("Title"))
+        && (WasBitflagSetInGame(learnedSongOfAwakening())
         || WasBitflagSetInGame(learnedSongOfHealing())
         || WasBitflagSetInGame(learnedSongOfBirds())
         || WasBitflagSetInGame(learnedSongOfLight())
-        || WasBitflagSetInGame(learnedSongOfDiscovery())
+        || WasBitflagSetInGame(learnedSongOfDiscovery()))
 )
 
 // "Duet with the Cellist"
@@ -231,11 +243,13 @@ function IsStagnoxDying() => byte(0x31f538) == 0x15
 
 function stagnoxHP() => byte(0x31f534)
 
+forestTemple = GetLocationByCode("ForestTemple")
+
 achievement(title = "Shoo, Fly, Shoo",
     description = "Defeat Stagnox without taking damage.", points = 10,
     trigger = never(!IsInLocationWithCode("Stagnox"))
-        && once(IsStagnoxDying())
-        && once(stagnoxHP() == 0x30)
+        && once(IsInLocationWithCode("Stagnox") && Delta(currentLocation()) == forestTemple["id"])
+        && IsStagnoxDying()
         && never(Delta(currentHP()) > currentHP())
 )
 
