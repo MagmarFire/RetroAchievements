@@ -38,6 +38,7 @@ locationInfo = {
     0x19: { "id": 0x19, "name": "the Forest Temple", "code": "ForestTemple", },
     0x1e: { "id": 0x1e, "name": "in Stagnox’s lair…", "code": "Stagnox", },
     0xff00: { "id": 0xff00, "name": "On the title screen…", "code": "Title", },
+    0x0: { "id": 0x0, "name": "Starting the game…", "code": "Boot", },
 }
 
 function GetLocationByCode(code)
@@ -55,6 +56,13 @@ function IsInLocationWithCode(code)
 {
     location = GetLocationByCode(code)
     return currentLocation() == location["id"]
+}
+
+function IsInGame()
+{
+    boot = GetLocationByCode("Boot")
+    title = GetLocationByCode("Title")
+    return currentLocation() != boot["id"] && currentLocation() != title["id"]
 }
 
 // $261654: Current location (US) (changes when level is done loading)
@@ -285,3 +293,53 @@ achievement(title = "Syrinx Sage",
     description = "Learn all five songs on the Spirit Flute.", points = 5,
     trigger = songTrigger
 )
+
+// Stamp achievements
+
+// $26856c: ID of stamp on first stamp page (0xff when there's no stamp)
+// $26857f: ID of stamp on the last stamp page (0xff when there's no stamp)
+function firstStampAddr() => 0x26856c
+
+function stampPageByNumber(pageNo) => byte(firstStampAddr() + pageNo - 1)
+
+function PageNumberIsStamped(pageNo)
+{
+    return stampPageByNumber(pageNo) != 0xff
+}
+
+stampAchievements = [
+    { "name": "The Beginning of a Pastime", "points": 1, "description": "Collect your first stamp.", "threshold": 1 },
+    { "name": "A Sheet Filled", "points": 3, "description": "Collect five stamps.", "threshold": 5 },
+    { "name": "Stamp Hobbyist", "points": 5, "description": "Collect ten stamps.", "threshold": 10 },
+    { "name": "First-Class Collector", "points": 10, "description": "Collect fifteen stamps.", "threshold": 15 },
+    { "name": "Philately Phanatic", "points": 25, "description": "Collect all twenty stamps.", "threshold": 20 }
+]
+
+for info in stampAchievements
+{
+    stampMade = always_false()
+    pausealt = always_true()
+    resetalt = always_true()
+    
+    for i in range(1, 20)
+    {
+        stampMade = stampMade || once(stampPageByNumber(i) != 0xff)
+        
+        // We want to reset the hit counts each time a stamp is made so that the player
+        // doesn't simply stamp each page in the book until each achievement is obtained.
+        // We want the hit counts to match the state of each stamp page.
+        resetalt = resetalt && never(Delta(stampPageByNumber(i)) != stampPageByNumber(i))
+        
+        // We also don't want to do anything if *none* of the stamp pages change. This way,
+        // simply loading a save doesn't trigger them immediately.
+        // TODO: Currently isn't used because the pause interferes with the hit counts.
+        //       Therefore, we still need to integrate save protection.
+        pausealt = pausealt && Delta(stampPageByNumber(i)) == stampPageByNumber(i)
+    }
+    
+    achievement(title = info["name"], description = info["description"], points = info["points"],
+        trigger = IsInGame() && never(isLoadingSaveFile())
+            && repeated(info["threshold"], stampMade)
+            && resetalt
+    )
+}
