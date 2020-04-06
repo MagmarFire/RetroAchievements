@@ -343,3 +343,104 @@ for info in stampAchievements
             && resetalt
     )
 }
+
+// Rabbit rescue achievements
+
+// $261610: Bits 0-7: Grass rabbits rescued
+// $261611: Bits 0-1: Grass rabbits rescued
+//          Bits 2-7: Snow rabbits rescued
+// $261612: Bits 0-3: Snow rabbits rescued
+//          Bits 4-7: Ocean rabbits rescued
+// $261613: Bits 0-5: Ocean rabbits rescued
+//          Bits 6-7: Mountain rabbits rescued
+// $261614: Bits 0-7: Mountain rabbits rescued
+// $261615: Bits 0-7: Desert rabbits rescued
+// $261616: Bits 0-1: Desert rabbits rescued
+
+function RabbitRescueState(index)
+{
+    if (index >= 0 && index < 32)
+    {
+        return bit(index, 0x261610)
+    }
+    else if (index >= 32 && index < 50)
+    {
+        return bit(index - 32, 0x261614)
+    }
+}
+
+sheerTotalRabbitAchievements = [
+    { "name": "Rookie Rabbit Rescuer", "points": 1, "description": "Rescue a rabbit for the first time.", "threshold": 1 },
+    { "name": "Trainee Rabbit Rescuer", "points": 3, "description": "", "threshold": 5 },
+    { "name": "Regular Rabbit Rescuer", "points": 5, "description": "", "threshold": 10 },
+    { "name": "Veteran Rabbit Rescuer", "points": 10, "description": "", "threshold": 25 },
+    { "name": "Legendary Rabbit Rescuer", "points": 25, "description": "Rescue all 50 rabbits.", "threshold": 50 }
+]
+
+for info in sheerTotalRabbitAchievements
+{
+    rabbitRescued = always_false()
+    description = info["description"]
+    resetalt = always_false()
+    
+    if (description == "")
+    {
+        description = "Rescue " + info["threshold"] + " rabbits."
+    }
+    
+    for i in range(0, 49)
+    {
+        rabbitRescued = rabbitRescued || once(RabbitRescueState(i) == 1)
+        
+        // Like the above, we want to reset the hit counts each time a rabbit is rescued
+        // to refresh the hitcount state that represents each individual rabbit being rescued.
+        resetalt = resetalt || never(Delta(RabbitRescueState(i)) != RabbitRescueState(i))
+            && unless(isLoadingSaveFile())
+    }
+    
+    // Also like the above, we also don't want to do anything if no rabbit is rescued on a frame
+    // as a save protection measure. A two-frame target is used for the same reason as the above, as well.
+    unlessRabbitStatesAreIdle = unless(repeated(2, always_true()))
+    
+    achievement(title = info["name"], description = description, points = info["points"],
+        trigger = IsInGame()
+            && measured(repeated(info["threshold"], rabbitRescued)) && unlessRabbitStatesAreIdle
+            && resetalt
+    )
+}
+
+// Type IDs must be zero-indexed for offset calculations.
+rabbitTypes = [
+    { "type": "Forest", "id": 0 },
+    { "type": "Snow", "id": 1 },
+    { "type": "Ocean", "id": 2 },
+    { "type": "Mountain", "id": 3 },
+    { "type": "Sand", "id": 4 }
+]
+
+rabbitTypeAchievements = [
+    { "name": "Forest Cuniculture", "description": "Rescue all ten grass rabbits.", "type": "Forest" },
+    { "name": "Snow Cuniculture", "description": "Rescue all ten snow rabbits.", "type": "Snow" },
+    { "name": "Ocean Cuniculture", "description": "Rescue all ten ocean rabbits.", "type": "Ocean" },
+    { "name": "Mountain Cuniculture", "description": "Rescue all ten mountain rabbits.", "type": "Mountain" },
+    { "name": "Sand Cuniculture", "description": "Rescue all ten desert rabbits.", "type": "Sand" }
+]
+
+function GetRabbitTypeIdByType(typeName)
+{
+    for type in rabbitTypes
+    {
+        if (typeName == type["type"])
+        {
+            return type["id"]
+        }
+    }
+}
+
+function RabbitRescueStateByType(index, type)
+{
+    // We need to get the proper index for the rabbit we're looking for.
+    // For instance, if we're looking for the third ocean rabbit, the index we're looking
+    // for is 22.
+    return RabbitRescueState(GetRabbitTypeIdByType(type) * 10 + index)
+}
