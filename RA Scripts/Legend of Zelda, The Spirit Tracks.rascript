@@ -318,8 +318,7 @@ stampAchievements = [
 for info in stampAchievements
 {
     stampMade = always_false()
-    pausealt = always_true()
-    resetalt = always_true()
+    resetalt = always_false()
     
     for i in range(1, 20)
     {
@@ -328,18 +327,19 @@ for info in stampAchievements
         // We want to reset the hit counts each time a stamp is made so that the player
         // doesn't simply stamp each page in the book until each achievement is obtained.
         // We want the hit counts to match the state of each stamp page.
-        resetalt = resetalt && never(Delta(stampPageByNumber(i)) != stampPageByNumber(i))
-        
-        // We also don't want to do anything if *none* of the stamp pages change. This way,
-        // simply loading a save doesn't trigger them immediately.
-        // TODO: Currently isn't used because the pause interferes with the hit counts.
-        //       Therefore, we still need to integrate save protection.
-        pausealt = pausealt && Delta(stampPageByNumber(i)) == stampPageByNumber(i)
+        resetalt = resetalt || never(Delta(stampPageByNumber(i)) != stampPageByNumber(i))
+            && unless(isLoadingSaveFile())
     }
     
+    // We also don't want to do anything if *none* of the stamp pages change. This way,
+    // simply loading a save doesn't trigger them immediately. A two-frame target is used
+    // to give the achievement time to register a new change on the frame immediately
+    // following a reset.
+    unlessStampStatesAreIdle = unless(repeated(2, always_true()))
+    
     achievement(title = info["name"], description = info["description"], points = info["points"],
-        trigger = IsInGame() && never(isLoadingSaveFile())
-            && repeated(info["threshold"], stampMade)
+        trigger = IsInGame()
+            && repeated(info["threshold"], stampMade) && unlessStampStatesAreIdle
             && resetalt
     )
 }
