@@ -22,7 +22,7 @@ function currentLocation() => word(0x261640)
 
 locationInfo = {
     0x2f: { "id": 0x2f, "name": "Agoda Village", "code": "Agoda", },
-    0x8: { "id": 0x8, "name": "Hyrule Field (Forest Realm)", "code": "ForestField", },
+    0x8: { "id": 0x8, "name": "Hyrule Field (Forest Realm)", "code": "ForestRealm", },
     0x29: { "id": 0x29, "name": "Castle Town", "code": "CastleTown", },
     0x28: { "id": 0x28, "name": "Hyrule Castle", "code": "Castle", },
     0x50: { "id": 0x50, "name": "Watching a cutscene…", "code": "Cutscene", },
@@ -39,6 +39,11 @@ locationInfo = {
     0x1e: { "id": 0x1e, "name": "in Stagnox’s lair…", "code": "Stagnox", },
     0xff00: { "id": 0xff00, "name": "On the title screen…", "code": "Title", },
     0x0: { "id": 0x0, "name": "Starting the game…", "code": "Boot", },
+    0x3e: { "id": 0x3e, "name": "Rabbitland Rescue", "code": "Rabbit", },
+    0x5: { "id": 0x5, "name": "Hyrule Field (Snow Realm)", "code": "SnowRealm", },
+    0x2b: { "id": 0x2b, "name": "Anouki Village", "code": "Anouki", },
+    0xb: { "id": 0xb, "name": "Hyrule Field (Snow Realm – Tunnel)", "code": "SnowTunnel", },
+    0x31: { "id": 0x31, "name": "the Snow Sanctuary", "code": "SnowSanctuary", },
 }
 
 function GetLocationByCode(code)
@@ -114,10 +119,12 @@ function forestTempleClear() => bit4(0x264CF4)
 
 // $264d0a: Bit 4: Started duet with Gage
 // $264CF5: Bit 0: Completed duet with Gage
+//          Bit 1: Completed duet with Steem
 //          Bit 7: Forest Railmap
 function startedDuetWithGage() => bit4(0x264d0a)
 
 function completedDuetWithGage() => bit0(0x264CF5)
+function completedDuetWithSteem() => bit1(0x264CF5)
 
 function hasForestRailmap() => bit7(0x264CF5)
 
@@ -187,7 +194,7 @@ function learnedSongOfDiscovery() => bit4(songAddr)
 // ACHIEVEMENTS
 
 // "Extra Credit"
-hyruleField = GetLocationByCode("ForestField")
+hyruleField = GetLocationByCode("ForestRealm")
 castleTown = GetLocationByCode("CastleTown")
 agoda = GetLocationByCode("Agoda")
 achievement(title = "Extra Credit", description = "Pass your final exam with at least 128 seconds left on the clock.", points = 1,
@@ -244,6 +251,14 @@ achievement(title = "Duet with the Cellist",
     trigger = WasBitflagSetInGame(startedDuetWithGage())
         && WasBitflagSetInGame(completedDuetWithGage())
         && IsInLocationWithCode("ForestSanctuary")
+)
+
+// "Duet with the Lutenist"
+achievement(title = "Duet with the Lutenist",
+    description = "Complete your duet with Steem and open the path to the Snow Temple.",
+    points = 3,
+    trigger = WasBitflagSetInGame(completedDuetWithSteem())
+        && IsInLocationWithCode("SnowSanctuary")
 )
 
 // "Shoo, Fly, Shoo"
