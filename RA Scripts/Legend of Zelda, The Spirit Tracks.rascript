@@ -444,3 +444,29 @@ function RabbitRescueStateByType(index, type)
     // for is 22.
     return RabbitRescueState(GetRabbitTypeIdByType(type) * 10 + index)
 }
+
+for cheevo in rabbitTypeAchievements
+{
+    rabbitRescued = always_false()
+    resetalt = always_false()
+    
+    for i in range(0, 9)
+    {
+        rabbitRescued = rabbitRescued || once(RabbitRescueStateByType(i, cheevo["type"]) == 1)
+        
+        // Like the above, we want to reset the hit counts each time a rabbit is rescued
+        // to refresh the hitcount state that represents each individual rabbit being rescued.
+        resetalt = resetalt || never(Delta(RabbitRescueStateByType(i, cheevo["type"])) != RabbitRescueStateByType(i, cheevo["type"]))
+            && unless(isLoadingSaveFile())
+    }
+    
+    // Also like the above, we also don't want to do anything if no rabbit is rescued on a frame
+    // as a save protection measure. A two-frame target is used for the same reason as the above, as well.
+    unlessRabbitStatesAreIdle = unless(repeated(2, always_true()))
+    
+    achievement(title = cheevo["name"], description = cheevo["description"], points = 10,
+        trigger = IsInGame()
+            && measured(repeated(10, rabbitRescued)) && unlessRabbitStatesAreIdle
+            && resetalt
+    )
+}
