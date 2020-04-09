@@ -17,6 +17,23 @@ function WasBitflagSetInGame(bit)
 // $0BB584: Time remaining in the final exam (dynamic?)
 function timeRemainingInFinalExam() => word(0x0BB584)
 
+// $1227f8: Training minigame - game state
+//
+//          0x0 = Not started/After fade in
+//          0x1 = Countdown
+//          0x2 = Guards are passive
+//          0x3 = Guard is attacking
+//          0x4 = Game over
+//          0x5 = Post game over
+function trainingGameState() => byte(0x1227f8)
+function trainingGameIsOver() => trainingGameState() == 0x4
+
+// $12280c: Training minigame - Hits remaining
+function trainingGameHitsRemaining() => word(0x12280c)
+
+// $12280e: Training minigame - Points in current game
+function trainingGameScore() => word(0x12280e)
+
 // $261640: Current location (US)
 function currentLocation() => word(0x261640)
 
@@ -44,6 +61,10 @@ locationInfo = {
     0x2b: { "id": 0x2b, "name": "Anouki Village", "code": "Anouki", },
     0xb: { "id": 0xb, "name": "Hyrule Field (Snow Realm – Tunnel)", "code": "SnowTunnel", },
     0x31: { "id": 0x31, "name": "the Snow Sanctuary", "code": "SnowSanctuary", },
+    0x35: { "id": 0x35, "name": "Wellspring Station", "code": "Wellspring", },
+    0x45: { "id": 0x45, "name": "On the side of the tracks…", "code": "Tracks", },
+    0x1a: { "id": 0x1a, "name": "the Snow Temple", "code": "SnowTemple", },
+    0x1f: { "id": 0x1f, "name": "in Fraaz’s lair…", "code": "Fraaz", },
 }
 
 function GetLocationByCode(code)
@@ -116,6 +137,9 @@ function rupees() => word(0x264908)
 //          Bit 6: Ocean Temple
 //          Bit 7: Fire Temple
 function forestTempleClear() => bit4(0x264CF4)
+function snowTempleClear() => bit5(0x264CF4)
+function oceanTempleClear() => bit6(0x264CF4)
+function fireTempleClear() => bit7(0x264CF4)
 
 // $264d0a: Bit 4: Started duet with Gage
 // $264CF5: Bit 0: Completed duet with Gage
@@ -276,8 +300,8 @@ achievement(title = "Shoo, Fly, Shoo",
         && never(Delta(currentHP()) > currentHP())
 )
 
-// "Yet More Shackles Remain"
-achievement(title = "Yet More Shackles Remain", points = 5,
+// "Whispers from the Forest"
+achievement(title = "Whispers from the Forest", points = 5,
     description = "Clear the Forest Temple.",
     trigger = WasBitflagSetInGame(forestTempleClear())
         && IsInLocationWithCode("Stagnox")
@@ -485,3 +509,38 @@ for cheevo in rabbitTypeAchievements
             && resetalt
     )
 }
+
+// "Quick Draw"
+function IsFraazRezzing() => byte(0x324f78) == 0x17
+function IsFraazGoingToPhase3() => byte(0x324f78) == 0x5
+function IsFraazDying() => byte(0x324f78) == 0x3
+
+snowTemple = GetLocationByCode("SnowTemple")
+achievement(title = "Quick Draw",
+    description = "Proceed to Fraaz's third phase before either Fraaz Jr. has a chance to resurrect the other or run away.",
+    points = 3,
+    trigger = once(IsInLocationWithCode("Fraaz") && Delta(currentLocation()) == snowTemple["id"])
+        && IsFraazGoingToPhase3() && never(IsFraazRezzing()) && never(!IsInLocationWithCode("Fraaz"))
+)
+
+// "Howls from the Tundra"
+achievement(title = "Howls from the Tundra", points = 5,
+    description = "Clear the Snow Temple.",
+    trigger = WasBitflagSetInGame(snowTempleClear())
+        && IsInLocationWithCode("Fraaz")
+)
+
+// "Third Intention"
+function StartedTrainingGame() => trainingGameState() == 0x1
+function GotHitInTrainingGame() => Delta(trainingGameHitsRemaining()) > trainingGameHitsRemaining()
+function ScoreIncreasedInTrainingGame()
+{
+    return Delta(trainingGameScore()) < trainingGameScore()
+}
+
+achievement(title = "Third Intention", points = 10,
+    description = "Score a total of 90 single hits in a row during training without getting hit yourself.",
+    trigger = never(StartedTrainingGame()) && never(GotHitInTrainingGame())
+        && repeated(90, ScoreIncreasedInTrainingGame()) && never(!IsInLocationWithCode("Castle"))
+        && never(trainingGameIsOver())
+)
