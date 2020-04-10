@@ -26,7 +26,6 @@ function timeRemainingInFinalExam() => word(0x0BB584)
 //          0x4 = Game over
 //          0x5 = Post game over
 function trainingGameState() => byte(0x1227f8)
-function trainingGameIsOver() => trainingGameState() == 0x4
 
 // $12280c: Training minigame - Hits remaining
 function trainingGameHitsRemaining() => word(0x12280c)
@@ -189,11 +188,13 @@ function wasPostmanIntroducedForTheFirstTime() => bit0(0x264CFB)
 // $2C3B00: Rupees (display)
 
 // $264cf6: Bit 0: Snow Railmap
+//          Bit 1: Ocean Railmap
 //          Bit 4: Trained with the captain
 //          Bit 5: Cole appears for the first time
 //          Bit 6: Zelda's guard is out of the way
 //          Bit 7: Cole has let the guard pass and is at the ceremony
 function hasSnowRailmap() => bit0(0x264cf6)
+function hasOceanRailmap() => bit1(0x264cf6)
 
 function trainedWithTheRoyalGuard() => bit4(0x264cf6)
 
@@ -254,6 +255,13 @@ achievement(title = "Forest Mapper",
 achievement(title = "Snow Mapper",
     description = "Obtain the Snow Railmap.", points = 3,
     trigger = WasBitflagSetInGame(hasSnowRailmap())
+        && IsInLocationWithCode("TowerDungeon")
+)
+
+// Ocean Mapper
+achievement(title = "Ocean Mapper",
+    description = "Obain the Ocean Railmap.", points = 3,
+    trigger = WasBitflagSetInGame(hasOceanRailmap())
         && IsInLocationWithCode("TowerDungeon")
 )
 
@@ -533,6 +541,7 @@ achievement(title = "Howls from the Tundra", points = 5,
 // "Third Intention"
 function StartedTrainingGame() => trainingGameState() == 0x1
 function GotHitInTrainingGame() => Delta(trainingGameHitsRemaining()) > trainingGameHitsRemaining()
+function TrainingGameIsOver() => trainingGameState() == 0x4
 function ScoreIncreasedInTrainingGame()
 {
     return Delta(trainingGameScore()) < trainingGameScore()
@@ -542,5 +551,13 @@ achievement(title = "Third Intention", points = 10,
     description = "Score a total of 90 single hits in a row during training without getting hit yourself.",
     trigger = never(StartedTrainingGame()) && never(GotHitInTrainingGame())
         && repeated(90, ScoreIncreasedInTrainingGame()) && never(!IsInLocationWithCode("Castle"))
-        && never(trainingGameIsOver())
+        && never(TrainingGameIsOver())
+)
+
+leaderboard(title = "Training with the Royal Guard",
+    description = "Get as many strikes in as you can before you yourself get hit three times.",
+    start = IsInLocationWithCode("Castle") && StartedTrainingGame(),
+    cancel = !IsInLocationWithCode("Castle"),
+    submit = TrainingGameIsOver(),
+    value = trainingGameScore()
 )
