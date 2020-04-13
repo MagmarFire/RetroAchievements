@@ -45,7 +45,7 @@ locationInfo = {
     0x18: { "id": 0x18, "name": "Tunnel to the Tower", "code": "Tunnel", },
     0x14: { "id": 0x14, "name": "the Tower of Spirits", "code": "Tower", },
     0x17: { "id": 0x17, "name": "the Spiral Staircase", "code": "Staircase", },
-    0x13: { "id": 0x13, "name": "the Tower of Spirits, 1F", "code": "TowerDungeon", },
+    0x13: { "id": 0x13, "name": "the Tower of Spirits", "code": "TowerDungeon", },
     0x4: { "id": 0x4, "name": "Hyrule Field (Forest Realm)", "code": "ForestField2", },
     0x2a: { "id": 0x2a, "name": "Whittleton", "code": "Whittleton", },
     0x38: { "id": 0x38, "name": "the wilds outside Whittleton", "code": "WhittletonWilds", },
@@ -64,6 +64,12 @@ locationInfo = {
     0x45: { "id": 0x45, "name": "On the side of the tracks…", "code": "Tracks", },
     0x1a: { "id": 0x1a, "name": "the Snow Temple", "code": "SnowTemple", },
     0x1f: { "id": 0x1f, "name": "in Fraaz’s lair…", "code": "Fraaz", },
+    0x37: { "id": 0x37, "name": "the Trading Post", "code": "Trading", },
+    0x36: { "id": 0x36, "name": "the Bridge Worker’s Home", "code": "BridgeWorker", },
+    0x6: { "id": 0x6, "name": "the Ocean Realm", "code": "Ocean", },
+    0x2c: { "id": 0x2c, "name": "Papuchia Village", "code": "Papuchia", },
+    0x32: { "id": 0x32, "name": "the Ocean Sanctuary", "code": "OceanSanctuary", },
+    0x43: { "id": 0x43, "name": "fending off intruders in the Spirit Train!", "code": "Train", },
 }
 
 function GetLocationByCode(code)
@@ -148,6 +154,7 @@ function startedDuetWithGage() => bit4(0x264d0a)
 
 function completedDuetWithGage() => bit0(0x264CF5)
 function completedDuetWithSteem() => bit1(0x264CF5)
+function completedDuetWithCarben() => bit2(0x264CF5)
 
 function hasForestRailmap() => bit7(0x264CF5)
 
@@ -167,6 +174,8 @@ function wasPostmanIntroducedForTheFirstTime() => bit0(0x264CFB)
 //          Bit 2: Freebie Card
 //          Bit 3: Quintuple Points Card
 //          Bit 4: Club Card
+function clubCardObtained() => bit4(0x264d26)
+
 // $2651BC: Current HP (EU)
 // $2651BD: Max HP (EU)
 // $2685E0: Demon Fossil count
@@ -215,6 +224,10 @@ function learnedSongOfHealing() => bit1(songAddr)
 function learnedSongOfBirds() => bit2(songAddr)
 function learnedSongOfLight() => bit3(songAddr)
 function learnedSongOfDiscovery() => bit4(songAddr)
+
+// $2d3260: Whistles performed for a pod of dolphins (Ocean Realm only).
+//          Loops back to 0 when enough whistles have been made to get a heart from them. (dynamic?)
+function whistlesMadeForDolphins() => byte(0x2d3260)
 
 // ACHIEVEMENTS
 
@@ -291,6 +304,14 @@ achievement(title = "Duet with the Lutenist",
     points = 3,
     trigger = WasBitflagSetInGame(completedDuetWithSteem())
         && IsInLocationWithCode("SnowSanctuary")
+)
+
+// "Duet with the Flautist"
+achievement(title = "Duet with the Flautist",
+    description = "Complete your duet with Carben and open the path to the Ocean Temple.",
+    points = 3,
+    trigger = WasBitflagSetInGame(completedDuetWithCarben())
+        && IsInLocationWithCode("OceanSanctuary")
 )
 
 // "Shoo, Fly, Shoo"
@@ -560,4 +581,17 @@ leaderboard(title = "Training with the Royal Guard",
     cancel = !IsInLocationWithCode("Castle"),
     submit = TrainingGameIsOver(),
     value = trainingGameScore()
+)
+
+// "The Price of Loyalty"
+achievement(title = "The Price of Loyalty",
+    description = "Get your Beedle Club Card in the mail.", points = 1,
+    trigger = WasBitflagSetInGame(clubCardObtained())
+)
+
+// "Aquatic Acquaintances"
+achievement(title = "Aquatic Acquaintances", description = "Befriend a pod of dolphins and have them put on a show.",
+    points = 1,
+    trigger = IsInLocationWithCode("Ocean")
+        && Delta(whistlesMadeForDolphins()) == 3 && whistlesMadeForDolphins() == 0
 )
