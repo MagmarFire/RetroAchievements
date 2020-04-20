@@ -11,6 +11,31 @@ function WasBitflagSetInGame(bit)
         && never(isLoadingSaveFile())
 }
 
+function SecondsToFormat(value)
+{
+    leadingZero = ""
+    if (value % 60 < 10)
+    {
+        leadingZero = "0"
+    }
+    return value / 60 + ":" + leadingZero + value % 60
+}
+
+// $3ffc3c: (32-bit) System timer. Increments by one every frame.
+function framesCounter() => dword(0x3ffc3c)
+
+function frameIncremented() => prev(framesCounter()) != framesCounter()
+
+function SecondsToFrames(seconds) => seconds * 60 // Assuming a 60 FPS framerate
+
+// $04e5ee: 0x1 = makes top screen white during transitions
+function topScreenTransitionState() => byte(0x04e5f0)
+
+// $04e5ef: 0xff = makes the top screen black if the previous byte is not 0.
+function IsTopScreenBlack() => byte(0x04e5ef) == 0xff
+
+function IsTransitioningInBlack() => IsTopScreenBlack() && topScreenTransitionState() == 1
+
 // $065B68: Max Rupees
 // $0B5308: >0x0 = air is being blown into the mic
 
@@ -33,6 +58,9 @@ function trainingGameHitsRemaining() => word(0x12280c)
 // $12280e: Training minigame - Points in current game
 function trainingGameScore() => word(0x12280e)
 
+// $25ff90: 0x1 = paused
+function IsPaused() => byte(0x25ff90) == 1
+
 // $261640: Current location (US)
 function currentLocation() => word(0x261640)
 
@@ -45,7 +73,7 @@ locationInfo = {
     0x18: { "id": 0x18, "name": "In the Tunnel to the Tower", "code": "Tunnel",  "floorAddr": 0 },
     0x14: { "id": 0x14, "name": "In the Tower of Spirits lobby", "code": "Tower",  "floorAddr": 0 },
     0x17: { "id": 0x17, "name": "Climbing the Spiral Staircase", "code": "Staircase",  "floorAddr": 0 },
-    0x13: { "id": 0x13, "name": "Fighting through the Tower of Spirits", "code": "TowerDungeon",  "floorAddr": 0x2cefe8 },
+    0x13: { "id": 0x13, "name": "In the Tower of Spirits", "code": "TowerDungeon",  "floorAddr": 0x2cefe8 },
     0x4: { "id": 0x4, "name": "In Hyrule Field (Forest Realm)", "code": "ForestField2",  "floorAddr": 0 },
     0x2a: { "id": 0x2a, "name": "In Whittleton", "code": "Whittleton",  "floorAddr": 0 },
     0x38: { "id": 0x38, "name": "In the wilds outside Whittleton", "code": "WhittletonWilds",  "floorAddr": 0 },
@@ -72,6 +100,7 @@ locationInfo = {
     0x43: { "id": 0x43, "name": "Fending off intruders in the Spirit Train!", "code": "Train",  "floorAddr": 0 },
     0xa: { "id": 0xa, "name": "Underwater (Ocean Realm)", "code": "UnderOcean",  "floorAddr": 0 },
     0x1b: { "id": 0x1b, "name": "In the Ocean Temple", "code": "OceanTemple",  "floorAddr": 0 },
+    0x20: { "id": 0x20, "name": "In Phytops’s lair…", "code": "Phytops",  "floorAddr": 0 },
 }
 
 function GetLocationByCode(code)
@@ -283,7 +312,7 @@ achievement(title = "Snow Mapper",
 
 // Ocean Mapper
 achievement(title = "Ocean Mapper",
-    description = "Obain the Ocean Railmap.", points = 3,
+    description = "Obtain the Ocean Railmap.", points = 3,
     trigger = WasBitflagSetInGame(hasOceanRailmap())
         && IsInLocationWithCode("TowerDungeon")
 )
@@ -611,6 +640,32 @@ achievement(title = "Keepie-Uppie with Squiddies",
     description = "Spawn two Squiddies from a main one and then juggle the latter four times before any Squiddy touches the ground.",
     points = 5,
     trigger = IsInLocationWithCode("Ocean") && squiddyInstances() == 3 && squiddyStrikes() >= 4
+)
+
+// "Whip It Good"
+oceanTemple = GetLocationByCode("OceanTemple")
+timeLimit = 165
+frameLimit = SecondsToFrames(timeLimit)
+function phytopsState() => byte(0x31fdb8)
+function PhytopsIsNotFighting() => phytopsState() == 0x0 || phytopsState() == 0x2 || phytopsState() == 0x3
+function PhytopsIsDying() => phytopsState() == 0xe
+
+achievement(title = "Whip It Good",
+    description = "Defeat Phytops within " + SecondsToFormat(timeLimit) + ".", points = 5,
+    trigger = PhytopsIsDying()
+        && never(repeated(frameLimit, frameIncremented())) && unless(IsPaused())
+        && unless(PhytopsIsNotFighting()) && never(!IsInLocationWithCode("Phytops"))
+        && unless(IsTransitioningInBlack())
+        && (
+            always_false() || once(Delta(currentLocation()) == oceanTemple["id"] && IsInLocationWithCode("Phytops"))
+        )
+)
+
+// "Roars from the Sea"
+achievement(title = "Roars from the Sea", points = 5,
+    description = "Clear the Ocean Temple.",
+    trigger = WasBitflagSetInGame(oceanTempleClear())
+        && IsInLocationWithCode("Phytops")
 )
 
 // RICH PRESENCE
