@@ -65,42 +65,42 @@ function IsPaused() => byte(0x25ff90) == 1
 function currentLocation() => word(0x261640)
 
 locationInfo = {
-    0x2f: { "id": 0x2f, "name": "In Agoda Village", "code": "Agoda",  "floorAddr": 0 },
-    0x8: { "id": 0x8, "name": "In Hyrule Field (Forest Realm)", "code": "ForestRealm",  "floorAddr": 0 },
-    0x29: { "id": 0x29, "name": "In Castle Town", "code": "CastleTown",  "floorAddr": 0 },
-    0x28: { "id": 0x28, "name": "Inside Hyrule Castle", "code": "Castle",  "floorAddr": 0 },
-    0x50: { "id": 0x50, "name": "Watching a cutscene…", "code": "Cutscene",  "floorAddr": 0 },
-    0x18: { "id": 0x18, "name": "In the Tunnel to the Tower", "code": "Tunnel",  "floorAddr": 0 },
-    0x14: { "id": 0x14, "name": "In the Tower of Spirits lobby", "code": "Tower",  "floorAddr": 0 },
-    0x17: { "id": 0x17, "name": "Climbing the Spiral Staircase", "code": "Staircase",  "floorAddr": 0 },
-    0x13: { "id": 0x13, "name": "In the Tower of Spirits", "code": "TowerDungeon",  "floorAddr": 0x2cefe8 },
-    0x4: { "id": 0x4, "name": "In Hyrule Field (Forest Realm)", "code": "ForestField2",  "floorAddr": 0 },
-    0x2a: { "id": 0x2a, "name": "In Whittleton", "code": "Whittleton",  "floorAddr": 0 },
-    0x38: { "id": 0x38, "name": "In the wilds outside Whittleton", "code": "WhittletonWilds",  "floorAddr": 0 },
-    0x9: { "id": 0x9, "name": "Stumbling through the Lost Woods", "code": "LostWoods",  "floorAddr": 0 },
-    0x30: { "id": 0x30, "name": "In the Forest Sanctuary", "code": "ForestSanctuary",  "floorAddr": 0 },
-    0x19: { "id": 0x19, "name": "In the Forest Temple", "code": "ForestTemple",  "floorAddr": 0 },
-    0x1e: { "id": 0x1e, "name": "In Stagnox’s lair…", "code": "Stagnox",  "floorAddr": 0 },
-    0xff00: { "id": 0xff00, "name": "On the title screen…", "code": "Title",  "floorAddr": 0 },
-    0x0: { "id": 0x0, "name": "Starting the game…", "code": "Boot",  "floorAddr": 0 },
-    0x3e: { "id": 0x3e, "name": "At Rabbitland Rescue", "code": "Rabbit",  "floorAddr": 0 },
-    0x5: { "id": 0x5, "name": "In Hyrule Field (Snow Realm)", "code": "SnowRealm",  "floorAddr": 0 },
-    0x2b: { "id": 0x2b, "name": "Anouki Village", "code": "Anouki",  "floorAddr": 0 },
-    0xb: { "id": 0xb, "name": "In Hyrule Field (Snow Realm – Tunnel)", "code": "SnowTunnel",  "floorAddr": 0 },
-    0x31: { "id": 0x31, "name": "In the Snow Sanctuary", "code": "SnowSanctuary",  "floorAddr": 0 },
-    0x35: { "id": 0x35, "name": "At Wellspring Station", "code": "Wellspring",  "floorAddr": 0 },
-    0x45: { "id": 0x45, "name": "On the side of the tracks…", "code": "Tracks",  "floorAddr": 0 },
-    0x1a: { "id": 0x1a, "name": "In the Snow Temple", "code": "SnowTemple",  "floorAddr": 0 },
-    0x1f: { "id": 0x1f, "name": "In Fraaz’s lair…", "code": "Fraaz",  "floorAddr": 0 },
-    0x37: { "id": 0x37, "name": "At the Trading Post", "code": "Trading",  "floorAddr": 0 },
-    0x36: { "id": 0x36, "name": "At the Bridge Worker’s Home", "code": "BridgeWorker",  "floorAddr": 0 },
-    0x6: { "id": 0x6, "name": "In Hyrule Field (Ocean Realm)", "code": "Ocean",  "floorAddr": 0 },
-    0x2c: { "id": 0x2c, "name": "In Papuchia Village", "code": "Papuchia",  "floorAddr": 0 },
-    0x32: { "id": 0x32, "name": "In the Ocean Sanctuary", "code": "OceanSanctuary",  "floorAddr": 0 },
-    0x43: { "id": 0x43, "name": "Fending off intruders in the Spirit Train!", "code": "Train",  "floorAddr": 0 },
-    0xa: { "id": 0xa, "name": "Underwater (Ocean Realm)", "code": "UnderOcean",  "floorAddr": 0 },
-    0x1b: { "id": 0x1b, "name": "In the Ocean Temple", "code": "OceanTemple",  "floorAddr": 0 },
-    0x20: { "id": 0x20, "name": "In Phytops’s lair…", "code": "Phytops",  "floorAddr": 0 },
+    0x2f: { "id": 0x2f, "name": "In Agoda Village", "code": "Agoda",  "isDungeon": 0 },
+    0x8: { "id": 0x8, "name": "In Hyrule Field (Forest Realm)", "code": "ForestRealm",  "isDungeon": 0 },
+    0x29: { "id": 0x29, "name": "In Castle Town", "code": "CastleTown",  "isDungeon": 0 },
+    0x28: { "id": 0x28, "name": "Inside Hyrule Castle", "code": "Castle",  "isDungeon": 1 },
+    0x50: { "id": 0x50, "name": "Watching a cutscene…", "code": "Cutscene",  "isDungeon": 0 },
+    0x18: { "id": 0x18, "name": "In the Tunnel to the Tower", "code": "Tunnel",  "isDungeon": 0 },
+    0x14: { "id": 0x14, "name": "In the Tower of Spirits lobby", "code": "Tower",  "isDungeon": 0 },
+    0x17: { "id": 0x17, "name": "Climbing the Spiral Staircase", "code": "Staircase",  "isDungeon": 0 },
+    0x13: { "id": 0x13, "name": "In the Tower of Spirits", "code": "TowerDungeon",  "isDungeon": 1 },
+    0x4: { "id": 0x4, "name": "In Hyrule Field (Forest Realm)", "code": "ForestField2",  "isDungeon": 0 },
+    0x2a: { "id": 0x2a, "name": "In Whittleton", "code": "Whittleton",  "isDungeon": 0 },
+    0x38: { "id": 0x38, "name": "In the wilds outside Whittleton", "code": "WhittletonWilds",  "isDungeon": 0 },
+    0x9: { "id": 0x9, "name": "Stumbling through the Lost Woods", "code": "LostWoods",  "isDungeon": 0 },
+    0x30: { "id": 0x30, "name": "In the Forest Sanctuary", "code": "ForestSanctuary",  "isDungeon": 0 },
+    0x19: { "id": 0x19, "name": "In the Forest Temple", "code": "ForestTemple",  "isDungeon": 1 },
+    0x1e: { "id": 0x1e, "name": "In Stagnox’s lair…", "code": "Stagnox",  "isDungeon": 0 },
+    0xff00: { "id": 0xff00, "name": "On the title screen…", "code": "Title",  "isDungeon": 0 },
+    0x0: { "id": 0x0, "name": "Starting the game…", "code": "Boot",  "isDungeon": 0 },
+    0x3e: { "id": 0x3e, "name": "At Rabbitland Rescue", "code": "Rabbit",  "isDungeon": 0 },
+    0x5: { "id": 0x5, "name": "In Hyrule Field (Snow Realm)", "code": "SnowRealm",  "isDungeon": 0 },
+    0x2b: { "id": 0x2b, "name": "Anouki Village", "code": "Anouki",  "isDungeon": 0 },
+    0xb: { "id": 0xb, "name": "In Hyrule Field (Snow Realm – Tunnel)", "code": "SnowTunnel",  "isDungeon": 0 },
+    0x31: { "id": 0x31, "name": "In the Snow Sanctuary", "code": "SnowSanctuary",  "isDungeon": 0 },
+    0x35: { "id": 0x35, "name": "At Wellspring Station", "code": "Wellspring",  "isDungeon": 0 },
+    0x45: { "id": 0x45, "name": "On the side of the tracks…", "code": "Tracks",  "isDungeon": 0 },
+    0x1a: { "id": 0x1a, "name": "In the Snow Temple", "code": "SnowTemple",  "isDungeon": 1 },
+    0x1f: { "id": 0x1f, "name": "In Fraaz’s lair…", "code": "Fraaz",  "isDungeon": 0 },
+    0x37: { "id": 0x37, "name": "At the Trading Post", "code": "Trading",  "isDungeon": 0 },
+    0x36: { "id": 0x36, "name": "At the Bridge Worker’s Home", "code": "BridgeWorker",  "isDungeon": 0 },
+    0x6: { "id": 0x6, "name": "In Hyrule Field (Ocean Realm)", "code": "Ocean",  "isDungeon": 0 },
+    0x2c: { "id": 0x2c, "name": "In Papuchia Village", "code": "Papuchia",  "isDungeon": 0 },
+    0x32: { "id": 0x32, "name": "In the Ocean Sanctuary", "code": "OceanSanctuary",  "isDungeon": 0 },
+    0x43: { "id": 0x43, "name": "Fending off intruders in the Spirit Train!", "code": "Train",  "isDungeon": 0 },
+    0xa: { "id": 0xa, "name": "Underwater (Ocean Realm)", "code": "UnderOcean",  "isDungeon": 0 },
+    0x1b: { "id": 0x1b, "name": "In the Ocean Temple", "code": "OceanTemple",  "isDungeon": 1 },
+    0x20: { "id": 0x20, "name": "In Phytops’s lair…", "code": "Phytops",  "isDungeon": 0 },
 }
 
 function GetLocationByCode(code)
@@ -635,8 +635,8 @@ achievement(title = "Aquatic Acquaintances", description = "Befriend a pod of do
         && Delta(whistlesMadeForDolphins()) == 3 && whistlesMadeForDolphins() == 0
 )
 
-// "Keepie-Uppie With Squiddies"
-achievement(title = "Keepie-Uppie with Squiddies",
+// "Keepie-Uppie"
+achievement(title = "Keepie-Uppie",
     description = "Spawn two Squiddies from a main one and then juggle the latter four times before any Squiddy touches the ground.",
     points = 5,
     trigger = IsInLocationWithCode("Ocean") && squiddyInstances() == 3 && squiddyStrikes() >= 4
@@ -658,6 +658,8 @@ achievement(title = "Whip It Good",
         && unless(IsTransitioningInBlack())
         && (
             always_false() || once(Delta(currentLocation()) == oceanTemple["id"] && IsInLocationWithCode("Phytops"))
+            // We're putting the checkpoint target in an alt to make sure the pauses
+            // in the core group don't also pause the hit target from being reached.
         )
 )
 
@@ -669,13 +671,14 @@ achievement(title = "Roars from the Sea", points = 5,
 )
 
 // RICH PRESENCE
+function CurrentFloor() => byte(0x260008) + 1
 function GetFloorlessLocationList()
 {
     list = {}
     for i in locationInfo
     {
         location = locationInfo[i]
-        if (location["floorAddr"] == 0)
+        if (location["isDungeon"] == 0)
         {
             list[location["id"]] = location["name"]
         }
@@ -688,10 +691,10 @@ function GetFloorlessLocationList()
 for i in locationInfo
 {
     location = locationInfo[i]
-    if (location["floorAddr"] != 0)
+    if (location["isDungeon"] == 1)
     {
         rich_presence_conditional_display(IsInLocationWithCode(location["code"]), "{0}, Floor {1}", location["name"],
-            rich_presence_value("FloorNumber", byte(location["floorAddr"]))
+            rich_presence_value("FloorNumber", CurrentFloor())
         )
     }
 }
