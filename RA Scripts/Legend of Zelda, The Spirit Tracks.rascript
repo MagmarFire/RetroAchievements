@@ -58,6 +58,32 @@ function trainingGameHitsRemaining() => word(0x12280c)
 // $12280e: Training minigame - Points in current game
 function trainingGameScore() => word(0x12280e)
 
+// $15b184: Whip Race - state:
+//          0x1 = countdown
+//          0x2 = race in progress
+//          0x3 = finish
+//          0x4 = after finish
+function whipRaceState() => byte(0x15b184)
+
+// $15b188: Whip race - current time (16-bit)
+function whipRaceTime() => word(0x15b188)
+
+// $15b194: Determines how the whip race ended.
+//
+//          0x1 = timeout
+//          0x2 = forfeit
+//          any other value = complete
+function reasonWhipRaceEnded() => byte(0x15b194)
+
+// $17e428: Take 'Em All On! state:
+//
+//          0x1 = counting down
+//          0x2 = in progress
+function gauntletState() => byte(0x17e428)
+
+// $17e42c: Gauntlet time (assumes 30fps) (32-bit)
+function gauntletTime() => dword(0x17e42c)
+
 // $25ff90: 0x1 = paused
 function IsPaused() => byte(0x25ff90) == 1
 
@@ -65,42 +91,45 @@ function IsPaused() => byte(0x25ff90) == 1
 function currentLocation() => word(0x261640)
 
 locationInfo = {
-    0x2f: { "id": 0x2f, "name": "In Agoda Village", "code": "Agoda",  "isDungeon": 0 },
-    0x8: { "id": 0x8, "name": "In Hyrule Field (Forest Realm)", "code": "ForestRealm",  "isDungeon": 0 },
-    0x29: { "id": 0x29, "name": "In Castle Town", "code": "CastleTown",  "isDungeon": 0 },
-    0x28: { "id": 0x28, "name": "Inside Hyrule Castle", "code": "Castle",  "isDungeon": 1 },
-    0x50: { "id": 0x50, "name": "Watching a cutscene…", "code": "Cutscene",  "isDungeon": 0 },
-    0x18: { "id": 0x18, "name": "In the Tunnel to the Tower", "code": "Tunnel",  "isDungeon": 0 },
-    0x14: { "id": 0x14, "name": "In the Tower of Spirits lobby", "code": "Tower",  "isDungeon": 0 },
-    0x17: { "id": 0x17, "name": "Climbing the Spiral Staircase", "code": "Staircase",  "isDungeon": 0 },
-    0x13: { "id": 0x13, "name": "In the Tower of Spirits", "code": "TowerDungeon",  "isDungeon": 1 },
-    0x4: { "id": 0x4, "name": "In Hyrule Field (Forest Realm)", "code": "ForestField2",  "isDungeon": 0 },
-    0x2a: { "id": 0x2a, "name": "In Whittleton", "code": "Whittleton",  "isDungeon": 0 },
-    0x38: { "id": 0x38, "name": "In the wilds outside Whittleton", "code": "WhittletonWilds",  "isDungeon": 0 },
-    0x9: { "id": 0x9, "name": "Stumbling through the Lost Woods", "code": "LostWoods",  "isDungeon": 0 },
-    0x30: { "id": 0x30, "name": "In the Forest Sanctuary", "code": "ForestSanctuary",  "isDungeon": 0 },
-    0x19: { "id": 0x19, "name": "In the Forest Temple", "code": "ForestTemple",  "isDungeon": 1 },
-    0x1e: { "id": 0x1e, "name": "In Stagnox’s lair…", "code": "Stagnox",  "isDungeon": 0 },
-    0xff00: { "id": 0xff00, "name": "On the title screen…", "code": "Title",  "isDungeon": 0 },
-    0x0: { "id": 0x0, "name": "Starting the game…", "code": "Boot",  "isDungeon": 0 },
-    0x3e: { "id": 0x3e, "name": "At Rabbitland Rescue", "code": "Rabbit",  "isDungeon": 0 },
-    0x5: { "id": 0x5, "name": "In Hyrule Field (Snow Realm)", "code": "SnowRealm",  "isDungeon": 0 },
-    0x2b: { "id": 0x2b, "name": "Anouki Village", "code": "Anouki",  "isDungeon": 0 },
-    0xb: { "id": 0xb, "name": "In Hyrule Field (Snow Realm – Tunnel)", "code": "SnowTunnel",  "isDungeon": 0 },
-    0x31: { "id": 0x31, "name": "In the Snow Sanctuary", "code": "SnowSanctuary",  "isDungeon": 0 },
-    0x35: { "id": 0x35, "name": "At Wellspring Station", "code": "Wellspring",  "isDungeon": 0 },
-    0x45: { "id": 0x45, "name": "On the side of the tracks…", "code": "Tracks",  "isDungeon": 0 },
-    0x1a: { "id": 0x1a, "name": "In the Snow Temple", "code": "SnowTemple",  "isDungeon": 1 },
-    0x1f: { "id": 0x1f, "name": "In Fraaz’s lair…", "code": "Fraaz",  "isDungeon": 0 },
-    0x37: { "id": 0x37, "name": "At the Trading Post", "code": "Trading",  "isDungeon": 0 },
-    0x36: { "id": 0x36, "name": "At the Bridge Worker’s Home", "code": "BridgeWorker",  "isDungeon": 0 },
-    0x6: { "id": 0x6, "name": "In Hyrule Field (Ocean Realm)", "code": "Ocean",  "isDungeon": 0 },
-    0x2c: { "id": 0x2c, "name": "In Papuchia Village", "code": "Papuchia",  "isDungeon": 0 },
-    0x32: { "id": 0x32, "name": "In the Ocean Sanctuary", "code": "OceanSanctuary",  "isDungeon": 0 },
-    0x43: { "id": 0x43, "name": "Fending off intruders in the Spirit Train!", "code": "Train",  "isDungeon": 0 },
-    0xa: { "id": 0xa, "name": "Underwater (Ocean Realm)", "code": "UnderOcean",  "isDungeon": 0 },
-    0x1b: { "id": 0x1b, "name": "In the Ocean Temple", "code": "OceanTemple",  "isDungeon": 1 },
-    0x20: { "id": 0x20, "name": "In Phytops’s lair…", "code": "Phytops",  "isDungeon": 0 },
+    0x2f: { "id": 0x2f, "name": "In Agoda Village", "code": "Agoda",  "isDungeon": 0,  "floorAddr": 0 },
+    0x8: { "id": 0x8, "name": "In Hyrule Field (Forest Realm)", "code": "ForestRealm",  "isDungeon": 0,  "floorAddr": 0 },
+    0x29: { "id": 0x29, "name": "In Castle Town", "code": "CastleTown",  "isDungeon": 0,  "floorAddr": 0 },
+    0x28: { "id": 0x28, "name": "Inside Hyrule Castle", "code": "Castle",  "isDungeon": 1,  "floorAddr": 0 },
+    0x50: { "id": 0x50, "name": "Watching a cutscene…", "code": "Cutscene",  "isDungeon": 0,  "floorAddr": 0 },
+    0x18: { "id": 0x18, "name": "In the Tunnel to the Tower", "code": "Tunnel",  "isDungeon": 0,  "floorAddr": 0 },
+    0x14: { "id": 0x14, "name": "In the Tower of Spirits lobby", "code": "Tower",  "isDungeon": 0,  "floorAddr": 0 },
+    0x17: { "id": 0x17, "name": "Climbing the Spiral Staircase", "code": "Staircase",  "isDungeon": 0,  "floorAddr": 0 },
+    0x13: { "id": 0x13, "name": "In the Tower of Spirits", "code": "TowerDungeon",  "isDungeon": 1,  "floorAddr": 0x2cefe8 },
+    0x4: { "id": 0x4, "name": "In Hyrule Field (Forest Realm)", "code": "ForestField2",  "isDungeon": 0,  "floorAddr": 0 },
+    0x2a: { "id": 0x2a, "name": "In Whittleton", "code": "Whittleton",  "isDungeon": 0,  "floorAddr": 0 },
+    0x38: { "id": 0x38, "name": "In the wilds outside Whittleton", "code": "WhittletonWilds",  "isDungeon": 0,  "floorAddr": 0 },
+    0x9: { "id": 0x9, "name": "Stumbling through the Lost Woods", "code": "LostWoods",  "isDungeon": 0,  "floorAddr": 0 },
+    0x30: { "id": 0x30, "name": "In the Forest Sanctuary", "code": "ForestSanctuary",  "isDungeon": 0,  "floorAddr": 0 },
+    0x19: { "id": 0x19, "name": "In the Forest Temple", "code": "ForestTemple",  "isDungeon": 1,  "floorAddr": 0 },
+    0x1e: { "id": 0x1e, "name": "In Stagnox’s lair…", "code": "Stagnox",  "isDungeon": 0,  "floorAddr": 0 },
+    0xff00: { "id": 0xff00, "name": "On the title screen…", "code": "Title",  "isDungeon": 0,  "floorAddr": 0 },
+    0x0: { "id": 0x0, "name": "Starting the game…", "code": "Boot",  "isDungeon": 0,  "floorAddr": 0 },
+    0x3e: { "id": 0x3e, "name": "At Rabbitland Rescue", "code": "Rabbit",  "isDungeon": 0,  "floorAddr": 0 },
+    0x5: { "id": 0x5, "name": "In Hyrule Field (Snow Realm)", "code": "SnowRealm",  "isDungeon": 0,  "floorAddr": 0 },
+    0x2b: { "id": 0x2b, "name": "Anouki Village", "code": "Anouki",  "isDungeon": 0,  "floorAddr": 0 },
+    0xb: { "id": 0xb, "name": "In Hyrule Field (Snow Realm – Tunnel)", "code": "SnowTunnel",  "isDungeon": 0,  "floorAddr": 0 },
+    0x31: { "id": 0x31, "name": "In the Snow Sanctuary", "code": "SnowSanctuary",  "isDungeon": 0,  "floorAddr": 0 },
+    0x35: { "id": 0x35, "name": "At Wellspring Station", "code": "Wellspring",  "isDungeon": 0,  "floorAddr": 0 },
+    0x45: { "id": 0x45, "name": "On the side of the tracks…", "code": "Tracks",  "isDungeon": 0,  "floorAddr": 0 },
+    0x1a: { "id": 0x1a, "name": "In the Snow Temple", "code": "SnowTemple",  "isDungeon": 1,  "floorAddr": 0 },
+    0x1f: { "id": 0x1f, "name": "In Fraaz’s lair…", "code": "Fraaz",  "isDungeon": 0,  "floorAddr": 0 },
+    0x37: { "id": 0x37, "name": "At the Trading Post", "code": "Trading",  "isDungeon": 0,  "floorAddr": 0 },
+    0x36: { "id": 0x36, "name": "At the Bridge Worker’s Home", "code": "BridgeWorker",  "isDungeon": 0,  "floorAddr": 0 },
+    0x6: { "id": 0x6, "name": "In Hyrule Field (Ocean Realm)", "code": "Ocean",  "isDungeon": 0,  "floorAddr": 0 },
+    0x2c: { "id": 0x2c, "name": "In Papuchia Village", "code": "Papuchia",  "isDungeon": 0,  "floorAddr": 0 },
+    0x32: { "id": 0x32, "name": "In the Ocean Sanctuary", "code": "OceanSanctuary",  "isDungeon": 0,  "floorAddr": 0 },
+    0x43: { "id": 0x43, "name": "Fending off intruders in the Spirit Train!", "code": "Train",  "isDungeon": 0,  "floorAddr": 0 },
+    0xa: { "id": 0xa, "name": "Underwater (Ocean Realm)", "code": "UnderOcean",  "isDungeon": 0,  "floorAddr": 0 },
+    0x1b: { "id": 0x1b, "name": "In the Ocean Temple", "code": "OceanTemple",  "isDungeon": 1,  "floorAddr": 0 },
+    0x20: { "id": 0x20, "name": "In Phytops’s lair…", "code": "Phytops",  "isDungeon": 0,  "floorAddr": 0 },
+    0x46: { "id": 0x46, "name": "Competing in Take ‘Em All On! - Level 1", "code": "Gauntlet1",  "isDungeon": 0,  "floorAddr": 0 },
+    0x4b: { "id": 0x4b, "name": "Fighting Stagnox in Take ‘Em All On!", "code": "GauntletStagnox",  "isDungeon": 0,  "floorAddr": 0 },
+    0x48: { "id": 0x48, "name": "Competing in Take ‘Em All On! - Level 2", "code": "Gauntlet2",  "isDungeon": 0,  "floorAddr": 0 },
 }
 
 function GetLocationByCode(code)
@@ -229,12 +258,14 @@ function clubCardObtained() => bit4(0x264d26)
 
 // $264cf6: Bit 0: Snow Railmap
 //          Bit 1: Ocean Railmap
+//          Bit 2: Fire Railmap
 //          Bit 4: Trained with the captain
 //          Bit 5: Cole appears for the first time
 //          Bit 6: Zelda's guard is out of the way
 //          Bit 7: Cole has let the guard pass and is at the ceremony
 function hasSnowRailmap() => bit0(0x264cf6)
 function hasOceanRailmap() => bit1(0x264cf6)
+function hasFireRailmap() => bit2(0x264cf6)
 
 function trainedWithTheRoyalGuard() => bit4(0x264cf6)
 
@@ -317,6 +348,13 @@ achievement(title = "Ocean Mapper",
         && IsInLocationWithCode("TowerDungeon")
 )
 
+// Fire Mapper
+achievement(title = "Fire Mapper",
+    description = "Obtain the Fire Railmap.", points = 3,
+    trigger = WasBitflagSetInGame(hasFireRailmap())
+        && IsInLocationWithCode("TowerDungeon")
+)
+
 // "Up-and-Coming Musician"
 achievement(title = "Up-and-Coming Musician",
     description = "Learn a song on the Spirit Flute.", points = 1,
@@ -359,13 +397,21 @@ function IsStagnoxDying() => byte(0x31f538) == 0x15
 function stagnoxHP() => byte(0x31f534)
 
 forestTemple = GetLocationByCode("ForestTemple")
+gauntlet1 = GetLocationByCode("Gauntlet1")
 
 achievement(title = "Shoo, Fly, Shoo",
     description = "Defeat Stagnox without taking damage.", points = 10,
-    trigger = never(!IsInLocationWithCode("Stagnox"))
-        && once(IsInLocationWithCode("Stagnox") && Delta(currentLocation()) == forestTemple["id"])
-        && IsStagnoxDying()
+    trigger = IsStagnoxDying()
         && never(Delta(currentHP()) > currentHP())
+        && (
+            // Forest Temple
+            never(!IsInLocationWithCode("Stagnox")) && unless(IsInLocationWithCode("GauntletStagnox"))
+            && once(IsInLocationWithCode("Stagnox") && Delta(currentLocation()) == forestTemple["id"])
+            
+            // Take 'Em All On!
+            || never(!IsInLocationWithCode("GauntletStagnox")) && unless(IsInLocationWithCode("Stagnox"))
+            && once(IsInLocationWithCode("GauntletStagnox") && Delta(currentLocation()) == gauntlet1["id"])
+        )
 )
 
 // "Whispers from the Forest"
@@ -670,6 +716,91 @@ achievement(title = "Roars from the Sea", points = 5,
         && IsInLocationWithCode("Phytops")
 )
 
+// "Watch out for That Tree!"
+function WhipRaceCountingDown() => whipRaceState() == 0x1
+function StartedWhipRace() => whipRaceState() == 0x2
+function WhipRaceJustEnded() => whipRaceState() == 0x3
+function WhipRaceIsOver() => whipRaceState() == 0x4
+function WhipRaceVictory() => reasonWhipRaceEnded() != 0x1 && reasonWhipRaceEnded() != 0x2
+timeLimit = 65
+framesPerSecond = 30 // The system timer uses 60fps, but Spirit Tracks calculates time assuming 30fps instead, for some reason.
+achievement(title = "Watch out for That Tree!", points = 25,
+    description = "Finish the whip race within " + SecondsToFormat(timeLimit) + ".",
+    trigger = IsInLocationWithCode("WhittletonWilds") && whipRaceTime() <= timeLimit * framesPerSecond
+        && once(WhipRaceJustEnded()) && WhipRaceIsOver() && never(StartedWhipRace())
+        && WhipRaceVictory()
+)
+
+leaderboard(title = "Whip Race",
+    description = "Swing to the end of the course in the fastest time you can!",
+    start = IsInLocationWithCode("WhittletonWilds") && WhipRaceCountingDown(),
+    cancel = !WhipRaceVictory() && WhipRaceIsOver(),
+    submit = WhipRaceJustEnded() && WhipRaceVictory(),
+    value = whipRaceTime() * 2 // Multiply it by 2 to convert the value to its 60fps equivalent so it properly calculates on the RA leaderboard.
+)
+
+// Force Gem achievements
+forceGemAddresses = [
+    { "addr": 0x264d01, "bit": 1 },
+    { "addr": 0x264d01, "bit": 2 },
+    { "addr": 0x264d01, "bit": 4 },
+]
+
+forceGemAchievements = [
+    { "name": "Help Wanted", "description": "", "threshold": 3, "points": 3 },
+    { "name": "The Gift of Charity", "description": "", "threshold": 10, "points": 10 },
+    { "name": "Premier Engineer", "description": "Collect all Force Gems and completely restore the Spirit Tracks.", "threshold": 20, "points": 25 }
+]
+
+for cheevo in forceGemAchievements
+{
+    forceGemObtained = always_false()
+    resetalt = always_false()
+    description = cheevo["description"]
+    
+    if (description == "")
+    {
+        description = "Collect " + cheevo["threshold"] + " Force Gems."
+    }
+    
+    for addr in forceGemAddresses
+    {
+        relevantBit = bit(addr["bit"], addr["addr"])
+        forceGemObtained = forceGemObtained || once(relevantBit == 1)
+        
+        // Like the above, we want to reset the hit counts each time a rabbit is rescued
+        // to refresh the hitcount state that represents each individual rabbit being rescued.
+        resetalt = resetalt || never(Delta(relevantBit) != relevantBit)
+            && unless(isLoadingSaveFile())
+    }
+    
+    // Also like the above, we also don't want to do anything if no rabbit is rescued on a frame
+    // as a save protection measure. A two-frame target is used for the same reason as the above, as well.
+    unlessRabbitStatesAreIdle = unless(repeated(2, always_true()))
+    
+    achievement(title = cheevo["name"], description = descriptoin, points = cheevo["points"],
+        trigger = IsInGame()
+            && measured(repeated(cheevo["threshold"], forceGemObtained)) && unlessRabbitStatesAreIdle
+            && resetalt
+    )
+}
+
+// Take 'Em All On!
+function GauntletCountingDown() => gauntletState() == 0x1
+function StartedGauntlet() => gauntletState() == 0x2
+function ForfeitedGauntlet() => gauntletState() == 0x4
+
+for level in range(1, 2)
+{
+    leaderboard(title = "Take 'Em All On! - Level " + level,
+        description = "Reach the end of Take 'Em All On! Level " + level + " and defeat the boss as quickly as you can!",
+        start = IsInLocationWithCode("Gauntlet" + level) && GauntletCountingDown(),
+        cancel = ForfeitedGauntlet(),
+        submit = Delta(gauntletState()) == 0x2 && gauntletState() == 0x0,
+        value = gauntletTime() * 2 // Multiply it by 2 to convert the value to its 60fps equivalent so it properly calculates on the RA leaderboard.
+    ) 
+}
+
 // RICH PRESENCE
 function CurrentFloor() => byte(0x260008) + 1
 function GetFloorlessLocationList()
@@ -693,8 +824,17 @@ for i in locationInfo
     location = locationInfo[i]
     if (location["isDungeon"] == 1)
     {
+        floor = 0
+        if (location["floorAddr"] == 0)
+        {
+            floor = CurrentFloor()
+        }
+        else // Sometimes, the generic floor value doesn't cut it. If we find an alternative, we can use that instead.
+        {
+            floor = byte(location["floorAddr"])
+        }
         rich_presence_conditional_display(IsInLocationWithCode(location["code"]), "{0}, Floor {1}", location["name"],
-            rich_presence_value("FloorNumber", CurrentFloor())
+            rich_presence_value("FloorNumber", floor)
         )
     }
 }
