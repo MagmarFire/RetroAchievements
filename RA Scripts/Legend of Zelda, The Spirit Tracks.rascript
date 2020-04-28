@@ -130,6 +130,14 @@ locationInfo = {
     0x46: { "id": 0x46, "name": "Competing in Take ‘Em All On! - Level 1", "code": "Gauntlet1",  "isDungeon": 0,  "floorAddr": 0 },
     0x4b: { "id": 0x4b, "name": "Fighting Stagnox in Take ‘Em All On!", "code": "GauntletStagnox",  "isDungeon": 0,  "floorAddr": 0 },
     0x48: { "id": 0x48, "name": "Competing in Take ‘Em All On! - Level 2", "code": "Gauntlet2",  "isDungeon": 0,  "floorAddr": 0 },
+    0x7: { "id": 0x7, "name": "In Hyrule Field (Fire Realm)", "code": "FireRealm",  "isDungeon": 0,  "floorAddr": 0 },
+    0x3c: { "id": 0x3c, "name": "At the Goron Target Range", "code": "TargetRange",  "isDungeon": 0,  "floorAddr": 0 },
+    0x2e: { "id": 0x2e, "name": "In Goron Village", "code": "Goron",  "isDungeon": 0,  "floorAddr": 0 },
+    0x2d: { "id": 0x2d, "name": "Walking the path to the Altar of the Mountain Goddess", "code": "AltarPath",  "isDungeon": 0,  "floorAddr": 0 },
+    0x33: { "id": 0x33, "name": "In the Fire Sanctuary", "code": "FireSanctuary",  "isDungeon": 0,  "floorAddr": 0 },
+    0x3f: { "id": 0x3f, "name": "At Snowdrift or Slippery Station", "code": "Snowdrift",  "isDungeon": 0,  "floorAddr": 0 },
+    0x1c: { "id": 0x1c, "name": "In the Fire Temple", "code": "FireTemple",  "isDungeon": 0,  "floorAddr": 0 },
+    0x21: { "id": 0x21, "name": "In Cragma’s lair…", "code": "Cragma",  "isDungeon": 0,  "floorAddr": 0 },
 }
 
 function GetLocationByCode(code)
@@ -147,6 +155,12 @@ function IsInLocationWithCode(code)
 {
     location = GetLocationByCode(code)
     return currentLocation() == location["id"]
+}
+
+function WasInLocationWithCode(code)
+{
+    location = GetLocationByCode(code)
+    return Delta(currentLocation()) == location["id"]
 }
 
 function IsInGame()
@@ -185,6 +199,9 @@ function hasRecruitSword() => bit1(0x264902)
 // $264908: Rupees
 function rupees() => word(0x264908)
 
+// $264912: Arrows in inventory
+function arrows() => word(0x264912)
+
 // $264914: Potion slot 1:
 //          
 //          0 = no potion
@@ -206,7 +223,16 @@ function snowTempleClear() => bit5(0x264CF4)
 function oceanTempleClear() => bit6(0x264CF4)
 function fireTempleClear() => bit7(0x264CF4)
 
+// $264d00: Bit 2: Snow Realm Rocktite defeated
+//          Bit 4: Purchased Mega Ice for the first time
+function snowRealmRocktiteDefeated() => bit2(0x264d00)
+function purchasedMegaIceForFirstTime() => bit4(0x264d00)
+
 // $264d0a: Bit 4: Started duet with Gage
+
+// $264d4b: Bit 1: Opened chest for Champion Course at Slippery Station
+function openedChampionChest() => bit1(0x264d4b)
+
 // $264CF5: Bit 0: Completed duet with Gage
 //          Bit 1: Completed duet with Steem
 //          Bit 7: Forest Railmap
@@ -215,6 +241,7 @@ function startedDuetWithGage() => bit4(0x264d0a)
 function completedDuetWithGage() => bit0(0x264CF5)
 function completedDuetWithSteem() => bit1(0x264CF5)
 function completedDuetWithCarben() => bit2(0x264CF5)
+function completedDuetWithEmbrose() => bit3(0x264CF5)
 
 function hasForestRailmap() => bit7(0x264CF5)
 
@@ -229,6 +256,13 @@ function wasPostmanIntroducedForTheFirstTime() => bit0(0x264CFB)
 // $264D18: Bit 5: Reward for rolling into the tree (ow...)
 // $264D19: Bit 1: Stamp Book
 //          Bit 5: Compass of Light
+
+// $264d25: Bit 6: Silver Card
+//          Bit 7: Gold Card
+function silverCardObtained() => bit6(0x264d25)
+
+function goldCardObtained() => bit7(0x264d25)
+
 // $264D26: Bit 0: Platinum Card (if Bit 4 is 1)
 //          Bit 1: Diamond Card (if Bit 4 is 1)
 //          Bit 2: Freebie Card
@@ -239,6 +273,9 @@ function clubCardObtained() => bit4(0x264d26)
 // $2651BC: Current HP (EU)
 // $2651BD: Max HP (EU)
 // $2685E0: Demon Fossil count
+demonFossilCountAddr = 0x2685e0
+function demonFossilCount() => word(demonFossilCountAddr)
+
 // $2685E2: Stalfos Skull count
 // $2685E4: Star Fragment count
 // $2685E6: Bee Larvae count
@@ -389,6 +426,14 @@ achievement(title = "Duet with the Flautist",
     points = 3,
     trigger = WasBitflagSetInGame(completedDuetWithCarben())
         && IsInLocationWithCode("OceanSanctuary")
+)
+
+// "Duet with the Timpanist"
+achievement(title = "Duet with the Timpanist",
+    description = "Complete your duet with Embrose and open the path to the Fire Temple.",
+    points = 3,
+    trigger = WasBitflagSetInGame(completedDuetWithEmbrose())
+        && IsInLocationWithCode("FireSanctuary")
 )
 
 // "Shoo, Fly, Shoo"
@@ -674,19 +719,37 @@ achievement(title = "The Price of Loyalty",
     trigger = WasBitflagSetInGame(clubCardObtained()) && IsInGame()
 )
 
-// "Aquatic Acquaintances"
-achievement(title = "Aquatic Acquaintances", description = "Befriend a pod of dolphins and have them put on a show.",
-    points = 1,
-    trigger = IsInLocationWithCode("Ocean")
-        && Delta(whistlesMadeForDolphins()) == 3 && whistlesMadeForDolphins() == 0
+// "Buy Nine, Get One Free"
+achievement(title = "Buy Nine, Get One Free",
+    description = "Get your Silver Card in the mail.", points = 3,
+    trigger = WasBitflagSetInGame(silverCardObtained()) && IsInGame()
 )
 
-// "Keepie-Uppie"
-achievement(title = "Keepie-Uppie",
-    description = "Spawn two Squiddies from a main one and then juggle the latter four times before any Squiddy touches the ground.",
-    points = 5,
-    trigger = IsInLocationWithCode("Ocean") && squiddyInstances() == 3 && squiddyStrikes() >= 4
+// "Persistent Patron"
+achievement(title = "Persistent Patron",
+    description = "Get your Gold Card in the mail.", points = 5,
+    trigger = WasBitflagSetInGame(goldCardObtained()) && IsInGame()
 )
+
+// Both of these achievements depend on values that are dynamic in nature, especially when train makeup changes.
+// To properly implement these, pointers for these values will need to be found first, which
+// may not be possible with the current implementation of DeSmuME.
+if (1 == 0)
+{
+    // "Aquatic Acquaintances"
+    achievement(title = "Aquatic Acquaintances", description = "Befriend a pod of dolphins and have them put on a show.",
+        points = 1,
+        trigger = IsInLocationWithCode("Ocean")
+            && Delta(whistlesMadeForDolphins()) == 3 && whistlesMadeForDolphins() == 0
+    )
+    
+    // "Keepie-Uppie"
+    achievement(title = "Keepie-Uppie",
+        description = "Spawn two Squiddies from a main one and then juggle the latter four times before any Squiddy touches the ground.",
+        points = 5,
+        trigger = IsInLocationWithCode("Ocean") && squiddyInstances() == 3 && squiddyStrikes() >= 4
+    )
+}
 
 // "Whip It Good"
 oceanTemple = GetLocationByCode("OceanTemple")
@@ -741,13 +804,22 @@ leaderboard(title = "Whip Race",
 
 // Force Gem achievements
 forceGemAddresses = [
+    { "addr": 0x264d01, "bit": 0 },
     { "addr": 0x264d01, "bit": 1 },
     { "addr": 0x264d01, "bit": 2 },
     { "addr": 0x264d01, "bit": 4 },
+    { "addr": 0x264d01, "bit": 5 },
+    { "addr": 0x264d01, "bit": 6 },
+    { "addr": 0x264d01, "bit": 7 },
+    { "addr": 0x264d02, "bit": 0 },
+    { "addr": 0x264d02, "bit": 1 },
+    { "addr": 0x264d02, "bit": 2 },
+    { "addr": 0x264d02, "bit": 4 },
+    { "addr": 0x264d03, "bit": 0 }
 ]
 
 forceGemAchievements = [
-    { "name": "Help Wanted", "description": "", "threshold": 3, "points": 3 },
+    { "name": "Help Wanted", "description": "", "threshold": 5, "points": 3 },
     { "name": "The Gift of Charity", "description": "", "threshold": 10, "points": 10 },
     { "name": "Premier Engineer", "description": "Collect all Force Gems and completely restore the Spirit Tracks.", "threshold": 20, "points": 25 }
 ]
@@ -778,7 +850,7 @@ for cheevo in forceGemAchievements
     // as a save protection measure. A two-frame target is used for the same reason as the above, as well.
     unlessRabbitStatesAreIdle = unless(repeated(2, always_true()))
     
-    achievement(title = cheevo["name"], description = descriptoin, points = cheevo["points"],
+    achievement(title = cheevo["name"], description = description, points = cheevo["points"],
         trigger = IsInGame()
             && measured(repeated(cheevo["threshold"], forceGemObtained)) && unlessRabbitStatesAreIdle
             && resetalt
@@ -800,6 +872,55 @@ for level in range(1, 2)
         value = gauntletTime() * 2 // Multiply it by 2 to convert the value to its 60fps equivalent so it properly calculates on the RA leaderboard.
     ) 
 }
+
+// "Treasure Hunter"
+allTreasureObtained = always_true()
+for i in range(0, 15)
+{
+    allTreasureObtained = allTreasureObtained && word(demonFossilCountAddr + i * 2) != 0xffff
+}
+
+achievement(title = "Treasure Hunter", points = 5,
+    description = "Obtain one of every type of treasure.",
+    trigger = IsInGame() && allTreasureObtained && never(isLoadingSaveFile())
+)
+
+// "Plus Shipping and Handling"
+function freightCount() => word(0x264bbc)
+function firstLavaPlumeCooled() => bit4(0x264d15)
+function freightType() => byte(0x264bb8)
+iceMax = 20
+iceLossLimit = 7
+achievement(title = "Plus Shipping and Handling", points = 5,
+    description = "Deliver your first batch of Mega Ice to Goron Village from Wellspring Station without losing more than "
+                + iceLossLimit + " lots of ice.",
+    trigger = once(WasInLocationWithCode("Wellspring") && IsInLocationWithCode("SnowRealm") && freightCount() == iceMax)
+        && IsInLocationWithCode("Goron") && firstLavaPlumeCooled() == 0 && never(freightCount() < iceMax - iceLossLimit)
+        && freightType() == 0
+)
+
+// "Kiss and Cry"
+achievement(title = "Kiss and Cry", points = 10,
+    description = "Complete the Champion Course at Slippery Station and take the treasure.",
+    trigger = IsInGame() && WasBitflagSetInGame(openedChampionChest())
+)
+
+// "Be Efficient"
+function IsCragmaDying() => byte(0x3222c8) == 0xc
+arrowLimit = 18
+
+achievement(title = "Be Efficient", points = 25,
+    description = "Defeat Cragma without using any more than " + arrowLimit + " arrows.",
+    trigger = once(WasInLocationWithCode("FireTemple") && IsInLocationWithCode("Cragma"))
+        && never(!IsInLocationWithCode("Cragma")) && IsCragmaDying() && never(repeated(arrowLimit + 1, Delta(arrows()) > arrows()))
+)
+
+// "Rumbles from the Mountain"
+achievement(title = "Rumbles from the Volcano", points = 5,
+    description = "Clear the Fire Temple.",
+    trigger = WasBitflagSetInGame(fireTempleClear())
+        && IsInLocationWithCode("Cragma")
+)
 
 // RICH PRESENCE
 function CurrentFloor() => byte(0x260008) + 1
