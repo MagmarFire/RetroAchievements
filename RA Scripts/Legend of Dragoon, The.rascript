@@ -19,6 +19,18 @@ function goldPrize() => word(0x0BC920)
 // $0BC95C: EXP Prize (32-bit)
 function expPrize() => word(0x0BC95C)
 
+function EnteredBattleOnce() => once(Delta(battleMarker()) != battleMarker() && IsInBattle())
+
+// $ccdec:  Misc.
+//
+//          0x1021 = in battle
+//          0x8005 = world map(?)
+function battleMarker() => word(0xccdec)
+function IsInBattle() => battleMarker() == 0x1021
+
+// $0badae: Total items in inventory
+function itemsInInventory() => byte(0x0badae)
+
 achievement(
     title = "Just One More!", description = "Perform your first Addition.", points = 1,
     id = 94789, badge = "107881", published = "1/15/2020 11:23:20 PM", modified = "2/13/2020 5:18:17 AM",
@@ -295,7 +307,7 @@ achievement(
     title = "A Humane Execution", description = "Defeat the Wounded Virage without destroying any of its appendages.", points = 10,
     id = 94791, badge = "106751", published = "1/15/2020 11:23:28 PM", modified = "2/3/2020 2:18:54 AM",
     trigger = word(0x0BB0F4) == 0x005B && word(0x0BB0F8) == 0x0198 && word(0x052C30) == 0x0078 && 
-              once(prev(word(0x0CCDEC)) != 0x1021 && word(0x0CCDEC) == 0x1021) &&
+              EnteredBattleOnce() && never(!IsInBattle()) &&
               ((repeated(256, word(0x1AC2F4) == 0x0000) && unless(byte(0x0BAC54) == 0x02) && 
                 unless(byte(0x0BAC58) == 0x02) && never(word(0x1ABF6C) == 0x0000) && never(word(0x1ABBE4) == 0x0000)) ||
                (repeated(256, word(0x1AC5F4) == 0x0000) && unless(byte(0x0BAC54) == 0x01) && 
@@ -396,8 +408,9 @@ achievement(
 achievement(
     title = "Item Miser", description = "Defeat the Jiango without using any items.", points = 10,
     id = 97122, badge = "106706", published = "2/1/2020 3:52:08 PM", modified = "2/3/2020 2:24:37 AM",
-    trigger = once(word(0x0BB0F8) == 0x019D && prev(word(0x0BB0F8)) != 0x019D) && word(0x0BC95C) == 0x07D0 && 
-              never(byte(0x0BADAE) != prev(byte(0x0BADAE)))
+    trigger = enemyId() == 0x019D && expPrize() == 0x07D0 && 
+              never(itemsInInventory() != Delta(itemsInInventory()))
+              && never(!IsInBattle()) && EnteredBattleOnce()
 )
 
 achievement(
