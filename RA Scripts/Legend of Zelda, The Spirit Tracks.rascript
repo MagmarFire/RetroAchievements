@@ -75,6 +75,15 @@ function whipRaceTime() => word(0x15b188)
 //          any other value = complete
 function reasonWhipRaceEnded() => byte(0x15b194)
 
+// $163fe0: Pirate Hideout minigame state
+//
+//          0x0 = before countdown
+//          0x1 = countdown
+//          0x2 = Stage 1
+//          0x3 = Stage 2
+//          0x5 = captured
+function pirateHideoutState() => byte(0x163fe0)
+
 // $17e428: Take 'Em All On! state:
 //
 //          0x1 = counting down
@@ -138,6 +147,14 @@ locationInfo = {
     0x3f: { "id": 0x3f, "name": "At Snowdrift or Slippery Station", "code": "Snowdrift",  "isDungeon": 0,  "floorAddr": 0 },
     0x1c: { "id": 0x1c, "name": "In the Fire Temple", "code": "FireTemple",  "isDungeon": 0,  "floorAddr": 0 },
     0x21: { "id": 0x21, "name": "In Cragma’s lair…", "code": "Cragma",  "isDungeon": 0,  "floorAddr": 0 },
+    0x23: { "id": 0x23, "name": "In Byrne’s lair…", "code": "Byrne",  "isDungeon": 0,  "floorAddr": 0 },
+    0x15: { "id": 0x15, "name": "At the top of the Tower of Spirits", "code": "TowerTop",  "isDungeon": 0,  "floorAddr": 0 },
+    0x16: { "id": 0x16, "name": "At the top of the Tower of Spirits", "code": "TowerTop2",  "isDungeon": 0,  "floorAddr": 0 },
+    0x44: { "id": 0x44, "name": "Aboard the Spirit Train", "code": "Train2",  "isDungeon": 0,  "floorAddr": 0 },
+    0xe: { "id": 0xe, "name": "Competing at the Goron Target Range", "code": "TargetRangeGame",  "isDungeon": 0,  "floorAddr": 0 },
+    0x40: { "id": 0x40, "name": "At Disorientation Station", "code": "Disorientation",  "isDungeon": 0,  "floorAddr": 0 },
+    0x3a: { "id": 0x3a, "name": "At the Pirate Hideout", "code": "Pirate",  "isDungeon": 0,  "floorAddr": 0 },
+    0x3b: { "id": 0x3b, "name": "Inside the Pirate Hideout", "code": "PirateMinigame",  "isDungeon": 0,  "floorAddr": 0 },
 }
 
 function GetLocationByCode(code)
@@ -268,6 +285,10 @@ function goldCardObtained() => bit7(0x264d25)
 //          Bit 2: Freebie Card
 //          Bit 3: Quintuple Points Card
 //          Bit 4: Club Card
+function platinumCardObtained() => bit0(0x264d26)
+
+function diamondCardObtained() => bit1(0x264d26)
+
 function clubCardObtained() => bit4(0x264d26)
 
 // $2651BC: Current HP (EU)
@@ -731,6 +752,18 @@ achievement(title = "Persistent Patron",
     trigger = WasBitflagSetInGame(goldCardObtained()) && IsInGame()
 )
 
+// "Top Investor"
+achievement(title = "Top Investor",
+    description = "Get your Platinum Card in the mail.", points = 10,
+    trigger = WasBitflagSetInGame(platinumCardObtained()) && IsInGame()
+)
+
+// "Chairman of the Board"
+achievement(title = "Chairman of the Board",
+    description = "Get your Diamond Card in the mail.", points = 25,
+    trigger = WasBitflagSetInGame(diamondCardObtained()) && IsInGame()
+)
+
 // Both of these achievements depend on values that are dynamic in nature, especially when train makeup changes.
 // To properly implement these, pointers for these values will need to be found first, which
 // may not be possible with the current implementation of DeSmuME.
@@ -814,8 +847,14 @@ forceGemAddresses = [
     { "addr": 0x264d02, "bit": 0 },
     { "addr": 0x264d02, "bit": 1 },
     { "addr": 0x264d02, "bit": 2 },
+    { "addr": 0x264d02, "bit": 3 },
     { "addr": 0x264d02, "bit": 4 },
-    { "addr": 0x264d03, "bit": 0 }
+    { "addr": 0x264d02, "bit": 6 },
+    { "addr": 0x264d02, "bit": 7 },
+    { "addr": 0x264d03, "bit": 0 },
+    { "addr": 0x264d03, "bit": 2 },
+    { "addr": 0x264d03, "bit": 3 },
+    { "addr": 0x264d08, "bit": 6 }
 ]
 
 forceGemAchievements = [
@@ -874,15 +913,31 @@ for level in range(1, 2)
 }
 
 // "Treasure Hunter"
-allTreasureObtained = always_true()
-for i in range(0, 15)
+totalTreasureTypes = 16
+treasureRegistered = always_false()
+resetalt = always_false()
+
+for i in range(0, totalTreasureTypes - 1)
 {
-    allTreasureObtained = allTreasureObtained && word(demonFossilCountAddr + i * 2) != 0xffff
+    offset = demonFossilCountAddr + i * 2
+    treasureRegistered = treasureRegistered || once(word(offset) != 0xffff)
+    
+    // We want to reset the hit counts each time a treasure is registered in order to
+    // reflect the state of registrations in memory.
+    resetalt = resetalt || never(Delta(word(offset)) != word(offset))
+        && unless(isLoadingSaveFile())
 }
 
-achievement(title = "Treasure Hunter", points = 5,
-    description = "Obtain one of every type of treasure.",
-    trigger = IsInGame() && allTreasureObtained && never(isLoadingSaveFile())
+// We also don't want to do anything if *none* of the treasure registrations change. This way,
+// simply loading a save doesn't trigger them immediately. A two-frame target is used
+// to give the achievement time to register a new change on the frame immediately
+// following a reset.
+unlessTreasureStatesAreIdle = unless(repeated(2, always_true()))
+
+achievement(title = "Treasure Hunter", description = "Obtain one of every type of treasure.", points = 5,
+    trigger = IsInGame()
+        && repeated(totalTreasureTypes, treasureRegistered) && unlessTreasureStatesAreIdle
+        && resetalt
 )
 
 // "Plus Shipping and Handling"
@@ -907,7 +962,7 @@ achievement(title = "Kiss and Cry", points = 10,
 
 // "Be Efficient"
 function IsCragmaDying() => byte(0x3222c8) == 0xc
-arrowLimit = 18
+arrowLimit = 20
 
 achievement(title = "Be Efficient", points = 25,
     description = "Defeat Cragma without using any more than " + arrowLimit + " arrows.",
@@ -915,12 +970,73 @@ achievement(title = "Be Efficient", points = 25,
         && never(!IsInLocationWithCode("Cragma")) && IsCragmaDying() && never(repeated(arrowLimit + 1, Delta(arrows()) > arrows()))
 )
 
-// "Rumbles from the Mountain"
+// "Rumbles from the Volcano"
 achievement(title = "Rumbles from the Volcano", points = 5,
     description = "Clear the Fire Temple.",
     trigger = WasBitflagSetInGame(fireTempleClear())
         && IsInLocationWithCode("Cragma")
 )
+
+// "A Swift Dispatching"
+function byrneState() => byte(0x33f378)
+function IsByrneDying() => byrneState() == 0x21
+timeLimit = 108
+transitionFrames = 50 // We need to take into account transition time between when the boss room loads and the cutscene starts.
+achievement(title = "A Swift Dispatching", points = 10,
+    description = "Defeat Byrne within " + SecondsToFormat(timeLimit) + ".",
+    trigger = once(WasInLocationWithCode("TowerDungeon") && IsInLocationWithCode("Byrne"))
+        && IsByrneDying()
+        && never(repeated(SecondsToFrames(timeLimit) + transitionFrames, Delta(framesCounter()) != framesCounter()))
+        && never(!IsInLocationWithCode("Byrne")) && unless(byrneState() == 0)
+        && unless(IsPaused())
+)
+
+// "Fourteen High Tons"
+targetScore = 2100
+function goronTargetRangeState() => byte(0x178520)
+function goronTargetRangeScore() => word(0x178534)
+function IsGoronTargetRangeGameComplete() => goronTargetRangeState() == 0x5
+function IsGoronTargetRangeCountingDown() => goronTargetRangeState() == 0x3
+function IsGoronTargetRangeInProgress() => goronTargetRangeState() == 0x4
+function IsGoronTargetRangeOver() => goronTargetRangeState() == 0x6
+achievement(title = "Fourteen High Tons", points = 10,
+    description = "Get a score of " + targetScore + " or higher at the Goron Target Range.",
+    trigger = once(IsInLocationWithCode("TargetRangeGame") && WasInLocationWithCode("TargetRange"))
+        && goronTargetRangeScore() >= targetScore
+        && IsGoronTargetRangeGameComplete()
+        && never(!IsInLocationWithCode("TargetRangeGame"))
+)
+
+leaderboard(title = "Goron Target Range",
+    description = "Get the highest score you can!",
+    start = IsInLocationWithCode("TargetRangeGame") && IsGoronTargetRangeCountingDown(),
+    cancel = once(Delta(goronTargetRangeState()) == 0x4 && IsGoronTargetRangeOver()) && never(IsGoronTargetRangeCountingDown()),
+    submit = once(Delta(goronTargetRangeState()) == 0x4 && IsGoronTargetRangeGameComplete()) && never(IsGoronTargetRangeCountingDown()),
+    value = goronTargetRangeScore()
+)
+
+// "Sharpshooter"
+comboTarget = 25
+function pirateHideoutComboLength() => byte(0x16422a)
+function pirateHideoutMultiplier() => byte(0x164228)
+achievement(title = "Sharpshooter", points = 10,
+    description = "Get a combo of " + comboTarget + " or more in the Pirate Hideout minigame.",
+    trigger = repeated(comboTarget, Delta(pirateHideoutComboLength()) != pirateHideoutComboLength())
+        && never(Delta(pirateHideoutMultiplier()) > pirateHideoutMultiplier())
+        && never(!IsInLocationWithCode("PirateMinigame"))
+)
+
+// "Keep Both Eyes Open"
+if (1 == 0)
+{
+ scoreTarget = 4200
+function pirateHideoutIsCountingDown() => byte(0x163fe0) == 0x1
+achievement(title = "Keep Both Eyes Open", points = 10,
+    description = "Get a score of " + scoreTarget + " or more in the Pirate Hideout minigame.",
+    trigger = IsInLocationWithCode("PirateMinigame")
+    
+)   
+}
 
 // RICH PRESENCE
 function CurrentFloor() => byte(0x260008) + 1
