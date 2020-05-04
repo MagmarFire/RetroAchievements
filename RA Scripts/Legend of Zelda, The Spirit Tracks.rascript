@@ -84,6 +84,9 @@ function reasonWhipRaceEnded() => byte(0x15b194)
 //          0x5 = captured
 function pirateHideoutState() => byte(0x163fe0)
 
+// $164224: Pirate Hideout minigame score
+function pirateHideoutScore() => word(0x164224)
+
 // $17e428: Take 'Em All On! state:
 //
 //          0x1 = counting down
@@ -100,61 +103,72 @@ function IsPaused() => byte(0x25ff90) == 1
 function currentLocation() => word(0x261640)
 
 locationInfo = {
-    0x2f: { "id": 0x2f, "name": "In Agoda Village", "code": "Agoda",  "isDungeon": 0,  "floorAddr": 0 },
-    0x8: { "id": 0x8, "name": "In Hyrule Field (Forest Realm)", "code": "ForestRealm",  "isDungeon": 0,  "floorAddr": 0 },
-    0x29: { "id": 0x29, "name": "In Castle Town", "code": "CastleTown",  "isDungeon": 0,  "floorAddr": 0 },
-    0x28: { "id": 0x28, "name": "Inside Hyrule Castle", "code": "Castle",  "isDungeon": 1,  "floorAddr": 0 },
-    0x50: { "id": 0x50, "name": "Watching a cutscene…", "code": "Cutscene",  "isDungeon": 0,  "floorAddr": 0 },
-    0x18: { "id": 0x18, "name": "In the Tunnel to the Tower", "code": "Tunnel",  "isDungeon": 0,  "floorAddr": 0 },
-    0x14: { "id": 0x14, "name": "In the Tower of Spirits lobby", "code": "Tower",  "isDungeon": 0,  "floorAddr": 0 },
-    0x17: { "id": 0x17, "name": "Climbing the Spiral Staircase", "code": "Staircase",  "isDungeon": 0,  "floorAddr": 0 },
-    0x13: { "id": 0x13, "name": "In the Tower of Spirits", "code": "TowerDungeon",  "isDungeon": 1,  "floorAddr": 0x2cefe8 },
-    0x4: { "id": 0x4, "name": "In Hyrule Field (Forest Realm)", "code": "ForestField2",  "isDungeon": 0,  "floorAddr": 0 },
-    0x2a: { "id": 0x2a, "name": "In Whittleton", "code": "Whittleton",  "isDungeon": 0,  "floorAddr": 0 },
-    0x38: { "id": 0x38, "name": "In the wilds outside Whittleton", "code": "WhittletonWilds",  "isDungeon": 0,  "floorAddr": 0 },
-    0x9: { "id": 0x9, "name": "Stumbling through the Lost Woods", "code": "LostWoods",  "isDungeon": 0,  "floorAddr": 0 },
-    0x30: { "id": 0x30, "name": "In the Forest Sanctuary", "code": "ForestSanctuary",  "isDungeon": 0,  "floorAddr": 0 },
-    0x19: { "id": 0x19, "name": "In the Forest Temple", "code": "ForestTemple",  "isDungeon": 1,  "floorAddr": 0 },
-    0x1e: { "id": 0x1e, "name": "In Stagnox’s lair…", "code": "Stagnox",  "isDungeon": 0,  "floorAddr": 0 },
-    0xff00: { "id": 0xff00, "name": "On the title screen…", "code": "Title",  "isDungeon": 0,  "floorAddr": 0 },
-    0x0: { "id": 0x0, "name": "Starting the game…", "code": "Boot",  "isDungeon": 0,  "floorAddr": 0 },
-    0x3e: { "id": 0x3e, "name": "At Rabbitland Rescue", "code": "Rabbit",  "isDungeon": 0,  "floorAddr": 0 },
-    0x5: { "id": 0x5, "name": "In Hyrule Field (Snow Realm)", "code": "SnowRealm",  "isDungeon": 0,  "floorAddr": 0 },
-    0x2b: { "id": 0x2b, "name": "Anouki Village", "code": "Anouki",  "isDungeon": 0,  "floorAddr": 0 },
-    0xb: { "id": 0xb, "name": "In Hyrule Field (Snow Realm – Tunnel)", "code": "SnowTunnel",  "isDungeon": 0,  "floorAddr": 0 },
-    0x31: { "id": 0x31, "name": "In the Snow Sanctuary", "code": "SnowSanctuary",  "isDungeon": 0,  "floorAddr": 0 },
-    0x35: { "id": 0x35, "name": "At Wellspring Station", "code": "Wellspring",  "isDungeon": 0,  "floorAddr": 0 },
-    0x45: { "id": 0x45, "name": "On the side of the tracks…", "code": "Tracks",  "isDungeon": 0,  "floorAddr": 0 },
-    0x1a: { "id": 0x1a, "name": "In the Snow Temple", "code": "SnowTemple",  "isDungeon": 1,  "floorAddr": 0 },
-    0x1f: { "id": 0x1f, "name": "In Fraaz’s lair…", "code": "Fraaz",  "isDungeon": 0,  "floorAddr": 0 },
-    0x37: { "id": 0x37, "name": "At the Trading Post", "code": "Trading",  "isDungeon": 0,  "floorAddr": 0 },
-    0x36: { "id": 0x36, "name": "At the Bridge Worker’s Home", "code": "BridgeWorker",  "isDungeon": 0,  "floorAddr": 0 },
-    0x6: { "id": 0x6, "name": "In Hyrule Field (Ocean Realm)", "code": "Ocean",  "isDungeon": 0,  "floorAddr": 0 },
-    0x2c: { "id": 0x2c, "name": "In Papuchia Village", "code": "Papuchia",  "isDungeon": 0,  "floorAddr": 0 },
-    0x32: { "id": 0x32, "name": "In the Ocean Sanctuary", "code": "OceanSanctuary",  "isDungeon": 0,  "floorAddr": 0 },
-    0x43: { "id": 0x43, "name": "Fending off intruders in the Spirit Train!", "code": "Train",  "isDungeon": 0,  "floorAddr": 0 },
-    0xa: { "id": 0xa, "name": "Underwater (Ocean Realm)", "code": "UnderOcean",  "isDungeon": 0,  "floorAddr": 0 },
-    0x1b: { "id": 0x1b, "name": "In the Ocean Temple", "code": "OceanTemple",  "isDungeon": 1,  "floorAddr": 0 },
-    0x20: { "id": 0x20, "name": "In Phytops’s lair…", "code": "Phytops",  "isDungeon": 0,  "floorAddr": 0 },
-    0x46: { "id": 0x46, "name": "Competing in Take ‘Em All On! - Level 1", "code": "Gauntlet1",  "isDungeon": 0,  "floorAddr": 0 },
-    0x4b: { "id": 0x4b, "name": "Fighting Stagnox in Take ‘Em All On!", "code": "GauntletStagnox",  "isDungeon": 0,  "floorAddr": 0 },
-    0x48: { "id": 0x48, "name": "Competing in Take ‘Em All On! - Level 2", "code": "Gauntlet2",  "isDungeon": 0,  "floorAddr": 0 },
-    0x7: { "id": 0x7, "name": "In Hyrule Field (Fire Realm)", "code": "FireRealm",  "isDungeon": 0,  "floorAddr": 0 },
-    0x3c: { "id": 0x3c, "name": "At the Goron Target Range", "code": "TargetRange",  "isDungeon": 0,  "floorAddr": 0 },
-    0x2e: { "id": 0x2e, "name": "In Goron Village", "code": "Goron",  "isDungeon": 0,  "floorAddr": 0 },
-    0x2d: { "id": 0x2d, "name": "Walking the path to the Altar of the Mountain Goddess", "code": "AltarPath",  "isDungeon": 0,  "floorAddr": 0 },
-    0x33: { "id": 0x33, "name": "In the Fire Sanctuary", "code": "FireSanctuary",  "isDungeon": 0,  "floorAddr": 0 },
-    0x3f: { "id": 0x3f, "name": "At Snowdrift or Slippery Station", "code": "Snowdrift",  "isDungeon": 0,  "floorAddr": 0 },
-    0x1c: { "id": 0x1c, "name": "In the Fire Temple", "code": "FireTemple",  "isDungeon": 0,  "floorAddr": 0 },
-    0x21: { "id": 0x21, "name": "In Cragma’s lair…", "code": "Cragma",  "isDungeon": 0,  "floorAddr": 0 },
-    0x23: { "id": 0x23, "name": "In Byrne’s lair…", "code": "Byrne",  "isDungeon": 0,  "floorAddr": 0 },
-    0x15: { "id": 0x15, "name": "At the top of the Tower of Spirits", "code": "TowerTop",  "isDungeon": 0,  "floorAddr": 0 },
-    0x16: { "id": 0x16, "name": "At the top of the Tower of Spirits", "code": "TowerTop2",  "isDungeon": 0,  "floorAddr": 0 },
-    0x44: { "id": 0x44, "name": "Aboard the Spirit Train", "code": "Train2",  "isDungeon": 0,  "floorAddr": 0 },
-    0xe: { "id": 0xe, "name": "Competing at the Goron Target Range", "code": "TargetRangeGame",  "isDungeon": 0,  "floorAddr": 0 },
-    0x40: { "id": 0x40, "name": "At Disorientation Station", "code": "Disorientation",  "isDungeon": 0,  "floorAddr": 0 },
-    0x3a: { "id": 0x3a, "name": "At the Pirate Hideout", "code": "Pirate",  "isDungeon": 0,  "floorAddr": 0 },
-    0x3b: { "id": 0x3b, "name": "Inside the Pirate Hideout", "code": "PirateMinigame",  "isDungeon": 0,  "floorAddr": 0 },
+    0x2f: { "id": 0x2f, "name": "In Agoda Village", "code": "Agoda", },
+    0x8: { "id": 0x8, "name": "In Hyrule Field (Forest Realm)", "code": "ForestRealm", },
+    0x29: { "id": 0x29, "name": "In Castle Town", "code": "CastleTown", },
+    0x28: { "id": 0x28, "name": "Inside Hyrule Castle", "code": "Castle", },
+    0x50: { "id": 0x50, "name": "Watching a cutscene…", "code": "Cutscene", },
+    0x18: { "id": 0x18, "name": "In the Tunnel to the Tower", "code": "Tunnel", },
+    0x14: { "id": 0x14, "name": "In the Tower of Spirits lobby", "code": "Tower", },
+    0x17: { "id": 0x17, "name": "Climbing the Spiral Staircase", "code": "Staircase", },
+    0x13: { "id": 0x13, "name": "In the Tower of Spirits", "code": "TowerDungeon", },
+    0x4: { "id": 0x4, "name": "In Hyrule Field (Forest Realm)", "code": "ForestField2", },
+    0x2a: { "id": 0x2a, "name": "In Whittleton", "code": "Whittleton", },
+    0x38: { "id": 0x38, "name": "In the wilds outside Whittleton", "code": "WhittletonWilds", },
+    0x9: { "id": 0x9, "name": "Stumbling through the Lost Woods", "code": "LostWoods", },
+    0x30: { "id": 0x30, "name": "In the Forest Sanctuary", "code": "ForestSanctuary", },
+    0x19: { "id": 0x19, "name": "In the Forest Temple", "code": "ForestTemple", },
+    0x1e: { "id": 0x1e, "name": "In Stagnox’s lair…", "code": "Stagnox", },
+    0xff00: { "id": 0xff00, "name": "On the title screen…", "code": "Title", },
+    0x0: { "id": 0x0, "name": "Starting the game…", "code": "Boot", },
+    0x3e: { "id": 0x3e, "name": "At Rabbitland Rescue", "code": "Rabbit", },
+    0x5: { "id": 0x5, "name": "In Hyrule Field (Snow Realm)", "code": "SnowRealm", },
+    0x2b: { "id": 0x2b, "name": "Anouki Village", "code": "Anouki", },
+    0xb: { "id": 0xb, "name": "In Hyrule Field (Snow Realm – Tunnel)", "code": "SnowTunnel", },
+    0x31: { "id": 0x31, "name": "In the Snow Sanctuary", "code": "SnowSanctuary", },
+    0x35: { "id": 0x35, "name": "At Wellspring Station", "code": "Wellspring", },
+    0x45: { "id": 0x45, "name": "On the side of the tracks…", "code": "Tracks", },
+    0x1a: { "id": 0x1a, "name": "In the Snow Temple", "code": "SnowTemple", },
+    0x1f: { "id": 0x1f, "name": "In Fraaz’s lair…", "code": "Fraaz", },
+    0x37: { "id": 0x37, "name": "At the Trading Post", "code": "Trading", },
+    0x36: { "id": 0x36, "name": "At the Bridge Worker’s Home", "code": "BridgeWorker", },
+    0x6: { "id": 0x6, "name": "In Hyrule Field (Ocean Realm)", "code": "Ocean", },
+    0x2c: { "id": 0x2c, "name": "In Papuchia Village", "code": "Papuchia", },
+    0x32: { "id": 0x32, "name": "In the Ocean Sanctuary", "code": "OceanSanctuary", },
+    0x43: { "id": 0x43, "name": "Fending off intruders in the Spirit Train!", "code": "Train", },
+    0xa: { "id": 0xa, "name": "Underwater (Ocean Realm)", "code": "UnderOcean", },
+    0x1b: { "id": 0x1b, "name": "In the Ocean Temple", "code": "OceanTemple", },
+    0x20: { "id": 0x20, "name": "In Phytops’s lair…", "code": "Phytops", },
+    0x46: { "id": 0x46, "name": "Competing in Take ‘Em All On! - Level 1", "code": "Gauntlet1", },
+    0x4b: { "id": 0x4b, "name": "Fighting Stagnox in Take ‘Em All On!", "code": "GauntletStagnox", },
+    0x48: { "id": 0x48, "name": "Competing in Take ‘Em All On! - Level 2", "code": "Gauntlet2", },
+    0x7: { "id": 0x7, "name": "In Hyrule Field (Fire Realm)", "code": "FireRealm", },
+    0x3c: { "id": 0x3c, "name": "At the Goron Target Range", "code": "TargetRange", },
+    0x2e: { "id": 0x2e, "name": "In Goron Village", "code": "Goron", },
+    0x2d: { "id": 0x2d, "name": "Walking the path to the Altar of the Mountain Goddess", "code": "AltarPath", },
+    0x33: { "id": 0x33, "name": "In the Fire Sanctuary", "code": "FireSanctuary", },
+    0x3f: { "id": 0x3f, "name": "At Snowdrift or Slippery Station", "code": "Snowdrift", },
+    0x1c: { "id": 0x1c, "name": "In the Fire Temple", "code": "FireTemple", },
+    0x21: { "id": 0x21, "name": "In Cragma’s lair…", "code": "Cragma", },
+    0x23: { "id": 0x23, "name": "In Byrne’s lair…", "code": "Byrne", },
+    0x15: { "id": 0x15, "name": "At the top of the Tower of Spirits", "code": "TowerTop", },
+    0x16: { "id": 0x16, "name": "At the top of the Tower of Spirits", "code": "TowerTop2", },
+    0x44: { "id": 0x44, "name": "Aboard the Spirit Train", "code": "Train2", },
+    0xe: { "id": 0xe, "name": "Competing at the Goron Target Range", "code": "TargetRangeGame", },
+    0x40: { "id": 0x40, "name": "At Disorientation Station", "code": "Disorientation", },
+    0x3a: { "id": 0x3a, "name": "At the Pirate Hideout", "code": "Pirate", },
+    0x3b: { "id": 0x3b, "name": "Inside the Pirate Hideout", "code": "PirateMinigame", },
+    0x34: { "id": 0x34, "name": "In the Sand Sanctuary", "code": "SandSanctuary", },
+    0xc: { "id": 0xc, "name": "In Hyrule Field (Ocean Realm – Tunnel)", "code": "OceanTunnel", },
+    0x1d: { "id": 0x1d, "name": "In the Sand Temple", "code": "SandTemple", },
+    0x22: { "id": 0x22, "name": "In Skeldritch’s lair…", "code": "Skeldritch", },
+    0x41: { "id": 0x41, "name": "At the Ends of the Earth Station", "code": "Ends", },
+    0xd: { "id": 0xd, "name": "In Hyrule Field (Fire Realm – Tunnel)", "code": "FireTunnel", },
+    0x3d: { "id": 0x3d, "name": "At Dark Ore Mine", "code": "DarkOre", },
+    0x39: { "id": 0x39, "name": "At Lost at Sea Station", "code": "LostAtSea", },
+    0x4c: { "id": 0x4c, "name": "Fighting Fraaz in Take ‘Em All On!", "code": "GauntletFraaz", },
+    0x4d: { "id": 0x4d, "name": "Fighting Phytops in Take ‘Em All On!", "code": "GauntletPhytops", },
+    0x47: { "id": 0x47, "name": "Competing in Take ‘Em All On! - Level 2", "code": "Gauntlet3", },
 }
 
 function GetLocationByCode(code)
@@ -173,6 +187,24 @@ function IsInLocationWithCode(code)
     location = GetLocationByCode(code)
     return currentLocation() == location["id"]
 }
+
+// RICH PRESENCE
+function CurrentFloor() => byte(0x260008) + 1
+function GetFloorlessLocationList()
+{
+    list = {}
+    for i in locationInfo
+    {
+        location = locationInfo[i]
+        list[location["id"]] = location["name"]
+    }
+    
+    return list
+}
+
+rich_presence_display("{0}",
+    rich_presence_lookup("Location", currentLocation(), GetFloorlessLocationList())
+)
 
 function WasInLocationWithCode(code)
 {
@@ -259,6 +291,7 @@ function completedDuetWithGage() => bit0(0x264CF5)
 function completedDuetWithSteem() => bit1(0x264CF5)
 function completedDuetWithCarben() => bit2(0x264CF5)
 function completedDuetWithEmbrose() => bit3(0x264CF5)
+function completedDuetWithRael() => bit4(0x264cf5)
 
 function hasForestRailmap() => bit7(0x264CF5)
 
@@ -270,6 +303,8 @@ function wasPostmanIntroducedForTheFirstTime() => bit0(0x264CFB)
 // $264D05: Bit 4: Rolled into the tree (ow...)
 // $264D0E: Bit 0: Sand Temple
 //          Bit 6: Rabbit Net
+function sandTempleClear() => bit0(0x264D0E)
+
 // $264D18: Bit 5: Reward for rolling into the tree (ow...)
 // $264D19: Bit 1: Stamp Book
 //          Bit 5: Compass of Light
@@ -356,6 +391,44 @@ function squiddyStrikes() => byte(0x2d35f0)
 // $2d35f1: Squiddy counter. Increments by 1 whenever a Squiddy splits off from the primary
 //          and decreases by 1 whenever a Squiddy despawns.
 function squiddyInstances() => byte(0x2d35f1)
+
+// This function allows the creation of achievements with built-in save protection that deal with a collection of bits being set
+// throughout the game. The schemas for both parameters are as follows:
+//
+// achievements: "name": title
+//               "description": self-explanatory
+//               "points": self-explanatory
+//               "treshold": how many bits in the "addresses" dictionary must be set before this achievement is triggered
+//
+// bits: "addr": the address of the bit to check
+//       "bit": the number of the bit that must be set
+function GenerateSaveProtectedAchievementFromBits(cheevo, bits)
+{
+    bitSet = always_false()
+    resetalt = always_false()
+    description = cheevo["description"]
+
+    for addr in bits
+    {
+        relevantBit = bit(addr["bit"], addr["addr"])
+        bitSet = bitSet || once(relevantBit == 1)
+    
+        // We want to reset the hit counts each time a bit is set in order
+        // to refresh the hitcount state that represents each individual bit.
+        resetalt = resetalt || never(Delta(relevantBit) != relevantBit)
+            && unless(isLoadingSaveFile())
+    }
+
+    // However, we also don't want to do anything if no bit is changed on a given frame
+    // as a save protection measure. A two-frame target is used for the same reason as the above, as well.
+    unlessBitStatesAreIdle = unless(repeated(2, always_true()))
+
+    achievement(title = cheevo["name"], description = description, points = cheevo["points"],
+        trigger = IsInGame()
+            && measured(repeated(cheevo["threshold"], bitSet)) && unlessBitStatesAreIdle
+            && resetalt
+    ) 
+}
 
 // ACHIEVEMENTS
 
@@ -457,6 +530,14 @@ achievement(title = "Duet with the Timpanist",
         && IsInLocationWithCode("FireSanctuary")
 )
 
+// "Duet with the Shawmist"
+achievement(title = "Duet with the Shawmist",
+    description = "Complete your duet with Rael and open the path to the Sand Temple.",
+    points = 3,
+    trigger = WasBitflagSetInGame(completedDuetWithRael())
+        && IsInLocationWithCode("SandSanctuary")
+)
+
 // "Shoo, Fly, Shoo"
 function IsStagnoxDying() => byte(0x31f538) == 0x15
 
@@ -464,6 +545,7 @@ function stagnoxHP() => byte(0x31f534)
 
 forestTemple = GetLocationByCode("ForestTemple")
 gauntlet1 = GetLocationByCode("Gauntlet1")
+gauntlet2 = GetLocationByCode("Gauntlet2")
 
 achievement(title = "Shoo, Fly, Shoo",
     description = "Defeat Stagnox without taking damage.", points = 10,
@@ -474,9 +556,13 @@ achievement(title = "Shoo, Fly, Shoo",
             never(!IsInLocationWithCode("Stagnox")) && unless(IsInLocationWithCode("GauntletStagnox"))
             && once(IsInLocationWithCode("Stagnox") && Delta(currentLocation()) == forestTemple["id"])
             
-            // Take 'Em All On!
+            // Take 'Em All On! - Level 1
             || never(!IsInLocationWithCode("GauntletStagnox")) && unless(IsInLocationWithCode("Stagnox"))
             && once(IsInLocationWithCode("GauntletStagnox") && Delta(currentLocation()) == gauntlet1["id"])
+            
+            // Take 'Em All On! - Level 2
+            || never(!IsInLocationWithCode("GauntletStagnox")) && unless(IsInLocationWithCode("Stagnox"))
+            && once(IsInLocationWithCode("GauntletStagnox") && Delta(currentLocation()) == gauntlet2["id"])
         )
 )
 
@@ -698,9 +784,19 @@ function IsFraazDying() => byte(0x324f78) == 0x3
 snowTemple = GetLocationByCode("SnowTemple")
 achievement(title = "Quick Draw",
     description = "Proceed to Fraaz's third phase before either Fraaz Jr. has a chance to resurrect the other or run away.",
-    points = 3,
-    trigger = once(IsInLocationWithCode("Fraaz") && Delta(currentLocation()) == snowTemple["id"])
-        && IsFraazGoingToPhase3() && never(IsFraazRezzing()) && never(!IsInLocationWithCode("Fraaz"))
+    points = 5,
+    trigger = IsFraazGoingToPhase3() && never(IsFraazRezzing()) &&
+        (
+        // Snow Temple
+        once(IsInLocationWithCode("Fraaz") && Delta(currentLocation()) == snowTemple["id"])
+        && never(!IsInLocationWithCode("Fraaz"))
+        && unless(IsInLocationWithCode("GauntletFraaz"))
+        
+        // Take 'Em All On! - Level 2
+        || once(IsInLocationWithCode("GauntletFraaz") && Delta(currentLocation()) == gauntlet2["id"])
+        && never(!IsInLocationWithCode("GauntletFraaz"))
+        && unless(IsInLocationWithCode("Fraaz"))
+        )
 )
 
 // "Howls from the Tundra"
@@ -791,17 +887,24 @@ frameLimit = SecondsToFrames(timeLimit)
 function phytopsState() => byte(0x31fdb8)
 function PhytopsIsNotFighting() => phytopsState() == 0x0 || phytopsState() == 0x2 || phytopsState() == 0x3
 function PhytopsIsDying() => phytopsState() == 0xe
+gauntlet3 = GetLocationByCode("Gauntlet3")
 
 achievement(title = "Whip It Good",
     description = "Defeat Phytops within " + SecondsToFormat(timeLimit) + ".", points = 5,
     trigger = PhytopsIsDying()
         && never(repeated(frameLimit, frameIncremented())) && unless(IsPaused())
-        && unless(PhytopsIsNotFighting()) && never(!IsInLocationWithCode("Phytops"))
-        && unless(IsTransitioningInBlack())
+        && unless(PhytopsIsNotFighting()) && unless(IsTransitioningInBlack())
+        
         && (
-            always_false() || once(Delta(currentLocation()) == oceanTemple["id"] && IsInLocationWithCode("Phytops"))
             // We're putting the checkpoint target in an alt to make sure the pauses
             // in the core group don't also pause the hit target from being reached.
+            once(
+                Delta(currentLocation()) == oceanTemple["id"] && IsInLocationWithCode("Phytops")
+                || Delta(currentLocation()) == gauntlet3["id"] && IsInLocationWithCode("GauntletPhytops")
+            )
+            
+            || never(!IsInLocationWithCode("Phytops")) && unless(IsInLocationWithCode("GauntletPhytops")) && always_false()
+            || never(!IsInLocationWithCode("GauntletPhytops")) && unless(IsInLocationWithCode("Phytops")) && always_false()
         )
 )
 
@@ -840,6 +943,7 @@ forceGemAddresses = [
     { "addr": 0x264d01, "bit": 0 },
     { "addr": 0x264d01, "bit": 1 },
     { "addr": 0x264d01, "bit": 2 },
+    { "addr": 0x264d01, "bit": 3 },
     { "addr": 0x264d01, "bit": 4 },
     { "addr": 0x264d01, "bit": 5 },
     { "addr": 0x264d01, "bit": 6 },
@@ -849,63 +953,46 @@ forceGemAddresses = [
     { "addr": 0x264d02, "bit": 2 },
     { "addr": 0x264d02, "bit": 3 },
     { "addr": 0x264d02, "bit": 4 },
+    { "addr": 0x264d02, "bit": 5 },
     { "addr": 0x264d02, "bit": 6 },
     { "addr": 0x264d02, "bit": 7 },
     { "addr": 0x264d03, "bit": 0 },
+    { "addr": 0x264d03, "bit": 1 },
     { "addr": 0x264d03, "bit": 2 },
     { "addr": 0x264d03, "bit": 3 },
     { "addr": 0x264d08, "bit": 6 }
 ]
 
 forceGemAchievements = [
-    { "name": "Help Wanted", "description": "", "threshold": 5, "points": 3 },
-    { "name": "The Gift of Charity", "description": "", "threshold": 10, "points": 10 },
-    { "name": "Premier Engineer", "description": "Collect all Force Gems and completely restore the Spirit Tracks.", "threshold": 20, "points": 25 }
+    { "name": "Help Wanted", "description": "Collect 5 Force Gems.", "threshold": 5, "points": 3 },
+    { "name": "The Gift of Charity", "description": "Collect 10 Force Gems.", "threshold": 10, "points": 10 },
+    { "name": "Premier Engineer", "description": "Collect all Force Gems and completely restore the Spirit Tracks.", "threshold": 21, "points": 25 }
 ]
 
 for cheevo in forceGemAchievements
 {
-    forceGemObtained = always_false()
-    resetalt = always_false()
-    description = cheevo["description"]
-    
-    if (description == "")
-    {
-        description = "Collect " + cheevo["threshold"] + " Force Gems."
-    }
-    
-    for addr in forceGemAddresses
-    {
-        relevantBit = bit(addr["bit"], addr["addr"])
-        forceGemObtained = forceGemObtained || once(relevantBit == 1)
-        
-        // Like the above, we want to reset the hit counts each time a rabbit is rescued
-        // to refresh the hitcount state that represents each individual rabbit being rescued.
-        resetalt = resetalt || never(Delta(relevantBit) != relevantBit)
-            && unless(isLoadingSaveFile())
-    }
-    
-    // Also like the above, we also don't want to do anything if no rabbit is rescued on a frame
-    // as a save protection measure. A two-frame target is used for the same reason as the above, as well.
-    unlessRabbitStatesAreIdle = unless(repeated(2, always_true()))
-    
-    achievement(title = cheevo["name"], description = description, points = cheevo["points"],
-        trigger = IsInGame()
-            && measured(repeated(cheevo["threshold"], forceGemObtained)) && unlessRabbitStatesAreIdle
-            && resetalt
-    )
+    GenerateSaveProtectedAchievementFromBits(cheevo, forceGemAddresses)
 }
 
 // Take 'Em All On!
 function GauntletCountingDown() => gauntletState() == 0x1
 function StartedGauntlet() => gauntletState() == 0x2
 function ForfeitedGauntlet() => gauntletState() == 0x4
+function GauntletLevel1DoorState() => bit3(0x264d17)
+function GauntletLevel2DoorState() => bit4(0x264d17)
+function GauntletLevel3DoorState() => bit5(0x264d17)
 
-for level in range(1, 2)
+gauntletLevels = [
+    { "level": 1, "doorAddr": GauntletLevel1DoorState() },
+    { "level": 2, "doorAddr": GauntletLevel2DoorState() },
+    { "level": 3, "doorAddr": GauntletLevel3DoorState() }
+]
+
+for level in gauntletLevels
 {
-    leaderboard(title = "Take 'Em All On! - Level " + level,
-        description = "Reach the end of Take 'Em All On! Level " + level + " and defeat the boss as quickly as you can!",
-        start = IsInLocationWithCode("Gauntlet" + level) && GauntletCountingDown(),
+    leaderboard(title = "Take 'Em All On! - Level " + level["level"],
+        description = "Reach the end of Take 'Em All On! Level " + level["level"] + " as quickly as you can!",
+        start = level["doorAddr"] == 0x1 && GauntletCountingDown(),
         cancel = ForfeitedGauntlet(),
         submit = Delta(gauntletState()) == 0x2 && gauntletState() == 0x0,
         value = gauntletTime() * 2 // Multiply it by 2 to convert the value to its 60fps equivalent so it properly calculates on the RA leaderboard.
@@ -916,15 +1003,18 @@ for level in range(1, 2)
 totalTreasureTypes = 16
 treasureRegistered = always_false()
 resetalt = always_false()
+allTreasureRegistered = always_true()
 
 for i in range(0, totalTreasureTypes - 1)
 {
-    offset = demonFossilCountAddr + i * 2
-    treasureRegistered = treasureRegistered || once(word(offset) != 0xffff)
+    treasureCount = word(demonFossilCountAddr + i * 2)
+    treasureTypeRegistered = treasureCount != 0xffff
+    treasureTypeWasUnregistered = Delta(treasureCount) == 0xffff
+    allTreasureRegistered = allTreasureRegistered && treasureTypeRegistered
     
     // We want to reset the hit counts each time a treasure is registered in order to
     // reflect the state of registrations in memory.
-    resetalt = resetalt || never(Delta(word(offset)) != word(offset))
+    resetalt = resetalt || never(treasureTypeWasUnregistered && treasureTypeRegistered)
         && unless(isLoadingSaveFile())
 }
 
@@ -936,7 +1026,7 @@ unlessTreasureStatesAreIdle = unless(repeated(2, always_true()))
 
 achievement(title = "Treasure Hunter", description = "Obtain one of every type of treasure.", points = 5,
     trigger = IsInGame()
-        && repeated(totalTreasureTypes, treasureRegistered) && unlessTreasureStatesAreIdle
+        && allTreasureRegistered && unlessTreasureStatesAreIdle
         && resetalt
 )
 
@@ -1016,7 +1106,7 @@ leaderboard(title = "Goron Target Range",
 )
 
 // "Sharpshooter"
-comboTarget = 25
+comboTarget = 35
 function pirateHideoutComboLength() => byte(0x16422a)
 function pirateHideoutMultiplier() => byte(0x164228)
 achievement(title = "Sharpshooter", points = 10,
@@ -1027,55 +1117,51 @@ achievement(title = "Sharpshooter", points = 10,
 )
 
 // "Keep Both Eyes Open"
-if (1 == 0)
-{
- scoreTarget = 4200
-function pirateHideoutIsCountingDown() => byte(0x163fe0) == 0x1
+scoreTarget = 4500
+function pirateHideoutResult() => byte(0x163fe4)
+function PirateHideoutIsCountingDown() => pirateHideoutState() == 0x1
+function DidLosePirateHideout() => pirateHideoutResult() == 0x2 || pirateHideoutResult() == 0x1
+function PirateHideoutIsOver() => pirateHideoutState() == 0x5
 achievement(title = "Keep Both Eyes Open", points = 10,
     description = "Get a score of " + scoreTarget + " or more in the Pirate Hideout minigame.",
-    trigger = IsInLocationWithCode("PirateMinigame")
-    
-)   
-}
-
-// RICH PRESENCE
-function CurrentFloor() => byte(0x260008) + 1
-function GetFloorlessLocationList()
-{
-    list = {}
-    for i in locationInfo
-    {
-        location = locationInfo[i]
-        if (location["isDungeon"] == 0)
-        {
-            list[location["id"]] = location["name"]
-        }
-    }
-    
-    return list
-}
-
-// Get any location with floors
-for i in locationInfo
-{
-    location = locationInfo[i]
-    if (location["isDungeon"] == 1)
-    {
-        floor = 0
-        if (location["floorAddr"] == 0)
-        {
-            floor = CurrentFloor()
-        }
-        else // Sometimes, the generic floor value doesn't cut it. If we find an alternative, we can use that instead.
-        {
-            floor = byte(location["floorAddr"])
-        }
-        rich_presence_conditional_display(IsInLocationWithCode(location["code"]), "{0}, Floor {1}", location["name"],
-            rich_presence_value("FloorNumber", floor)
-        )
-    }
-}
-
-rich_presence_display("{0}",
-    rich_presence_lookup("Location", currentLocation(), GetFloorlessLocationList())
+    trigger = IsInLocationWithCode("PirateMinigame") && PirateHideoutIsOver()
+        && never(DidLosePirateHideout()) && pirateHideoutScore() >= scoreTarget
 )
+
+leaderboard(title = "Pirate Hideout",
+    description = "Get the highest score you can!",
+    start = IsInLocationWithCode("PirateMinigame") && PirateHideoutIsCountingDown(),
+    cancel = DidLosePirateHideout() && PirateHideoutIsOver(),
+    submit = PirateHideoutIsOver() && IsInLocationWithCode("PirateMinigame"),
+    value = pirateHideoutScore()
+)
+
+// "Echoes from the Desert"
+achievement(title = "Echoes from the Desert", points = 5,
+    description = "Clear the Sand Temple.",
+    trigger = IsInLocationWithCode("Skeldritch") && WasBitflagSetInGame(sandTempleClear())
+)
+
+// "Crabshell Cracker"
+rocktiteAddresses = [
+    { "addr": 0x264d00, "bit": 2 }, // Snow
+    { "addr": 0x264d0d, "bit": 4 }, // Ocean
+    { "addr": 0x264d4a, "bit": 0 } // Fire
+]
+
+GenerateSaveProtectedAchievementFromBits({
+    "name": "Crabshell Cracker",
+    "description": "Defeat all three Rocktites.",
+    "points": 10,
+    "threshold": 3
+}, rocktiteAddresses)
+
+// "Where We're Going, We Don't Need Tracks"
+gateAddresses = [
+    { "addr": 0x264d24, "bit": 3 },
+    { "addr": 0x264d24, "bit": 4 },
+    { "addr": 0x264d24, "bit": 5 },
+    { "addr": 0x264d24, "bit": 7 },
+    { "addr": 0x264d25, "bit": 0 },
+    { "addr": 0x264d25, "bit": 2 },
+]
