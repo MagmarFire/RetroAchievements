@@ -139,9 +139,9 @@ locationInfo = {
     0xa: { "id": 0xa, "name": "Underwater (Ocean Realm)", "code": "UnderOcean", },
     0x1b: { "id": 0x1b, "name": "In the Ocean Temple", "code": "OceanTemple", },
     0x20: { "id": 0x20, "name": "In Phytops’s lair…", "code": "Phytops", },
-    0x46: { "id": 0x46, "name": "Competing in Take ‘Em All On! - Level 1", "code": "Gauntlet1", },
+    0x46: { "id": 0x46, "name": "Competing in Take ‘Em All On!", "code": "Gauntlet1", },
     0x4b: { "id": 0x4b, "name": "Fighting Stagnox in Take ‘Em All On!", "code": "GauntletStagnox", },
-    0x48: { "id": 0x48, "name": "Competing in Take ‘Em All On! - Level 2", "code": "Gauntlet2", },
+    0x48: { "id": 0x48, "name": "Competing in Take ‘Em All On!", "code": "Gauntlet2", },
     0x7: { "id": 0x7, "name": "In Hyrule Field (Fire Realm)", "code": "FireRealm", },
     0x3c: { "id": 0x3c, "name": "At the Goron Target Range", "code": "TargetRange", },
     0x2e: { "id": 0x2e, "name": "In Goron Village", "code": "Goron", },
@@ -168,7 +168,7 @@ locationInfo = {
     0x39: { "id": 0x39, "name": "At Lost at Sea Station", "code": "LostAtSea", },
     0x4c: { "id": 0x4c, "name": "Fighting Fraaz in Take ‘Em All On!", "code": "GauntletFraaz", },
     0x4d: { "id": 0x4d, "name": "Fighting Phytops in Take ‘Em All On!", "code": "GauntletPhytops", },
-    0x47: { "id": 0x47, "name": "Competing in Take ‘Em All On! - Level 2", "code": "Gauntlet3", },
+    0x47: { "id": 0x47, "name": "Competing in Take ‘Em All On!", "code": "Gauntlet3", },
 }
 
 function GetLocationByCode(code)
