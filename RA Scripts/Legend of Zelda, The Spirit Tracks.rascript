@@ -3,6 +3,9 @@
 
 // UTILITY
 
+// The system timer uses 60fps, but Spirit Tracks calculates time for its actual minigame timers assuming 30fps instead, for some reason.
+framesPerSecond = 30
+
 function Delta(addr) => prev(addr)
 
 function WasBitflagSetInGame(bit)
@@ -169,6 +172,9 @@ locationInfo = {
     0x4c: { "id": 0x4c, "name": "Fighting Fraaz in Take ‘Em All On!", "code": "GauntletFraaz", },
     0x4d: { "id": 0x4d, "name": "Fighting Phytops in Take ‘Em All On!", "code": "GauntletPhytops", },
     0x47: { "id": 0x47, "name": "Competing in Take ‘Em All On!", "code": "Gauntlet3", },
+    0x4a: { "id": 0x4a, "name": "Competing in Take ‘Em All On!", "code": "Gauntlet4", },
+    0x49: { "id": 0x49, "name": "Competing in Take ‘Em All On!", "code": "Gauntlet5", },
+    0x4e: { "id": 0x4e, "name": "Fighting Cragma in Take ‘Em All On!", "code": "GauntletCragma", },
 }
 
 function GetLocationByCode(code)
@@ -546,6 +552,7 @@ function stagnoxHP() => byte(0x31f534)
 forestTemple = GetLocationByCode("ForestTemple")
 gauntlet1 = GetLocationByCode("Gauntlet1")
 gauntlet2 = GetLocationByCode("Gauntlet2")
+gauntlet3 = GetLocationByCode("Gauntlet3")
 
 achievement(title = "Shoo, Fly, Shoo",
     description = "Defeat Stagnox without taking damage.", points = 10,
@@ -556,14 +563,20 @@ achievement(title = "Shoo, Fly, Shoo",
             never(!IsInLocationWithCode("Stagnox")) && unless(IsInLocationWithCode("GauntletStagnox"))
             && once(IsInLocationWithCode("Stagnox") && Delta(currentLocation()) == forestTemple["id"])
             
-            // Take 'Em All On! - Level 1
+            // Take 'Em All On!
             || never(!IsInLocationWithCode("GauntletStagnox")) && unless(IsInLocationWithCode("Stagnox"))
-            && once(IsInLocationWithCode("GauntletStagnox") && Delta(currentLocation()) == gauntlet1["id"])
+            && 
+            (
+            // Level 1
+            once(IsInLocationWithCode("GauntletStagnox") && Delta(currentLocation()) == gauntlet1["id"])
             
-            // Take 'Em All On! - Level 2
-            || never(!IsInLocationWithCode("GauntletStagnox")) && unless(IsInLocationWithCode("Stagnox"))
-            && once(IsInLocationWithCode("GauntletStagnox") && Delta(currentLocation()) == gauntlet2["id"])
-        )
+            // Level 2
+            || once(IsInLocationWithCode("GauntletStagnox") && Delta(currentLocation()) == gauntlet2["id"])
+            
+            // Level 3
+            || once(IsInLocationWithCode("GauntletStagnox") && Delta(currentLocation()) == gauntlet3["id"])
+            )
+       )
 )
 
 // "Whispers from the Forest"
@@ -782,6 +795,7 @@ function IsFraazGoingToPhase3() => byte(0x324f78) == 0x5
 function IsFraazDying() => byte(0x324f78) == 0x3
 
 snowTemple = GetLocationByCode("SnowTemple")
+gauntletStagnox = GetLocationByCode("GauntletStagnox")
 achievement(title = "Quick Draw",
     description = "Proceed to Fraaz's third phase before either Fraaz Jr. has a chance to resurrect the other or run away.",
     points = 5,
@@ -794,6 +808,11 @@ achievement(title = "Quick Draw",
         
         // Take 'Em All On! - Level 2
         || once(IsInLocationWithCode("GauntletFraaz") && Delta(currentLocation()) == gauntlet2["id"])
+        && never(!IsInLocationWithCode("GauntletFraaz"))
+        && unless(IsInLocationWithCode("Fraaz"))
+        
+        // Take 'Em All On! - Level 3
+        || once(IsInLocationWithCode("GauntletFraaz") && Delta(currentLocation()) == gauntletStagnox["id"])
         && never(!IsInLocationWithCode("GauntletFraaz"))
         && unless(IsInLocationWithCode("Fraaz"))
         )
@@ -882,12 +901,12 @@ if (1 == 0)
 
 // "Whip It Good"
 oceanTemple = GetLocationByCode("OceanTemple")
-timeLimit = 165
+gauntletFraaz = GetLocationByCode("GauntletFraaz")
+timeLimit = 135
 frameLimit = SecondsToFrames(timeLimit)
 function phytopsState() => byte(0x31fdb8)
 function PhytopsIsNotFighting() => phytopsState() == 0x0 || phytopsState() == 0x2 || phytopsState() == 0x3
 function PhytopsIsDying() => phytopsState() == 0xe
-gauntlet3 = GetLocationByCode("Gauntlet3")
 
 achievement(title = "Whip It Good",
     description = "Defeat Phytops within " + SecondsToFormat(timeLimit) + ".", points = 5,
@@ -901,6 +920,7 @@ achievement(title = "Whip It Good",
             once(
                 Delta(currentLocation()) == oceanTemple["id"] && IsInLocationWithCode("Phytops")
                 || Delta(currentLocation()) == gauntlet3["id"] && IsInLocationWithCode("GauntletPhytops")
+                || Delta(currentLocation()) == gauntletFraaz["id"] && IsInLocationWithCode("GauntletPhytops")
             )
             
             || never(!IsInLocationWithCode("Phytops")) && unless(IsInLocationWithCode("GauntletPhytops")) && always_false()
@@ -922,7 +942,7 @@ function WhipRaceJustEnded() => whipRaceState() == 0x3
 function WhipRaceIsOver() => whipRaceState() == 0x4
 function WhipRaceVictory() => reasonWhipRaceEnded() != 0x1 && reasonWhipRaceEnded() != 0x2
 timeLimit = 65
-framesPerSecond = 30 // The system timer uses 60fps, but Spirit Tracks calculates time assuming 30fps instead, for some reason.
+
 achievement(title = "Watch out for That Tree!", points = 25,
     description = "Finish the whip race within " + SecondsToFormat(timeLimit) + ".",
     trigger = IsInLocationWithCode("WhittletonWilds") && whipRaceTime() <= timeLimit * framesPerSecond
@@ -983,20 +1003,27 @@ function GauntletLevel2DoorState() => bit4(0x264d17)
 function GauntletLevel3DoorState() => bit5(0x264d17)
 
 gauntletLevels = [
-    { "level": 1, "doorAddr": GauntletLevel1DoorState() },
-    { "level": 2, "doorAddr": GauntletLevel2DoorState() },
-    { "level": 3, "doorAddr": GauntletLevel3DoorState() }
+    { "level": 1, "doorAddr": GauntletLevel1DoorState(), "timeLimit": 370, "name": "Blitz upon the Few", "points": 5 },
+    { "level": 2, "doorAddr": GauntletLevel2DoorState(), "timeLimit": 730, "name": "Blitz upon the Many", "points": 10 },
+    { "level": 3, "doorAddr": GauntletLevel3DoorState(), "timeLimit": 600, "name": "Blitz upon All", "points": 10 }
 ]
 
 for level in gauntletLevels
 {
+    achievement(title = level["name"], points = level["points"],
+        description = "Complete Level " + level["level"] +
+            " of Take 'Em All On! with an in-game time of " + SecondsToFormat(level["timeLimit"]) + " or less.",
+        trigger = level["doorAddr"] == 0x1 && Delta(gauntletState()) == 0x2 && gauntletState() == 0x0
+            && gauntletTime() / framesPerSecond <= level["timeLimit"]
+    )
+    
     leaderboard(title = "Take 'Em All On! - Level " + level["level"],
         description = "Reach the end of Take 'Em All On! Level " + level["level"] + " as quickly as you can!",
         start = level["doorAddr"] == 0x1 && GauntletCountingDown(),
         cancel = ForfeitedGauntlet(),
         submit = Delta(gauntletState()) == 0x2 && gauntletState() == 0x0,
         value = gauntletTime() * 2 // Multiply it by 2 to convert the value to its 60fps equivalent so it properly calculates on the RA leaderboard.
-    ) 
+    )
 }
 
 // "Treasure Hunter"
@@ -1052,12 +1079,21 @@ achievement(title = "Kiss and Cry", points = 10,
 
 // "Be Efficient"
 function IsCragmaDying() => byte(0x3222c8) == 0xc
+function IsGauntletCragmaDying() => byte(0x3222e8) == 0xc
 arrowLimit = 20
 
 achievement(title = "Be Efficient", points = 25,
     description = "Defeat Cragma without using any more than " + arrowLimit + " arrows.",
-    trigger = once(WasInLocationWithCode("FireTemple") && IsInLocationWithCode("Cragma"))
-        && never(!IsInLocationWithCode("Cragma")) && IsCragmaDying() && never(repeated(arrowLimit + 1, Delta(arrows()) > arrows()))
+    trigger = never(repeated(arrowLimit + 1, Delta(arrows()) > arrows()))
+        && (
+            // Fire Temple
+            IsCragmaDying() && once(WasInLocationWithCode("FireTemple") && IsInLocationWithCode("Cragma"))
+            && never(!IsInLocationWithCode("Cragma")) && unless(IsInLocationWithCode("GauntletCragma"))
+            
+            // Take 'Em All On!
+            || IsGauntletCragmaDying() && once(WasInLocationWithCode("GauntletPhytops") && IsInLocationWithCode("GauntletCragma"))
+            && never(!IsInLocationWithCode("GauntletCragma")) && unless(IsInLocationWithCode("Cragma"))
+        )
 )
 
 // "Rumbles from the Volcano"
