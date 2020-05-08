@@ -175,6 +175,7 @@ locationInfo = {
     0x4a: { "id": 0x4a, "name": "Competing in Take ‘Em All On!", "code": "Gauntlet4", },
     0x49: { "id": 0x49, "name": "Competing in Take ‘Em All On!", "code": "Gauntlet5", },
     0x4e: { "id": 0x4e, "name": "Fighting Cragma in Take ‘Em All On!", "code": "GauntletCragma", },
+    0x4f: { "id": 0x4f, "name": "Fighting Skeldritch in Take ‘Em All On!", "code": "GauntletSkeldritch", },
 }
 
 function GetLocationByCode(code)
@@ -231,10 +232,10 @@ function currentLocationAfterLoad() => word(0x261654)
 // $262060: Current Location (EU)
 // $262074: Location that will load (EU)
 
-// $26479C: Current HP(?)
+// $26479C: Current HP
 function currentHP() => byte(0x26479C)
 
-// $26479D: Max HP(?)
+// $26479D: Max HP
 function maxHP() => byte(0x26479D)
 
 // $2648F8: Currently equipped item
@@ -1005,15 +1006,17 @@ function GauntletLevel3DoorState() => bit5(0x264d17)
 gauntletLevels = [
     { "level": 1, "doorAddr": GauntletLevel1DoorState(), "timeLimit": 370, "name": "Blitz upon the Few", "points": 5 },
     { "level": 2, "doorAddr": GauntletLevel2DoorState(), "timeLimit": 730, "name": "Blitz upon the Many", "points": 10 },
-    { "level": 3, "doorAddr": GauntletLevel3DoorState(), "timeLimit": 600, "name": "Blitz upon All", "points": 10 }
+    { "level": 3, "doorAddr": GauntletLevel3DoorState(), "timeLimit": 1650, "name": "Blitz upon All", "points": 25 }
 ]
+
+function GauntletIsComplete() => Delta(gauntletState()) == 0x2 && gauntletState() == 0x0
 
 for level in gauntletLevels
 {
     achievement(title = level["name"], points = level["points"],
         description = "Complete Level " + level["level"] +
             " of Take 'Em All On! with an in-game time of " + SecondsToFormat(level["timeLimit"]) + " or less.",
-        trigger = level["doorAddr"] == 0x1 && Delta(gauntletState()) == 0x2 && gauntletState() == 0x0
+        trigger = level["doorAddr"] == 0x1 && GauntletIsComplete()
             && gauntletTime() / framesPerSecond <= level["timeLimit"]
     )
     
@@ -1021,10 +1024,27 @@ for level in gauntletLevels
         description = "Reach the end of Take 'Em All On! Level " + level["level"] + " as quickly as you can!",
         start = level["doorAddr"] == 0x1 && GauntletCountingDown(),
         cancel = ForfeitedGauntlet(),
-        submit = Delta(gauntletState()) == 0x2 && gauntletState() == 0x0,
+        submit = GauntletIsComplete(),
         value = gauntletTime() * 2 // Multiply it by 2 to convert the value to its 60fps equivalent so it properly calculates on the RA leaderboard.
     )
 }
+
+// "Walk It Off"
+achievement(title = "Walk It Off", points = 10,
+    description = "Complete Level 3 of Take 'Em All On! without recovering any life energy.",
+    trigger = GauntletLevel3DoorState() == 0x1 && GauntletIsComplete()
+        && once(WasInLocationWithCode("CastleTown") && IsInLocationWithCode("Gauntlet2"))
+        && never(Delta(currentHP()) < currentHP())
+)
+
+// "Enemy Without"
+function darkLinkState() => byte(0x326e18)
+function DarkLinkIsDead() => darkLinkState() == 0x15
+achievement(title = "Enemy Without", points = 5,
+    description = "Defeat Dark Link.",
+    trigger = IsInLocationWithCode("Gauntlet5") && DarkLinkIsDead()
+        || GauntletLevel3DoorState() == 0x1 && GauntletIsComplete() // Adding this as a contingency measure, in case the Dark Link addresses are dynamic.
+)
 
 // "Treasure Hunter"
 totalTreasureTypes = 16
@@ -1192,12 +1212,27 @@ GenerateSaveProtectedAchievementFromBits({
     "threshold": 3
 }, rocktiteAddresses)
 
+// "Heartthrob"
+achievement(title = "Heartthrob", points = 5,
+    description = "Collect all thirteen Heart Containers.",
+    trigger = Delta(maxHP()) == 0x3c && maxHP() == 0x40
+)
+
 // "Where We're Going, We Don't Need Tracks"
 gateAddresses = [
     { "addr": 0x264d24, "bit": 3 },
     { "addr": 0x264d24, "bit": 4 },
     { "addr": 0x264d24, "bit": 5 },
+    { "addr": 0x264d24, "bit": 6 },
     { "addr": 0x264d24, "bit": 7 },
     { "addr": 0x264d25, "bit": 0 },
+    { "addr": 0x264d25, "bit": 1 },
     { "addr": 0x264d25, "bit": 2 },
 ]
+
+GenerateSaveProtectedAchievementFromBits({
+    "name": "Where We're Going, We Don't Need Tracks",
+    "description": "Activate all Spacetime Gates.",
+    "points": 5,
+    "threshold": 8
+}, gateAddresses)
