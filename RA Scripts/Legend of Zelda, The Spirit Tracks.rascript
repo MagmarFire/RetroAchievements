@@ -1236,3 +1236,14 @@ GenerateSaveProtectedAchievementFromBits({
     "points": 5,
     "threshold": 8
 }, gateAddresses)
+
+// "The Art of War"
+GenerateSaveProtectedAchievementFromBits({
+    "name": "The Art of War",
+    "description": "Obtain both Swordsman's Scrolls.",
+    "points": 5,
+    "threshold": 2
+}, [
+    { "addr": 0x264902, "bit": 4 },
+    { "addr": 0x264902, "bit": 5 }
+])
