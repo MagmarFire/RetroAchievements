@@ -31,6 +31,9 @@ function IsInBattle() => battleMarker() == 0x1021
 // $0badae: Total items in inventory
 function itemsInInventory() => byte(0x0badae)
 
+// $0bac3c: Tickets earned
+function ticketsEarned() => byte(0x0bac3c)
+
 achievement(
     title = "Just One More!", description = "Perform your first Addition.", points = 1,
     id = 94789, badge = "107881", published = "1/15/2020 11:23:20 PM", modified = "2/13/2020 5:18:17 AM",
@@ -389,14 +392,11 @@ achievement(
                (byte(0x1B81A0) == 0x03 && byte(0x0BAC60) > 0x00))
 )
 
+// Refactored as of 27492
 achievement(
     title = "Threading the Needle", description = "Complete the Obstacle Course minigame.", points = 10,
-    id = 94801, badge = "106744", published = "1/15/2020 11:26:37 PM", modified = "2/5/2020 12:15:28 AM",
-    trigger = dword(0x052C30) == 0x0000027F && byte(0x0BC080) == 0x01 &&
-              ((dword(0x1AA618) >= 0x000000F0 && dword(0x1AA618) <= 0x000000F8 && dword(0x1AA684) >= 0x0000015B && 
-                dword(0x1AA684) <= 0x0000016A) ||
-               (word(0x1A9ACA) >= 0x00F0 && word(0x1A9ACA) <= 0x00F8 && word(0x1A9AC6) >= 0x015B && 
-                word(0x1A9AC6) <= 0x016A))
+    id = 94801, badge = "106744", published = "1/15/2020 11:26:37 PM", modified = "5/10/2020 01:43:00 AM",
+    trigger = mapId() == 0x0000027F && Delta(ticketsEarned()) < ticketsEarned()
 )
 
 achievement(
