@@ -168,7 +168,7 @@ locationInfo = {
     0x41: { "id": 0x41, "name": "At the Ends of the Earth Station", "code": "Ends", },
     0xd: { "id": 0xd, "name": "In Hyrule Field (Fire Realm – Tunnel)", "code": "FireTunnel", },
     0x3d: { "id": 0x3d, "name": "At Dark Ore Mine", "code": "DarkOre", },
-    0x39: { "id": 0x39, "name": "At Lost at Sea Station", "code": "LostAtSea", },
+    0x39: { "id": 0x39, "name": "At Lost at Sea Station or in the wilds outside Papuchia Village", "code": "LostAtSea", },
     0x4c: { "id": 0x4c, "name": "Fighting Fraaz in Take ‘Em All On!", "code": "GauntletFraaz", },
     0x4d: { "id": 0x4d, "name": "Fighting Phytops in Take ‘Em All On!", "code": "GauntletPhytops", },
     0x47: { "id": 0x47, "name": "Competing in Take ‘Em All On!", "code": "Gauntlet3", },
@@ -176,6 +176,13 @@ locationInfo = {
     0x49: { "id": 0x49, "name": "Competing in Take ‘Em All On!", "code": "Gauntlet5", },
     0x4e: { "id": 0x4e, "name": "Fighting Cragma in Take ‘Em All On!", "code": "GauntletCragma", },
     0x4f: { "id": 0x4f, "name": "Fighting Skeldritch in Take ‘Em All On!", "code": "GauntletSkeldritch", },
+    0xf: { "id": 0xf, "name": "In the Dark Realm", "code": "DarkRealm", },
+    0x10: { "id": 0x10, "name": "Confronting the Demon Train", "code": "DarkRealm2", },
+    0x11: { "id": 0x11, "name": "Confronting the Demon Train", "code": "DarkRealm3", },
+    0x24: { "id": 0x24, "name": "Confronting Malladus", "code": "DarkRealm4", },
+    0x25: { "id": 0x25, "name": "Confronting Malladus", "code": "Malladus", },
+    0x26: { "id": 0x26, "name": "Playing a duet with Zelda", "code": "Duet", },
+    0x27: { "id": 0x27, "name": "Confronting Malladus once and for all", "code": "Malladus2", },
 }
 
 function GetLocationByCode(code)
@@ -315,6 +322,7 @@ function sandTempleClear() => bit0(0x264D0E)
 // $264D18: Bit 5: Reward for rolling into the tree (ow...)
 // $264D19: Bit 1: Stamp Book
 //          Bit 5: Compass of Light
+function hasCompassOfLight() => bit5(0x264D19)
 
 // $264d25: Bit 6: Silver Card
 //          Bit 7: Gold Card
@@ -493,6 +501,14 @@ achievement(title = "Fire Mapper",
         && IsInLocationWithCode("TowerDungeon")
 )
 
+// "The Tunnel at the End of the Light"
+function darkRealmRevealed() => bit5(0x264cf5)
+achievement(title = "The Tunnel at the End of the Light",
+    description = "Obtain the Compass of Light and reveal the location of the Dark Realm.", points = 3,
+    trigger = WasBitflagSetInGame(darkRealmRevealed())
+        && IsInLocationWithCode("TowerDungeon")
+)
+
 // "Up-and-Coming Musician"
 achievement(title = "Up-and-Coming Musician",
     description = "Learn a song on the Spirit Flute.", points = 1,
@@ -543,6 +559,13 @@ achievement(title = "Duet with the Shawmist",
     points = 3,
     trigger = WasBitflagSetInGame(completedDuetWithRael())
         && IsInLocationWithCode("SandSanctuary")
+)
+
+// "Duet with the Divine"
+achievement(title = "Duet with the Divine",
+    description = "Complete your duet with Zelda and reveal Malladus's weak point.",
+    points = 3,
+    trigger = WasInLocationWithCode("Duet") && IsInLocationWithCode("Malladus2")
 )
 
 // "Shoo, Fly, Shoo"
@@ -900,7 +923,7 @@ if (1 == 0)
     )
 }
 
-// "Whip It Good"
+// "Guide My Hand"
 oceanTemple = GetLocationByCode("OceanTemple")
 gauntletFraaz = GetLocationByCode("GauntletFraaz")
 timeLimit = 135
@@ -909,7 +932,7 @@ function phytopsState() => byte(0x31fdb8)
 function PhytopsIsNotFighting() => phytopsState() == 0x0 || phytopsState() == 0x2 || phytopsState() == 0x3
 function PhytopsIsDying() => phytopsState() == 0xe
 
-achievement(title = "Whip It Good",
+achievement(title = "Guide My Hand",
     description = "Defeat Phytops within " + SecondsToFormat(timeLimit) + ".", points = 5,
     trigger = PhytopsIsDying()
         && never(repeated(frameLimit, frameIncremented())) && unless(IsPaused())
@@ -936,7 +959,7 @@ achievement(title = "Roars from the Sea", points = 5,
         && IsInLocationWithCode("Phytops")
 )
 
-// "Watch out for That Tree!"
+// "Whip It Good"
 function WhipRaceCountingDown() => whipRaceState() == 0x1
 function StartedWhipRace() => whipRaceState() == 0x2
 function WhipRaceJustEnded() => whipRaceState() == 0x3
@@ -944,7 +967,7 @@ function WhipRaceIsOver() => whipRaceState() == 0x4
 function WhipRaceVictory() => reasonWhipRaceEnded() != 0x1 && reasonWhipRaceEnded() != 0x2
 timeLimit = 65
 
-achievement(title = "Watch out for That Tree!", points = 25,
+achievement(title = "Whip It Good", points = 25,
     description = "Finish the whip race within " + SecondsToFormat(timeLimit) + ".",
     trigger = IsInLocationWithCode("WhittletonWilds") && whipRaceTime() <= timeLimit * framesPerSecond
         && once(WhipRaceJustEnded()) && WhipRaceIsOver() && never(StartedWhipRace())
@@ -1208,12 +1231,12 @@ rocktiteAddresses = [
 GenerateSaveProtectedAchievementFromBits({
     "name": "Crabshell Cracker",
     "description": "Defeat all three Rocktites.",
-    "points": 10,
+    "points": 5,
     "threshold": 3
 }, rocktiteAddresses)
 
 // "Heartthrob"
-achievement(title = "Heartthrob", points = 5,
+achievement(title = "Heartthrob", points = 10,
     description = "Collect all thirteen Heart Containers.",
     trigger = Delta(maxHP()) == 0x3c && maxHP() == 0x40
 )
@@ -1241,9 +1264,50 @@ GenerateSaveProtectedAchievementFromBits({
 GenerateSaveProtectedAchievementFromBits({
     "name": "The Art of War",
     "description": "Obtain both Swordsman's Scrolls.",
-    "points": 5,
+    "points": 10,
     "threshold": 2
 }, [
     { "addr": 0x264902, "bit": 4 },
     { "addr": 0x264902, "bit": 5 }
 ])
+
+// "Armed to the Teeth"
+function quiverUpgradesObtained() => byte(0x264910)
+function bombUpgradesObtained() => byte(0x264911)
+achievement(title = "Armed to the Teeth", points = 5,
+    description = "Acquire all bow and bomb upgrades.",
+    trigger = never(isLoadingSaveFile()) && quiverUpgradesObtained() == 2 && bombUpgradesObtained() == 2
+         && (Delta(bombUpgradesObtained()) == 1 || Delta(quiverUpgradesObtained()) == 1)
+)
+
+// "By Steam Alone"
+function potionSlot1() => byte(0x264914)
+function potionSlot2() => byte(0x264915)
+achievement(title = "By Steam Alone", points = 5,
+    description = "Defeat Malladus's final phase without using any potions.",
+    trigger = once(WasInLocationWithCode("Duet") && IsInLocationWithCode("Malladus2")) // Checkpoint
+        && IsInLocationWithCode("Malladus") // Defeated Malladus after checkpoint
+        && never(currentHP() == 0) // Never game over
+        // Never gain or use a potion. You can never gain a potion after this point anyway,
+        // so we can get away with making this simpler.
+        && never(Delta(potionSlot1()) != potionSlot1() || Delta(potionSlot2()) != potionSlot2())
+)
+
+// "Engineering in Style"
+GenerateSaveProtectedAchievementFromBits({
+    "name": "Engineering in Style",
+    "description": "Acquire any of the gold train parts.",
+    "points": 5,
+    "threshold": 1
+}, [
+    { "addr": 0x26498b, "bit": 4 },
+    { "addr": 0x26498b, "bit": 5 },
+    { "addr": 0x26498b, "bit": 6 },
+    { "addr": 0x26498b, "bit": 7 },
+])
+
+// "From a Railway Carriage"/"Night Mail"
+achievement(title = "From a Railway Carriage", points = 25,
+    description = "Save New Hyrule from the resurrection of Malladus.",
+    trigger = WasInLocationWithCode("Malladus") && IsInLocationWithCode("Castle")
+)
