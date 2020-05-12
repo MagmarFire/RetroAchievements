@@ -1,3 +1,6 @@
 
 *.ods#
 .~lock.Croc Level Data.ods#
+*.png
+*.pdn
+*.jpg

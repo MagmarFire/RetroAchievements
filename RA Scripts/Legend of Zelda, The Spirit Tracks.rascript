@@ -106,8 +106,8 @@ function IsPaused() => byte(0x25ff90) == 1
 function currentLocation() => word(0x261640)
 
 locationInfo = {
-    0x2f: { "id": 0x2f, "name": "In Agoda Village", "code": "Agoda", },
-    0x8: { "id": 0x8, "name": "In Hyrule Field (Forest Realm)", "code": "ForestRealm", },
+    0x2f: { "id": 0x2f, "name": "In Aboda Village", "code": "Aboda", },
+    0x8: { "id": 0x8, "name": "In the Forest Realm", "code": "ForestRealm", },
     0x29: { "id": 0x29, "name": "In Castle Town", "code": "CastleTown", },
     0x28: { "id": 0x28, "name": "Inside Hyrule Castle", "code": "Castle", },
     0x50: { "id": 0x50, "name": "Watching a cutscene…", "code": "Cutscene", },
@@ -115,7 +115,7 @@ locationInfo = {
     0x14: { "id": 0x14, "name": "In the Tower of Spirits lobby", "code": "Tower", },
     0x17: { "id": 0x17, "name": "Climbing the Spiral Staircase", "code": "Staircase", },
     0x13: { "id": 0x13, "name": "In the Tower of Spirits", "code": "TowerDungeon", },
-    0x4: { "id": 0x4, "name": "In Hyrule Field (Forest Realm)", "code": "ForestField2", },
+    0x4: { "id": 0x4, "name": "In the Forest Realm", "code": "ForestField2", },
     0x2a: { "id": 0x2a, "name": "In Whittleton", "code": "Whittleton", },
     0x38: { "id": 0x38, "name": "In the wilds outside Whittleton", "code": "WhittletonWilds", },
     0x9: { "id": 0x9, "name": "Stumbling through the Lost Woods", "code": "LostWoods", },
@@ -125,9 +125,9 @@ locationInfo = {
     0xff00: { "id": 0xff00, "name": "On the title screen…", "code": "Title", },
     0x0: { "id": 0x0, "name": "Starting the game…", "code": "Boot", },
     0x3e: { "id": 0x3e, "name": "At Rabbitland Rescue", "code": "Rabbit", },
-    0x5: { "id": 0x5, "name": "In Hyrule Field (Snow Realm)", "code": "SnowRealm", },
+    0x5: { "id": 0x5, "name": "In the Snow Realm", "code": "SnowRealm", },
     0x2b: { "id": 0x2b, "name": "Anouki Village", "code": "Anouki", },
-    0xb: { "id": 0xb, "name": "In Hyrule Field (Snow Realm – Tunnel)", "code": "SnowTunnel", },
+    0xb: { "id": 0xb, "name": "In the Snow Realm – Tunnel", "code": "SnowTunnel", },
     0x31: { "id": 0x31, "name": "In the Snow Sanctuary", "code": "SnowSanctuary", },
     0x35: { "id": 0x35, "name": "At Wellspring Station", "code": "Wellspring", },
     0x45: { "id": 0x45, "name": "On the side of the tracks…", "code": "Tracks", },
@@ -135,7 +135,7 @@ locationInfo = {
     0x1f: { "id": 0x1f, "name": "In Fraaz’s lair…", "code": "Fraaz", },
     0x37: { "id": 0x37, "name": "At the Trading Post", "code": "Trading", },
     0x36: { "id": 0x36, "name": "At the Bridge Worker’s Home", "code": "BridgeWorker", },
-    0x6: { "id": 0x6, "name": "In Hyrule Field (Ocean Realm)", "code": "Ocean", },
+    0x6: { "id": 0x6, "name": "In the Ocean Realm", "code": "Ocean", },
     0x2c: { "id": 0x2c, "name": "In Papuchia Village", "code": "Papuchia", },
     0x32: { "id": 0x32, "name": "In the Ocean Sanctuary", "code": "OceanSanctuary", },
     0x43: { "id": 0x43, "name": "Fending off intruders in the Spirit Train!", "code": "Train", },
@@ -145,7 +145,7 @@ locationInfo = {
     0x46: { "id": 0x46, "name": "Competing in Take ‘Em All On!", "code": "Gauntlet1", },
     0x4b: { "id": 0x4b, "name": "Fighting Stagnox in Take ‘Em All On!", "code": "GauntletStagnox", },
     0x48: { "id": 0x48, "name": "Competing in Take ‘Em All On!", "code": "Gauntlet2", },
-    0x7: { "id": 0x7, "name": "In Hyrule Field (Fire Realm)", "code": "FireRealm", },
+    0x7: { "id": 0x7, "name": "In the Fire Realm", "code": "FireRealm", },
     0x3c: { "id": 0x3c, "name": "At the Goron Target Range", "code": "TargetRange", },
     0x2e: { "id": 0x2e, "name": "In Goron Village", "code": "Goron", },
     0x2d: { "id": 0x2d, "name": "Walking the path to the Altar of the Mountain Goddess", "code": "AltarPath", },
@@ -162,11 +162,11 @@ locationInfo = {
     0x3a: { "id": 0x3a, "name": "At the Pirate Hideout", "code": "Pirate", },
     0x3b: { "id": 0x3b, "name": "Inside the Pirate Hideout", "code": "PirateMinigame", },
     0x34: { "id": 0x34, "name": "In the Sand Sanctuary", "code": "SandSanctuary", },
-    0xc: { "id": 0xc, "name": "In Hyrule Field (Ocean Realm – Tunnel)", "code": "OceanTunnel", },
+    0xc: { "id": 0xc, "name": "In the Ocean Realm – Tunnel", "code": "OceanTunnel", },
     0x1d: { "id": 0x1d, "name": "In the Sand Temple", "code": "SandTemple", },
     0x22: { "id": 0x22, "name": "In Skeldritch’s lair…", "code": "Skeldritch", },
     0x41: { "id": 0x41, "name": "At the Ends of the Earth Station", "code": "Ends", },
-    0xd: { "id": 0xd, "name": "In Hyrule Field (Fire Realm – Tunnel)", "code": "FireTunnel", },
+    0xd: { "id": 0xd, "name": "In the Fire Realm – Tunnel", "code": "FireTunnel", },
     0x3d: { "id": 0x3d, "name": "At Dark Ore Mine", "code": "DarkOre", },
     0x39: { "id": 0x39, "name": "At Lost at Sea Station or in the wilds outside Papuchia Village", "code": "LostAtSea", },
     0x4c: { "id": 0x4c, "name": "Fighting Fraaz in Take ‘Em All On!", "code": "GauntletFraaz", },
@@ -450,9 +450,9 @@ function GenerateSaveProtectedAchievementFromBits(cheevo, bits)
 // "Extra Credit"
 hyruleField = GetLocationByCode("ForestRealm")
 castleTown = GetLocationByCode("CastleTown")
-agoda = GetLocationByCode("Agoda")
+Aboda = GetLocationByCode("Aboda")
 achievement(title = "Extra Credit", description = "Pass your final exam with at least 128 seconds left on the clock.", points = 1,
-    trigger = once(Delta(currentLocation()) == agoda["id"] && currentLocation() == hyruleField["id"])
+    trigger = once(Delta(currentLocation()) == Aboda["id"] && currentLocation() == hyruleField["id"])
         && never(timeRemainingInFinalExam() < 128)
         && currentLocation() == castleTown["id"]
         && unless(timeRemainingInFinalExam() == 0)
@@ -852,7 +852,7 @@ achievement(title = "Howls from the Tundra", points = 5,
 // "Third Intention"
 function StartedTrainingGame() => trainingGameState() == 0x1
 function GotHitInTrainingGame() => Delta(trainingGameHitsRemaining()) > trainingGameHitsRemaining()
-function TrainingGameIsOver() => trainingGameState() == 0x4
+function TrainingGameIsOver() => trainingGameState() == 0x4 || trainingGameState() == 0x5
 function ScoreIncreasedInTrainingGame()
 {
     return Delta(trainingGameScore()) < trainingGameScore()
@@ -868,7 +868,7 @@ achievement(title = "Third Intention", points = 10,
 leaderboard(title = "Training with the Royal Guard",
     description = "Get as many strikes in as you can before you yourself get hit three times.",
     start = IsInLocationWithCode("Castle") && StartedTrainingGame(),
-    cancel = !IsInLocationWithCode("Castle"),
+    cancel = !IsInLocationWithCode("Castle") || TrainingGameIsOver(),
     submit = TrainingGameIsOver(),
     value = trainingGameScore()
 )
@@ -1307,7 +1307,7 @@ GenerateSaveProtectedAchievementFromBits({
 ])
 
 // "From a Railway Carriage"/"Night Mail"
-achievement(title = "From a Railway Carriage", points = 25,
+achievement(title = "The Tracks Go On", points = 25,
     description = "Save New Hyrule from the resurrection of Malladus.",
     trigger = WasInLocationWithCode("Malladus") && IsInLocationWithCode("Castle")
 )
