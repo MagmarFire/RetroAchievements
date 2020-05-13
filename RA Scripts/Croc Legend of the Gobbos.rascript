@@ -319,6 +319,19 @@ function HasGobboScoreChangedForLevel(levelCode)
     return once(Delta(GobbosRescuedHighScoreInLevel(levelCode)) != GobbosRescuedHighScoreInLevel(levelCode)) && IsInLevel()
 }
 
+function AreGobbosRescuedHighScoresRegular()
+{
+    result = always_true()
+    for worldId in worldsToGobboLevels
+    {
+        for level in worldsToGobboLevels[worldId]
+        {
+            result = result && GobbosRescuedHighScoreInLevel(level) <= 6
+        }
+    }
+    return result
+}
+
 for threshold in gobboAchievementThresholds
 {
     description = threshold["description"]
@@ -343,7 +356,7 @@ for threshold in gobboAchievementThresholds
     }
     
     achievement(title = threshold["name"], description = description, points = threshold["points"], trigger =
-        IsLevelComplete() && unless(PasswordWasUsed()) && never(JustLoadedFromSave()) &&
+        IsLevelComplete() && unless(PasswordWasUsed()) && never(JustLoadedFromSave()) && AreGobbosRescuedHighScoresRegular() &&
         LevelHasLoadedAndIdHasNotChanged() && // Core
         (
             alt
@@ -373,7 +386,7 @@ for worldId in worldIdToData
     
     achievement(title = worldIdToData[worldId], description = "Rescue all Gobbos in World " + worldId + ".",
         points = 10, trigger =
-            IsLevelComplete() && unless(PasswordWasUsed()) && never(JustLoadedFromSave()) &&
+            IsLevelComplete() && unless(PasswordWasUsed()) && never(JustLoadedFromSave()) && AreGobbosRescuedHighScoresRegular() &&
             LevelHasLoadedAndIdHasNotChanged() && // Core
             (
                 alt
