@@ -6,6 +6,30 @@
 // The system timer uses 60fps, but Spirit Tracks calculates time for its actual minigame timers assuming 30fps instead, for some reason.
 framesPerSecond = 30
 
+englishOffset = 0x300
+frenchOffset = 0x320
+spanishOffset = 0x380
+
+// $25f584: Appears constant for each language.
+//
+//          0x300 = English
+//          0x320 = French
+//          0x380 = Spanish
+function GetGlobalOffset() => word(0x25f584) - englishOffset
+
+function obit0(addr) => bit0(addr + GetGlobalOffset())
+function obit1(addr) => bit1(addr + GetGlobalOffset())
+function obit2(addr) => bit2(addr + GetGlobalOffset())
+function obit3(addr) => bit3(addr + GetGlobalOffset())
+function obit4(addr) => bit4(addr + GetGlobalOffset())
+function obit5(addr) => bit5(addr + GetGlobalOffset())
+function obit6(addr) => bit6(addr + GetGlobalOffset())
+function obit7(addr) => bit7(addr + GetGlobalOffset())
+
+function obyte(addr) => byte(addr + GetGlobalOffset())
+function oword(addr) => word(addr + GetGlobalOffset())
+function odword(addr) => dword(addr + GetGlobalOffset())
+
 function Delta(addr) => prev(addr)
 
 function WasBitflagSetInGame(bit)
@@ -451,7 +475,7 @@ function GenerateSaveProtectedAchievementFromBits(cheevo, bits)
 hyruleField = GetLocationByCode("ForestRealm")
 castleTown = GetLocationByCode("CastleTown")
 Aboda = GetLocationByCode("Aboda")
-achievement(title = "Extra Credit", description = "Pass your final exam with at least 128 seconds left on the clock.", points = 1,
+achievement(title = "Extra Credit [m]", description = "Pass your final exam with at least 128 seconds left on the clock.", points = 1,
     trigger = once(Delta(currentLocation()) == Aboda["id"] && currentLocation() == hyruleField["id"])
         && never(timeRemainingInFinalExam() < 128)
         && currentLocation() == castleTown["id"]
@@ -524,8 +548,7 @@ achievement(title = "Up-and-Coming Musician",
 achievement(title = "Duet with the Cellist",
     description = "Complete your duet with Gage and open the path to the Forest Temple.",
     points = 3,
-    trigger = WasBitflagSetInGame(startedDuetWithGage())
-        && WasBitflagSetInGame(completedDuetWithGage())
+    trigger = WasBitflagSetInGame(completedDuetWithGage())
         && IsInLocationWithCode("ForestSanctuary")
 )
 
@@ -764,7 +787,7 @@ rabbitTypeAchievements = [
     { "name": "Forest Cuniculture", "description": "Rescue all ten grass rabbits.", "type": "Forest" },
     { "name": "Snow Cuniculture", "description": "Rescue all ten snow rabbits.", "type": "Snow" },
     { "name": "Ocean Cuniculture", "description": "Rescue all ten ocean rabbits.", "type": "Ocean" },
-    { "name": "Mountain Cuniculture", "description": "Rescue all ten mountain rabbits.", "type": "Mountain" },
+    { "name": "Fire Cuniculture", "description": "Rescue all ten mountain rabbits.", "type": "Mountain" },
     { "name": "Sand Cuniculture", "description": "Rescue all ten desert rabbits.", "type": "Sand" }
 ]
 
@@ -822,7 +845,7 @@ snowTemple = GetLocationByCode("SnowTemple")
 gauntletStagnox = GetLocationByCode("GauntletStagnox")
 achievement(title = "Quick Draw",
     description = "Proceed to Fraaz's third phase before either Fraaz Jr. has a chance to resurrect the other or run away.",
-    points = 5,
+    points = 3,
     trigger = IsFraazGoingToPhase3() && never(IsFraazRezzing()) &&
         (
         // Snow Temple
@@ -1106,7 +1129,7 @@ function firstLavaPlumeCooled() => bit4(0x264d15)
 function freightType() => byte(0x264bb8)
 iceMax = 20
 iceLossLimit = 7
-achievement(title = "Plus Shipping and Handling", points = 5,
+achievement(title = "Plus Shipping and Handling [m]", points = 5,
     description = "Deliver your first batch of Mega Ice to Goron Village from Wellspring Station without losing more than "
                 + iceLossLimit + " lots of ice.",
     trigger = once(WasInLocationWithCode("Wellspring") && IsInLocationWithCode("SnowRealm") && freightCount() == iceMax)
@@ -1151,7 +1174,7 @@ function byrneState() => byte(0x33f378)
 function IsByrneDying() => byrneState() == 0x21
 timeLimit = 108
 transitionFrames = 50 // We need to take into account transition time between when the boss room loads and the cutscene starts.
-achievement(title = "A Swift Dispatching", points = 10,
+achievement(title = "A Swift Dispatching [m]", points = 10,
     description = "Defeat Byrne within " + SecondsToFormat(timeLimit) + ".",
     trigger = once(WasInLocationWithCode("TowerDungeon") && IsInLocationWithCode("Byrne"))
         && IsByrneDying()
@@ -1168,7 +1191,7 @@ function IsGoronTargetRangeGameComplete() => goronTargetRangeState() == 0x5
 function IsGoronTargetRangeCountingDown() => goronTargetRangeState() == 0x3
 function IsGoronTargetRangeInProgress() => goronTargetRangeState() == 0x4
 function IsGoronTargetRangeOver() => goronTargetRangeState() == 0x6
-achievement(title = "Fourteen High Tons", points = 10,
+achievement(title = "Fourteen High Tons", points = 25,
     description = "Get a score of " + targetScore + " or higher at the Goron Target Range.",
     trigger = once(IsInLocationWithCode("TargetRangeGame") && WasInLocationWithCode("TargetRange"))
         && goronTargetRangeScore() >= targetScore
