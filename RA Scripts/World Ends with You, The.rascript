@@ -434,6 +434,31 @@ function GetPinById(id)
     }
 }
 
+function GetPinsByMaxLevel(maxLevel)
+{
+    ret = {}
+    for i in pins
+    {
+        pin = pins[i]
+        if (pin["MaxLevel"] == maxLevel)
+        {
+            ret[pin["ID"]] = pin["ID"]
+        }
+    }
+    return ret
+}
+
+function GetLevelClassesForPins()
+{
+    ret = {}
+    for i in pins
+    {
+        pin = pins[i]
+        ret[pin["MaxLevel"]] = 1
+    }
+    return ret
+}
+
 function deckSlot1BaseAddr() => 0x071d84
 function deckPinByteSize() => 10
 
@@ -443,10 +468,19 @@ function IsDeckPinMasteredByAddr(baseAddr)
     level = low4(baseAddr + 0x9)
     result = always_false()
     
-    for i in pins
+    levelClasses = GetLevelClassesForPins()
+    
+    for i in levelClasses
     {
-        pin = pins[i]
-        result = result || level == pin["MaxLevel"] && pin["ID"] == id
+        pinAlt = always_false()
+        pinsInLevel = GetPinsByMaxLevel(i)
+        
+        for i in pinsInLevel
+        {
+            pin = pins[i]
+            pinAlt = pinAlt || id == pin["ID"]
+        }
+        result = result || Delta(level) != level && level == i && once(pinAlt)
     }
 
     return result
