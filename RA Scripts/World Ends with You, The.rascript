@@ -23,8 +23,9 @@ function SecondsToFormat(value)
     return value / 60 + ":" + leadingZero + value % 60
 }
 
-enemyNamesToIds = {
-    "Metal Corehog": {  }
+function SecondsToFrames(value)
+{
+    return value * framesPerSecond
 }
 
 // $074194: 0x1 = transitioning into game mode after clicking Adventure or Battle
@@ -33,11 +34,44 @@ function IsLoadingSaveFile() => Delta(isOnTitleScreen()) == 0x1 && isOnTitleScre
 function isOnTitleScreen() => byte(0x074194)
 
 // $071D1C: Money (32-bit)
+// $071D14: Current LV
+function currentLevel() => byte(0x071D14)
+
 // $071D28: Partner ID (8-bit)
 //          
 //          0x0 = Shiki
 //          0x1 = Joshua
 //          0x2 = Beat
+// $071d29: Bits 0-1: Difficulty
+//          - 0x0 = Easy
+//          - 0x1 = Medium
+//          - 0x2 = Hard
+//          - 0x3 = Ultimate
+//          Bits 2-3: Partner behavior
+//          Bits 4-7: Currently-equipped deck (2-bit)
+
+function difficulty() => bit0(0x071d29) + bit1(0x071d29) + bit1(0x071d29) // Can't multiply by 2 because reasons.
+
+function IsAtLeastOnDifficulty(value)
+{
+    if (value == "Easy")
+    {
+        return always_true()
+    }
+    else if (value == "Normal")
+    {
+        return difficulty() >= 0x1
+    }
+    else if (value == "Hard")
+    {
+        return difficulty() >= 0x2
+    }
+    else if (value == "Ultimate")
+    {
+        return difficulty() >= 0x3
+    }
+}
+
 // $071D84: Deck 1, Slot 1, Pin ID (16-bit)
 // $0737B8: ESP'er Points
 // $07415C: Overworld x-coordinate (32-bit)
@@ -49,26 +83,50 @@ function noiseInterrobang() => bit3(0x074171)
 // $074E52: Battle state:
 //          
 //          0x0 = switch to battle
-//          0x1 = in battle
-//          0x2 = victory
-function InBattle() => byte(0x074e52) == 0x1
-function OutOfBattle() => byte(0x074e52) == 0x2
+//          0x1 = in battle (does not change if you run away)
+//          0x2 = not in battle (if victorious?)
+function battleState() => byte(0x074e52)
+function WonBattle() => battleState() == 0x2
+function WonBattleAndOnResultsScreen() => once(WonBattle() && Delta(battleState()) == 0x1) && never(battleState() == 0x0)
+
+// $074E56: Enemy ID
+function enemyId() => word(0x074e56)
+
+enemyNamesToIds = {
+    "Metal Corehog": { "ID": 0x7d }
+}
+
+function GetEnemyByName(name)
+{
+    for i in enemyNamesToIds
+    {
+        if (i == name)
+        {
+            return enemyNamesToIds[i]
+        }
+    }
+}
+
+function GetEnemyIdByName(name)
+{
+    enemy = GetEnemyByName(name)
+    return enemy["ID"]
+}
 
 // $074E98: Time elapsed in battle (frames) (32-bit)
+function battleTime() => dword(0x074E98)
+
 // $074E9C: Number of consecutive hits in battle (16-bit)
 // $074E9F: Hits taken in battle
-// $3984C4: Slot 1 pin ID (pins screen) (16-bit)
-//          
-//          Set to 0xffff if there is no pin in that slot.
-// $3984DA: Slot 1 is in a sub-slot
-// $398BE4: ID of pin in Slot 1 of your inventory
-// $398BF8: Stockpile pin, Slot 1 - Level (8-bit)
-// $398C30: ID of pin in Slot 2 of stockpile
 
+// $06879A: Like 0x06879c, appears to be related to the top-screen rank sprite that pops in at the end of battles.
+//          This address appears to dictate rotation and screen position.
+//
+//          0xc002 is its final position.
+function rankingGraphicXPosition() => word(0x06879A)
 function currentRankingGraphic() => byte(0x06879c)
 
-function whipSoundEffect() => byte(0x39d544)
-function WhipSoundEffectPlayed() => Delta(whipSoundEffect()) == 0x0 && whipSoundEffect() == 0x1
+function RankingGraphicIsInFinalPosition() => rankingGraphicXPosition() == 0xc002
 
 rankingGraphicIndices = {
     "Star": { "index": 0x10 },
@@ -92,7 +150,7 @@ function GetRankingGraphicIndexByName(name)
 
 function IsRankingRevealed()
 {
-    return OutOfBattle() && WhipSoundEffectPlayed()
+    return WonBattleAndOnResultsScreen() && RankingGraphicIsInFinalPosition()
 }
 
 // Pin-related functionality
@@ -448,6 +506,7 @@ function GetPinsByMaxLevel(maxLevel)
     return ret
 }
 
+// Level classes are used to optimize the size of pin mastery achievements.
 function GetLevelClassesForPins()
 {
     ret = {}
@@ -480,7 +539,11 @@ function IsDeckPinMasteredByAddr(baseAddr)
             pin = pins[i]
             pinAlt = pinAlt || id == pin["ID"]
         }
-        result = result || Delta(level) != level && level == i && once(pinAlt)
+        result = result ||
+            Delta(level) != level // Trigger only if the level changes.
+            && level == i // Trigger if the level is changed to the max level.
+            && once(pinAlt) // Trigger if we're dealing with any of the pins in this level class.
+            && Delta(id) == id // Don't trigger if we're just moving mastered pins around.
     }
 
     return result
@@ -506,7 +569,7 @@ achievement(title = "Save Protection Test", points = 0,
     trigger = WasBitflagSetInGame(noiseInterrobang())
 )
 
-achievement(title = "Pin Mastery Test", points = 0,
+achievement(title = "It's a Step Forward", points = 3,
     description = "Master a pin in your deck.",
     trigger = IsAnyDeckPinMastered() && isOnTitleScreen() == 0x0
 )
@@ -514,10 +577,13 @@ achievement(title = "Pin Mastery Test", points = 0,
 achievement(title = "Battle Star", points = 5,
     description = "Attain a 🟊 ranking in battle on Hard or Ultimate difficulty.",
     trigger = currentRankingGraphic() == GetRankingGraphicIndexByName("Star") && IsRankingRevealed()
+        && IsAtLeastOnDifficulty("Hard")
 )
 
 timeLimit = 30
 achievement(title = "Don't Kill Me Slowly", points = 5,
-    description = "Defeat the Metal Corehog on Week 1, Day 2, within " + SecondsToFormat(timeLimit) + " on Normal difficulty or higher.",
-    trigger = always_false()
+    description = "Defeat the Metal Corehog on Week 1, Day 2, within " + SecondsToFormat(timeLimit)
+        + " on Normal difficulty or higher and at Level 2 or below.",
+    trigger = enemyId() == GetEnemyIdByName("Metal Corehog") && IsRankingRevealed() && battleTime() <= SecondsToFrames(timeLimit)
+        && IsAtLeastOnDifficulty("Normal") && currentLevel() <= 2
 )
