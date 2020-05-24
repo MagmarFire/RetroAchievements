@@ -9,7 +9,12 @@ function Delta(addr) => prev(addr)
 
 function WasBitflagSetInGame(bit)
 {
-    return once(Delta(bit) != bit && bit == 1)
+    return WasValueSetInGame(bit, 0, 1)
+}
+
+function WasValueSetInGame(mem, oldValue, newValue)
+{
+    return once(Delta(mem) == oldValue && mem == newValue)
         && never(IsLoadingSaveFile())
 }
 
@@ -42,6 +47,28 @@ function currentLevel() => byte(0x071D14)
 //          0x0 = Shiki
 //          0x1 = Joshua
 //          0x2 = Beat
+function partner() => byte(0x071D28)
+
+function GetPartnerByName(name)
+{
+    if (name == "Shiki")
+    {
+        return 0x0
+    }
+    else if (name == "Joshua")
+    {
+        return 0x1
+    }
+    else if (name == "Beat")
+    {
+        return 0x2
+    }
+    else
+    {
+        return 0xFF
+    }
+}
+
 // $071d29: Bits 0-1: Difficulty
 //          - 0x0 = Easy
 //          - 0x1 = Medium
@@ -74,9 +101,149 @@ function IsAtLeastOnDifficulty(value)
 
 // $071D84: Deck 1, Slot 1, Pin ID (16-bit)
 // $0737B8: ESP'er Points
+// $0737c0: Chapter
+function chapter() => byte(0x0737c0)
+
+chapters = {
+0x0: { "id": 0x0, "name": "Shiki, Day 1", },
+0x1: { "id": 0x1, "name": "Shiki, Day 2", },
+0x2: { "id": 0x2, "name": "Shiki, Day 3", },
+0x3: { "id": 0x3, "name": "Shiki, Day 4", },
+0x4: { "id": 0x4, "name": "Shiki, Day 5", },
+0x5: { "id": 0x5, "name": "Shiki, Day 6", },
+0x6: { "id": 0x6, "name": "Shiki, Day 7", },
+0x7: { "id": 0x7, "name": "Joshua, Day 1", },
+0x8: { "id": 0x8, "name": "Joshua, Day 2", },
+0x9: { "id": 0x9, "name": "Joshua, Day 3", },
+0xA: { "id": 0xA, "name": "Joshua, Day 4", },
+0xB: { "id": 0xB, "name": "Joshua, Day 5", },
+0xC: { "id": 0xC, "name": "Joshua, Day 6", },
+0xD: { "id": 0xD, "name": "Joshua, Day 7", },
+0xE: { "id": 0xE, "name": "Beat, Day 1", },
+0xF: { "id": 0xF, "name": "Beat, Day 2", },
+0x10: { "id": 0x10, "name": "Beat, Day 3", },
+0x11: { "id": 0x11, "name": "Beat, Day 4", },
+0x12: { "id": 0x12, "name": "Beat, Day 5", },
+0x13: { "id": 0x13, "name": "Beat, Day 6", },
+0x14: { "id": 0x14, "name": "Beat, Day 7", },
+0x15: { "id": 0x15, "name": "Another Day", },
+}
+
+function GetChapterByName(name)
+{
+    for i in chapters
+    {
+        chapter = chapters[i]
+        if (chapter["name"] == name)
+        {
+            return chapters[i]
+        }
+    }
+}
+
+function CurrentChapterIs(name)
+{
+    chapter = GetChapterByName(name)
+    return chapter() == chapter["id"]
+}
+
+// $073AA4: Play time (32-bit)
+function playTime() => dword(0x073aa4)
+
 // $07415C: Overworld x-coordinate (32-bit)
 // $074160: Overworld y-coordinate (32-bit)
 // $074168: Map ID (16-bit)
+function mapId() => word(0x074168)
+
+locations = {
+    0x11: { "id": 0x11, "name": "West Exit Bus Terminal", },
+0x12: { "id": 0x12, "name": "Station Underpass", },
+0x0: { "id": 0x0, "name": "Spain Hill", },
+0x1: { "id": 0x1, "name": "Scramble Crossing", },
+0x2: { "id": 0x2, "name": "AMX", },
+0x3: { "id": 0x3, "name": "104 Building", },
+0x4: { "id": 0x4, "name": "Center Street Entrance", },
+0x5: { "id": 0x5, "name": "Statue of Hachiko", },
+0x6: { "id": 0x6, "name": "Tipsy Tose Hall", },
+0x7: { "id": 0x7, "name": "Shibu-Q Heads", },
+0x8: { "id": 0x8, "name": "Molco", },
+0x9: { "id": 0x9, "name": "Udagawa Back Streets", },
+0xa: { "id": 0xa, "name": "TEST", },
+0xb: { "id": 0xb, "name": "Shibu Department Store", },
+0xc: { "id": 0xc, "name": "Cadoi City", },
+0xd: { "id": 0xd, "name": "Towa Records", },
+0xe: { "id": 0xe, "name": "Miyashita Park", },
+0xf: { "id": 0xf, "name": "Miyashita Park Underpass", },
+0x10: { "id": 0x10, "name": "Cat Street", },
+0x13: { "id": 0x13, "name": "Dogenzaka", },
+0x14: { "id": 0x14, "name": "Pork City, 1st Floor", },
+0x15: { "id": 0x15, "name": "A-East", },
+0x16: { "id": 0x16, "name": "Shibukyu Main Store", },
+0x17: { "id": 0x17, "name": "Concert Stage", },
+0x18: { "id": 0x18, "name": "Pork City, 1st Floor", },
+0x19: { "id": 0x19, "name": "Pork City, 2nd Floor", },
+0x1a: { "id": 0x1a, "name": "Pork City, 3rd Floor", },
+0x1b: { "id": 0x1b, "name": "Pork City, 4th Floor", },
+0x1c: { "id": 0x1c, "name": "Pork City, 5th Floor", },
+0x1d: { "id": 0x1d, "name": "Pork City, 6th Floor", },
+0x1e: { "id": 0x1e, "name": "Pork City, 7th Floor", },
+0x1f: { "id": 0x1f, "name": "Pork City, 8th Floor", },
+0x20: { "id": 0x20, "name": "Pork City, 9th Floor", },
+0x21: { "id": 0x21, "name": "Pork City, 10th Floor", },
+0x22: { "id": 0x22, "name": "Pork City, 11th Floor", },
+0x23: { "id": 0x23, "name": "Pork City, 12th Floor", },
+0x24: { "id": 0x24, "name": "Pork City, 13th Floor", },
+0x25: { "id": 0x25, "name": "Pork City, 1st Floor", },
+0x26: { "id": 0x26, "name": "Trail of the Sinner", },
+0x27: { "id": 0x27, "name": "Rubicon", },
+0x28: { "id": 0x28, "name": "Trail of the Bygone", },
+0x29: { "id": 0x29, "name": "Dead God’s Pad", },
+0x2a: { "id": 0x2a, "name": "Trail of the Judged", },
+0x2b: { "id": 0x2b, "name": "Room of Reckoning", },
+0x2c: { "id": 0x2c, "name": "Trail of the Sinner, Roof", },
+0x2d: { "id": 0x2d, "name": "Trail of the Sinner, Roof", },
+0x2e: { "id": 0x2e, "name": "Trail of the Sinner, Roof", },
+0x2f: { "id": 0x2f, "name": "Statue of Hachiko", },
+0x30: { "id": 0x30, "name": ".....", },
+0x31: { "id": 0x31, "name": "The mission!", },
+0x32: { "id": 0x32, "name": "Missing No.", },
+}
+
+function GetLocationByName(name)
+{
+    for i in locations
+    {
+        location = locations[i]
+        if (location["name"] == name)
+        {
+            return location
+        }
+    }
+}
+
+// RICH PRESENCE
+
+function GetRPLookup(dict)
+{
+    ret = {}
+    for i in dict
+    {
+        element = dict[i]
+        ret[i] = element["name"]
+    }
+    return ret
+}
+
+rich_presence_conditional_display(isOnTitleScreen() == 0x1, "On the title screen")
+rich_presence_display("{0} | {1} | Play Time: {2}",
+    rich_presence_lookup("Chapter", chapter(), GetRPLookup(chapters)),
+    rich_presence_lookup("Location", mapId(), GetRPLookup(locations)),
+    rich_presence_value("Time", playTime(), "FRAMES")
+)
+
+// END RICH PRESENCE
+
+
 // $074171: Bit 3: "Noise!?"
 function noiseInterrobang() => bit3(0x074171)
 
@@ -567,6 +734,12 @@ function IsAnyDeckPinMastered()
 achievement(title = "Save Protection Test", points = 0,
     description = "If this pops when the game loads, save protection is bugged!",
     trigger = WasBitflagSetInGame(noiseInterrobang())
+)
+
+achievement(title = "In the Nick of Time", points = 1,
+    description = "Forge a pact with Shiki.",
+    trigger = WasValueSetInGame(partner(), GetPartnerByName("NONE"), GetPartnerByName("Shiki"))
+        && CurrentChapterIs("Shiki, Day 1")
 )
 
 achievement(title = "It's a Step Forward", points = 3,
