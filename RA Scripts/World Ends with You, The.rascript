@@ -104,6 +104,15 @@ function IsAtLeastOnDifficulty(value)
 // $0737c0: Chapter
 function chapter() => byte(0x0737c0)
 
+function currentShopkeeperFriendshipLevel() => byte(0x3a354c)
+function currentShopkeeperFriendshipEXP() => word(0x3a355c)
+
+function WasShopkeeperLeveledUpToLevel(level)
+{
+    return Delta(currentShopkeeperFriendshipLevel()) == level - 1 && currentShopkeeperFriendshipLevel() == level
+        && currentShopkeeperFriendshipEXP() != 0xffff
+}
+
 chapters = {
 0x0: { "id": 0x0, "name": "Shiki, Day 1", },
 0x1: { "id": 0x1, "name": "Shiki, Day 2", },
@@ -731,10 +740,44 @@ function IsAnyDeckPinMastered()
     return result
 }
 
-achievement(title = "Save Protection Test", points = 0,
-    description = "If this pops when the game loads, save protection is bugged!",
-    trigger = WasBitflagSetInGame(noiseInterrobang())
-)
+// ITEMS
+
+items = {
+    0x2A8: { "id": 0x2A8, "name": "(S) Extra Slot", },
+0xFFFF: { "id": 0xFFFF, "name": "None", },
+}
+
+itemSlots = 472
+firstItemSlotBaseAddr = 0x072c80
+
+function GetItemByName(name)
+{
+    for i in items
+    {
+        item = items[i]
+        if (item["name"] == name)
+        {
+            return item
+        }
+    }
+}
+
+function JustGotNumberOfItemsByName(name, count)
+{
+    item = GetItemByName(name)
+    result = always_false()
+    
+    for i in range(0, itemSlots - 1)
+    {
+        addr = firstItemSlotBaseAddr + 4 * i
+        result = result || word(addr) == item["id"] && WasValueSetInGame(low4(addr + 2), count - 1, count)
+            && unless(word(addr) != item["id"]) // We don't want achievements to trigger if the inventory is sorted.    
+    }
+    
+    return result
+}
+
+// END ITEMS
 
 achievement(title = "In the Nick of Time", points = 1,
     description = "Forge a pact with Shiki.",
@@ -745,6 +788,21 @@ achievement(title = "In the Nick of Time", points = 1,
 achievement(title = "It's a Step Forward", points = 3,
     description = "Master a pin in your deck.",
     trigger = IsAnyDeckPinMastered() && isOnTitleScreen() == 0x0
+)
+
+achievement(title = "Befriending the Shopkeeper", points = 5,
+    description = "Attain a Friendship Level of 5 with a shopkeeper.",
+    trigger = WasShopkeeperLeveledUpToLevel(5)
+)
+
+achievement(title = "Crushing on the Shopkeeper", points = 10,
+    description = "Max out your friendship level with a shopkeeper.",
+    trigger = WasShopkeeperLeveledUpToLevel(10)
+)
+
+achievement(title = "With All Six Pins", points = 5,
+    description = "Obtain four Extra Slot stickers.",
+    trigger = JustGotNumberOfItemsByName("(S) Extra Slot", 4)
 )
 
 achievement(title = "Battle Star", points = 5,
