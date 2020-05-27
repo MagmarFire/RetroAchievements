@@ -263,22 +263,25 @@ function noiseInterrobang() => bit3(0x074171)
 //          0x2 = not in battle (if victorious?)
 function battleState() => byte(0x074e52)
 function WonBattle() => battleState() == 0x2
+function EnterBattleCheckpointValid() => once(battleTime() > 0 && Delta(battleTime()) == 0) && never(battleState() == 0x0)
 function WonBattleAndOnResultsScreen() => once(WonBattle() && Delta(battleState()) == 0x1) && never(battleState() == 0x0)
 
 // $074E56: Enemy ID
 function enemyId() => word(0x074e56)
 
-enemyNamesToIds = {
-    "Metal Corehog": { "ID": 0x7d }
+enemies = {
+"Metal Corehog": { "id": 0x7d, "name": "Metal Corehog", },
+"Vespertilio Canor": { "id": 0x7, "name": "Vespertilio Canor", },
+
 }
 
 function GetEnemyByName(name)
 {
-    for i in enemyNamesToIds
+    for i in enemies
     {
         if (i == name)
         {
-            return enemyNamesToIds[i]
+            return enemies[i]
         }
     }
 }
@@ -286,7 +289,7 @@ function GetEnemyByName(name)
 function GetEnemyIdByName(name)
 {
     enemy = GetEnemyByName(name)
-    return enemy["ID"]
+    return enemy["id"]
 }
 
 // $074E98: Time elapsed in battle (frames) (32-bit)
@@ -302,7 +305,11 @@ function battleTime() => dword(0x074E98)
 function rankingGraphicXPosition() => word(0x06879A)
 function currentRankingGraphic() => byte(0x06879c)
 
-function RankingGraphicIsInFinalPosition() => rankingGraphicXPosition() == 0xc002
+function RankingGraphicIsInFinalPosition()
+{
+    return currentRankingGraphic() == GetRankingGraphicIndexByName("Star") && rankingGraphicXPosition() == 0xc002
+        || rankingGraphicXPosition() == 0xc004 && currentRankingGraphic() != GetRankingGraphicIndexByName("Star")
+}
 
 rankingGraphicIndices = {
     "Star": { "index": 0x10 },
@@ -806,7 +813,7 @@ achievement(title = "With All Six Pins", points = 5,
 )
 
 achievement(title = "Battle Star", points = 5,
-    description = "Attain a 🟊 ranking in battle on Hard or Ultimate difficulty.",
+    description = "Earn a 🟊 ranking in battle on Hard or Ultimate difficulty.",
     trigger = currentRankingGraphic() == GetRankingGraphicIndexByName("Star") && IsRankingRevealed()
         && IsAtLeastOnDifficulty("Hard")
 )
@@ -814,7 +821,16 @@ achievement(title = "Battle Star", points = 5,
 timeLimit = 30
 achievement(title = "Don't Kill Me Slowly", points = 5,
     description = "Defeat the Metal Corehog on Week 1, Day 2, within " + SecondsToFormat(timeLimit)
-        + " on Normal difficulty or higher and at Level 2 or below.",
+        + " (Normal or higher; Level 2 or below).",
     trigger = enemyId() == GetEnemyIdByName("Metal Corehog") && IsRankingRevealed() && battleTime() <= SecondsToFrames(timeLimit)
         && IsAtLeastOnDifficulty("Normal") && currentLevel() <= 2
+)
+
+function fusionLevel() => byte(0x37212d)
+
+achievement(title = "No 1 2 Trust", points = 5,
+    description = "Defeat the Vespertilio Canor on Week 1, Day 3, without activating a Fusion (Normal or higher; Level 3 or below).",
+    trigger = enemyId() == GetEnemyIdByName("Vespertilio Canor") && EnterBattleCheckpointValid()
+        && IsAtLeastOnDifficulty("Normal") && currentLevel() <= 3 && never(Delta(fusionLevel()) > fusionLevel())
+        && IsRankingRevealed()
 )
