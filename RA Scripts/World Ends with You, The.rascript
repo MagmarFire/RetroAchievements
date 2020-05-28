@@ -3,6 +3,9 @@
 
 // UTILITY
 
+TRUE = 1 == 1
+FALSE = 1 == 0
+
 framesPerSecond = 60
 
 function Delta(addr) => prev(addr)
@@ -750,8 +753,10 @@ function IsAnyDeckPinMastered()
 // ITEMS
 
 items = {
-    0x2A8: { "id": 0x2A8, "name": "(S) Extra Slot", },
+0x2A8: { "id": 0x2A8, "name": "(S) Extra Slot", },
 0xFFFF: { "id": 0xFFFF, "name": "None", },
+0x2ce: { "id": 0x2ce, "name": "(S) Noise Report", },
+0x2ae: { "id": 0x2ae, "name": "(S) Game Cleared", }
 }
 
 itemSlots = 472
@@ -778,7 +783,7 @@ function JustGotNumberOfItemsByName(name, count)
     {
         addr = firstItemSlotBaseAddr + 4 * i
         result = result || word(addr) == item["id"] && WasValueSetInGame(low4(addr + 2), count - 1, count)
-            && unless(word(addr) != item["id"]) // We don't want achievements to trigger if the inventory is sorted.    
+            && unless(word(addr) != item["id"]) // We don't want achievements to trigger if the inventory is sorted.
     }
     
     return result
