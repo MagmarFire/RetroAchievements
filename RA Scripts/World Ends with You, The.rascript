@@ -789,12 +789,33 @@ function JustGotNumberOfItemsByName(name, count)
     return result
 }
 
+// With this function, we don't have to check if the value was set in game. We just want to know if
+// an item exists in the inventory.
+function HasNumberOfItemsByName(name, count)
+{
+    item = GetItemByName(name)
+    result = always_false()
+    
+    for i in range(0, itemSlots - 1)
+    {
+        addr = firstItemSlotBaseAddr + 4 * i
+        result = result || word(addr) == item["id"]
+    }
+    
+    return result
+}
+
+function PlayingOnClearedGame()
+{
+    return HasNumberOfItemsByName("(S) Game Cleared", 1)
+}
+
 // END ITEMS
 
 achievement(title = "In the Nick of Time", points = 1,
     description = "Forge a pact with Shiki.",
     trigger = WasValueSetInGame(partner(), GetPartnerByName("NONE"), GetPartnerByName("Shiki"))
-        && CurrentChapterIs("Shiki, Day 1")
+        && CurrentChapterIs("Shiki, Day 1") && never(PlayingOnClearedGame())
 )
 
 achievement(title = "It's a Step Forward", points = 3,
