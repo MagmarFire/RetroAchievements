@@ -21,6 +21,11 @@ function WasValueSetInGame(mem, oldValue, newValue)
         && never(IsLoadingSaveFile())
 }
 
+function DidValueBecomeGreaterThanGivenInGame(mem, value)
+{
+    return once(Delta(mem) <= value && mem > value) && never(IsLoadingSaveFile())
+}
+
 function SecondsToFormat(value)
 {
     leadingZero = ""
@@ -34,6 +39,44 @@ function SecondsToFormat(value)
 function SecondsToFrames(value)
 {
     return value * framesPerSecond
+}
+
+// This function allows the creation of achievements with built-in save protection that deal with a collection of values being set
+// throughout the game. The schemas for both parameters are as follows:
+//
+// cheevo: "name": title
+//         "description": self-explanatory
+//         "points": self-explanatory
+//         "threshold": how many values in the "addresses" dictionary must be set before this achievement is triggered
+//
+// conditions: "countsWhen": the condition that must be true in order for it to be counted in the total
+//             "resetWhen": the condition that indicates that relevant values in the condition have changed, forcing the state to refresh
+function GenerateSaveProtectedAchievementFromConditions(cheevo, conditions)
+{
+    counts = always_false()
+    resetalt = always_false()
+
+    for i in conditions
+    {
+        condition = conditions[i]
+        countsWhen = condition["countsWhen"]
+        resetWhen = condition["resetWhen"]
+        counts = counts || once(countsWhen)
+    
+        // We want to reset the hit counts each time the resetWhen condition is true in order
+        // to refresh the hitcount state that represents each individual condition.
+        resetalt = resetalt || never(resetWhen) && unless(IsLoadingSaveFile())
+    }
+
+    // However, we also don't want to do anything if no condition is changed on a given frame
+    // as a save protection measure. A two-frame target is used for the same reason as the above, as well.
+    unlessValueStatesAreIdle = unless(repeated(2, always_true()))
+
+    achievement(title = cheevo["name"], description = cheevo["description"], points = cheevo["points"],
+        trigger = isOnTitleScreen() == 0x0
+            && measured(repeated(cheevo["threshold"], counts)) && unlessValueStatesAreIdle
+            && resetalt
+    ) 
 }
 
 // $074194: 0x1 = transitioning into game mode after clicking Adventure or Battle
@@ -812,6 +855,36 @@ function PlayingOnClearedGame()
 
 // END ITEMS
 
+// NOISE REPORT
+
+// $073cda: Noise Report, first entry - Min LV
+noiseReportBaseAddr = 0x073cda
+numberOfNoiseEntries = 96
+
+function GetNoiseEntryAddressByIndex(index)
+{
+    return noiseReportBaseAddr + 4 * index + 2
+}
+
+function NoiseEntryIsUnlocked(index)
+{
+    noiseDefeatedAddr = GetNoiseEntryAddressByIndex(index)
+    return word(noiseDefeatedAddr) > 0
+}
+
+function AnyNoiseEntryWasJustUnlocked()
+{
+    alt = always_false()
+    for index in range(0, numberOfNoiseEntries - 1)
+    {
+        noiseDefeatedAddr = GetNoiseEntryAddressByIndex(index)
+        alt = alt || Delta(word(noiseDefeatedAddr)) == 0 && word(noiseDefeatedAddr) > 0
+    }
+    return alt
+}
+
+// END NOISE REPORT
+
 achievement(title = "In the Nick of Time", points = 1,
     description = "Forge a pact with Shiki.",
     trigger = WasValueSetInGame(partner(), GetPartnerByName("NONE"), GetPartnerByName("Shiki"))
@@ -837,6 +910,27 @@ achievement(title = "With All Six Pins", points = 5,
     description = "Obtain four Extra Slot stickers.",
     trigger = JustGotNumberOfItemsByName("(S) Extra Slot", 4)
 )
+
+// Noise achievements
+noiseAchievements = [
+    { "name": "Rookie Eraser", "description": "Complete 10% of the Noise Report.", "threshold": 10, "points": 3 },
+    { "name": "Regular Eraser", "description": "Complete 25% of the Noise Report.", "threshold": 24, "points": 5 },
+    { "name": "Veteran Eraser", "description": "Complete 50% of the Noise Report.", "threshold": 48, "points": 10 },
+    { "name": "Legendary Eraser", "description": "Complete 100% of the Noise Report.", "threshold": 96, "points": 25 }
+]
+
+noiseConditions = {}
+for i in range(0, numberOfNoiseEntries - 1)
+{
+    noiseConditions[i] = { "countsWhen": NoiseEntryIsUnlocked(i), "resetWhen": AnyNoiseEntryWasJustUnlocked() }
+}
+
+for cheevo in noiseAchievements
+{
+    GenerateSaveProtectedAchievementFromConditions(cheevo, noiseConditions)
+}
+
+// End Noise achievements
 
 achievement(title = "Battle Star", points = 5,
     description = "Earn a 🟊 ranking in battle on Hard or Ultimate difficulty.",
