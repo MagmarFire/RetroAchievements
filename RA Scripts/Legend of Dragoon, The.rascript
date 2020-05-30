@@ -413,10 +413,11 @@ achievement(
               && never(!IsInBattle()) && EnteredBattleOnce()
 )
 
+// Changed as of 28263
 achievement(
     title = "Desertion", description = "Defeat Fruegel before either Guftas or Rodriguez.", points = 10,
     id = 97123, badge = "106705", published = "2/1/2020 4:54:27 PM", modified = "2/22/2020 7:51:34 PM",
-    trigger = once(word(0x0BB0F8) == 0x0183 && prev(word(0x0BB0F8)) != 0x0183) && word(0x0CCDEC) == 0x1021 && 
+    trigger = enemyId() == 0x0183 && never(!IsInBattle()) && EnteredBattleOnce() &&
               never(word(0x052C30) != 0x0024) &&
               ((unless(byte(0x0BAC58) != 0x03) && repeated(450, word(0x1AF0C4) == 0x0000) && 
                 never(word(0x1AED3C) == 0x0000) && never(word(0x1AE9B4) == 0x0000)) ||
