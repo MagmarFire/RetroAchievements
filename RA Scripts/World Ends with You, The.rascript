@@ -297,15 +297,17 @@ rich_presence_display("{0} | {1} | Play Time: {2}",
 // $074171: Bit 3: "Noise!?"
 function noiseInterrobang() => bit3(0x074171)
 
-// $074E52: Battle state:
-//          
-//          0x0 = switch to battle
-//          0x1 = in battle (does not change if you run away)
-//          0x2 = not in battle (if victorious?)
-function battleState() => byte(0x074e52)
-function WonBattle() => battleState() == 0x2
-function EnterBattleCheckpointValid() => once(battleTime() > 0 && Delta(battleTime()) == 0) && never(battleState() == 0x0)
-function WonBattleAndOnResultsScreen() => once(WonBattle() && Delta(battleState()) == 0x1) && never(battleState() == 0x0)
+function lengthOfBattleChain() => byte(0x074e54)
+
+// $074E52: Current battle in the chain:
+//
+//          0x0 when first battle begins
+//
+//          Increases by 1 when you win a battle, and the chain is complete when this number is 1 greater than the total length of the chain.
+function currentBattleInChain() => byte(0x074e52)
+function WonBattle() => currentBattleInChain() == lengthOfBattleChain() + 1
+function EnterBattleCheckpointValid() => once(battleTime() > 0 && Delta(battleTime()) == 0) && never(currentBattleInChain() == 0x0)
+function WonBattleAndOnResultsScreen() => once(WonBattle()) && never(currentBattleInChain() == 0x0)
 
 // $074E56: Enemy ID
 function enemyId() => word(0x074e56)
@@ -870,6 +872,12 @@ items = {
 0x2ae: { "id": 0x2ae, "name": "(S) Game Cleared", }
 }
 
+// $071d2c: Neku thread, slot 1 (16-bit)
+// $071d2e: Neku thread, slot 2 (16-bit)
+// $071d30: Neku thread, slot 3 (16-bit)
+// $071d32: Neku thread, slot 4 (16-bit)
+function nekuThreadSlot1BaseAddr() => 0x071d2c
+
 itemSlots = 472
 firstItemSlotBaseAddr = 0x072c80
 
@@ -993,7 +1001,7 @@ noiseAchievements = [
 noiseConditions = {}
 for i in range(0, numberOfNoiseEntries - 1)
 {
-    noiseConditions[i] = { "countsWhen": NoiseEntryIsUnlocked(i), "resetWhen": anyNoiseEntryWasJustUnlocked }
+    //noiseConditions[i] = { "countsWhen": NoiseEntryIsUnlocked(i), "resetWhen": anyNoiseEntryWasJustUnlocked }
 }
 
 for cheevo in noiseAchievements
@@ -1006,10 +1014,12 @@ for cheevo in noiseAchievements
 // Pin mastery achievements (TODO: Attempt to optimize; VERY SLOW TO GENERATE)
 
 pinMasteryConditions = {}
-for i in range(0, numberOfMasteredPinSlots - 1)
-{
-    pinMasteryConditions[i] = { "countsWhen": MasteredPinSlotIsFilled(i), "resetWhen": MasteredPinSlotChanged(i) }
-}
+//for i in range(0, numberOfMasteredPinSlots - 1)
+//{
+    // Resetting the game can trigger the achievements; checking if the play time is greater than 0 should prevent this.
+    //resetWhen = MasteredPinSlotChanged(i) && playTime() > 0
+    //pinMasteryConditions[i] = { "countsWhen": MasteredPinSlotIsFilled(i), "resetWhen": resetWhen }
+//}
 
 pinMasteryAchievements = [
     //{ "name": "A Couple Lanyards Full", "description": "Have 30 types of pins in your Mastered collection.", "threshold": 30, "points": 3 },
@@ -1028,7 +1038,7 @@ for cheevo in pinMasteryAchievements
 
 achievement(title = "Battle Star", points = 5,
     description = "Earn a 🟊 ranking in battle on Hard or Ultimate difficulty.",
-    trigger = currentRankingGraphic() == GetRankingGraphicIndexByName("Star") && IsRankingRevealed()
+    trigger = AcquiredAtLeastRank("Star") && IsRankingRevealed()
         && IsAtLeastOnDifficulty("Hard")
 )
 
@@ -1053,4 +1063,9 @@ achievement(title = "Avenged", points = 25,
     description = "Defeat the Swing Shark on Week 1, Day 4, without any recovery pins equipped (Normal or higher; Level 4 or below).",
     trigger = enemyId() == GetEnemyIdByName("Swing Shark") && EnterBattleCheckpointValid()
         && IsAtLeastOnDifficulty("Normal") && currentLevel() <= 4 && IsRankingRevealed() && !HasRecoveryPinsEquipped()
+)
+
+achievement(title = "It's My Asskicking Outfit, Bitch!", points = 0,
+    description = "Defeat X with Neku wearing only threads that don't share the same brand.",
+    trigger = always_false()
 )
