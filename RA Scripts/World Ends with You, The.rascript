@@ -74,6 +74,18 @@ function GenerateSaveProtectedAchievementFromConditions(cheevo, conditions)
     ) 
 }
 
+// $066a30: Appears to correlate to the screen you're on in some way:
+//
+//          0x3 = battle
+//          0x1c = Noise Report
+//          0x1e = overworld
+//          0x25 = title screen
+//          0x2b = Phone Menu (items, pins, save only)
+//          0x2c = battle results
+//          0x2d = Friends
+function screen() => word(0x066a30)
+function IsOnResultsScreen() => screen() == 0x2c
+
 // $074194: 0x1 = transitioning into game mode after clicking Adventure or Battle
 function IsLoadingSaveFile() => Delta(isOnTitleScreen()) == 0x1 && isOnTitleScreen() == 0x0
 
@@ -307,7 +319,7 @@ function lengthOfBattleChain() => byte(0x074e54)
 function currentBattleInChain() => byte(0x074e52)
 function WonBattle() => currentBattleInChain() == lengthOfBattleChain() + 1
 function EnterBattleCheckpointValid() => once(battleTime() > 0 && Delta(battleTime()) == 0) && never(currentBattleInChain() == 0x0)
-function WonBattleAndOnResultsScreen() => once(WonBattle()) && never(currentBattleInChain() == 0x0)
+function WonBattleAndOnResultsScreen() => once(WonBattle()) && never(!IsOnResultsScreen())
 
 // $074E56: Enemy ID
 function enemyId() => word(0x074e56)
@@ -814,9 +826,20 @@ function IsDeckPinMasteredByAddr(baseAddr)
     return result
 }
 
+function IsDeckPinEvolvedByAddr(baseAddr)
+{
+    id = word(baseAddr)
+    return Delta(id) != id && IsOnResultsScreen()
+}
+
 function IsDeckPinMastered(slotId)
 {
     return IsDeckPinMasteredByAddr(deckSlot1BaseAddr() + slotId * deckPinByteSize())
+}
+
+function IsDeckPinEvolved(slotId)
+{
+    return IsDeckPinEvolvedByAddr(deckSlot1BaseAddr() + slotId * deckPinByteSize())
 }
 
 function IsDeckPinARecoveryPin(slotId)
@@ -836,6 +859,16 @@ function IsAnyDeckPinMastered()
     for i in range(0, 5)
     {
         result = result || IsDeckPinMastered(i)
+    }
+    return result
+}
+
+function IsAnyDeckPinEvolved()
+{
+    result = always_false()
+    for i in range(0, 5)
+    {
+        result = result || IsDeckPinEvolved(i)
     }
     return result
 }
@@ -972,6 +1005,11 @@ achievement(title = "In the Nick of Time", points = 1,
 achievement(title = "It's a Step Forward", points = 3,
     description = "Master a pin in your deck.",
     trigger = IsAnyDeckPinMastered() && isOnTitleScreen() == 0x0
+)
+
+achievement(title = "Unnatural Selection", points = 5,
+    description = "Evolve a pin.",
+    trigger = IsAnyDeckPinEvolved()
 )
 
 achievement(title = "Befriending the Shopkeeper", points = 5,
