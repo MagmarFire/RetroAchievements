@@ -50,13 +50,13 @@ function SecondsToFrames(value)
 //             "resetWhen": the condition that indicates that relevant values in the condition have changed, forcing the state to refresh
 function GenerateSaveProtectedAchievementFromConditions(cheevo, conditions)
 {
-    counts = always_true()
+    counts = []
     resetalt = always_false()
 
     for i in conditions
     {
         condition = conditions[i]
-        counts = counts || once(condition["countsWhen"])
+        array_push(counts, once(condition["countsWhen"]))
     
         // We want to reset the hit counts each time the resetWhen condition is true in order
         // to refresh the hitcount state that represents each individual condition.
@@ -69,7 +69,7 @@ function GenerateSaveProtectedAchievementFromConditions(cheevo, conditions)
 
     achievement(title = cheevo["name"], description = cheevo["description"], points = cheevo["points"],
         trigger = isOnTitleScreen() == 0x0
-            && measured(repeated(cheevo["threshold"], counts)) && unlessValueStatesAreIdle
+            && measured(tally(cheevo["threshold"], counts)) && unlessValueStatesAreIdle
             && resetalt
     ) 
 }
@@ -319,7 +319,7 @@ function lengthOfBattleChain() => byte(0x074e54)
 function currentBattleInChain() => byte(0x074e52)
 function WonBattle() => currentBattleInChain() == lengthOfBattleChain() + 1
 function EnterBattleCheckpointValid() => once(battleTime() > 0 && Delta(battleTime()) == 0) && never(currentBattleInChain() == 0x0)
-function WonBattleAndOnResultsScreen() => once(WonBattle()) && never(!IsOnResultsScreen())
+function WonBattleAndOnResultsScreen() => once(WonBattle()) && IsOnResultsScreen()
 
 // $074E56: Enemy ID
 function enemyId() => word(0x074e56)
@@ -328,6 +328,7 @@ enemies = {
 "Metal Corehog": { "id": 0x7d, "name": "Metal Corehog", },
 "Vespertilio Canor": { "id": 0x7, "name": "Vespertilio Canor", },
 "Swing Shark": { "id": 0x81, "name": "Swing Shark", },
+"Circle Pit Grizzly": { "id": 0x84, "name": "Circle Pit Grizzly", },
 }
 
 function GetEnemyByName(name)
@@ -832,14 +833,19 @@ function IsDeckPinEvolvedByAddr(baseAddr)
     return Delta(id) != id && IsOnResultsScreen()
 }
 
+function GetDeckSlotAddrBySlotId(slotId)
+{
+    return deckSlot1BaseAddr() + slotId * deckPinByteSize()
+}
+
 function IsDeckPinMastered(slotId)
 {
-    return IsDeckPinMasteredByAddr(deckSlot1BaseAddr() + slotId * deckPinByteSize())
+    return IsDeckPinMasteredByAddr(GetDeckSlotAddrBySlotId(slotId))
 }
 
 function IsDeckPinEvolved(slotId)
 {
-    return IsDeckPinEvolvedByAddr(deckSlot1BaseAddr() + slotId * deckPinByteSize())
+    return IsDeckPinEvolvedByAddr(GetDeckSlotAddrBySlotId(slotId))
 }
 
 function IsDeckPinARecoveryPin(slotId)
@@ -848,7 +854,7 @@ function IsDeckPinARecoveryPin(slotId)
     for i in recoveryPins
     {
         pin = recoveryPins[i]
-        isARecoveryPin = isARecoveryPin || word(deckSlot1BaseAddr() + slotId * deckPinByteSize()) == pin["ID"]
+        isARecoveryPin = isARecoveryPin || word(GetDeckSlotAddrBySlotId(slotId)) == pin["ID"]
     }
     return isARecoveryPin
 }
@@ -869,6 +875,16 @@ function IsAnyDeckPinEvolved()
     for i in range(0, 5)
     {
         result = result || IsDeckPinEvolved(i)
+    }
+    return result
+}
+
+function HasPinLoadoutChanged()
+{
+    result = always_false()
+    for slotId in range(0, 5)
+    {
+        result = result || word(GetDeckSlotAddrBySlotId(slotId)) != Delta(word(GetDeckSlotAddrBySlotId(slotId)))
     }
     return result
 }
@@ -899,10 +915,382 @@ function MasteredPinSlotChanged(slot)
 // ITEMS
 
 items = {
-0x2A8: { "id": 0x2A8, "name": "(S) Extra Slot", },
-0xFFFF: { "id": 0xFFFF, "name": "None", },
-0x2ce: { "id": 0x2ce, "name": "(S) Noise Report", },
-0x2ae: { "id": 0x2ae, "name": "(S) Game Cleared", }
+0x2A8: { "id": 0x2A8, "name": "(S) Extra Slot", "type": "Sticker", },
+0xFFFF: { "id": 0xFFFF, "name": "None", "type": "None", },
+0x2ce: { "id": 0x2ce, "name": "(S) Noise Report", "type": "Sticker", },
+0x2ae: { "id": 0x2ae, "name": "(S) Game Cleared", "type": "Sticker", },
+0x285: { "id": 0x285, "name": "(CD) Track 1", "type": "CD", },
+0x286: { "id": 0x286, "name": "(CD) Track 2", "type": "CD", },
+0x287: { "id": 0x287, "name": "(CD) Track 3", "type": "CD", },
+0x288: { "id": 0x288, "name": "(CD) Track 4", "type": "CD", },
+0x289: { "id": 0x289, "name": "(CD) Track 5", "type": "CD", },
+0x28A: { "id": 0x28A, "name": "(CD) Track 6", "type": "CD", },
+0x28B: { "id": 0x28B, "name": "(CD) Track 7", "type": "CD", },
+0x28C: { "id": 0x28C, "name": "(CD) Track 8", "type": "CD", },
+0x28D: { "id": 0x28D, "name": "(CD) Track 9", "type": "CD", },
+0x28E: { "id": 0x28E, "name": "(CD) Track 10", "type": "CD", },
+0x28F: { "id": 0x28F, "name": "(CD) Track 11", "type": "CD", },
+0x290: { "id": 0x290, "name": "(CD) Track 12", "type": "CD", },
+0x291: { "id": 0x291, "name": "(CD) Track 13", "type": "CD", },
+0x292: { "id": 0x292, "name": "(CD) Track 14", "type": "CD", },
+0x293: { "id": 0x293, "name": "(CD) Track 15", "type": "CD", },
+0x294: { "id": 0x294, "name": "(CD) Track 16", "type": "CD", },
+0x295: { "id": 0x295, "name": "(CD) Track 17", "type": "CD", },
+0x296: { "id": 0x296, "name": "(CD) Track 18", "type": "CD", },
+0x297: { "id": 0x297, "name": "(CD) Track 19", "type": "CD", },
+0x298: { "id": 0x298, "name": "(CD) Track 20", "type": "CD", },
+0x299: { "id": 0x299, "name": "(CD) Track 21", "type": "CD", },
+0x29A: { "id": 0x29A, "name": "(CD) Track 22", "type": "CD", },
+0x29B: { "id": 0x29B, "name": "(CD) Track 23", "type": "CD", },
+0x29C: { "id": 0x29C, "name": "(CD) Track 24", "type": "CD", },
+0x29D: { "id": 0x29D, "name": "(CD) Track 25", "type": "CD", },
+0x29E: { "id": 0x29E, "name": "(CD) Track 26", "type": "CD", },
+0x29F: { "id": 0x29F, "name": "(CD) Track 27", "type": "CD", },
+0x2A0: { "id": 0x2A0, "name": "(CD) Track 28", "type": "CD", },
+0x2A1: { "id": 0x2A1, "name": "(CD) Track 29", "type": "CD", },
+0x2A2: { "id": 0x2A2, "name": "(CD) Track 30", "type": "CD", },
+0x2A3: { "id": 0x2A3, "name": "(CD) Track 31", "type": "CD", },
+0x2A4: { "id": 0x2A4, "name": "(CD) Track 32", "type": "CD", },
+0x2A5: { "id": 0x2A5, "name": "(CD) Track 33", "type": "CD", },
+0x2A6: { "id": 0x2A6, "name": "(CD) Track 34", "type": "CD", },
+}
+
+function GetAllItemsOfType(type)
+{
+    result = {}
+    for i in items
+    {
+        item = items[i]
+        if (item["type"] == type)
+        {
+            result[i] = item
+        }
+    }
+    return result
+}
+
+threads = {
+    0x130: { "id": 0x130, "name": "M Cap", "brand": "Mus Rattus", },
+0x131: { "id": 0x131, "name": "Yellow Tee", "brand": "Mus Rattus", },
+0x132: { "id": 0x132, "name": "Mowzy Tee (Red)", "brand": "Mus Rattus", },
+0x133: { "id": 0x133, "name": "Mint Polo", "brand": "Mus Rattus", },
+0x134: { "id": 0x134, "name": "Runner's Tank", "brand": "Mus Rattus", },
+0x135: { "id": 0x135, "name": "Mowzy Sweatshirt", "brand": "Mus Rattus", },
+0x136: { "id": 0x136, "name": "Brown Baby Tee", "brand": "Mus Rattus", },
+0x137: { "id": 0x137, "name": "Pink Blouse", "brand": "Mus Rattus", },
+0x138: { "id": 0x138, "name": "Peach Turtleneck", "brand": "Mus Rattus", },
+0x139: { "id": 0x139, "name": "Classic Jeans", "brand": "Mus Rattus", },
+0x13A: { "id": 0x13A, "name": "Khaki Chinos", "brand": "Mus Rattus", },
+0x13B: { "id": 0x13B, "name": "Green Warm-ups", "brand": "Mus Rattus", },
+0x13C: { "id": 0x13C, "name": "Beach Sandals", "brand": "Mus Rattus", },
+0x13D: { "id": 0x13D, "name": "3-for-1 Sock Pak", "brand": "Mus Rattus", },
+0x13E: { "id": 0x13E, "name": "Mowzy", "brand": "Mus Rattus", },
+0x13F: { "id": 0x13F, "name": "Backpack", "brand": "Mus Rattus", },
+0x140: { "id": 0x140, "name": "Canvas Tote", "brand": "Mus Rattus", },
+0x141: { "id": 0x141, "name": "Nylon Waist Pack", "brand": "Mus Rattus", },
+0x142: { "id": 0x142, "name": "Stronger Cap", "brand": "D+B", },
+0x143: { "id": 0x143, "name": "Star Cap", "brand": "D+B", },
+0x144: { "id": 0x144, "name": "Knit Casquette", "brand": "D+B", },
+0x145: { "id": 0x145, "name": "Svelte Parka", "brand": "D+B", },
+0x146: { "id": 0x146, "name": "Denim Blouse", "brand": "D+B", },
+0x147: { "id": 0x147, "name": "Cupid Tee", "brand": "D+B", },
+0x148: { "id": 0x148, "name": "Satin Camisole", "brand": "D+B", },
+0x149: { "id": 0x149, "name": "Vest-Blouse Combo", "brand": "D+B", },
+0x14A: { "id": 0x14A, "name": "Leather Shorts", "brand": "D+B", },
+0x14B: { "id": 0x14B, "name": "Skinny Jeans (Black)", "brand": "D+B", },
+0x14C: { "id": 0x14C, "name": "Denim Miniskirt", "brand": "D+B", },
+0x14D: { "id": 0x14D, "name": "Plaid Miniskirt", "brand": "D+B", },
+0x14E: { "id": 0x14E, "name": "Knee-high Boots", "brand": "D+B", },
+0x14F: { "id": 0x14F, "name": "Cowboy Boots (Red)", "brand": "D+B", },
+0x150: { "id": 0x150, "name": "Purple Bikini", "brand": "D+B", },
+0x151: { "id": 0x151, "name": "Black Bikini", "brand": "D+B", },
+0x152: { "id": 0x152, "name": "Studded Belt", "brand": "D+B", },
+0x153: { "id": 0x153, "name": "D+B Ring", "brand": "D+B", },
+0x154: { "id": 0x154, "name": "Biker Jacket", "brand": "Tigre Punks", },
+0x155: { "id": 0x155, "name": "Patchy Biker Jacket", "brand": "Tigre Punks", },
+0x156: { "id": 0x156, "name": "Cotton Biker Vest", "brand": "Tigre Punks", },
+0x157: { "id": 0x157, "name": "Tiger Biker Vest", "brand": "Tigre Punks", },
+0x158: { "id": 0x158, "name": "Fitted Coat", "brand": "Tigre Punks", },
+0x159: { "id": 0x159, "name": "Tartan Coat", "brand": "Tigre Punks", },
+0x15A: { "id": 0x15A, "name": "Pink Gauze Shirt", "brand": "Tigre Punks", },
+0x15B: { "id": 0x15B, "name": "Grey Gauze Shirt", "brand": "Tigre Punks", },
+0x15C: { "id": 0x15C, "name": "Black Raglan Tee", "brand": "Tigre Punks", },
+0x15D: { "id": 0x15D, "name": "Blue Raglan Tee", "brand": "Tigre Punks", },
+0x15E: { "id": 0x15E, "name": "Bondage Pants (Black)", "brand": "Tigre Punks", },
+0x15F: { "id": 0x15F, "name": "Skirt Bondage Combo", "brand": "Tigre Punks", },
+0x160: { "id": 0x160, "name": "Bondage Half-pants", "brand": "Tigre Punks", },
+0x161: { "id": 0x161, "name": "Work Boots", "brand": "Tigre Punks", },
+0x162: { "id": 0x162, "name": "Purple Sneaks", "brand": "Tigre Punks", },
+0x163: { "id": 0x163, "name": "Custom Sneaks", "brand": "Tigre Punks", },
+0x164: { "id": 0x164, "name": "White Rubbersoles", "brand": "Tigre Punks", },
+0x165: { "id": 0x165, "name": "Double-spiked Cuff", "brand": "Tigre Punks", },
+0x166: { "id": 0x166, "name": "Spiked Choker", "brand": "Tigre Punks", },
+0x167: { "id": 0x167, "name": "Red Mohawk Set", "brand": "Tigre Punks", },
+0x168: { "id": 0x168, "name": "Gold Padlock Necklace", "brand": "Tigre Punks", },
+0x169: { "id": 0x169, "name": "Custom Waist Pack", "brand": "Tigre Punks", },
+0x16A: { "id": 0x16A, "name": "Tiger Waist Pack", "brand": "Tigre Punks", },
+0x16B: { "id": 0x16B, "name": "Lace Bonnet", "brand": "Lapin Angelique", },
+0x16C: { "id": 0x16C, "name": "Ribbon Bonnet", "brand": "Lapin Angelique", },
+0x16D: { "id": 0x16D, "name": "Ribbon Mini-hat", "brand": "Lapin Angelique", },
+0x16E: { "id": 0x16E, "name": "Mini-crown", "brand": "Lapin Angelique", },
+0x16F: { "id": 0x16F, "name": "Goth Bondage Coat", "brand": "Lapin Angelique", },
+0x170: { "id": 0x170, "name": "Asymmetric Jersey", "brand": "Lapin Angelique", },
+0x171: { "id": 0x171, "name": "Spiderweb Jersey", "brand": "Lapin Angelique", },
+0x172: { "id": 0x172, "name": "Bunny Parka", "brand": "Lapin Angelique", },
+0x173: { "id": 0x173, "name": "Shirt & Arm Warmers", "brand": "Lapin Angelique", },
+0x174: { "id": 0x174, "name": "Bandage Pants", "brand": "Lapin Angelique", },
+0x175: { "id": 0x175, "name": "Red Two-tier Skirt", "brand": "Lapin Angelique", },
+0x176: { "id": 0x176, "name": "Double-breasted Suit", "brand": "Lapin Angelique", },
+0x177: { "id": 0x177, "name": "Lace-up Dress", "brand": "Lapin Angelique", },
+0x178: { "id": 0x178, "name": "Ribbon-laced Dress", "brand": "Lapin Angelique", },
+0x179: { "id": 0x179, "name": "Vampire Dress", "brand": "Lapin Angelique", },
+0x17A: { "id": 0x17A, "name": "Ribbon Shoes", "brand": "Lapin Angelique", },
+0x17B: { "id": 0x17B, "name": "Platform Shoes", "brand": "Lapin Angelique", },
+0x17C: { "id": 0x17C, "name": "Cape", "brand": "Lapin Angelique", },
+0x17D: { "id": 0x17D, "name": "Frilly Parasol", "brand": "Lapin Angelique", },
+0x17E: { "id": 0x17E, "name": "Blond Wig", "brand": "Lapin Angelique", },
+0x17F: { "id": 0x17F, "name": "M'sieur Lapin", "brand": "Lapin Angelique", },
+0x180: { "id": 0x180, "name": "White Dragon", "brand": "Dragon Couture", },
+0x181: { "id": 0x181, "name": "Light and Shadow", "brand": "Dragon Couture", },
+0x182: { "id": 0x182, "name": "Yin Blazer", "brand": "Dragon Couture", },
+0x183: { "id": 0x183, "name": "Midnight Thoughts", "brand": "Dragon Couture", },
+0x184: { "id": 0x184, "name": "Plum Blossom", "brand": "Dragon Couture", },
+0x185: { "id": 0x185, "name": "Vernal Equinox", "brand": "Dragon Couture", },
+0x186: { "id": 0x186, "name": "Autumn Dragon", "brand": "Dragon Couture", },
+0x187: { "id": 0x187, "name": "Sun Emperor", "brand": "Dragon Couture", },
+0x188: { "id": 0x188, "name": "Dragon Lady", "brand": "Dragon Couture", },
+0x189: { "id": 0x189, "name": "A Flash, A Spark", "brand": "Dragon Couture", },
+0x18A: { "id": 0x18A, "name": "One Man, No Equals", "brand": "Dragon Couture", },
+0x18B: { "id": 0x18B, "name": "Old Wisdom Made New", "brand": "Dragon Couture", },
+0x18C: { "id": 0x18C, "name": "Typhoon", "brand": "Dragon Couture", },
+0x18D: { "id": 0x18D, "name": "Dandy Hat", "brand": "Hip Snake", },
+0x18E: { "id": 0x18E, "name": "Zephyr's Elegy", "brand": "Hip Snake", },
+0x18F: { "id": 0x18F, "name": "Tree Leaf Serenade", "brand": "Hip Snake", },
+0x190: { "id": 0x190, "name": "Dappled Light Waltz", "brand": "Hip Snake", },
+0x191: { "id": 0x191, "name": "Zephyr's Sonata", "brand": "Hip Snake", },
+0x192: { "id": 0x192, "name": "North Wind Concerto", "brand": "Hip Snake", },
+0x193: { "id": 0x193, "name": "Spring Breeze Rhapsody", "brand": "Hip Snake", },
+0x194: { "id": 0x194, "name": "Sky Blue Paean", "brand": "Hip Snake", },
+0x195: { "id": 0x195, "name": "High Sun Paean", "brand": "Hip Snake", },
+0x196: { "id": 0x196, "name": "Sunflower", "brand": "Hip Snake", },
+0x197: { "id": 0x197, "name": "Hydrangea", "brand": "Hip Snake", },
+0x198: { "id": 0x198, "name": "Tulip", "brand": "Hip Snake", },
+0x199: { "id": 0x199, "name": "Sunshine One-piece", "brand": "Hip Snake", },
+0x19A: { "id": 0x19A, "name": "Flower One-piece", "brand": "Hip Snake", },
+0x19B: { "id": 0x19B, "name": "Youth's March", "brand": "Hip Snake", },
+0x19C: { "id": 0x19C, "name": "Young Folks", "brand": "Hip Snake", },
+0x19D: { "id": 0x19D, "name": "When You're in Love", "brand": "Hip Snake", },
+0x19E: { "id": 0x19E, "name": "Love in a Heartbeat", "brand": "Hip Snake", },
+0x19F: { "id": 0x19F, "name": "Let's Dance", "brand": "Hip Snake", },
+0x1A0: { "id": 0x1A0, "name": "Young American", "brand": "Hip Snake", },
+0x1A1: { "id": 0x1A1, "name": "Funky Shades", "brand": "Hip Snake", },
+0x1A2: { "id": 0x1A2, "name": "Love & Peace", "brand": "Hip Snake", },
+0x1A3: { "id": 0x1A3, "name": "Slogan Bandannas", "brand": "Hip Snake", },
+0x1A4: { "id": 0x1A4, "name": "Cocktail Queen", "brand": "Pegaso", },
+0x1A5: { "id": 0x1A5, "name": "Regal Presence", "brand": "Pegaso", },
+0x1A6: { "id": 0x1A6, "name": "Tweed Gentleman", "brand": "Pegaso", },
+0x1A7: { "id": 0x1A7, "name": "Lavender Lotus", "brand": "Pegaso", },
+0x1A8: { "id": 0x1A8, "name": "Classic Half-boots", "brand": "Pegaso", },
+0x1A9: { "id": 0x1A9, "name": "Crimson Stilettos", "brand": "Pegaso", },
+0x1AA: { "id": 0x1AA, "name": "Silver Baron", "brand": "Pegaso", },
+0x1AB: { "id": 0x1AB, "name": "Liberty Duke", "brand": "Pegaso", },
+0x1AC: { "id": 0x1AC, "name": "Royal Splendor", "brand": "Pegaso", },
+0x1AD: { "id": 0x1AD, "name": "Revolution", "brand": "Pegaso", },
+0x1AE: { "id": 0x1AE, "name": "Sparkling Flight", "brand": "Pegaso", },
+0x1AF: { "id": 0x1AF, "name": "Darling Lock", "brand": "Pegaso", },
+0x1B0: { "id": 0x1B0, "name": "Pitter Patter Plaid", "brand": "Sheep Heavenly", },
+0x1B1: { "id": 0x1B1, "name": "Frilly Camisole", "brand": "Sheep Heavenly", },
+0x1B2: { "id": 0x1B2, "name": "Aqua Puffy Blouse", "brand": "Sheep Heavenly", },
+0x1B3: { "id": 0x1B3, "name": "Retro Dot One-piece", "brand": "Sheep Heavenly", },
+0x1B4: { "id": 0x1B4, "name": "Easy Breezy Dress", "brand": "Sheep Heavenly", },
+0x1B5: { "id": 0x1B5, "name": "Green With Envy", "brand": "Sheep Heavenly", },
+0x1B6: { "id": 0x1B6, "name": "Lemon Sherbert", "brand": "Sheep Heavenly", },
+0x1B7: { "id": 0x1B7, "name": "Mint Ice Cream", "brand": "Sheep Heavenly", },
+0x1B8: { "id": 0x1B8, "name": "Spangle Sorbet", "brand": "Sheep Heavenly", },
+0x1B9: { "id": 0x1B9, "name": "Iris Gelato", "brand": "Sheep Heavenly", },
+0x1BA: { "id": 0x1BA, "name": "Strawberry Chocolate", "brand": "Sheep Heavenly", },
+0x1BB: { "id": 0x1BB, "name": "Mint Choco-chip", "brand": "Sheep Heavenly", },
+0x1BC: { "id": 0x1BC, "name": "Angel Frill Skirt", "brand": "Sheep Heavenly", },
+0x1BD: { "id": 0x1BD, "name": "Citrus Shorts", "brand": "Sheep Heavenly", },
+0x1BE: { "id": 0x1BE, "name": "Sparkling Capris", "brand": "Sheep Heavenly", },
+0x1BF: { "id": 0x1BF, "name": "Ribbon Cargos", "brand": "Sheep Heavenly", },
+0x1C0: { "id": 0x1C0, "name": "Flaming Knee-highs", "brand": "Sheep Heavenly", },
+0x1C1: { "id": 0x1C1, "name": "Cloud Nine Scarf", "brand": "Sheep Heavenly", },
+0x1C2: { "id": 0x1C2, "name": "Lucky Rainbow Bracelets", "brand": "Sheep Heavenly", },
+0x1C3: { "id": 0x1C3, "name": "Rounded Specs", "brand": "Sheep Heavenly", },
+0x1C4: { "id": 0x1C4, "name": "Shining Star Dangles", "brand": "Sheep Heavenly", },
+0x1C5: { "id": 0x1C5, "name": "Princess Ring", "brand": "Sheep Heavenly", },
+0x1C6: { "id": 0x1C6, "name": "Happy Necklace", "brand": "Sheep Heavenly", },
+0x1C7: { "id": 0x1C7, "name": "Heart Pochette", "brand": "Sheep Heavenly", },
+0x1C8: { "id": 0x1C8, "name": "Polka Dot Bag", "brand": "Sheep Heavenly", },
+0x1C9: { "id": 0x1C9, "name": "Wadatsumi", "brand": "Jupiter of the Monkey", },
+0x1CA: { "id": 0x1CA, "name": "Fudo", "brand": "Jupiter of the Monkey", },
+0x1CB: { "id": 0x1CB, "name": "Dharma", "brand": "Jupiter of the Monkey", },
+0x1CC: { "id": 0x1CC, "name": "Suiten", "brand": "Jupiter of the Monkey", },
+0x1CD: { "id": 0x1CD, "name": "Haramitsu", "brand": "Jupiter of the Monkey", },
+0x1CE: { "id": 0x1CE, "name": "Amida", "brand": "Jupiter of the Monkey", },
+0x1CF: { "id": 0x1CF, "name": "Ashura", "brand": "Jupiter of the Monkey", },
+0x1D0: { "id": 0x1D0, "name": "Brahma", "brand": "Jupiter of the Monkey", },
+0x1D1: { "id": 0x1D1, "name": "Komokuten", "brand": "Jupiter of the Monkey", },
+0x1D2: { "id": 0x1D2, "name": "Togenkyo", "brand": "Jupiter of the Monkey", },
+0x1D3: { "id": 0x1D3, "name": "Inazuma", "brand": "Jupiter of the Monkey", },
+0x1D4: { "id": 0x1D4, "name": "Hannya", "brand": "Jupiter of the Monkey", },
+0x1D5: { "id": 0x1D5, "name": "Aun", "brand": "Jupiter of the Monkey", },
+0x1D6: { "id": 0x1D6, "name": "Gekirin", "brand": "Jupiter of the Monkey", },
+0x1D7: { "id": 0x1D7, "name": "Karma", "brand": "Jupiter of the Monkey", },
+0x1D8: { "id": 0x1D8, "name": "Naraka", "brand": "Jupiter of the Monkey", },
+0x1D9: { "id": 0x1D9, "name": "Plumeria Ring", "brand": "Pavo Real", },
+0x1DA: { "id": 0x1DA, "name": "Gold Band", "brand": "Pavo Real", },
+0x1DB: { "id": 0x1DB, "name": "Coral Necklace", "brand": "Pavo Real", },
+0x1DC: { "id": 0x1DC, "name": "Turquoise Necklace", "brand": "Pavo Real", },
+0x1DD: { "id": 0x1DD, "name": "Garden Bracelet", "brand": "Pavo Real", },
+0x1DE: { "id": 0x1DE, "name": "Wheel Bracelet", "brand": "Pavo Real", },
+0x1DF: { "id": 0x1DF, "name": "Gold Bangle", "brand": "Pavo Real", },
+0x1E0: { "id": 0x1E0, "name": "Pureheart Pendant", "brand": "Pavo Real", },
+0x1E1: { "id": 0x1E1, "name": "Skull Pendant", "brand": "Pavo Real", },
+0x1E2: { "id": 0x1E2, "name": "Chandelier Dangles", "brand": "Pavo Real", },
+0x1E3: { "id": 0x1E3, "name": "Diamond Studs", "brand": "Pavo Real", },
+0x1E4: { "id": 0x1E4, "name": "Plumeria Studs", "brand": "Pavo Real", },
+0x1E5: { "id": 0x1E5, "name": "Navel Piercing", "brand": "Pavo Real", },
+0x1E6: { "id": 0x1E6, "name": "Heart Nails", "brand": "Pavo Real", },
+0x1E7: { "id": 0x1E7, "name": "Blue Nails", "brand": "Pavo Real", },
+0x1E8: { "id": 0x1E8, "name": "Silver Screen Sweetheart", "brand": "Natural Puppy", },
+0x1E9: { "id": 0x1E9, "name": "Silver Screen Starlet", "brand": "Natural Puppy", },
+0x1EA: { "id": 0x1EA, "name": "Plain Shirt", "brand": "Natural Puppy", },
+0x1EB: { "id": 0x1EB, "name": "Negative Polo", "brand": "Natural Puppy", },
+0x1EC: { "id": 0x1EC, "name": "Positive Polo", "brand": "Natural Puppy", },
+0x1ED: { "id": 0x1ED, "name": "Pink Stripe", "brand": "Natural Puppy", },
+0x1EE: { "id": 0x1EE, "name": "Black Stripe", "brand": "Natural Puppy", },
+0x1EF: { "id": 0x1EF, "name": "Lovely Camisole", "brand": "Natural Puppy", },
+0x1F0: { "id": 0x1F0, "name": "White Cache-coeur", "brand": "Natural Puppy", },
+0x1F1: { "id": 0x1F1, "name": "Chic Black Turtleneck", "brand": "Natural Puppy", },
+0x1F2: { "id": 0x1F2, "name": "Midday Kitten Knit", "brand": "Natural Puppy", },
+0x1F3: { "id": 0x1F3, "name": "Black Jeans", "brand": "Natural Puppy", },
+0x1F4: { "id": 0x1F4, "name": "Brown Jeans", "brand": "Natural Puppy", },
+0x1F5: { "id": 0x1F5, "name": "Skinny Jeans (Blue)", "brand": "Natural Puppy", },
+0x1F6: { "id": 0x1F6, "name": "My Favorite One-piece", "brand": "Natural Puppy", },
+0x1F7: { "id": 0x1F7, "name": "Angelic One-piece", "brand": "Natural Puppy", },
+0x1F8: { "id": 0x1F8, "name": "Lovely One-piece", "brand": "Natural Puppy", },
+0x1F9: { "id": 0x1F9, "name": "Simple Mules", "brand": "Natural Puppy", },
+0x1FA: { "id": 0x1FA, "name": "Blossom Mules", "brand": "Natural Puppy", },
+0x1FB: { "id": 0x1FB, "name": "Enamel Pumps", "brand": "Natural Puppy", },
+0x1FC: { "id": 0x1FC, "name": "Simple Necktie", "brand": "Natural Puppy", },
+0x1FD: { "id": 0x1FD, "name": "Waffle Necktie", "brand": "Natural Puppy", },
+0x1FE: { "id": 0x1FE, "name": "Seattle", "brand": "Wild Boar", },
+0x1FF: { "id": 0x1FF, "name": "San Francisco", "brand": "Wild Boar", },
+0x200: { "id": 0x200, "name": "Las Vegas", "brand": "Wild Boar", },
+0x201: { "id": 0x201, "name": "Chicago", "brand": "Wild Boar", },
+0x202: { "id": 0x202, "name": "New York", "brand": "Wild Boar", },
+0x203: { "id": 0x203, "name": "Negotiator", "brand": "Wild Boar", },
+0x204: { "id": 0x204, "name": "Hey Boy", "brand": "Wild Boar", },
+0x205: { "id": 0x205, "name": "Hey Girl", "brand": "Wild Boar", },
+0x206: { "id": 0x206, "name": "Hey Everybody", "brand": "Wild Boar", },
+0x207: { "id": 0x207, "name": "Alive", "brand": "Wild Boar", },
+0x208: { "id": 0x208, "name": "Sabotage", "brand": "Wild Boar", },
+0x209: { "id": 0x209, "name": "3 MC's 1 DJ", "brand": "Wild Boar", },
+0x20A: { "id": 0x20A, "name": "Pass the Mic", "brand": "Wild Boar", },
+0x20B: { "id": 0x20B, "name": "Won't Stop", "brand": "Wild Boar", },
+0x20C: { "id": 0x20C, "name": "Don't Stop", "brand": "Wild Boar", },
+0x20D: { "id": 0x20D, "name": "Camouflage", "brand": "Wild Boar", },
+0x20E: { "id": 0x20E, "name": "Darkness", "brand": "Wild Boar", },
+0x20F: { "id": 0x20F, "name": "Denim Coveralls", "brand": "Wild Boar", },
+0x210: { "id": 0x210, "name": "Work Coveralls", "brand": "Wild Boar", },
+0x211: { "id": 0x211, "name": "Gold Die", "brand": "Wild Boar", },
+0x212: { "id": 0x212, "name": "Wild Boar Pendant", "brand": "Wild Boar", },
+0x213: { "id": 0x213, "name": "King Pendant", "brand": "Wild Boar", },
+0x214: { "id": 0x214, "name": "Skull Deck", "brand": "Wild Boar", },
+0x215: { "id": 0x215, "name": "Camo Deck", "brand": "Wild Boar", },
+0x216: { "id": 0x216, "name": "Cat Deck", "brand": "Wild Boar", },
+0x217: { "id": 0x217, "name": "WEWY Promo Coat", "brand": "Gatito", },
+0x218: { "id": 0x218, "name": "WEWY Promo Tee", "brand": "Gatito", },
+0x219: { "id": 0x219, "name": "WEWY Promo Tote", "brand": "Gatito", },
+0x21A: { "id": 0x21A, "name": "Pinky's Lipstick", "brand": "Gatito", },
+0x21B: { "id": 0x21B, "name": "Lollipop's Parka", "brand": "Gatito", },
+0x21C: { "id": 0x21C, "name": "Big Guy's Buckle", "brand": "Gatito", },
+0x21D: { "id": 0x21D, "name": "Pi-Face's Cap", "brand": "Gatito", },
+0x21E: { "id": 0x21E, "name": "Pi-Face's Coat", "brand": "Gatito", },
+0x21F: { "id": 0x21F, "name": "Pi-Face's Jeans", "brand": "Gatito", },
+0x220: { "id": 0x220, "name": "Pi-Face's Bandanna", "brand": "Gatito", },
+0x221: { "id": 0x221, "name": "Iron Maiden's One-piece", "brand": "Gatito", },
+0x222: { "id": 0x222, "name": "Shade's Headphones", "brand": "Gatito", },
+0x223: { "id": 0x223, "name": "Sis's Pendant", "brand": "Gatito", },
+0x224: { "id": 0x224, "name": "Wizard's Glasses", "brand": "Gatito", },
+0x225: { "id": 0x225, "name": "My Phones", "brand": "Gatito", },
+0x226: { "id": 0x226, "name": "Your Cap", "brand": "Gatito", },
+0x227: { "id": 0x227, "name": "Her Stuffed Animal", "brand": "Gatito", },
+0x228: { "id": 0x228, "name": "Angel Feather", "brand": "Gatito", },
+0x229: { "id": 0x229, "name": "Gakuran", "brand": "Unbranded", },
+0x22A: { "id": 0x22A, "name": "Sailor Suit", "brand": "Unbranded", },
+0x22B: { "id": 0x22B, "name": "Boys' Uniform with Blazer", "brand": "Unbranded", },
+0x22C: { "id": 0x22C, "name": "Girls' Uniform with Blazer", "brand": "Unbranded", },
+0x22D: { "id": 0x22D, "name": "Girls' Uniform with Sweater", "brand": "Unbranded", },
+0x22E: { "id": 0x22E, "name": "Head Honcho", "brand": "Unbranded", },
+0x22F: { "id": 0x22F, "name": "Yukata", "brand": "Unbranded", },
+0x230: { "id": 0x230, "name": "The Dead Slammurai", "brand": "Unbranded", },
+0x231: { "id": 0x231, "name": "The Black Slammurai", "brand": "Unbranded", },
+0x232: { "id": 0x232, "name": "Nose Glasses", "brand": "Unbranded", },
+0x233: { "id": 0x233, "name": "Samurai Wig", "brand": "Unbranded", },
+0x234: { "id": 0x234, "name": "Mr. Mew Suit", "brand": "Unbranded", },
+0x235: { "id": 0x235, "name": "New Year's Gift", "brand": "Unbranded", },
+0x236: { "id": 0x236, "name": "Pirate Hat", "brand": "Unbranded", },
+0x237: { "id": 0x237, "name": "Potted Plant", "brand": "Unbranded", },
+0x238: { "id": 0x238, "name": "Mr. Claus", "brand": "Unbranded", },
+0x239: { "id": 0x239, "name": "Mrs. Claus", "brand": "Unbranded", },
+0x23A: { "id": 0x23A, "name": "Black Book Bag", "brand": "Unbranded", },
+0x23B: { "id": 0x23B, "name": "Red Book Bag", "brand": "Unbranded", },
+0x23C: { "id": 0x23C, "name": "Biker Gloves", "brand": "Unbranded", },
+0x23D: { "id": 0x23D, "name": "Maid Costume", "brand": "Unbranded", },
+0x23E: { "id": 0x23E, "name": "Supermask's Mask", "brand": "Unbranded", },
+0x23F: { "id": 0x23F, "name": "Ninja Garb", "brand": "Unbranded", },
+0x240: { "id": 0x240, "name": "Samurai Helm", "brand": "Unbranded", },
+0x241: { "id": 0x241, "name": "Samurai Armor", "brand": "Unbranded", },
+0x242: { "id": 0x242, "name": "Fan of the Rising Sun", "brand": "Unbranded", },
+0x243: { "id": 0x243, "name": "Samurai Sword", "brand": "Unbranded", },
+0x244: { "id": 0x244, "name": "Solid Slammer", "brand": "Unbranded", },
+0x245: { "id": 0x245, "name": "False Teeth", "brand": "Unbranded", },
+0x246: { "id": 0x246, "name": "Lucky Mallet", "brand": "Unbranded", },
+0x247: { "id": 0x247, "name": "Mr. Ducky", "brand": "Unbranded", },
+}
+
+// Hardcode it instead of generate it because array_push() doesn't exist yet.
+brands = [
+    "D+B", "Mus Rattus", "Dragon Couture", "Gatito", "Hip Snake", "Jupiter of the Monkey",
+    "Lapin Angelique", "Natural Puppy", "Pavo Real", "Tigre Punks", "Pegaso", "Sheep Heavenly",
+    "Wild Boar", "Unbranded"
+]
+
+function GetAllThreadsOfBrand(brand)
+{
+    result = {}
+    for i in threads
+    {
+        thread = threads[i]
+        if (thread["brand"] == brand)
+        {
+            result[i] = thread
+        }
+    }
+    return result
+}
+
+function DoesNekuHaveBrandEquipped(brand)
+{
+    threadsInBrand = GetAllThreadsOfBrand(brand)
+    result = always_false()
+    for slot in range(0, 3)
+    {
+        brandIsInSlot = always_false()
+        slotAddr = nekuThreadSlot1BaseAddr() + slot * 2
+        for i in threadsInBrand
+        {
+            thread = threadsInBrand[i]
+            brandIsInSlot = brandIsInSlot || word(slotAddr) == thread["id"]
+        }
+        
+        result = result || brandIsInSlot
+    }
+    
+    return once(result)
 }
 
 // $071d2c: Neku thread, slot 1 (16-bit)
@@ -910,6 +1298,20 @@ items = {
 // $071d30: Neku thread, slot 3 (16-bit)
 // $071d32: Neku thread, slot 4 (16-bit)
 function nekuThreadSlot1BaseAddr() => 0x071d2c
+
+function HasNekuClothingChanged()
+{
+    result = always_false()
+    for slot in range(0, 3)
+    {
+        threadHasChanged = always_false()
+        slotAddr = nekuThreadSlot1BaseAddr() + slot * 2
+
+        result = result || Delta(word(slotAddr)) != word(slotAddr)
+    }
+    
+    return result
+}
 
 itemSlots = 472
 firstItemSlotBaseAddr = 0x072c80
@@ -944,7 +1346,7 @@ function JustGotNumberOfItemsByName(name, count)
 
 // With this function, we don't have to check if the value was set in game. We just want to know if
 // an item exists in the inventory.
-function HasNumberOfItemsByName(name, count)
+function HasItemByName(name)
 {
     item = GetItemByName(name)
     result = always_false()
@@ -958,7 +1360,7 @@ function HasNumberOfItemsByName(name, count)
     return result
 }
 
-playingOnClearedGame = HasNumberOfItemsByName("(S) Game Cleared", 1) // Attempt to cache
+playingOnClearedGame = HasItemByName("(S) Game Cleared") // Attempt to cache
 
 // END ITEMS
 
@@ -1001,10 +1403,9 @@ achievement(title = "In the Nick of Time", points = 1,
         && CurrentChapterIs("Shiki, Day 1")
 )
 
-// TODO: May trigger at wrong time. Investigate further.
 achievement(title = "It's a Step Forward", points = 3,
     description = "Master a pin in your deck.",
-    trigger = IsAnyDeckPinMastered() && isOnTitleScreen() == 0x0
+    trigger = IsAnyDeckPinMastered() && isOnTitleScreen() == 0x0 && never(HasPinLoadoutChanged())
 )
 
 achievement(title = "Unnatural Selection", points = 5,
@@ -1028,6 +1429,27 @@ achievement(title = "Crushing on the Shopkeeper", points = 10,
 //    trigger = JustGotNumberOfItemsByName("(S) Extra Slot", 4)
 //)
 
+// Music achievements
+
+musicAchievements = [
+    { "name": "Bronze Discography", "description": "Acquire five music tracks.", "threshold": 5, "points": 3 },
+]
+
+musicConditions = {}
+for i in GetAllItemsOfType("CD")
+{
+    cd = items[i]
+    // Unknown if these conditions are right due to the recursion issue.
+    //musicConditions[i] = { "countsWhen": HasItemByName(cd["name"]), "resetWhen": JustGotNumberOfItemsByName(cd["name"], 1) }
+}
+
+for cheevo in musicAchievements
+{
+    //GenerateSaveProtectedAchievementFromConditions(cheevo, musicConditions) // TODO: Uncomment when "recursion" fix is implemented
+}
+
+// End music achievements
+
 // Noise achievements
 noiseAchievements = [
     { "name": "Rookie Eraser", "description": "Complete 10% of the Noise Report.", "threshold": 10, "points": 3 },
@@ -1044,7 +1466,7 @@ for i in range(0, numberOfNoiseEntries - 1)
 
 for cheevo in noiseAchievements
 {
-    //GenerateSaveProtectedAchievementFromConditions(cheevo, noiseConditions) // TODO: Uncomment when "recursion" fix is implemented
+    //GenerateSaveProtectedAchievementFromConditions(cheevo, noiseConditions)
 }
 
 // End Noise achievements
@@ -1052,19 +1474,19 @@ for cheevo in noiseAchievements
 // Pin mastery achievements (TODO: Attempt to optimize; VERY SLOW TO GENERATE)
 
 pinMasteryConditions = {}
-//for i in range(0, numberOfMasteredPinSlots - 1)
-//{
+for i in range(0, numberOfMasteredPinSlots - 1)
+{
     // Resetting the game can trigger the achievements; checking if the play time is greater than 0 should prevent this.
-    //resetWhen = MasteredPinSlotChanged(i) && playTime() > 0
-    //pinMasteryConditions[i] = { "countsWhen": MasteredPinSlotIsFilled(i), "resetWhen": resetWhen }
-//}
+    resetWhen = MasteredPinSlotChanged(i) && playTime() > 0
+    pinMasteryConditions[i] = { "countsWhen": MasteredPinSlotIsFilled(i), "resetWhen": resetWhen }
+}
 
 pinMasteryAchievements = [
     //{ "name": "A Couple Lanyards Full", "description": "Have 30 types of pins in your Mastered collection.", "threshold": 30, "points": 3 },
     //{ "name": "Flea Market Vendor", "description": "Have 75 types of pins in your Mastered collection.", "threshold": 75, "points": 5 },
     //{ "name": "Comiket Vendor", "description": "Have 150 types of pins in your Mastered collection.", "threshold": 150, "points": 10 },
     //{ "name": "Pioneer of the Trade", "description": "Have all 289 types of pins that do not require mingling in your Mastered collection.",
-    //    "threshold": 289, "points": 25 }
+        //"threshold": 289, "points": 25 }
 ]
 
 for cheevo in pinMasteryAchievements
@@ -1080,9 +1502,21 @@ achievement(title = "Battle Star", points = 5,
         && IsAtLeastOnDifficulty("Hard")
 )
 
+achievement(title = "Battle Asterism", points = 25,
+    description = "Earn a 🟊 ranking in a 4-chain battle or longer on Hard or Ultimate difficulty.",
+    trigger = AcquiredAtLeastRank("Star") && IsRankingRevealed()
+        && IsAtLeastOnDifficulty("Hard") && lengthOfBattleChain() >= 4
+)
+
+achievement(title = "Battle Constellation", points = 50,
+    description = "Earn a 🟊 ranking in a 9-chain battle or longer on Hard or Ultimate difficulty.",
+    trigger = AcquiredAtLeastRank("Star") && IsRankingRevealed()
+        && IsAtLeastOnDifficulty("Hard") && lengthOfBattleChain() >= 9
+)
+
 timeLimit = 30
 achievement(title = "Don't Kill Me Slowly", points = 5,
-    description = "Defeat the Metal Corehog on Week 1, Day 2, within " + SecondsToFormat(timeLimit)
+    description = "Defeat the Metal Corehog on within " + SecondsToFormat(timeLimit)
         + " (Normal or higher; Level 2 or below).",
     trigger = enemyId() == GetEnemyIdByName("Metal Corehog") && IsRankingRevealed() && battleTime() <= SecondsToFrames(timeLimit)
         && IsAtLeastOnDifficulty("Normal") && currentLevel() <= 2
@@ -1091,19 +1525,39 @@ achievement(title = "Don't Kill Me Slowly", points = 5,
 function fusionLevel() => byte(0x37212d)
 
 achievement(title = "No 1 2 Trust", points = 5,
-    description = "Defeat the Vespertilio Canor on Week 1, Day 3, without activating a Fusion (Normal or higher; Level 3 or below).",
+    description = "Defeat the Vespertilio Canor without activating a Fusion (Normal or higher; Level 3 or below).",
     trigger = enemyId() == GetEnemyIdByName("Vespertilio Canor") && EnterBattleCheckpointValid()
         && IsAtLeastOnDifficulty("Normal") && currentLevel() <= 3 && never(Delta(fusionLevel()) > fusionLevel())
         && IsRankingRevealed()
 )
 
 achievement(title = "Avenged", points = 25,
-    description = "Defeat the Swing Shark on Week 1, Day 4, without any recovery pins equipped (Normal or higher; Level 4 or below).",
+    description = "Defeat the Swing Shark without any recovery pins equipped (Normal or higher; Level 4 or below).",
     trigger = enemyId() == GetEnemyIdByName("Swing Shark") && EnterBattleCheckpointValid()
         && IsAtLeastOnDifficulty("Normal") && currentLevel() <= 4 && IsRankingRevealed() && !HasRecoveryPinsEquipped()
 )
 
+pinsEquipped = []
+for slotId in range(0, 5)
+{
+    array_push(pinsEquipped, once(word(GetDeckSlotAddrBySlotId(slotId)) != 0xffff))
+}
+achievement(title = "Empty Wardrobes", points = 5,
+    description = "Defeat the Circle Pit Grizzly without equipping any more than two pins (Normal or higher; Level 5 or below).",
+    trigger = enemyId() == GetEnemyIdByName("Circle Pit Grizzly") && EnterBattleCheckpointValid()
+        && IsAtLeastOnDifficulty("Normal") && currentLevel() <= 5 && IsRankingRevealed()
+        && never(tally(3, pinsEquipped))
+)
+
+equippedBrands = []
+for i in brands
+{
+    array_push(equippedBrands, DoesNekuHaveBrandEquipped(i))
+}
+
+
 achievement(title = "It's My Asskicking Outfit, Bitch!", points = 0,
-    description = "Defeat X with Neku wearing only threads that don't share the same brand.",
-    trigger = always_false()
+    description = "Defeat X while Neku is wearing threads from four different brands.",
+    trigger = tally(4, equippedBrands) && never(HasNekuClothingChanged())
+        //&& EnterBattleCheckpointValid() && IsRankingRevealed()
 )
