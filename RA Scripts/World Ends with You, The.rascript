@@ -1280,11 +1280,10 @@ function DoesNekuHaveBrandEquipped(brand)
     for slot in range(0, 3)
     {
         brandIsInSlot = always_false()
-        slotAddr = nekuThreadSlot1BaseAddr() + slot * 2
         for i in threadsInBrand
         {
             thread = threadsInBrand[i]
-            brandIsInSlot = brandIsInSlot || word(slotAddr) == thread["id"]
+            brandIsInSlot = brandIsInSlot || word(GetNekuThreadAddressBySlot(slot)) == thread["id"]
         }
         
         result = result || brandIsInSlot
@@ -1299,15 +1298,36 @@ function DoesNekuHaveBrandEquipped(brand)
 // $071d32: Neku thread, slot 4 (16-bit)
 function nekuThreadSlot1BaseAddr() => 0x071d2c
 
+// $071d44: Shiki thread, slot 1 (16-bit)
+function shikiThreadSlot1BaseAddr() => 0x071d44
+
+// $071d5c: Joshua thread, slot 1 (16-bit)
+function joshuaThreadSlot1BaseAddr() => 0x071d5c
+
+// $071d74: Beat thread, slot 1 (16-bit)
+function beatThreadSlot1BaseAddr() => 0x071d74
+
+function GetNekuThreadAddressBySlot(slotId) => GetThreadAddressBySlot(slotId, nekuThreadSlot1BaseAddr())
+
+function GetThreadAddressBySlot(slotId, slot1Addr) => slot1Addr + slotId * 2
+
+function DoesNekuHaveThreadsEquipped()
+{
+    result = always_false()
+    for slot in range(0, 3)
+    {
+        result = result || word(GetNekuThreadAddressBySlot(slot)) != 0xffff
+    }
+    
+    return result
+}
+
 function HasNekuClothingChanged()
 {
     result = always_false()
     for slot in range(0, 3)
     {
-        threadHasChanged = always_false()
-        slotAddr = nekuThreadSlot1BaseAddr() + slot * 2
-
-        result = result || Delta(word(slotAddr)) != word(slotAddr)
+        result = result || Delta(word(GetNekuThreadAddressBySlot(slot))) != word(GetNekuThreadAddressBySlot(slot))
     }
     
     return result
@@ -1516,7 +1536,7 @@ achievement(title = "Battle Constellation", points = 50,
 
 timeLimit = 30
 achievement(title = "Don't Kill Me Slowly", points = 5,
-    description = "Defeat the Metal Corehog on within " + SecondsToFormat(timeLimit)
+    description = "Defeat the Metal Corehog within " + SecondsToFormat(timeLimit)
         + " (Normal or higher; Level 2 or below).",
     trigger = enemyId() == GetEnemyIdByName("Metal Corehog") && IsRankingRevealed() && battleTime() <= SecondsToFrames(timeLimit)
         && IsAtLeastOnDifficulty("Normal") && currentLevel() <= 2
@@ -1543,10 +1563,11 @@ for slotId in range(0, 5)
     array_push(pinsEquipped, once(word(GetDeckSlotAddrBySlotId(slotId)) != 0xffff))
 }
 achievement(title = "Empty Wardrobes", points = 5,
-    description = "Defeat the Circle Pit Grizzly without equipping any more than two pins (Normal or higher; Level 5 or below).",
+    description = "Defeat the Circle Pit Grizzly without Neku wearing threads and with no"
+        + " more than two pins equipped (Normal or higher; Level 5 or below).",
     trigger = enemyId() == GetEnemyIdByName("Circle Pit Grizzly") && EnterBattleCheckpointValid()
         && IsAtLeastOnDifficulty("Normal") && currentLevel() <= 5 && IsRankingRevealed()
-        && never(tally(3, pinsEquipped))
+        && never(tally(3, pinsEquipped)) && !DoesNekuHaveThreadsEquipped()
 )
 
 equippedBrands = []
