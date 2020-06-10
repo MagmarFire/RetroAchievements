@@ -14,8 +14,13 @@ function WasBitflagSetInGame(bit)
 
 function WasValueSetInGame(mem, oldValue, newValue)
 {
-    return once(Delta(mem) == oldValue && mem == newValue)
+    return WasValueSet(mem, oldValue, newValue)
         && never(IsLoadingSaveFile())
+}
+
+function WasValueSet(mem, oldValue, newValue)
+{
+    return once(Delta(mem) == oldValue && mem == newValue)
 }
 
 function DidValueBecomeGreaterThanGivenInGame(mem, value)
@@ -1348,6 +1353,11 @@ function GetItemByName(name)
     }
 }
 
+function GetItemSlotAddrByIndex(slotNumber)
+{
+    return firstItemSlotBaseAddr + 4 * slotNumber
+}
+
 // TODO: VERY SLOW
 function JustGotNumberOfItemsByName(name, count)
 {
@@ -1356,7 +1366,7 @@ function JustGotNumberOfItemsByName(name, count)
     
     for i in range(0, itemSlots - 1)
     {
-        addr = firstItemSlotBaseAddr + 4 * i
+        addr = GetItemSlotAddrByIndex(i)
         result = result || word(addr) == item["id"] && WasValueSetInGame(low4(addr + 2), count - 1, count)
             && unless(word(addr) != item["id"]) // We don't want achievements to trigger if the inventory is sorted.
     }
@@ -1373,8 +1383,7 @@ function HasItemByName(name)
     
     for i in range(0, itemSlots - 1)
     {
-        addr = firstItemSlotBaseAddr + 4 * i
-        result = result || word(addr) == item["id"]
+        result = result || word(GetItemSlotAddrByIndex(i)) == item["id"]
     }
     
     return result
@@ -1456,15 +1465,16 @@ musicAchievements = [
 ]
 
 musicConditions = {}
-for i in GetAllItemsOfType("CD")
+cds = { 0x2A6: { "id": 0x2A6, "name": "(CD) Track 34", "type": "CD", }, }//GetAllItemsOfType("CD") // TODO: Temporary while achievement logic conditions are hashed out.
+for i in cds
 {
     cd = items[i]
-    //musicConditions[i] = { "countsWhen": HasItemByName(cd["name"]), "resetWhen": JustGotNumberOfItemsByName(cd["name"], 1) }
+    musicConditions[i] = { "countsWhen": HasItemByName(cd["name"]), "resetWhen": JustGotNumberOfItemsByName(cd["name"], 1) }
 }
 
 for cheevo in musicAchievements
 {
-    //GenerateSaveProtectedAchievementFromConditions(cheevo, musicConditions) // TODO: Uncomment when '%s' error workaroun is discovered.
+    GenerateSaveProtectedAchievementFromConditions(cheevo, musicConditions) // TODO: Uncomment when '%s' error workaroun is discovered.
 }
 
 // End music achievements
