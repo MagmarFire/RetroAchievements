@@ -1459,13 +1459,12 @@ musicConditions = {}
 for i in GetAllItemsOfType("CD")
 {
     cd = items[i]
-    // Unknown if these conditions are right due to the recursion issue.
     //musicConditions[i] = { "countsWhen": HasItemByName(cd["name"]), "resetWhen": JustGotNumberOfItemsByName(cd["name"], 1) }
 }
 
 for cheevo in musicAchievements
 {
-    //GenerateSaveProtectedAchievementFromConditions(cheevo, musicConditions) // TODO: Uncomment when "recursion" fix is implemented
+    //GenerateSaveProtectedAchievementFromConditions(cheevo, musicConditions) // TODO: Uncomment when '%s' error workaroun is discovered.
 }
 
 // End music achievements
