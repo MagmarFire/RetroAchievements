@@ -7,6 +7,18 @@ framesPerSecond = 60
 
 function Delta(addr) => prev(addr)
 
+function Min(x, y)
+{
+    if (x > y)
+    {
+        return x
+    }
+    else
+    {
+        return y
+    }
+}
+
 function WasBitflagSetInGame(bit)
 {
     return WasValueSetInGame(bit, 0, 1)
@@ -52,8 +64,48 @@ function SecondsToFrames(value)
 //         "threshold": how many values in the "addresses" dictionary must be set before this achievement is triggered
 //
 // conditions: "countsWhen": the condition that must be true in order for it to be counted in the total
-//             "resetWhen": the condition that indicates that relevant values in the condition have changed, forcing the state to refresh
+// "resetWhen": the condition that indicates that relevant values in the condition have changed, forcing the state to refresh
 function GenerateSaveProtectedAchievementFromConditions(cheevo, conditions)
+{
+    loadedCounts = []
+    totalCounts = []
+    resetConditions = []
+    resetAlt = always_false()
+
+    for i in conditions
+    {
+        condition = conditions[i]
+        
+        // Actual score is equal to the counts the player has when the game is loaded + the counts obtained in game. In other words,
+        // total = load + session
+        // If the loaded score is greater than or equal to the threshold, this should trigger a permanant pauselock to serve as save protection.
+        array_push(loadedCounts, once(condition["countsWhen"] && IsLoadingSaveFile()))
+        
+        // We want both loaded and session counts here (that is, we don't care if we're loading a save file when these are tallied).
+        // This way, loading a save doesn't invalidate the achievement outright and the player can still make progress towards earning it.
+        array_push(totalCounts, once(condition["countsWhen"]))
+        
+        resetAlt = resetAlt || condition["resetWhen"]
+    }
+
+    achievement(title = cheevo["name"], description = cheevo["description"], points = cheevo["points"],
+        trigger = isOnTitleScreen() == 0x0
+            && measured(tally(cheevo["threshold"], totalCounts)) && unless(tally(cheevo["threshold"], loadedCounts))
+            && never(resetAlt)
+    )
+}
+
+// This function allows the creation of achievements with built-in save protection that deal with a collection of values being set
+// throughout the game. The schemas for both parameters are as follows:
+//
+// cheevo: "name": title
+//         "description": self-explanatory
+//         "points": self-explanatory
+//         "threshold": how many values in the "addresses" dictionary must be set before this achievement is triggered
+//
+// conditions: "countsWhen": the condition that must be true in order for it to be counted in the total
+//             "resetWhen": the condition that indicates that relevant values in the condition have changed, forcing the state to refresh
+function GenerateSaveProtectedAchievementFromConditions_Naive(cheevo, conditions)
 {
     counts = []
     resetalt = always_false()
@@ -76,7 +128,7 @@ function GenerateSaveProtectedAchievementFromConditions(cheevo, conditions)
         trigger = isOnTitleScreen() == 0x0
             && measured(tally(cheevo["threshold"], counts)) && unlessValueStatesAreIdle
             && resetalt
-    ) 
+    )
 }
 
 // $066a30: Appears to correlate to the screen you're on in some way:
@@ -1359,7 +1411,7 @@ function GetItemSlotAddrByIndex(slotNumber)
 }
 
 // TODO: VERY SLOW
-function JustGotNumberOfItemsByName(name, count)
+function _BaseJustGotNumberOfItemsByName(name, count)
 {
     item = GetItemByName(name)
     result = always_false()
@@ -1367,11 +1419,26 @@ function JustGotNumberOfItemsByName(name, count)
     for i in range(0, itemSlots - 1)
     {
         addr = GetItemSlotAddrByIndex(i)
+        idSubclause = always_false()
+        if (count == 1)
+        {
+            idSubclause = Delta(word(addr)) == 0xffff
+        }
+        else
+        {
+            idSubclause = Delta(word(addr)) == item["id"] // We don't want achievements to trigger if the inventory is sorted.
+        }
+        
         result = result || word(addr) == item["id"] && WasValueSetInGame(low4(addr + 2), count - 1, count)
-            && unless(word(addr) != item["id"]) // We don't want achievements to trigger if the inventory is sorted.
+            && idSubclause 
     }
     
     return result
+}
+
+function JustGotNumberOfItemsByName(name, count)
+{
+    return _BaseJustGotNumberOfItemsByName(name, count)
 }
 
 // With this function, we don't have to check if the value was set in game. We just want to know if
@@ -1387,6 +1454,24 @@ function HasItemByName(name)
     }
     
     return result
+}
+
+function ItemInSlotIsACD(slot)
+{
+    id = word(GetItemSlotAddrByIndex(slot))
+    return id >= 0x285 && id <= 0x2A6
+}
+
+function ItemInSlotJustGotFilledWithACD(slot)
+{
+    id = word(GetItemSlotAddrByIndex(slot))
+    return Delta(id) == 0xffff && ItemInSlotIsACD(slot)
+}
+
+function ItemInSlotWasJustEmpty(slot)
+{
+    id = word(GetItemSlotAddrByIndex(slot))
+    return Delta(id) == 0xffff
 }
 
 playingOnClearedGame = HasItemByName("(S) Game Cleared") // Attempt to cache
@@ -1459,22 +1544,23 @@ achievement(title = "Crushing on the Shopkeeper", points = 10,
 //)
 
 // Music achievements
-
+// TODO: Barring significant optimizations for item slots and save protection, this achievement type is impossible.
+//       There are over 400 item slots, and with 34 CDs, that's an absolute minimum of 16,048 conditions, and that's not
+//       even taking into account save protection.
 musicAchievements = [
     { "name": "Bronze Discography", "description": "Acquire five music tracks.", "threshold": 5, "points": 3 },
+    { "name": "Silver Discography", "description": "Acquire six music tracks.", "threshold": 6, "points": 3 },
 ]
 
 musicConditions = {}
-cds = { 0x2A6: { "id": 0x2A6, "name": "(CD) Track 34", "type": "CD", }, }//GetAllItemsOfType("CD") // TODO: Temporary while achievement logic conditions are hashed out.
-for i in cds
+for i in range(0, itemSlots - 1)
 {
-    cd = items[i]
-    musicConditions[i] = { "countsWhen": HasItemByName(cd["name"]), "resetWhen": JustGotNumberOfItemsByName(cd["name"], 1) }
+    musicConditions[i] = { "countsWhen": ItemInSlotIsACD(i), "resetWhen": ItemInSlotJustGotFilledWithACD(i) }
 }
 
 for cheevo in musicAchievements
 {
-    GenerateSaveProtectedAchievementFromConditions(cheevo, musicConditions) // TODO: Uncomment when '%s' error workaroun is discovered.
+    GenerateSaveProtectedAchievementFromConditions_Naive(cheevo, musicConditions)
 }
 
 // End music achievements
@@ -1532,13 +1618,13 @@ achievement(title = "Battle Star", points = 5,
 )
 
 achievement(title = "Battle Asterism", points = 25,
-    description = "Earn a 🟊 ranking in a 4-chain battle or longer on Hard or Ultimate difficulty.",
+    description = "Earn a 🟊 ranking in a four-reduction battle chain or longer on Hard or Ultimate difficulty.",
     trigger = AcquiredAtLeastRank("Star") && IsRankingRevealed()
         && IsAtLeastOnDifficulty("Hard") && lengthOfBattleChain() >= 4
 )
 
 achievement(title = "Battle Constellation", points = 50,
-    description = "Earn a 🟊 ranking in a 9-chain battle or longer on Hard or Ultimate difficulty.",
+    description = "Earn a 🟊 ranking in a nine-reduction battle chain or longer on Hard or Ultimate difficulty.",
     trigger = AcquiredAtLeastRank("Star") && IsRankingRevealed()
         && IsAtLeastOnDifficulty("Hard") && lengthOfBattleChain() >= 9
 )
@@ -1591,3 +1677,5 @@ achievement(title = "It's My Asskicking Outfit, Bitch!", points = 0,
     trigger = tally(4, equippedBrands) && never(HasNekuClothingChanged())
         //&& EnterBattleCheckpointValid() && IsRankingRevealed()
 )
+
+
