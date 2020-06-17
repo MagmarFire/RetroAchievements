@@ -642,10 +642,11 @@ achievement(
               never(prev(word(0x052C30)) != 0x01A7) && never(prev(word(0x0CCDEC)) != 0x1021)
 )
 
+// Fixed as of 28918
 achievement(
     title = "One Spirit to Rule Them All", description = "Witness the birth of a new Dragoon Spirit.", points = 1,
     id = 98040, badge = "106779", published = "2/9/2020 7:39:10 AM", modified = "2/13/2020 10:38:34 PM",
-    trigger = prev(word(0x052C30)) == 0x01A7 && word(0x052C30) == 0x01A8
+    trigger = prev(mapId()) == 0x01A7 && mapId() == 0x01A8 && goldPrize() > 0
 )
 
 achievement(
