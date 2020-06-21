@@ -181,24 +181,25 @@ function GetPartnerByName(name)
 //          Bits 4-7: Currently-equipped deck (2-bit)
 
 function difficulty() => bit0(0x071d29) + bit1(0x071d29) + bit1(0x071d29) // Can't multiply by 2 because reasons.
+function IsRetryingOnEasy() => byte(0x074e51) == 0x0
 
 function IsAtLeastOnDifficulty(value)
 {
     if (value == "Easy")
     {
-        return always_true()
+        return difficulty() == 0x0 || IsRetryingOnEasy()
     }
     else if (value == "Normal")
     {
-        return difficulty() >= 0x1
+        return difficulty() >= 0x1 && !IsRetryingOnEasy()
     }
     else if (value == "Hard")
     {
-        return difficulty() >= 0x2
+        return difficulty() >= 0x2 && !IsRetryingOnEasy()
     }
     else if (value == "Ultimate")
     {
-        return difficulty() >= 0x3
+        return difficulty() >= 0x3 && !IsRetryingOnEasy()
     }
 }
 
@@ -310,7 +311,7 @@ locations = {
 0x22: { "id": 0x22, "name": "Pork City, 11th Floor", },
 0x23: { "id": 0x23, "name": "Pork City, 12th Floor", },
 0x24: { "id": 0x24, "name": "Pork City, 13th Floor", },
-0x25: { "id": 0x25, "name": "Pork City, 1st Floor", },
+0x25: { "id": 0x25, "name": "Somewhere in Shibuya...", },
 0x26: { "id": 0x26, "name": "Trail of the Sinner", },
 0x27: { "id": 0x27, "name": "Rubicon", },
 0x28: { "id": 0x28, "name": "Trail of the Bygone", },
@@ -1795,7 +1796,7 @@ for brand in brands
         "threshold": numberOfBasePinsInBrand,
         "points": GetPinMasteryScoreFromThreshold(numberOfBasePinsInBrand)
     }
-    GenerateSaveProtectedAchievementFromConditions(cheevo, pinMasteryConditions)
+    //GenerateSaveProtectedAchievementFromConditions(cheevo, pinMasteryConditions)
 }
 
 // End pin mastery achievements
@@ -1885,7 +1886,7 @@ achievement(title = "Enervated Escargot", points = 10,
 
 positivePins = GetPinsByTrait("Element", "Pos")
 positivePins[0xffff] = emptySlot
-achievement(title = "Yoctometers Apart", points = 5,
+achievement(title = "Yoctometers Apart", points = 10,
     description = "Defeat the Dub Rhino with at most four, Positive-type pins equipped (Normal or higher; Level 8 or below).",
     trigger = enemyId() == GetEnemyIdByName("Dub Rhino") && EnterBattleCheckpointValid()
         && IsAtLeastOnDifficulty("Normal") && currentLevel() <= 8 && IsRankingRevealed()
