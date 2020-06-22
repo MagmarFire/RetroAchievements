@@ -1673,6 +1673,9 @@ dayAchievements = [
     { "name": "Here, There Be Ghosts", "description": "Reach the end of Week 1, Day 5.", "chapterCompleted": "Shiki, Day 5", "points": 1 },
     { "name": "Living for Two", "description": "Reach the end of Week 1, Day 6.", "chapterCompleted": "Shiki, Day 6", "points": 1 },
     { "name": "A Second Chance at Death", "description": "Survive Week 1 of the Reapers' Game.", "chapterCompleted": "Shiki, Day 7", "points": 5 },
+    { "name": "Play to Win", "description": "Reach the end of Week 2, Day 1.", "chapterCompleted": "Joshua, Day 1", "points": 1 },
+    { "name": "Stalkers", "description": "Reach the end of Week 2, Day 2.", "chapterCompleted": "Joshua, Day 2", "points": 1 },
+    { "name": "The Heart of a Cook", "description": "Reach the end of Week 2, Day 3.", "chapterCompleted": "Joshua, Day 3", "points": 1 },
 ]
 
 for cheevo in dayAchievements
