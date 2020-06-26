@@ -1941,18 +1941,24 @@ function EnterTinPinCheckpointValid()
         && never(IsInOverworld())
 }
 function p1PinState() => byte(0x39b8f0)
+function p2PinState() => byte(0x398e30)
 function P1PinLost() => Delta(ptrP1TinPinCurrentPinId()) != ptrP1TinPinCurrentPinId()
+function P2PinLost() => Delta(ptrP2TinPinCurrentPinId()) != ptrP2TinPinCurrentPinId()
 function P1Invincible() => word(0x39b960) > 0
+function P2Invincible() => word(0x398ea0) > 0
 function P1LostAllPins() => word(ptrP1TinPinCurrentPin()) >= voidPinId()
-function P1PPGained() => word(0x39b9a4)
-function P2PPGained() => word(0x398ee4)
-function WonTinPinGame() => P1PPGained() >= P2PPGained() && IsOnTinPinResultsScreen()
+function p1PPGained() => word(0x39b9a4)
+function p2PPGained() => word(0x398ee4)
+function WonTinPinGame() => p1PPGained() >= p2PPGained() && IsOnTinPinResultsScreen()
 function p1Stingers() => word(0x39b970)
 function p1DiveBombers() => word(0x39b972)
 function p1Sledgehammers() => word(0x39b974)
 function p1HelpingHands() => word(0x39b976)
 function P1PinKnockedOut() => p1PinState() == 0x4
+function P2PinKnockedOut() => p2PinState() == 0x4
+function P2IsUsingHelpingHand() => p2PinState() == 0x9
 
+function p1StunTimer() => word(0x39b940)
 function p2StunTimer() => word(0x398e80)
 
 function P1UsingWhammy()
@@ -1982,7 +1988,7 @@ achievement(title = "Hey, You, Whatcha Gonna Do?", points = 5,
 
 achievement(title = "Watch Me Flex", points = 5,
     description = "Earn 30 PP or more in a single game of Tin Pin Slammer.",
-    trigger = EnterTinPinCheckpointValid() && P1PPGained() >= 30
+    trigger = EnterTinPinCheckpointValid() && p1PPGained() >= 30
         && WonTinPinGame()
 )
 
@@ -2036,4 +2042,24 @@ achievement(title = "Heavyweight", points = 5,
         && never(!GivenPinsIncludesIdAtAddress(allowedPins, ptrP1TinPinCurrentPinId()))
 )
 
+achievement(title = "Flawless Slammer", points = 5,
+    description = "Win a game of Tin Pin Slammer without getting hit by a whammy.",
+    trigger = EnterTinPinCheckpointValid() && WonTinPinGame()
+        && never(p1StunTimer() > 0)
+)
+
+achievement(title = "Spawn Camper", points = 25,
+    description = "Send a pin off the edge within seven seconds of it respawning in Tin Pin Slammer.",
+    trigger = IsInTinPinMatch() && unless(repeated(SecondsToFrames(7), !P2Invincible()))
+        && once(P2PinKnockedOut() || P2IsUsingHelpingHand())
+        && (always_true() || never(P2Invincible()))
+)
+
+achievement(title = "Pacifist", points = 5,
+    description = "Win a game of Tin Pin Slammer without knocking out any pins.",
+    trigger = EnterTinPinCheckpointValid() && WonTinPinGame()
+        && never(once(p1PPGained() == Delta(p1PPGained()) + 2) && P2PinLost())
+)
+
 // End Tin Pin Slammer achievements
+
