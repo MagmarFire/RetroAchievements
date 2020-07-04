@@ -398,6 +398,8 @@ enemies = {
 "Cornix Canor": { "id": 0x9, "name": "Cornix Canor", },
 "Ovis Cantus": { "id": 0x13, "name": "Ovis Cantus", },
 "Dub Rhino": { "id": 0x89, "name": "Dub Rhino", },
+"Wall of Grizzly": { "id": 0x93, "name": "Wall of Grizzly", },
+"Leo Cantus": { "id": 0xf, "name": "Leo Cantus", },
 }
 
 function GetEnemyByName(name)
@@ -419,6 +421,8 @@ function GetEnemyIdByName(name)
 
 // $074E98: Time elapsed in battle (frames) (32-bit)
 function battleTime() => dword(0x074E98)
+
+function bottomScreenOnlyWin() => bit5(0x074ea1)
 
 // $074E9C: Number of consecutive hits in battle (16-bit)
 // $074E9F: Hits taken in battle
@@ -1016,19 +1020,24 @@ function OnlyTheGivenPinsAreEquipped(allowedPins)
     return result
 }
 
-function AnyOfTheGivenPinsAreEquipped(requestedPins)
+function NumberOfTheGivenPinsAreEquipped(requestedPins, atLeast)
 {
-    result = always_false()
+    result = []
     for slotId in range(0, 5)
     {
         for i in requestedPins
         {
             pin = requestedPins[i]
-            result = result || word(GetDeckSlotAddrBySlotId(slotId)) == pin["ID"]
+            array_push(result, once(word(GetDeckSlotAddrBySlotId(slotId)) == pin["ID"]))
         }
     }
     
-    return tally(1, result)
+    return tally(atLeast, result)
+}
+
+function AnyOfTheGivenPinsAreEquipped(requestedPins)
+{
+    return NumberOfTheGivenPinsAreEquipped(requestedPins, 1)
 }
 
 function HasRecoveryPinsEquipped()
@@ -1697,6 +1706,10 @@ dayAchievements = [
     { "name": "Play to Win", "description": "Reach the end of Week 2, Day 1.", "chapterCompleted": "Joshua, Day 1", "points": 1 },
     { "name": "Stalkers", "description": "Reach the end of Week 2, Day 2.", "chapterCompleted": "Joshua, Day 2", "points": 1 },
     { "name": "The Heart of a Cook", "description": "Reach the end of Week 2, Day 3.", "chapterCompleted": "Joshua, Day 3", "points": 1 },
+    { "name": "A Witness to Murder", "description": "Reach the end of Week 2, Day 4.", "chapterCompleted": "Joshua, Day 4", "points": 1 },
+    { "name": "Dual Partnership", "description": "Reach the end of Week 2, Day 5.", "chapterCompleted": "Joshua, Day 5", "points": 1 },
+    { "name": "Prey on the Run", "description": "Reach the end of Week 2, Day 6.", "chapterCompleted": "Joshua, Day 6", "points": 1 },
+    { "name": "Best of Three", "description": "Survive Week 2 of the Reapers' Game.", "chapterCompleted": "Joshua, Day 7", "points": 5 },
 ]
 
 for cheevo in dayAchievements
@@ -1740,7 +1753,7 @@ achievement(title = "Crushing on the Clerk", points = 10,
 musicAchievements = [
     { "name": "Bronze Discography", "description": "Acquire five music tracks.", "threshold": 5, "points": 3 },
     { "name": "Silver Discography", "description": "Acquire ten music tracks.", "threshold": 10, "points": 5 },
-    { "name": "Gold Discography", "description": "Acquire twenty-five music tracks.", "threshold": 25, "points": 10 },
+    { "name": "Gold Discography", "description": "Acquire twenty music tracks.", "threshold": 20, "points": 10 },
     { "name": "Platinum Discography", "description": "Acquire all thirty-four music tracks.", "threshold": 34, "points": 25 },
 ]
 
@@ -1917,6 +1930,21 @@ achievement(title = "Yoctometers Apart", points = 10,
         && never(tally(5, pinsEquipped)) && OnlyTheGivenPinsAreEquipped(positivePins)
 )
 
+achievement(title = "If You Want Something Done Right...", points = 5,
+    description = "Defeat the Wall of Grizzly using only Neku (Normal or higher; Level 20 or below).",
+    trigger = enemyId() == GetEnemyIdByName("Wall of Grizzly") && EnterBattleCheckpointValid()
+        && IsAtLeastOnDifficulty("Normal") && currentLevel() <= 20 && IsRankingRevealed()
+        && bottomScreenOnlyWin() == 1
+)
+
+apportPins = GetPinsByTrait("Psych", "Apport")
+achievement(title = "Drop the Freaking Moon!", points = 10,
+    description = "Defeat the Leo Cantus with at least two equipped pins with the Apport psych (Normal or higher; Level 20 or below).",
+    trigger = enemyId() == GetEnemyIdByName("Leo Cantus") && EnterBattleCheckpointValid()
+        && IsAtLeastOnDifficulty("Normal") && currentLevel() <= 20 && IsRankingRevealed()
+        && NumberOfTheGivenPinsAreEquipped(apportPins, 2)
+)
+
 equippedBrands = []
 for i in brands
 {
@@ -2049,8 +2077,8 @@ achievement(title = "Flawless Slammer", points = 5,
 )
 
 achievement(title = "Spawn Camper", points = 25,
-    description = "Send a pin off the edge within seven seconds of it respawning in Tin Pin Slammer.",
-    trigger = IsInTinPinMatch() && unless(repeated(SecondsToFrames(7), !P2Invincible()))
+    description = "Send a pin off the edge within six seconds of it respawning in Tin Pin Slammer.",
+    trigger = IsInTinPinMatch() && unless(repeated(SecondsToFrames(6), !P2Invincible()))
         && once(P2PinKnockedOut() || P2IsUsingHelpingHand())
         && (always_true() || never(P2Invincible()))
 )
