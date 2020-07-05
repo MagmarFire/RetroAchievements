@@ -1678,7 +1678,7 @@ anyNoiseEntryWasJustUnlocked = AnyNoiseEntryWasJustUnlocked() // Attempt to cach
 
 // END NOISE REPORT
 
-achievement(title = "The Seamstress", points = 1,
+achievement(title = "The Resenter", points = 1,
     description = "Forge a pact with Shiki.",
     trigger = WasValueSetInGame(partner(), GetPartnerByName("NONE"), GetPartnerByName("Shiki"))
         && never(IsLoadingSaveFile()) && unless(once(PlayerHasAccessedChapterSelectMenuBefore()))
@@ -1690,6 +1690,13 @@ achievement(title = "The Observer", points = 1,
     trigger = WasValueSetInGame(partner(), GetPartnerByName("NONE"), GetPartnerByName("Joshua"))
         && never(IsLoadingSaveFile()) && unless(once(PlayerHasAccessedChapterSelectMenuBefore()))
         && CurrentChapterIs("Joshua, Day 1")
+)
+
+achievement(title = "The Deserter", points = 1,
+    description = "Forge a pact with Beat.",
+    trigger = WasValueSetInGame(partner(), GetPartnerByName("NONE"), GetPartnerByName("Beat"))
+        && never(IsLoadingSaveFile()) && unless(once(PlayerHasAccessedChapterSelectMenuBefore()))
+        && CurrentChapterIs("Beat, Day 1")
 )
 
 // Day progression achievements
@@ -1710,6 +1717,7 @@ dayAchievements = [
     { "name": "Dual Partnership", "description": "Reach the end of Week 2, Day 5.", "chapterCompleted": "Joshua, Day 5", "points": 1 },
     { "name": "Prey on the Run", "description": "Reach the end of Week 2, Day 6.", "chapterCompleted": "Joshua, Day 6", "points": 1 },
     { "name": "Best of Three", "description": "Survive Week 2 of the Reapers' Game.", "chapterCompleted": "Joshua, Day 7", "points": 5 },
+    { "name": "Sense from Nonsense", "description": "Reach the end of Week 3, Day 1.", "chapterCompleted": "Beat, Day 1", "points": 1 },
 ]
 
 for cheevo in dayAchievements
@@ -1939,10 +1947,10 @@ achievement(title = "If You Want Something Done Right...", points = 5,
 
 apportPins = GetPinsByTrait("Psych", "Apport")
 achievement(title = "Drop the Freaking Moon!", points = 10,
-    description = "Defeat the Leo Cantus with at least two equipped pins with the Apport psych (Normal or higher; Level 20 or below).",
+    description = "Defeat the Leo Cantus with at most five pins equipped, at least two of which having the Apport psych (Normal or higher; Level 20 or below).",
     trigger = enemyId() == GetEnemyIdByName("Leo Cantus") && EnterBattleCheckpointValid()
         && IsAtLeastOnDifficulty("Normal") && currentLevel() <= 20 && IsRankingRevealed()
-        && NumberOfTheGivenPinsAreEquipped(apportPins, 2)
+        && NumberOfTheGivenPinsAreEquipped(apportPins, 2) && never(tally(6, pinsEquipped))
 )
 
 equippedBrands = []
