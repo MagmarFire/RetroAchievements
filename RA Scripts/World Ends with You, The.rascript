@@ -400,6 +400,8 @@ enemies = {
 "Dub Rhino": { "id": 0x89, "name": "Dub Rhino", },
 "Wall of Grizzly": { "id": 0x93, "name": "Wall of Grizzly", },
 "Leo Cantus": { "id": 0xf, "name": "Leo Cantus", },
+"Pteropus Canor": { "id": 0x8, "name": "Pteropus Canor", },
+"Uzuki Yashiro": { "id": 0x1d, "name": "Uzuki Yashiro", },
 }
 
 function GetEnemyByName(name)
@@ -422,6 +424,11 @@ function GetEnemyIdByName(name)
 // $074E98: Time elapsed in battle (frames) (32-bit)
 function battleTime() => dword(0x074E98)
 
+function consecutiveHits200() => bit5(0x074ea0)
+function consecutiveHits500() => bit6(0x074ea0)
+function consecutiveHits1000() => bit7(0x074ea0)
+function puckRallyPass50() => bit2(0x074ea1)
+function puckRallyPass100() => bit3(0x074ea1)
 function bottomScreenOnlyWin() => bit5(0x074ea1)
 
 // $074E9C: Number of consecutive hits in battle (16-bit)
@@ -1183,286 +1190,286 @@ function GetAllItemsOfType(type)
 }
 
 threads = {
-    0x130: { "id": 0x130, "name": "M Cap", "brand": "Mus Rattus", },
-0x131: { "id": 0x131, "name": "Yellow Tee", "brand": "Mus Rattus", },
-0x132: { "id": 0x132, "name": "Mowzy Tee (Red)", "brand": "Mus Rattus", },
-0x133: { "id": 0x133, "name": "Mint Polo", "brand": "Mus Rattus", },
-0x134: { "id": 0x134, "name": "Runner's Tank", "brand": "Mus Rattus", },
-0x135: { "id": 0x135, "name": "Mowzy Sweatshirt", "brand": "Mus Rattus", },
-0x136: { "id": 0x136, "name": "Brown Baby Tee", "brand": "Mus Rattus", },
-0x137: { "id": 0x137, "name": "Pink Blouse", "brand": "Mus Rattus", },
-0x138: { "id": 0x138, "name": "Peach Turtleneck", "brand": "Mus Rattus", },
-0x139: { "id": 0x139, "name": "Classic Jeans", "brand": "Mus Rattus", },
-0x13A: { "id": 0x13A, "name": "Khaki Chinos", "brand": "Mus Rattus", },
-0x13B: { "id": 0x13B, "name": "Green Warm-ups", "brand": "Mus Rattus", },
-0x13C: { "id": 0x13C, "name": "Beach Sandals", "brand": "Mus Rattus", },
-0x13D: { "id": 0x13D, "name": "3-for-1 Sock Pak", "brand": "Mus Rattus", },
-0x13E: { "id": 0x13E, "name": "Mowzy", "brand": "Mus Rattus", },
-0x13F: { "id": 0x13F, "name": "Backpack", "brand": "Mus Rattus", },
-0x140: { "id": 0x140, "name": "Canvas Tote", "brand": "Mus Rattus", },
-0x141: { "id": 0x141, "name": "Nylon Waist Pack", "brand": "Mus Rattus", },
-0x142: { "id": 0x142, "name": "Stronger Cap", "brand": "D+B", },
-0x143: { "id": 0x143, "name": "Star Cap", "brand": "D+B", },
-0x144: { "id": 0x144, "name": "Knit Casquette", "brand": "D+B", },
-0x145: { "id": 0x145, "name": "Svelte Parka", "brand": "D+B", },
-0x146: { "id": 0x146, "name": "Denim Blouse", "brand": "D+B", },
-0x147: { "id": 0x147, "name": "Cupid Tee", "brand": "D+B", },
-0x148: { "id": 0x148, "name": "Satin Camisole", "brand": "D+B", },
-0x149: { "id": 0x149, "name": "Vest-Blouse Combo", "brand": "D+B", },
-0x14A: { "id": 0x14A, "name": "Leather Shorts", "brand": "D+B", },
-0x14B: { "id": 0x14B, "name": "Skinny Jeans (Black)", "brand": "D+B", },
-0x14C: { "id": 0x14C, "name": "Denim Miniskirt", "brand": "D+B", },
-0x14D: { "id": 0x14D, "name": "Plaid Miniskirt", "brand": "D+B", },
-0x14E: { "id": 0x14E, "name": "Knee-high Boots", "brand": "D+B", },
-0x14F: { "id": 0x14F, "name": "Cowboy Boots (Red)", "brand": "D+B", },
-0x150: { "id": 0x150, "name": "Purple Bikini", "brand": "D+B", },
-0x151: { "id": 0x151, "name": "Black Bikini", "brand": "D+B", },
-0x152: { "id": 0x152, "name": "Studded Belt", "brand": "D+B", },
-0x153: { "id": 0x153, "name": "D+B Ring", "brand": "D+B", },
-0x154: { "id": 0x154, "name": "Biker Jacket", "brand": "Tigre Punks", },
-0x155: { "id": 0x155, "name": "Patchy Biker Jacket", "brand": "Tigre Punks", },
-0x156: { "id": 0x156, "name": "Cotton Biker Vest", "brand": "Tigre Punks", },
-0x157: { "id": 0x157, "name": "Tiger Biker Vest", "brand": "Tigre Punks", },
-0x158: { "id": 0x158, "name": "Fitted Coat", "brand": "Tigre Punks", },
-0x159: { "id": 0x159, "name": "Tartan Coat", "brand": "Tigre Punks", },
-0x15A: { "id": 0x15A, "name": "Pink Gauze Shirt", "brand": "Tigre Punks", },
-0x15B: { "id": 0x15B, "name": "Grey Gauze Shirt", "brand": "Tigre Punks", },
-0x15C: { "id": 0x15C, "name": "Black Raglan Tee", "brand": "Tigre Punks", },
-0x15D: { "id": 0x15D, "name": "Blue Raglan Tee", "brand": "Tigre Punks", },
-0x15E: { "id": 0x15E, "name": "Bondage Pants (Black)", "brand": "Tigre Punks", },
-0x15F: { "id": 0x15F, "name": "Skirt Bondage Combo", "brand": "Tigre Punks", },
-0x160: { "id": 0x160, "name": "Bondage Half-pants", "brand": "Tigre Punks", },
-0x161: { "id": 0x161, "name": "Work Boots", "brand": "Tigre Punks", },
-0x162: { "id": 0x162, "name": "Purple Sneaks", "brand": "Tigre Punks", },
-0x163: { "id": 0x163, "name": "Custom Sneaks", "brand": "Tigre Punks", },
-0x164: { "id": 0x164, "name": "White Rubbersoles", "brand": "Tigre Punks", },
-0x165: { "id": 0x165, "name": "Double-spiked Cuff", "brand": "Tigre Punks", },
-0x166: { "id": 0x166, "name": "Spiked Choker", "brand": "Tigre Punks", },
-0x167: { "id": 0x167, "name": "Red Mohawk Set", "brand": "Tigre Punks", },
-0x168: { "id": 0x168, "name": "Gold Padlock Necklace", "brand": "Tigre Punks", },
-0x169: { "id": 0x169, "name": "Custom Waist Pack", "brand": "Tigre Punks", },
-0x16A: { "id": 0x16A, "name": "Tiger Waist Pack", "brand": "Tigre Punks", },
-0x16B: { "id": 0x16B, "name": "Lace Bonnet", "brand": "Lapin Angelique", },
-0x16C: { "id": 0x16C, "name": "Ribbon Bonnet", "brand": "Lapin Angelique", },
-0x16D: { "id": 0x16D, "name": "Ribbon Mini-hat", "brand": "Lapin Angelique", },
-0x16E: { "id": 0x16E, "name": "Mini-crown", "brand": "Lapin Angelique", },
-0x16F: { "id": 0x16F, "name": "Goth Bondage Coat", "brand": "Lapin Angelique", },
-0x170: { "id": 0x170, "name": "Asymmetric Jersey", "brand": "Lapin Angelique", },
-0x171: { "id": 0x171, "name": "Spiderweb Jersey", "brand": "Lapin Angelique", },
-0x172: { "id": 0x172, "name": "Bunny Parka", "brand": "Lapin Angelique", },
-0x173: { "id": 0x173, "name": "Shirt & Arm Warmers", "brand": "Lapin Angelique", },
-0x174: { "id": 0x174, "name": "Bandage Pants", "brand": "Lapin Angelique", },
-0x175: { "id": 0x175, "name": "Red Two-tier Skirt", "brand": "Lapin Angelique", },
-0x176: { "id": 0x176, "name": "Double-breasted Suit", "brand": "Lapin Angelique", },
-0x177: { "id": 0x177, "name": "Lace-up Dress", "brand": "Lapin Angelique", },
-0x178: { "id": 0x178, "name": "Ribbon-laced Dress", "brand": "Lapin Angelique", },
-0x179: { "id": 0x179, "name": "Vampire Dress", "brand": "Lapin Angelique", },
-0x17A: { "id": 0x17A, "name": "Ribbon Shoes", "brand": "Lapin Angelique", },
-0x17B: { "id": 0x17B, "name": "Platform Shoes", "brand": "Lapin Angelique", },
-0x17C: { "id": 0x17C, "name": "Cape", "brand": "Lapin Angelique", },
-0x17D: { "id": 0x17D, "name": "Frilly Parasol", "brand": "Lapin Angelique", },
-0x17E: { "id": 0x17E, "name": "Blond Wig", "brand": "Lapin Angelique", },
-0x17F: { "id": 0x17F, "name": "M'sieur Lapin", "brand": "Lapin Angelique", },
-0x180: { "id": 0x180, "name": "White Dragon", "brand": "Dragon Couture", },
-0x181: { "id": 0x181, "name": "Light and Shadow", "brand": "Dragon Couture", },
-0x182: { "id": 0x182, "name": "Yin Blazer", "brand": "Dragon Couture", },
-0x183: { "id": 0x183, "name": "Midnight Thoughts", "brand": "Dragon Couture", },
-0x184: { "id": 0x184, "name": "Plum Blossom", "brand": "Dragon Couture", },
-0x185: { "id": 0x185, "name": "Vernal Equinox", "brand": "Dragon Couture", },
-0x186: { "id": 0x186, "name": "Autumn Dragon", "brand": "Dragon Couture", },
-0x187: { "id": 0x187, "name": "Sun Emperor", "brand": "Dragon Couture", },
-0x188: { "id": 0x188, "name": "Dragon Lady", "brand": "Dragon Couture", },
-0x189: { "id": 0x189, "name": "A Flash, A Spark", "brand": "Dragon Couture", },
-0x18A: { "id": 0x18A, "name": "One Man, No Equals", "brand": "Dragon Couture", },
-0x18B: { "id": 0x18B, "name": "Old Wisdom Made New", "brand": "Dragon Couture", },
-0x18C: { "id": 0x18C, "name": "Typhoon", "brand": "Dragon Couture", },
-0x18D: { "id": 0x18D, "name": "Dandy Hat", "brand": "Hip Snake", },
-0x18E: { "id": 0x18E, "name": "Zephyr's Elegy", "brand": "Hip Snake", },
-0x18F: { "id": 0x18F, "name": "Tree Leaf Serenade", "brand": "Hip Snake", },
-0x190: { "id": 0x190, "name": "Dappled Light Waltz", "brand": "Hip Snake", },
-0x191: { "id": 0x191, "name": "Zephyr's Sonata", "brand": "Hip Snake", },
-0x192: { "id": 0x192, "name": "North Wind Concerto", "brand": "Hip Snake", },
-0x193: { "id": 0x193, "name": "Spring Breeze Rhapsody", "brand": "Hip Snake", },
-0x194: { "id": 0x194, "name": "Sky Blue Paean", "brand": "Hip Snake", },
-0x195: { "id": 0x195, "name": "High Sun Paean", "brand": "Hip Snake", },
-0x196: { "id": 0x196, "name": "Sunflower", "brand": "Hip Snake", },
-0x197: { "id": 0x197, "name": "Hydrangea", "brand": "Hip Snake", },
-0x198: { "id": 0x198, "name": "Tulip", "brand": "Hip Snake", },
-0x199: { "id": 0x199, "name": "Sunshine One-piece", "brand": "Hip Snake", },
-0x19A: { "id": 0x19A, "name": "Flower One-piece", "brand": "Hip Snake", },
-0x19B: { "id": 0x19B, "name": "Youth's March", "brand": "Hip Snake", },
-0x19C: { "id": 0x19C, "name": "Young Folks", "brand": "Hip Snake", },
-0x19D: { "id": 0x19D, "name": "When You're in Love", "brand": "Hip Snake", },
-0x19E: { "id": 0x19E, "name": "Love in a Heartbeat", "brand": "Hip Snake", },
-0x19F: { "id": 0x19F, "name": "Let's Dance", "brand": "Hip Snake", },
-0x1A0: { "id": 0x1A0, "name": "Young American", "brand": "Hip Snake", },
-0x1A1: { "id": 0x1A1, "name": "Funky Shades", "brand": "Hip Snake", },
-0x1A2: { "id": 0x1A2, "name": "Love & Peace", "brand": "Hip Snake", },
-0x1A3: { "id": 0x1A3, "name": "Slogan Bandannas", "brand": "Hip Snake", },
-0x1A4: { "id": 0x1A4, "name": "Cocktail Queen", "brand": "Pegaso", },
-0x1A5: { "id": 0x1A5, "name": "Regal Presence", "brand": "Pegaso", },
-0x1A6: { "id": 0x1A6, "name": "Tweed Gentleman", "brand": "Pegaso", },
-0x1A7: { "id": 0x1A7, "name": "Lavender Lotus", "brand": "Pegaso", },
-0x1A8: { "id": 0x1A8, "name": "Classic Half-boots", "brand": "Pegaso", },
-0x1A9: { "id": 0x1A9, "name": "Crimson Stilettos", "brand": "Pegaso", },
-0x1AA: { "id": 0x1AA, "name": "Silver Baron", "brand": "Pegaso", },
-0x1AB: { "id": 0x1AB, "name": "Liberty Duke", "brand": "Pegaso", },
-0x1AC: { "id": 0x1AC, "name": "Royal Splendor", "brand": "Pegaso", },
-0x1AD: { "id": 0x1AD, "name": "Revolution", "brand": "Pegaso", },
-0x1AE: { "id": 0x1AE, "name": "Sparkling Flight", "brand": "Pegaso", },
-0x1AF: { "id": 0x1AF, "name": "Darling Lock", "brand": "Pegaso", },
-0x1B0: { "id": 0x1B0, "name": "Pitter Patter Plaid", "brand": "Sheep Heavenly", },
-0x1B1: { "id": 0x1B1, "name": "Frilly Camisole", "brand": "Sheep Heavenly", },
-0x1B2: { "id": 0x1B2, "name": "Aqua Puffy Blouse", "brand": "Sheep Heavenly", },
-0x1B3: { "id": 0x1B3, "name": "Retro Dot One-piece", "brand": "Sheep Heavenly", },
-0x1B4: { "id": 0x1B4, "name": "Easy Breezy Dress", "brand": "Sheep Heavenly", },
-0x1B5: { "id": 0x1B5, "name": "Green With Envy", "brand": "Sheep Heavenly", },
-0x1B6: { "id": 0x1B6, "name": "Lemon Sherbert", "brand": "Sheep Heavenly", },
-0x1B7: { "id": 0x1B7, "name": "Mint Ice Cream", "brand": "Sheep Heavenly", },
-0x1B8: { "id": 0x1B8, "name": "Spangle Sorbet", "brand": "Sheep Heavenly", },
-0x1B9: { "id": 0x1B9, "name": "Iris Gelato", "brand": "Sheep Heavenly", },
-0x1BA: { "id": 0x1BA, "name": "Strawberry Chocolate", "brand": "Sheep Heavenly", },
-0x1BB: { "id": 0x1BB, "name": "Mint Choco-chip", "brand": "Sheep Heavenly", },
-0x1BC: { "id": 0x1BC, "name": "Angel Frill Skirt", "brand": "Sheep Heavenly", },
-0x1BD: { "id": 0x1BD, "name": "Citrus Shorts", "brand": "Sheep Heavenly", },
-0x1BE: { "id": 0x1BE, "name": "Sparkling Capris", "brand": "Sheep Heavenly", },
-0x1BF: { "id": 0x1BF, "name": "Ribbon Cargos", "brand": "Sheep Heavenly", },
-0x1C0: { "id": 0x1C0, "name": "Flaming Knee-highs", "brand": "Sheep Heavenly", },
-0x1C1: { "id": 0x1C1, "name": "Cloud Nine Scarf", "brand": "Sheep Heavenly", },
-0x1C2: { "id": 0x1C2, "name": "Lucky Rainbow Bracelets", "brand": "Sheep Heavenly", },
-0x1C3: { "id": 0x1C3, "name": "Rounded Specs", "brand": "Sheep Heavenly", },
-0x1C4: { "id": 0x1C4, "name": "Shining Star Dangles", "brand": "Sheep Heavenly", },
-0x1C5: { "id": 0x1C5, "name": "Princess Ring", "brand": "Sheep Heavenly", },
-0x1C6: { "id": 0x1C6, "name": "Happy Necklace", "brand": "Sheep Heavenly", },
-0x1C7: { "id": 0x1C7, "name": "Heart Pochette", "brand": "Sheep Heavenly", },
-0x1C8: { "id": 0x1C8, "name": "Polka Dot Bag", "brand": "Sheep Heavenly", },
-0x1C9: { "id": 0x1C9, "name": "Wadatsumi", "brand": "Jupiter of the Monkey", },
-0x1CA: { "id": 0x1CA, "name": "Fudo", "brand": "Jupiter of the Monkey", },
-0x1CB: { "id": 0x1CB, "name": "Dharma", "brand": "Jupiter of the Monkey", },
-0x1CC: { "id": 0x1CC, "name": "Suiten", "brand": "Jupiter of the Monkey", },
-0x1CD: { "id": 0x1CD, "name": "Haramitsu", "brand": "Jupiter of the Monkey", },
-0x1CE: { "id": 0x1CE, "name": "Amida", "brand": "Jupiter of the Monkey", },
-0x1CF: { "id": 0x1CF, "name": "Ashura", "brand": "Jupiter of the Monkey", },
-0x1D0: { "id": 0x1D0, "name": "Brahma", "brand": "Jupiter of the Monkey", },
-0x1D1: { "id": 0x1D1, "name": "Komokuten", "brand": "Jupiter of the Monkey", },
-0x1D2: { "id": 0x1D2, "name": "Togenkyo", "brand": "Jupiter of the Monkey", },
-0x1D3: { "id": 0x1D3, "name": "Inazuma", "brand": "Jupiter of the Monkey", },
-0x1D4: { "id": 0x1D4, "name": "Hannya", "brand": "Jupiter of the Monkey", },
-0x1D5: { "id": 0x1D5, "name": "Aun", "brand": "Jupiter of the Monkey", },
-0x1D6: { "id": 0x1D6, "name": "Gekirin", "brand": "Jupiter of the Monkey", },
-0x1D7: { "id": 0x1D7, "name": "Karma", "brand": "Jupiter of the Monkey", },
-0x1D8: { "id": 0x1D8, "name": "Naraka", "brand": "Jupiter of the Monkey", },
-0x1D9: { "id": 0x1D9, "name": "Plumeria Ring", "brand": "Pavo Real", },
-0x1DA: { "id": 0x1DA, "name": "Gold Band", "brand": "Pavo Real", },
-0x1DB: { "id": 0x1DB, "name": "Coral Necklace", "brand": "Pavo Real", },
-0x1DC: { "id": 0x1DC, "name": "Turquoise Necklace", "brand": "Pavo Real", },
-0x1DD: { "id": 0x1DD, "name": "Garden Bracelet", "brand": "Pavo Real", },
-0x1DE: { "id": 0x1DE, "name": "Wheel Bracelet", "brand": "Pavo Real", },
-0x1DF: { "id": 0x1DF, "name": "Gold Bangle", "brand": "Pavo Real", },
-0x1E0: { "id": 0x1E0, "name": "Pureheart Pendant", "brand": "Pavo Real", },
-0x1E1: { "id": 0x1E1, "name": "Skull Pendant", "brand": "Pavo Real", },
-0x1E2: { "id": 0x1E2, "name": "Chandelier Dangles", "brand": "Pavo Real", },
-0x1E3: { "id": 0x1E3, "name": "Diamond Studs", "brand": "Pavo Real", },
-0x1E4: { "id": 0x1E4, "name": "Plumeria Studs", "brand": "Pavo Real", },
-0x1E5: { "id": 0x1E5, "name": "Navel Piercing", "brand": "Pavo Real", },
-0x1E6: { "id": 0x1E6, "name": "Heart Nails", "brand": "Pavo Real", },
-0x1E7: { "id": 0x1E7, "name": "Blue Nails", "brand": "Pavo Real", },
-0x1E8: { "id": 0x1E8, "name": "Silver Screen Sweetheart", "brand": "Natural Puppy", },
-0x1E9: { "id": 0x1E9, "name": "Silver Screen Starlet", "brand": "Natural Puppy", },
-0x1EA: { "id": 0x1EA, "name": "Plain Shirt", "brand": "Natural Puppy", },
-0x1EB: { "id": 0x1EB, "name": "Negative Polo", "brand": "Natural Puppy", },
-0x1EC: { "id": 0x1EC, "name": "Positive Polo", "brand": "Natural Puppy", },
-0x1ED: { "id": 0x1ED, "name": "Pink Stripe", "brand": "Natural Puppy", },
-0x1EE: { "id": 0x1EE, "name": "Black Stripe", "brand": "Natural Puppy", },
-0x1EF: { "id": 0x1EF, "name": "Lovely Camisole", "brand": "Natural Puppy", },
-0x1F0: { "id": 0x1F0, "name": "White Cache-coeur", "brand": "Natural Puppy", },
-0x1F1: { "id": 0x1F1, "name": "Chic Black Turtleneck", "brand": "Natural Puppy", },
-0x1F2: { "id": 0x1F2, "name": "Midday Kitten Knit", "brand": "Natural Puppy", },
-0x1F3: { "id": 0x1F3, "name": "Black Jeans", "brand": "Natural Puppy", },
-0x1F4: { "id": 0x1F4, "name": "Brown Jeans", "brand": "Natural Puppy", },
-0x1F5: { "id": 0x1F5, "name": "Skinny Jeans (Blue)", "brand": "Natural Puppy", },
-0x1F6: { "id": 0x1F6, "name": "My Favorite One-piece", "brand": "Natural Puppy", },
-0x1F7: { "id": 0x1F7, "name": "Angelic One-piece", "brand": "Natural Puppy", },
-0x1F8: { "id": 0x1F8, "name": "Lovely One-piece", "brand": "Natural Puppy", },
-0x1F9: { "id": 0x1F9, "name": "Simple Mules", "brand": "Natural Puppy", },
-0x1FA: { "id": 0x1FA, "name": "Blossom Mules", "brand": "Natural Puppy", },
-0x1FB: { "id": 0x1FB, "name": "Enamel Pumps", "brand": "Natural Puppy", },
-0x1FC: { "id": 0x1FC, "name": "Simple Necktie", "brand": "Natural Puppy", },
-0x1FD: { "id": 0x1FD, "name": "Waffle Necktie", "brand": "Natural Puppy", },
-0x1FE: { "id": 0x1FE, "name": "Seattle", "brand": "Wild Boar", },
-0x1FF: { "id": 0x1FF, "name": "San Francisco", "brand": "Wild Boar", },
-0x200: { "id": 0x200, "name": "Las Vegas", "brand": "Wild Boar", },
-0x201: { "id": 0x201, "name": "Chicago", "brand": "Wild Boar", },
-0x202: { "id": 0x202, "name": "New York", "brand": "Wild Boar", },
-0x203: { "id": 0x203, "name": "Negotiator", "brand": "Wild Boar", },
-0x204: { "id": 0x204, "name": "Hey Boy", "brand": "Wild Boar", },
-0x205: { "id": 0x205, "name": "Hey Girl", "brand": "Wild Boar", },
-0x206: { "id": 0x206, "name": "Hey Everybody", "brand": "Wild Boar", },
-0x207: { "id": 0x207, "name": "Alive", "brand": "Wild Boar", },
-0x208: { "id": 0x208, "name": "Sabotage", "brand": "Wild Boar", },
-0x209: { "id": 0x209, "name": "3 MC's 1 DJ", "brand": "Wild Boar", },
-0x20A: { "id": 0x20A, "name": "Pass the Mic", "brand": "Wild Boar", },
-0x20B: { "id": 0x20B, "name": "Won't Stop", "brand": "Wild Boar", },
-0x20C: { "id": 0x20C, "name": "Don't Stop", "brand": "Wild Boar", },
-0x20D: { "id": 0x20D, "name": "Camouflage", "brand": "Wild Boar", },
-0x20E: { "id": 0x20E, "name": "Darkness", "brand": "Wild Boar", },
-0x20F: { "id": 0x20F, "name": "Denim Coveralls", "brand": "Wild Boar", },
-0x210: { "id": 0x210, "name": "Work Coveralls", "brand": "Wild Boar", },
-0x211: { "id": 0x211, "name": "Gold Die", "brand": "Wild Boar", },
-0x212: { "id": 0x212, "name": "Wild Boar Pendant", "brand": "Wild Boar", },
-0x213: { "id": 0x213, "name": "King Pendant", "brand": "Wild Boar", },
-0x214: { "id": 0x214, "name": "Skull Deck", "brand": "Wild Boar", },
-0x215: { "id": 0x215, "name": "Camo Deck", "brand": "Wild Boar", },
-0x216: { "id": 0x216, "name": "Cat Deck", "brand": "Wild Boar", },
-0x217: { "id": 0x217, "name": "WEWY Promo Coat", "brand": "Gatito", },
-0x218: { "id": 0x218, "name": "WEWY Promo Tee", "brand": "Gatito", },
-0x219: { "id": 0x219, "name": "WEWY Promo Tote", "brand": "Gatito", },
-0x21A: { "id": 0x21A, "name": "Pinky's Lipstick", "brand": "Gatito", },
-0x21B: { "id": 0x21B, "name": "Lollipop's Parka", "brand": "Gatito", },
-0x21C: { "id": 0x21C, "name": "Big Guy's Buckle", "brand": "Gatito", },
-0x21D: { "id": 0x21D, "name": "Pi-Face's Cap", "brand": "Gatito", },
-0x21E: { "id": 0x21E, "name": "Pi-Face's Coat", "brand": "Gatito", },
-0x21F: { "id": 0x21F, "name": "Pi-Face's Jeans", "brand": "Gatito", },
-0x220: { "id": 0x220, "name": "Pi-Face's Bandanna", "brand": "Gatito", },
-0x221: { "id": 0x221, "name": "Iron Maiden's One-piece", "brand": "Gatito", },
-0x222: { "id": 0x222, "name": "Shade's Headphones", "brand": "Gatito", },
-0x223: { "id": 0x223, "name": "Sis's Pendant", "brand": "Gatito", },
-0x224: { "id": 0x224, "name": "Wizard's Glasses", "brand": "Gatito", },
-0x225: { "id": 0x225, "name": "My Phones", "brand": "Gatito", },
-0x226: { "id": 0x226, "name": "Your Cap", "brand": "Gatito", },
-0x227: { "id": 0x227, "name": "Her Stuffed Animal", "brand": "Gatito", },
-0x228: { "id": 0x228, "name": "Angel Feather", "brand": "Gatito", },
-0x229: { "id": 0x229, "name": "Gakuran", "brand": "Unbranded", },
-0x22A: { "id": 0x22A, "name": "Sailor Suit", "brand": "Unbranded", },
-0x22B: { "id": 0x22B, "name": "Boys' Uniform with Blazer", "brand": "Unbranded", },
-0x22C: { "id": 0x22C, "name": "Girls' Uniform with Blazer", "brand": "Unbranded", },
-0x22D: { "id": 0x22D, "name": "Girls' Uniform with Sweater", "brand": "Unbranded", },
-0x22E: { "id": 0x22E, "name": "Head Honcho", "brand": "Unbranded", },
-0x22F: { "id": 0x22F, "name": "Yukata", "brand": "Unbranded", },
-0x230: { "id": 0x230, "name": "The Dead Slammurai", "brand": "Unbranded", },
-0x231: { "id": 0x231, "name": "The Black Slammurai", "brand": "Unbranded", },
-0x232: { "id": 0x232, "name": "Nose Glasses", "brand": "Unbranded", },
-0x233: { "id": 0x233, "name": "Samurai Wig", "brand": "Unbranded", },
-0x234: { "id": 0x234, "name": "Mr. Mew Suit", "brand": "Unbranded", },
-0x235: { "id": 0x235, "name": "New Year's Gift", "brand": "Unbranded", },
-0x236: { "id": 0x236, "name": "Pirate Hat", "brand": "Unbranded", },
-0x237: { "id": 0x237, "name": "Potted Plant", "brand": "Unbranded", },
-0x238: { "id": 0x238, "name": "Mr. Claus", "brand": "Unbranded", },
-0x239: { "id": 0x239, "name": "Mrs. Claus", "brand": "Unbranded", },
-0x23A: { "id": 0x23A, "name": "Black Book Bag", "brand": "Unbranded", },
-0x23B: { "id": 0x23B, "name": "Red Book Bag", "brand": "Unbranded", },
-0x23C: { "id": 0x23C, "name": "Biker Gloves", "brand": "Unbranded", },
-0x23D: { "id": 0x23D, "name": "Maid Costume", "brand": "Unbranded", },
-0x23E: { "id": 0x23E, "name": "Supermask's Mask", "brand": "Unbranded", },
-0x23F: { "id": 0x23F, "name": "Ninja Garb", "brand": "Unbranded", },
-0x240: { "id": 0x240, "name": "Samurai Helm", "brand": "Unbranded", },
-0x241: { "id": 0x241, "name": "Samurai Armor", "brand": "Unbranded", },
-0x242: { "id": 0x242, "name": "Fan of the Rising Sun", "brand": "Unbranded", },
-0x243: { "id": 0x243, "name": "Samurai Sword", "brand": "Unbranded", },
-0x244: { "id": 0x244, "name": "Solid Slammer", "brand": "Unbranded", },
-0x245: { "id": 0x245, "name": "False Teeth", "brand": "Unbranded", },
-0x246: { "id": 0x246, "name": "Lucky Mallet", "brand": "Unbranded", },
-0x247: { "id": 0x247, "name": "Mr. Ducky", "brand": "Unbranded", },
+0x130: { "id": 0x130, "name": "M Cap", "brand": "Mus Rattus", "ability": "Combo Branch +1", },
+0x131: { "id": 0x131, "name": "Yellow Tee", "brand": "Mus Rattus", "ability": "No Obstacles", },
+0x132: { "id": 0x132, "name": "Mowzy Tee (Red)", "brand": "Mus Rattus", "ability": "Slower Puck I", },
+0x133: { "id": 0x133, "name": "Mint Polo", "brand": "Mus Rattus", "ability": "Hold that Puck I", },
+0x134: { "id": 0x134, "name": "Runner's Tank", "brand": "Mus Rattus", "ability": "More Defense Breaks I", },
+0x135: { "id": 0x135, "name": "Mowzy Sweatshirt", "brand": "Mus Rattus", "ability": "Shiki: Nag-free Escape", },
+0x136: { "id": 0x136, "name": "Brown Baby Tee", "brand": "Mus Rattus", "ability": "Combo Panel -1", },
+0x137: { "id": 0x137, "name": "Pink Blouse", "brand": "Mus Rattus", "ability": "More HP Drains I", },
+0x138: { "id": 0x138, "name": "Peach Turtleneck", "brand": "Mus Rattus", "ability": "Faster Puck I", },
+0x139: { "id": 0x139, "name": "Classic Jeans", "brand": "Mus Rattus", "ability": "More Attack Breaks I", },
+0x13A: { "id": 0x13A, "name": "Khaki Chinos", "brand": "Mus Rattus", "ability": "Show Combo Map Longer", },
+0x13B: { "id": 0x13B, "name": "Green Warm-ups", "brand": "Mus Rattus", "ability": "Faster Puck I", },
+0x13C: { "id": 0x13C, "name": "Beach Sandals", "brand": "Mus Rattus", "ability": "More HP Drains I", },
+0x13D: { "id": 0x13D, "name": "3-for-1 Sock Pak", "brand": "Mus Rattus", "ability": "Defense Break Finisher", },
+0x13E: { "id": 0x13E, "name": "Mowzy", "brand": "Mus Rattus", "ability": "HIT Keeper I", },
+0x13F: { "id": 0x13F, "name": "Backpack", "brand": "Mus Rattus", "ability": "HP Drain Finisher", },
+0x140: { "id": 0x140, "name": "Canvas Tote", "brand": "Mus Rattus", "ability": "Shiki: Ground Combo C", },
+0x141: { "id": 0x141, "name": "Nylon Waist Pack", "brand": "Mus Rattus", "ability": "Combo Panel -1", },
+0x142: { "id": 0x142, "name": "Stronger Cap", "brand": "D+B", "ability": "Shiki: HP +10", },
+0x143: { "id": 0x143, "name": "Star Cap", "brand": "D+B", "ability": "Shiki: Fusion ★ +1", },
+0x144: { "id": 0x144, "name": "Knit Casquette", "brand": "D+B", "ability": "Shiki: ATK +1", },
+0x145: { "id": 0x145, "name": "Svelte Parka", "brand": "D+B", "ability": "Shiki: ATK +2", },
+0x146: { "id": 0x146, "name": "Denim Blouse", "brand": "D+B", "ability": "More Defense Breaks II", },
+0x147: { "id": 0x147, "name": "Cupid Tee", "brand": "D+B", "ability": "Shiki: Fusion ★ +1", },
+0x148: { "id": 0x148, "name": "Satin Camisole", "brand": "D+B", "ability": "Shiki: DEF +1", },
+0x149: { "id": 0x149, "name": "Vest-Blouse Combo", "brand": "D+B", "ability": "Shiki: HP +20", },
+0x14A: { "id": 0x14A, "name": "Leather Shorts", "brand": "D+B", "ability": "Resist Attack Breaks", },
+0x14B: { "id": 0x14B, "name": "Skinny Jeans (Black)", "brand": "D+B", "ability": "Shiki: DEF +2", },
+0x14C: { "id": 0x14C, "name": "Denim Miniskirt", "brand": "D+B", "ability": "Shiki: DEF +2", },
+0x14D: { "id": 0x14D, "name": "Plaid Miniskirt", "brand": "D+B", "ability": "Shiki: DEF +1", },
+0x14E: { "id": 0x14E, "name": "Knee-high Boots", "brand": "D+B", "ability": "Shiki: ATK +2", },
+0x14F: { "id": 0x14F, "name": "Cowboy Boots (Red)", "brand": "D+B", "ability": "HIT Keeper II", },
+0x150: { "id": 0x150, "name": "Purple Bikini", "brand": "D+B", "ability": "Shiki: Fusion ★ +2", },
+0x151: { "id": 0x151, "name": "Black Bikini", "brand": "D+B", "ability": "Shiki: Fusion ★ +3", },
+0x152: { "id": 0x152, "name": "Studded Belt", "brand": "D+B", "ability": "EXP Boost I", },
+0x153: { "id": 0x153, "name": "D+B Ring", "brand": "D+B", "ability": "Puck Power II", },
+0x154: { "id": 0x154, "name": "Biker Jacket", "brand": "Tigre Punks", "ability": "Neku: ATK +5", },
+0x155: { "id": 0x155, "name": "Patchy Biker Jacket", "brand": "Tigre Punks", "ability": "ATK +5", },
+0x156: { "id": 0x156, "name": "Cotton Biker Vest", "brand": "Tigre Punks", "ability": "Neku: ATK +3", },
+0x157: { "id": 0x157, "name": "Tiger Biker Vest", "brand": "Tigre Punks", "ability": "Beat: Fusion ★ +3", },
+0x158: { "id": 0x158, "name": "Fitted Coat", "brand": "Tigre Punks", "ability": "Beat: DEF +4", },
+0x159: { "id": 0x159, "name": "Tartan Coat", "brand": "Tigre Punks", "ability": "Beat: Air Combo D", },
+0x15A: { "id": 0x15A, "name": "Pink Gauze Shirt", "brand": "Tigre Punks", "ability": "Joshua: Air Combo A", },
+0x15B: { "id": 0x15B, "name": "Grey Gauze Shirt", "brand": "Tigre Punks", "ability": "HP +15", },
+0x15C: { "id": 0x15C, "name": "Black Raglan Tee", "brand": "Tigre Punks", "ability": "SOS ATK Boost I", },
+0x15D: { "id": 0x15D, "name": "Blue Raglan Tee", "brand": "Tigre Punks", "ability": "Shiki: HP +10", },
+0x15E: { "id": 0x15E, "name": "Bondage Pants (Black)", "brand": "Tigre Punks", "ability": "SOS Null Damage", },
+0x15F: { "id": 0x15F, "name": "Skirt Bondage Combo", "brand": "Tigre Punks", "ability": "Resist Immobilization", },
+0x160: { "id": 0x160, "name": "Bondage Half-pants", "brand": "Tigre Punks", "ability": "Neku: DEF +1", },
+0x161: { "id": 0x161, "name": "Work Boots", "brand": "Tigre Punks", "ability": "Resist Knockback", },
+0x162: { "id": 0x162, "name": "Purple Sneaks", "brand": "Tigre Punks", "ability": "Faster Puck II", },
+0x163: { "id": 0x163, "name": "Custom Sneaks", "brand": "Tigre Punks", "ability": "More Defense Breaks I", },
+0x164: { "id": 0x164, "name": "White Rubbersoles", "brand": "Tigre Punks", "ability": "EXP Boost I", },
+0x165: { "id": 0x165, "name": "Double-spiked Cuff", "brand": "Tigre Punks", "ability": "Attack Break Finisher", },
+0x166: { "id": 0x166, "name": "Spiked Choker", "brand": "Tigre Punks", "ability": "Shiki: Ground Combo A", },
+0x167: { "id": 0x167, "name": "Red Mohawk Set", "brand": "Tigre Punks", "ability": "HP Drain Finisher", },
+0x168: { "id": 0x168, "name": "Gold Padlock Necklace", "brand": "Tigre Punks", "ability": "Beat: Fusion ★ +1", },
+0x169: { "id": 0x169, "name": "Custom Waist Pack", "brand": "Tigre Punks", "ability": "ATK +2", },
+0x16A: { "id": 0x16A, "name": "Tiger Waist Pack", "brand": "Tigre Punks", "ability": "Combo Panel +1", },
+0x16B: { "id": 0x16B, "name": "Lace Bonnet", "brand": "Lapin Angelique", "ability": "No Obstacles", },
+0x16C: { "id": 0x16C, "name": "Ribbon Bonnet", "brand": "Lapin Angelique", "ability": "Shiki: ATK +1", },
+0x16D: { "id": 0x16D, "name": "Ribbon Mini-hat", "brand": "Lapin Angelique", "ability": "SOS ATK Boost I", },
+0x16E: { "id": 0x16E, "name": "Mini-crown", "brand": "Lapin Angelique", "ability": "SOS DEF Boost I", },
+0x16F: { "id": 0x16F, "name": "Goth Bondage Coat", "brand": "Lapin Angelique", "ability": "Jinxed ATK Boost +10", },
+0x170: { "id": 0x170, "name": "Asymmetric Jersey", "brand": "Lapin Angelique", "ability": "Joshua: Air Combo C", },
+0x171: { "id": 0x171, "name": "Spiderweb Jersey", "brand": "Lapin Angelique", "ability": "SOS DEF Boost II", },
+0x172: { "id": 0x172, "name": "Bunny Parka", "brand": "Lapin Angelique", "ability": "Joshua: HP +20", },
+0x173: { "id": 0x173, "name": "Shirt & Arm Warmers", "brand": "Lapin Angelique", "ability": "Combo Panel -1", },
+0x174: { "id": 0x174, "name": "Bandage Pants", "brand": "Lapin Angelique", "ability": "Shiki: Fusion ★ +2", },
+0x175: { "id": 0x175, "name": "Red Two-tier Skirt", "brand": "Lapin Angelique", "ability": "SOS Power Up I", },
+0x176: { "id": 0x176, "name": "Double-breasted Suit", "brand": "Lapin Angelique", "ability": "Jinxed Regeneration", },
+0x177: { "id": 0x177, "name": "Lace-up Dress", "brand": "Lapin Angelique", "ability": "Combo Map Upgrade I", },
+0x178: { "id": 0x178, "name": "Ribbon-laced Dress", "brand": "Lapin Angelique", "ability": "Jinxed Regeneration", },
+0x179: { "id": 0x179, "name": "Vampire Dress", "brand": "Lapin Angelique", "ability": "SOS ATK Boost II", },
+0x17A: { "id": 0x17A, "name": "Ribbon Shoes", "brand": "Lapin Angelique", "ability": "Jinxed EXP Boost", },
+0x17B: { "id": 0x17B, "name": "Platform Shoes", "brand": "Lapin Angelique", "ability": "Jinxed HIT Keeper", },
+0x17C: { "id": 0x17C, "name": "Cape", "brand": "Lapin Angelique", "ability": "SOS DEF Boost II", },
+0x17D: { "id": 0x17D, "name": "Frilly Parasol", "brand": "Lapin Angelique", "ability": "Joshua: Fusion ★ +1", },
+0x17E: { "id": 0x17E, "name": "Blond Wig", "brand": "Lapin Angelique", "ability": "Jinxed Hold that Puck", },
+0x17F: { "id": 0x17F, "name": "M'sieur Lapin", "brand": "Lapin Angelique", "ability": "Jinxed Immobilizing Finisher", },
+0x180: { "id": 0x180, "name": "White Dragon", "brand": "Dragon Couture", "ability": "Joshua: Ground Combo A", },
+0x181: { "id": 0x181, "name": "Light and Shadow", "brand": "Dragon Couture", "ability": "Joshua: Ground Combo C", },
+0x182: { "id": 0x182, "name": "Yin Blazer", "brand": "Dragon Couture", "ability": "Joshua: DEF +3", },
+0x183: { "id": 0x183, "name": "Midnight Thoughts", "brand": "Dragon Couture", "ability": "HP +5", },
+0x184: { "id": 0x184, "name": "Plum Blossom", "brand": "Dragon Couture", "ability": "Puck Power I", },
+0x185: { "id": 0x185, "name": "Vernal Equinox", "brand": "Dragon Couture", "ability": "Joshua: Air Combo B", },
+0x186: { "id": 0x186, "name": "Autumn Dragon", "brand": "Dragon Couture", "ability": "Joshua: Ground Combo B", },
+0x187: { "id": 0x187, "name": "Sun Emperor", "brand": "Dragon Couture", "ability": "SOS Power Up II", },
+0x188: { "id": 0x188, "name": "Dragon Lady", "brand": "Dragon Couture", "ability": "More Durable Obstacles II", },
+0x189: { "id": 0x189, "name": "A Flash, A Spark", "brand": "Dragon Couture", "ability": "Joshua: Nag-free Escape", },
+0x18A: { "id": 0x18A, "name": "One Man, No Equals", "brand": "Dragon Couture", "ability": "Joshua: Fusion ★ +2", },
+0x18B: { "id": 0x18B, "name": "Old Wisdom Made New", "brand": "Dragon Couture", "ability": "DEF +3", },
+0x18C: { "id": 0x18C, "name": "Typhoon", "brand": "Dragon Couture", "ability": "Combo Branch +2", },
+0x18D: { "id": 0x18D, "name": "Dandy Hat", "brand": "Hip Snake", "ability": "Show Combo Map Longer", },
+0x18E: { "id": 0x18E, "name": "Zephyr's Elegy", "brand": "Hip Snake", "ability": "Joshua: ATK +2", },
+0x18F: { "id": 0x18F, "name": "Tree Leaf Serenade", "brand": "Hip Snake", "ability": "Beat: Air Combo B", },
+0x190: { "id": 0x190, "name": "Dappled Light Waltz", "brand": "Hip Snake", "ability": "More Attack Breaks II", },
+0x191: { "id": 0x191, "name": "Zephyr's Sonata", "brand": "Hip Snake", "ability": "Combo Map Upgrade II", },
+0x192: { "id": 0x192, "name": "North Wind Concerto", "brand": "Hip Snake", "ability": "Neku: HP +40", },
+0x193: { "id": 0x193, "name": "Spring Breeze Rhapsody", "brand": "Hip Snake", "ability": "More Defense Breaks II", },
+0x194: { "id": 0x194, "name": "Sky Blue Paean", "brand": "Hip Snake", "ability": "More Attack Breaks I", },
+0x195: { "id": 0x195, "name": "High Sun Paean", "brand": "Hip Snake", "ability": "More Immobilization II", },
+0x196: { "id": 0x196, "name": "Sunflower", "brand": "Hip Snake", "ability": "More Defense Breaks I", },
+0x197: { "id": 0x197, "name": "Hydrangea", "brand": "Hip Snake", "ability": "DEF +2", },
+0x198: { "id": 0x198, "name": "Tulip", "brand": "Hip Snake", "ability": "More HP Drains I", },
+0x199: { "id": 0x199, "name": "Sunshine One-piece", "brand": "Hip Snake", "ability": "More Immobilization I", },
+0x19A: { "id": 0x19A, "name": "Flower One-piece", "brand": "Hip Snake", "ability": "More Attack Breaks II", },
+0x19B: { "id": 0x19B, "name": "Youth's March", "brand": "Hip Snake", "ability": "More Immobilization I", },
+0x19C: { "id": 0x19C, "name": "Young Folks", "brand": "Hip Snake", "ability": "More HP Drains II", },
+0x19D: { "id": 0x19D, "name": "When You're in Love", "brand": "Hip Snake", "ability": "Shiki: Fusion ★ +2", },
+0x19E: { "id": 0x19E, "name": "Love in a Heartbeat", "brand": "Hip Snake", "ability": "Combo Panel +2", },
+0x19F: { "id": 0x19F, "name": "Let's Dance", "brand": "Hip Snake", "ability": "SOS DEF Boost I", },
+0x1A0: { "id": 0x1A0, "name": "Young American", "brand": "Hip Snake", "ability": "Resist Knockback", },
+0x1A1: { "id": 0x1A1, "name": "Funky Shades", "brand": "Hip Snake", "ability": "Show Combo Map Longer", },
+0x1A2: { "id": 0x1A2, "name": "Love & Peace", "brand": "Hip Snake", "ability": "Beat: Fusion ★ +2", },
+0x1A3: { "id": 0x1A3, "name": "Slogan Bandannas", "brand": "Hip Snake", "ability": "Faster Puck I", },
+0x1A4: { "id": 0x1A4, "name": "Cocktail Queen", "brand": "Pegaso", "ability": "HP +35", },
+0x1A5: { "id": 0x1A5, "name": "Regal Presence", "brand": "Pegaso", "ability": "SOS Power Up II", },
+0x1A6: { "id": 0x1A6, "name": "Tweed Gentleman", "brand": "Pegaso", "ability": "Joshua: ATK +3", },
+0x1A7: { "id": 0x1A7, "name": "Lavender Lotus", "brand": "Pegaso", "ability": "Puck Power III", },
+0x1A8: { "id": 0x1A8, "name": "Classic Half-boots", "brand": "Pegaso", "ability": "Joshua: HP +40", },
+0x1A9: { "id": 0x1A9, "name": "Crimson Stilettos", "brand": "Pegaso", "ability": "Hold that Puck III", },
+0x1AA: { "id": 0x1AA, "name": "Silver Baron", "brand": "Pegaso", "ability": "All-around Upgrade III", },
+0x1AB: { "id": 0x1AB, "name": "Liberty Duke", "brand": "Pegaso", "ability": "All-around Upgrade III", },
+0x1AC: { "id": 0x1AC, "name": "Royal Splendor", "brand": "Pegaso", "ability": "Resist All", },
+0x1AD: { "id": 0x1AD, "name": "Revolution", "brand": "Pegaso", "ability": "EXP Boost III", },
+0x1AE: { "id": 0x1AE, "name": "Sparkling Flight", "brand": "Pegaso", "ability": "All-around Upgrade II", },
+0x1AF: { "id": 0x1AF, "name": "Darling Lock", "brand": "Pegaso", "ability": "Regeneration IV", },
+0x1B0: { "id": 0x1B0, "name": "Pitter Patter Plaid", "brand": "Sheep Heavenly", "ability": "Dual Resistance II", },
+0x1B1: { "id": 0x1B1, "name": "Frilly Camisole", "brand": "Sheep Heavenly", "ability": "HP +15", },
+0x1B2: { "id": 0x1B2, "name": "Aqua Puffy Blouse", "brand": "Sheep Heavenly", "ability": "More Attack Breaks I", },
+0x1B3: { "id": 0x1B3, "name": "Retro Dot One-piece", "brand": "Sheep Heavenly", "ability": "HP +35", },
+0x1B4: { "id": 0x1B4, "name": "Easy Breezy Dress", "brand": "Sheep Heavenly", "ability": "More HP Drains II", },
+0x1B5: { "id": 0x1B5, "name": "Green With Envy", "brand": "Sheep Heavenly", "ability": "Regeneration II", },
+0x1B6: { "id": 0x1B6, "name": "Lemon Sherbert", "brand": "Sheep Heavenly", "ability": "HP +5", },
+0x1B7: { "id": 0x1B7, "name": "Mint Ice Cream", "brand": "Sheep Heavenly", "ability": "Neku: DEF +1", },
+0x1B8: { "id": 0x1B8, "name": "Spangle Sorbet", "brand": "Sheep Heavenly", "ability": "Shiki: DEF +1", },
+0x1B9: { "id": 0x1B9, "name": "Iris Gelato", "brand": "Sheep Heavenly", "ability": "DEF +1", },
+0x1BA: { "id": 0x1BA, "name": "Strawberry Chocolate", "brand": "Sheep Heavenly", "ability": "Shiki: DEF +1", },
+0x1BB: { "id": 0x1BB, "name": "Mint Choco-chip", "brand": "Sheep Heavenly", "ability": "Regeneration I", },
+0x1BC: { "id": 0x1BC, "name": "Angel Frill Skirt", "brand": "Sheep Heavenly", "ability": "SOS DEF Boost I", },
+0x1BD: { "id": 0x1BD, "name": "Citrus Shorts", "brand": "Sheep Heavenly", "ability": "Faster Puck II", },
+0x1BE: { "id": 0x1BE, "name": "Sparkling Capris", "brand": "Sheep Heavenly", "ability": "Shiki: Fusion ★ +1", },
+0x1BF: { "id": 0x1BF, "name": "Ribbon Cargos", "brand": "Sheep Heavenly", "ability": "Combo Panel -1", },
+0x1C0: { "id": 0x1C0, "name": "Flaming Knee-highs", "brand": "Sheep Heavenly", "ability": "Regeneration I", },
+0x1C1: { "id": 0x1C1, "name": "Cloud Nine Scarf", "brand": "Sheep Heavenly", "ability": "Shiki: Ground Combo B", },
+0x1C2: { "id": 0x1C2, "name": "Lucky Rainbow Bracelets", "brand": "Sheep Heavenly", "ability": "Slower Puck I", },
+0x1C3: { "id": 0x1C3, "name": "Rounded Specs", "brand": "Sheep Heavenly", "ability": "Display Time", },
+0x1C4: { "id": 0x1C4, "name": "Shining Star Dangles", "brand": "Sheep Heavenly", "ability": "Defense Break Finisher", },
+0x1C5: { "id": 0x1C5, "name": "Princess Ring", "brand": "Sheep Heavenly", "ability": "Puck Power I", },
+0x1C6: { "id": 0x1C6, "name": "Happy Necklace", "brand": "Sheep Heavenly", "ability": "Shiki: Air Combo A", },
+0x1C7: { "id": 0x1C7, "name": "Heart Pochette", "brand": "Sheep Heavenly", "ability": "Faster Puck II", },
+0x1C8: { "id": 0x1C8, "name": "Polka Dot Bag", "brand": "Sheep Heavenly", "ability": "Hold that Puck II", },
+0x1C9: { "id": 0x1C9, "name": "Wadatsumi", "brand": "Jupiter of the Monkey", "ability": "Neku: DEF +1", },
+0x1CA: { "id": 0x1CA, "name": "Fudo", "brand": "Jupiter of the Monkey", "ability": "Neku: HP +20", },
+0x1CB: { "id": 0x1CB, "name": "Dharma", "brand": "Jupiter of the Monkey", "ability": "Neku: ATK +1", },
+0x1CC: { "id": 0x1CC, "name": "Suiten", "brand": "Jupiter of the Monkey", "ability": "Neku: HP +20", },
+0x1CD: { "id": 0x1CD, "name": "Haramitsu", "brand": "Jupiter of the Monkey", "ability": "Neku: ATK +1", },
+0x1CE: { "id": 0x1CE, "name": "Amida", "brand": "Jupiter of the Monkey", "ability": "Neku: ATK +5", },
+0x1CF: { "id": 0x1CF, "name": "Ashura", "brand": "Jupiter of the Monkey", "ability": "All-around Upgrade I", },
+0x1D0: { "id": 0x1D0, "name": "Brahma", "brand": "Jupiter of the Monkey", "ability": "Neku: HP +40", },
+0x1D1: { "id": 0x1D1, "name": "Komokuten", "brand": "Jupiter of the Monkey", "ability": "Neku: DEF +3", },
+0x1D2: { "id": 0x1D2, "name": "Togenkyo", "brand": "Jupiter of the Monkey", "ability": "Neku: HP +70", },
+0x1D3: { "id": 0x1D3, "name": "Inazuma", "brand": "Jupiter of the Monkey", "ability": "HIT Keeper I", },
+0x1D4: { "id": 0x1D4, "name": "Hannya", "brand": "Jupiter of the Monkey", "ability": "Neku: ATK +3", },
+0x1D5: { "id": 0x1D5, "name": "Aun", "brand": "Jupiter of the Monkey", "ability": "Neku: DEF +5", },
+0x1D6: { "id": 0x1D6, "name": "Gekirin", "brand": "Jupiter of the Monkey", "ability": "HIT Keeper II", },
+0x1D7: { "id": 0x1D7, "name": "Karma", "brand": "Jupiter of the Monkey", "ability": "Display Time", },
+0x1D8: { "id": 0x1D8, "name": "Naraka", "brand": "Jupiter of the Monkey", "ability": "Puck Power I", },
+0x1D9: { "id": 0x1D9, "name": "Plumeria Ring", "brand": "Pavo Real", "ability": "EXP Boost II", },
+0x1DA: { "id": 0x1DA, "name": "Gold Band", "brand": "Pavo Real", "ability": "EXP Boost II", },
+0x1DB: { "id": 0x1DB, "name": "Coral Necklace", "brand": "Pavo Real", "ability": "SOS Power Up I", },
+0x1DC: { "id": 0x1DC, "name": "Turquoise Necklace", "brand": "Pavo Real", "ability": "HIT Keeper III", },
+0x1DD: { "id": 0x1DD, "name": "Garden Bracelet", "brand": "Pavo Real", "ability": "Defense Break Finisher", },
+0x1DE: { "id": 0x1DE, "name": "Wheel Bracelet", "brand": "Pavo Real", "ability": "All-around Upgrade I", },
+0x1DF: { "id": 0x1DF, "name": "Gold Bangle", "brand": "Pavo Real", "ability": "EXP Boost II", },
+0x1E0: { "id": 0x1E0, "name": "Pureheart Pendant", "brand": "Pavo Real", "ability": "Shiki: Nag-free Escape", },
+0x1E1: { "id": 0x1E1, "name": "Skull Pendant", "brand": "Pavo Real", "ability": "EXP Boost I", },
+0x1E2: { "id": 0x1E2, "name": "Chandelier Dangles", "brand": "Pavo Real", "ability": "Slower Puck II", },
+0x1E3: { "id": 0x1E3, "name": "Diamond Studs", "brand": "Pavo Real", "ability": "Dual Resistance II", },
+0x1E4: { "id": 0x1E4, "name": "Plumeria Studs", "brand": "Pavo Real", "ability": "Regeneration III", },
+0x1E5: { "id": 0x1E5, "name": "Navel Piercing", "brand": "Pavo Real", "ability": "Combo Branch +2", },
+0x1E6: { "id": 0x1E6, "name": "Heart Nails", "brand": "Pavo Real", "ability": "Shiki: Ground Combo D", },
+0x1E7: { "id": 0x1E7, "name": "Blue Nails", "brand": "Pavo Real", "ability": "Shiki: Air Combo B", },
+0x1E8: { "id": 0x1E8, "name": "Silver Screen Sweetheart", "brand": "Natural Puppy", "ability": "Combo Branch +1", },
+0x1E9: { "id": 0x1E9, "name": "Silver Screen Starlet", "brand": "Natural Puppy", "ability": "Resist Defense Breaks", },
+0x1EA: { "id": 0x1EA, "name": "Plain Shirt", "brand": "Natural Puppy", "ability": "Regeneration I", },
+0x1EB: { "id": 0x1EB, "name": "Negative Polo", "brand": "Natural Puppy", "ability": "HP +15", },
+0x1EC: { "id": 0x1EC, "name": "Positive Polo", "brand": "Natural Puppy", "ability": "DEF +2", },
+0x1ED: { "id": 0x1ED, "name": "Pink Stripe", "brand": "Natural Puppy", "ability": "HP +5", },
+0x1EE: { "id": 0x1EE, "name": "Black Stripe", "brand": "Natural Puppy", "ability": "DEF +1", },
+0x1EF: { "id": 0x1EF, "name": "Lovely Camisole", "brand": "Natural Puppy", "ability": "Shiki: HP +10", },
+0x1F0: { "id": 0x1F0, "name": "White Cache-coeur", "brand": "Natural Puppy", "ability": "Resist HP Drain", },
+0x1F1: { "id": 0x1F1, "name": "Chic Black Turtleneck", "brand": "Natural Puppy", "ability": "Combo Panel +1", },
+0x1F2: { "id": 0x1F2, "name": "Midday Kitten Knit", "brand": "Natural Puppy", "ability": "DEF +3", },
+0x1F3: { "id": 0x1F3, "name": "Black Jeans", "brand": "Natural Puppy", "ability": "Dual Resistance I", },
+0x1F4: { "id": 0x1F4, "name": "Brown Jeans", "brand": "Natural Puppy", "ability": "Hold that Puck I", },
+0x1F5: { "id": 0x1F5, "name": "Skinny Jeans (Blue)", "brand": "Natural Puppy", "ability": "Resist Attack Breaks", },
+0x1F6: { "id": 0x1F6, "name": "My Favorite One-piece", "brand": "Natural Puppy", "ability": "DEF +5", },
+0x1F7: { "id": 0x1F7, "name": "Angelic One-piece", "brand": "Natural Puppy", "ability": "Puck Power I", },
+0x1F8: { "id": 0x1F8, "name": "Lovely One-piece", "brand": "Natural Puppy", "ability": "Regeneration II", },
+0x1F9: { "id": 0x1F9, "name": "Simple Mules", "brand": "Natural Puppy", "ability": "More Durable Obstacles I", },
+0x1FA: { "id": 0x1FA, "name": "Blossom Mules", "brand": "Natural Puppy", "ability": "Puck Power I", },
+0x1FB: { "id": 0x1FB, "name": "Enamel Pumps", "brand": "Natural Puppy", "ability": "Resist Knockback", },
+0x1FC: { "id": 0x1FC, "name": "Simple Necktie", "brand": "Natural Puppy", "ability": "Joshua: Fusion ★ +1", },
+0x1FD: { "id": 0x1FD, "name": "Waffle Necktie", "brand": "Natural Puppy", "ability": "Resist Defense Breaks", },
+0x1FE: { "id": 0x1FE, "name": "Seattle", "brand": "Wild Boar", "ability": "Combo Branch +1", },
+0x1FF: { "id": 0x1FF, "name": "San Francisco", "brand": "Wild Boar", "ability": "Resist Immobilization", },
+0x200: { "id": 0x200, "name": "Las Vegas", "brand": "Wild Boar", "ability": "Resist HP Drain", },
+0x201: { "id": 0x201, "name": "Chicago", "brand": "Wild Boar", "ability": "Display Time", },
+0x202: { "id": 0x202, "name": "New York", "brand": "Wild Boar", "ability": "HIT Keeper I", },
+0x203: { "id": 0x203, "name": "Negotiator", "brand": "Wild Boar", "ability": "Beat: Fusion ★ +2", },
+0x204: { "id": 0x204, "name": "Hey Boy", "brand": "Wild Boar", "ability": "Beat: Ground Combo A", },
+0x205: { "id": 0x205, "name": "Hey Girl", "brand": "Wild Boar", "ability": "Beat: Air Combo C", },
+0x206: { "id": 0x206, "name": "Hey Everybody", "brand": "Wild Boar", "ability": "Beat: Ground Combo B", },
+0x207: { "id": 0x207, "name": "Alive", "brand": "Wild Boar", "ability": "ATK +1", },
+0x208: { "id": 0x208, "name": "Sabotage", "brand": "Wild Boar", "ability": "Combo Panel +1", },
+0x209: { "id": 0x209, "name": "3 MC's 1 DJ", "brand": "Wild Boar", "ability": "ATK +2", },
+0x20A: { "id": 0x20A, "name": "Pass the Mic", "brand": "Wild Boar", "ability": "Show Combo Map Longer", },
+0x20B: { "id": 0x20B, "name": "Won't Stop", "brand": "Wild Boar", "ability": "Beat: ATK +3", },
+0x20C: { "id": 0x20C, "name": "Don't Stop", "brand": "Wild Boar", "ability": "Beat: HP +30", },
+0x20D: { "id": 0x20D, "name": "Camouflage", "brand": "Wild Boar", "ability": "SOS ATK Boost I", },
+0x20E: { "id": 0x20E, "name": "Darkness", "brand": "Wild Boar", "ability": "Beat: Air Combo A", },
+0x20F: { "id": 0x20F, "name": "Denim Coveralls", "brand": "Wild Boar", "ability": "Beat: DEF +4", },
+0x210: { "id": 0x210, "name": "Work Coveralls", "brand": "Wild Boar", "ability": "Beat: HP +70", },
+0x211: { "id": 0x211, "name": "Gold Die", "brand": "Wild Boar", "ability": "Beat: DEF +3", },
+0x212: { "id": 0x212, "name": "Wild Boar Pendant", "brand": "Wild Boar", "ability": "Beat: Nag-free Escape", },
+0x213: { "id": 0x213, "name": "King Pendant", "brand": "Wild Boar", "ability": "Beat: ATK +4", },
+0x214: { "id": 0x214, "name": "Skull Deck", "brand": "Wild Boar", "ability": "Display Time", },
+0x215: { "id": 0x215, "name": "Camo Deck", "brand": "Wild Boar", "ability": "Attack Break Finisher", },
+0x216: { "id": 0x216, "name": "Cat Deck", "brand": "Wild Boar", "ability": "HIT Keeper III", },
+0x217: { "id": 0x217, "name": "WEWY Promo Coat", "brand": "Gatito", "ability": "Hold that Puck III", },
+0x218: { "id": 0x218, "name": "WEWY Promo Tee", "brand": "Gatito", "ability": "All-around Upgrade III", },
+0x219: { "id": 0x219, "name": "WEWY Promo Tote", "brand": "Gatito", "ability": "EXP Boost III", },
+0x21A: { "id": 0x21A, "name": "Pinky's Lipstick", "brand": "Gatito", "ability": "Dual Resistance I", },
+0x21B: { "id": 0x21B, "name": "Lollipop's Parka", "brand": "Gatito", "ability": "Dual Resistance II", },
+0x21C: { "id": 0x21C, "name": "Big Guy's Buckle", "brand": "Gatito", "ability": "HP +100", },
+0x21D: { "id": 0x21D, "name": "Pi-Face's Cap", "brand": "Gatito", "ability": "ATK +5", },
+0x21E: { "id": 0x21E, "name": "Pi-Face's Coat", "brand": "Gatito", "ability": "Puck Power III", },
+0x21F: { "id": 0x21F, "name": "Pi-Face's Jeans", "brand": "Gatito", "ability": "Combo Map Upgrade II", },
+0x220: { "id": 0x220, "name": "Pi-Face's Bandanna", "brand": "Gatito", "ability": "Immobilizing Finisher", },
+0x221: { "id": 0x221, "name": "Iron Maiden's One-piece", "brand": "Gatito", "ability": "DEF +5", },
+0x222: { "id": 0x222, "name": "Shade's Headphones", "brand": "Gatito", "ability": "SOS Power Up II", },
+0x223: { "id": 0x223, "name": "Sis's Pendant", "brand": "Gatito", "ability": "Regeneration IV", },
+0x224: { "id": 0x224, "name": "Wizard's Glasses", "brand": "Gatito", "ability": "All-around Upgrade I", },
+0x225: { "id": 0x225, "name": "My Phones", "brand": "Gatito", "ability": "All-around Upgrade IV", },
+0x226: { "id": 0x226, "name": "Your Cap", "brand": "Gatito", "ability": "Beat: Fusion ★ +3", },
+0x227: { "id": 0x227, "name": "Her Stuffed Animal", "brand": "Gatito", "ability": "Shiki: Fusion ★ +3", },
+0x228: { "id": 0x228, "name": "Angel Feather", "brand": "Gatito", "ability": "Joshua: Fusion ★ +3", },
+0x229: { "id": 0x229, "name": "Gakuran", "brand": "Unbranded", "ability": "SOS Power Up I", },
+0x22A: { "id": 0x22A, "name": "Sailor Suit", "brand": "Unbranded", "ability": "Hold that Puck II", },
+0x22B: { "id": 0x22B, "name": "Boys' Uniform with Blazer", "brand": "Unbranded", "ability": "Dual Resistance II", },
+0x22C: { "id": 0x22C, "name": "Girls' Uniform with Blazer", "brand": "Unbranded", "ability": "Dual Resistance I", },
+0x22D: { "id": 0x22D, "name": "Girls' Uniform with Sweater", "brand": "Unbranded", "ability": "SOS Power Up I", },
+0x22E: { "id": 0x22E, "name": "Head Honcho", "brand": "Unbranded", "ability": "HP +15", },
+0x22F: { "id": 0x22F, "name": "Yukata", "brand": "Unbranded", "ability": "EXP Boost II", },
+0x230: { "id": 0x230, "name": "The Dead Slammurai", "brand": "Unbranded", "ability": "Puck Power II", },
+0x231: { "id": 0x231, "name": "The Black Slammurai", "brand": "Unbranded", "ability": "HP +35", },
+0x232: { "id": 0x232, "name": "Nose Glasses", "brand": "Unbranded", "ability": "Jinxed ATK Boost +10", },
+0x233: { "id": 0x233, "name": "Samurai Wig", "brand": "Unbranded", "ability": "Dual Resistance I", },
+0x234: { "id": 0x234, "name": "Mr. Mew Suit", "brand": "Unbranded", "ability": "Resist Knockback", },
+0x235: { "id": 0x235, "name": "New Year's Gift", "brand": "Unbranded", "ability": "Regeneration III", },
+0x236: { "id": 0x236, "name": "Pirate Hat", "brand": "Unbranded", "ability": "DEF +3", },
+0x237: { "id": 0x237, "name": "Potted Plant", "brand": "Unbranded", "ability": "Puck Power II", },
+0x238: { "id": 0x238, "name": "Mr. Claus", "brand": "Unbranded", "ability": "Combo Branch +2", },
+0x239: { "id": 0x239, "name": "Mrs. Claus", "brand": "Unbranded", "ability": "Regeneration III", },
+0x23A: { "id": 0x23A, "name": "Black Book Bag", "brand": "Unbranded", "ability": "SOS ATK Boost II", },
+0x23B: { "id": 0x23B, "name": "Red Book Bag", "brand": "Unbranded", "ability": "SOS DEF Boost II", },
+0x23C: { "id": 0x23C, "name": "Biker Gloves", "brand": "Unbranded", "ability": "Faster Puck II", },
+0x23D: { "id": 0x23D, "name": "Maid Costume", "brand": "Unbranded", "ability": "ATK +3", },
+0x23E: { "id": 0x23E, "name": "Supermask's Mask", "brand": "Unbranded", "ability": "SOS Null Damage", },
+0x23F: { "id": 0x23F, "name": "Ninja Garb", "brand": "Unbranded", "ability": "More Durable Obstacles I", },
+0x240: { "id": 0x240, "name": "Samurai Helm", "brand": "Unbranded", "ability": "All-around Upgrade II", },
+0x241: { "id": 0x241, "name": "Samurai Armor", "brand": "Unbranded", "ability": "HP +35", },
+0x242: { "id": 0x242, "name": "Fan of the Rising Sun", "brand": "Unbranded", "ability": "DEF +3", },
+0x243: { "id": 0x243, "name": "Samurai Sword", "brand": "Unbranded", "ability": "ATK +3", },
+0x244: { "id": 0x244, "name": "Solid Slammer", "brand": "Unbranded", "ability": "ATK +5", },
+0x245: { "id": 0x245, "name": "False Teeth", "brand": "Unbranded", "ability": "EXP Boost III", },
+0x246: { "id": 0x246, "name": "Lucky Mallet", "brand": "Unbranded", "ability": "EXP Boost II", },
+0x247: { "id": 0x247, "name": "Mr. Ducky", "brand": "Unbranded", "ability": "Slower Puck II", },
 }
 
 // Hardcode it instead of generate it because array_push() doesn't exist yet.
@@ -1486,17 +1493,47 @@ function GetNumberOfBasePinsInBrand(brand)
     return result
 }
 
-function GetAllThreadsOfBrand(brand)
+function GetThreadsByTrait(trait, value)
 {
     result = {}
     for i in threads
     {
         thread = threads[i]
-        if (thread["brand"] == brand)
+        if (thread[trait] == value)
         {
             result[i] = thread
         }
     }
+    return result
+}
+
+function GetAllThreadsOfBrand(brand)
+{
+    return GetThreadsByTrait("brand", brand)
+}
+
+function IsPartnerWearingAnyOfTheGivenThreads(givenThreads)
+{
+    result = always_false()
+    
+    for i in [ "Shiki", "Joshua", "Beat" ]
+    {
+        subresult = always_false()
+        partnerId = GetPartnerByName(i)
+        slot1Addr = GetThread1AddrForPartner(partnerId)
+        for slotId in range(0, 3)
+        {
+            threadSlotAddr = GetThreadAddressBySlot(slotId, slot1Addr)
+            
+            for j in givenThreads
+            {
+                thread = givenThreads[j]
+                subresult = subresult || word(threadSlotAddr) == thread["id"]
+            }
+        }
+        result = result || once(subresult) && partner() == partnerId
+    }
+    
     return result
 }
 
@@ -1535,6 +1572,22 @@ function joshuaThreadSlot1BaseAddr() => 0x071d5c
 function beatThreadSlot1BaseAddr() => 0x071d74
 
 function GetNekuThreadAddressBySlot(slotId) => GetThreadAddressBySlot(slotId, nekuThreadSlot1BaseAddr())
+
+function GetThread1AddrForPartner(partnerId)
+{
+    if (partnerId == GetPartnerByName("Shiki"))
+    {
+        return shikiThreadSlot1BaseAddr()
+    }
+    else if (partnerId == GetPartnerByName("Joshua"))
+    {
+        return joshuaThreadSlot1BaseAddr()
+    }
+    else if (partnerId == GetPartnerByName("Beat"))
+    {
+        return beatThreadSlot1BaseAddr()
+    }
+}
 
 function GetThreadAddressBySlot(slotId, slot1Addr) => slot1Addr + slotId * 2
 
@@ -1718,6 +1771,8 @@ dayAchievements = [
     { "name": "Prey on the Run", "description": "Reach the end of Week 2, Day 6.", "chapterCompleted": "Joshua, Day 6", "points": 1 },
     { "name": "Best of Three", "description": "Survive Week 2 of the Reapers' Game.", "chapterCompleted": "Joshua, Day 7", "points": 5 },
     { "name": "Sense from Nonsense", "description": "Reach the end of Week 3, Day 1.", "chapterCompleted": "Beat, Day 1", "points": 1 },
+    { "name": "No Style in the Dark", "description": "Reach the end of Week 3, Day 2.", "chapterCompleted": "Beat, Day 2", "points": 1 },
+    { "name": "Play On, Maestro", "description": "Reach the end of Week 3, Day 3.", "chapterCompleted": "Beat, Day 3", "points": 1 },
 ]
 
 for cheevo in dayAchievements
@@ -1731,7 +1786,7 @@ for cheevo in dayAchievements
 
 // End day progression achievements
 
-achievement(title = "It's a Step Forward", points = 3,
+achievement(title = "Psychic Escalation", points = 3,
     description = "Master a pin in your deck.",
     trigger = IsAnyDeckPinMastered() && isOnTitleScreen() == 0x0 && never(HasPinLoadoutChanged())
 )
@@ -1864,6 +1919,20 @@ achievement(title = "Battle Constellation", points = 50,
         && IsAtLeastOnDifficulty("Hard") && lengthOfBattleChain() >= 9
 )
 
+achievement(title = "By a Thousand Cuts", points = 10,
+    description = "Earn a '200 consecutive hits' bonus at a battle's conclusion.",
+    trigger = IsRankingRevealed()
+        && once(consecutiveHits200() == 1
+            || consecutiveHits500() == 1
+            || consecutiveHits1000() == 1)
+)
+
+achievement(title = "The Pendulum Swings", points = 25,
+    description = "Earn a '50-pass puck rally' bonus at a battle's conclusion.",
+    trigger = IsRankingRevealed()
+        && once(puckRallyPass50() == 1 || puckRallyPass100() == 1)
+)
+
 timeLimit = 30
 achievement(title = "Don't Kill Me Slowly", points = 5,
     description = "Defeat the Metal Corehog within " + SecondsToFormat(timeLimit)
@@ -1953,6 +2022,23 @@ achievement(title = "Drop the Freaking Moon!", points = 10,
         && NumberOfTheGivenPinsAreEquipped(apportPins, 2) && never(tally(6, pinsEquipped))
 )
 
+achievement(title = "Agnus Dei", points = 25,
+    description = "Defeat the Pteropus Canor with both Holy Light and Sacrifice pins equipped and no recovery pins (Normal or higher; Level 23 or below).",
+    trigger = enemyId() == GetEnemyIdByName("Pteropus Canor") && EnterBattleCheckpointValid()
+        && IsAtLeastOnDifficulty("Normal") && currentLevel() <= 23 && IsRankingRevealed()
+        && AnyOfTheGivenPinsAreEquipped(GetPinsByTrait("Psych", "Sacrifice"))
+        && AnyOfTheGivenPinsAreEquipped(GetPinsByTrait("Psych", "Holy Light"))
+        && !HasRecoveryPinsEquipped()
+)
+
+comboPanelMinus1Threads = GetThreadsByTrait("ability", "Combo Panel -1")
+achievement(title = "Hyperfocus", points = 5,
+    description = "Defeat Uzuki Yashiro without your partner wearing threads that normally have the Combo Panel -1 ability (Normal or higher; Level 27 or below).",
+    trigger = enemyId() == GetEnemyIdByName("Uzuki Yashiro") && EnterBattleCheckpointValid()
+        && IsAtLeastOnDifficulty("Normal") && currentLevel() <= 27 && IsRankingRevealed()
+        && never(IsPartnerWearingAnyOfTheGivenThreads(comboPanelMinus1Threads))
+)
+
 equippedBrands = []
 for i in brands
 {
@@ -1966,9 +2052,14 @@ achievement(title = "It's My Asskicking Outfit, Bitch!", points = 0,
 )
 
 // Tin Pin Slammer achievements
+
+// May there be a better way to detect this, since this is haaaaaacky.
+function IsInSinglesMatch() => tpsFfaTimeRemaining() == 0x2374e80
+
 function ptrP1TinPinCurrentPinId() => tbyte(0x39b964)
 function ptrP2TinPinCurrentPinId() => tbyte(0x398ea4)
 function tpsTimeRemaining() => dword(0x37a1dc)
+function tpsFfaTimeRemaining() => dword(0x374e5c)
 function voidPinId() => 0x130
 function tpsTimeSet() => Delta(tpsTimeRemaining()) < tpsTimeRemaining()
 function EnterTinPinCheckpointValid()
@@ -1985,7 +2076,17 @@ function P2Invincible() => word(0x398ea0) > 0
 function P1LostAllPins() => word(ptrP1TinPinCurrentPin()) >= voidPinId()
 function p1PPGained() => word(0x39b9a4)
 function p2PPGained() => word(0x398ee4)
-function WonTinPinGame() => p1PPGained() >= p2PPGained() && IsOnTinPinResultsScreen()
+function p3PPGained() => word(0x396524)
+function p4PPGained() => word(0x393b64)
+function WonSinglesTinPinGame()
+{
+    return IsOnTinPinResultsScreen() && IsInSinglesMatch() && p1PPGained() >= p2PPGained()
+}
+function WonFreeForAllTinPinGame()
+{
+    return IsOnTinPinResultsScreen() && !IsInSinglesMatch() && p1PPGained() >= p2PPGained()
+        && p1PPGained() >= p3PPGained() && p1PPGained() >= p4PPGained()
+}
 function p1Stingers() => word(0x39b970)
 function p1DiveBombers() => word(0x39b972)
 function p1Sledgehammers() => word(0x39b974)
@@ -2006,33 +2107,34 @@ function P1UsingWhammy()
 }
 
 achievement(title = "C'mon and Slam!", points = 5,
-    description = "Win a game of Tin Pin Slammer with all of your pins intact.",
+    description = "Win a 1v1 game of Tin Pin Slammer with all of your pins intact.",
     trigger = EnterTinPinCheckpointValid() && never(once(P1PinLost()))
-        && WonTinPinGame()
+        && WonSinglesTinPinGame()
 )
 
 achievement(title = "And Welcome to the Jam!", points = 10,
     description = "Win a game of Tin Pin Slammer without using any whammies.",
-    trigger = EnterTinPinCheckpointValid() && WonTinPinGame()
-        && never(P1UsingWhammy())
+    trigger = EnterTinPinCheckpointValid()
+        && never(P1UsingWhammy()) && (WonSinglesTinPinGame() || WonFreeForAllTinPinGame())
 )
 
 achievement(title = "Hey, You, Whatcha Gonna Do?", points = 5,
-    description = "Stun the opponent with a whammy ten times in a single game of Tin Pin Slammer.",
+    description = "Stun the opponent with a whammy ten times in a single 1v1 game of Tin Pin Slammer.",
     trigger = EnterTinPinCheckpointValid() && repeated(10, Delta(p2StunTimer()) == 0x0 && p2StunTimer() > 0)
+         && IsInSinglesMatch()
 )
 
 achievement(title = "Watch Me Flex", points = 5,
     description = "Earn 30 PP or more in a single game of Tin Pin Slammer.",
-    trigger = EnterTinPinCheckpointValid() && p1PPGained() >= 30
-        && WonTinPinGame()
+    trigger = EnterTinPinCheckpointValid() && p1PPGained() >= 30 && IsOnTinPinResultsScreen()
 )
 
 timeLimit = 60
 achievement(title = "Let It Rip!", points = 10,
     description = "Win a game of Tin Pin Slammer within " + timeLimit + " seconds.",
-    trigger = EnterTinPinCheckpointValid() && WonTinPinGame()
-        && never(repeated(SecondsToFrames(timeLimit), Delta(tpsTimeRemaining()) > tpsTimeRemaining()))
+    trigger = EnterTinPinCheckpointValid()
+        && (WonSinglesTinPinGame() && never(repeated(SecondsToFrames(timeLimit), Delta(tpsTimeRemaining()) > tpsTimeRemaining()))
+            || WonFreeForAllTinPinGame() && never(repeated(SecondsToFrames(timeLimit), Delta(tpsFfaTimeRemaining()) > tpsFfaTimeRemaining())))
 )
 
 allowedPins = {}
@@ -2053,8 +2155,9 @@ for i in pinsOfWeight2
 
 achievement(title = "Flyweight", points = 5,
     description = "Win a game of Tin Pin Slammer using only pins with weights no greater than 2.",
-    trigger = EnterTinPinCheckpointValid() && WonTinPinGame()
+    trigger = EnterTinPinCheckpointValid()
         && never(!GivenPinsIncludesIdAtAddress(allowedPins, ptrP1TinPinCurrentPinId()))
+        && (WonSinglesTinPinGame() || WonFreeForAllTinPinGame())
 )
 
 allowedPins = {}
@@ -2074,27 +2177,31 @@ for i in pinsOfWeight9
 }
 achievement(title = "Heavyweight", points = 5,
     description = "Win a game of Tin Pin Slammer using only pins with weights no lower than 9.",
-    trigger = EnterTinPinCheckpointValid() && WonTinPinGame()
+    trigger = EnterTinPinCheckpointValid()
         && never(!GivenPinsIncludesIdAtAddress(allowedPins, ptrP1TinPinCurrentPinId()))
+        && (WonSinglesTinPinGame() || WonFreeForAllTinPinGame())
 )
 
 achievement(title = "Flawless Slammer", points = 5,
     description = "Win a game of Tin Pin Slammer without getting hit by a whammy.",
-    trigger = EnterTinPinCheckpointValid() && WonTinPinGame()
+    trigger = EnterTinPinCheckpointValid()
         && never(p1StunTimer() > 0)
+        && (WonSinglesTinPinGame() || WonFreeForAllTinPinGame())
 )
 
 achievement(title = "Spawn Camper", points = 25,
-    description = "Send a pin off the edge within six seconds of it respawning in Tin Pin Slammer.",
+    description = "Send a pin off the edge within six seconds of it respawning in a 1v1 game of Tin Pin Slammer.",
     trigger = IsInTinPinMatch() && unless(repeated(SecondsToFrames(6), !P2Invincible()))
         && once(P2PinKnockedOut() || P2IsUsingHelpingHand())
         && (always_true() || never(P2Invincible()))
+        && IsInSinglesMatch()
 )
 
 achievement(title = "Pacifist", points = 5,
-    description = "Win a game of Tin Pin Slammer without knocking out any pins.",
-    trigger = EnterTinPinCheckpointValid() && WonTinPinGame()
+    description = "Win a 1v1 game of Tin Pin Slammer without knocking out any pins.",
+    trigger = EnterTinPinCheckpointValid()
         && never(once(p1PPGained() == Delta(p1PPGained()) + 2) && P2PinLost())
+        && WonSinglesTinPinGame()
 )
 
 // End Tin Pin Slammer achievements
