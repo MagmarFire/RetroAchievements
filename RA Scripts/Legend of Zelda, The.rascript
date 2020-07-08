@@ -15,7 +15,7 @@ function gameMode() => byte(0x000012)
 // $0016: Current Save Slot
 function currentSaveSlot() => byte(0x000016)
 
-function IsLoading() => gameMode() == 0x2
+function IsInGame() => gameMode() > 0x2
 
 // $062D: Current Quest for Save 1
 function save1Quest() => byte(0x00062D)
@@ -170,19 +170,19 @@ achievement(
 achievement(
     title = "Boy, This is Really Expensive!", description = "Equip the blue ring in the first quest", points = 5,
     id = 33231, badge = "62756", published = "2/24/2016 9:17:32 PM", modified = "10/20/2019 9:05:01 PM",
-    trigger = byte(0x000662) == 0x01 &&
-              ((byte(0x000016) == 0x00 && byte(0x00062D) == 0x00) ||
-               (byte(0x000016) == 0x01 && byte(0x00062E) == 0x00) ||
-               (byte(0x000016) == 0x02 && byte(0x00062F) == 0x00))
+    trigger = ring() == 0x01 && Delta(ring()) == 0x0 && IsInGame() &&
+              ((currentSaveSlot() == 0x00 && save1Quest() == 0x00) ||
+               (currentSaveSlot() == 0x01 && save2Quest() == 0x00) ||
+               (currentSaveSlot() == 0x02 && save3Quest() == 0x00))
 )
 
 achievement(
     title = "Recommendation for the Old Woman", description = "Find the letter in the first quest", points = 3,
     id = 33338, badge = "62757", published = "2/26/2016 1:59:50 PM", modified = "8/3/2019 3:41:25 AM",
     trigger = byte(0x000526) == 0xFF && byte(0x0000EB) == 0x0E && byte(0x000666) == 0x01 &&
-              ((byte(0x000016) == 0x00 && byte(0x00062D) == 0x00) ||
-               (byte(0x000016) == 0x01 && byte(0x00062E) == 0x00) ||
-               (byte(0x000016) == 0x02 && byte(0x00062F) == 0x00))
+              ((currentSaveSlot() == 0x00 && save1Quest() == 0x00) ||
+               (currentSaveSlot() == 0x01 && save2Quest() == 0x00) ||
+               (currentSaveSlot() == 0x02 && save3Quest() == 0x00))
 )
 
 achievement(
@@ -207,9 +207,9 @@ achievement(
     title = "Boomerang Pro", description = "Obtain the magical boomerang in the first quest", points = 5,
     id = 33224, badge = "62761", published = "2/24/2016 6:17:38 PM", modified = "8/3/2019 3:41:46 AM",
     trigger = byte(0x000526) == 0x3C && byte(0x0000EB) == 0x4F && byte(0x000675) == 0x01 &&
-              ((byte(0x000016) == 0x00 && byte(0x00062D) == 0x00) ||
-               (byte(0x000016) == 0x01 && byte(0x00062E) == 0x00) ||
-               (byte(0x000016) == 0x02 && byte(0x00062F) == 0x00))
+              ((currentSaveSlot() == 0x00 && save1Quest() == 0x00) ||
+               (currentSaveSlot() == 0x01 && save2Quest() == 0x00) ||
+               (currentSaveSlot() == 0x02 && save3Quest() == 0x00))
 )
 
 achievement(
@@ -257,7 +257,7 @@ achievement(
 achievement(
     title = "Red Hype", description = "Obtain the red ring in the first quest", points = 10,
     id = 33230, badge = "62769", published = "2/24/2016 9:07:25 PM", modified = "8/3/2019 3:42:48 AM",
-    trigger = byte(0x000526) == 0x05 && byte(0x0000EB) == 0x00 && byte(0x000662) == 0x02
+    trigger = byte(0x000526) == 0x05 && byte(0x0000EB) == 0x00 && ring() == 0x02
 )
 
 achievement(
@@ -280,7 +280,7 @@ achievement(
 achievement(
     title = "Rupee Bounty", description = "Have 100 Rupees", points = 3,
     id = 3738, badge = "62772", published = "12/6/2013 4:40:23 AM", modified = "8/3/2019 3:43:37 AM",
-    trigger = byte(0x00066D) >= 0x64 && byte(0x000012) == 0x05
+    trigger = rupees() >= 0x64 && Delta(rupees()) < 0x64 && IsInGame()
 )
 
 // Ticket 29432: Needs save protection.  Triggers upon loading a save with 100+ rupees.  Can be fixed with a
@@ -289,34 +289,34 @@ achievement(
 achievement(
     title = "Rupee Hoarder", description = "Have 255 Rupees", points = 5,
     id = 3745, badge = "62773", published = "12/6/2013 7:24:22 AM", modified = "5/9/2018 2:17:10 AM",
-    trigger = byte(0x00066D) == 0xFF && byte(0x000012) == 0x05
+    trigger = rupees() == 0xFF && Delta(rupees()) < 0xFF && IsInGame()
 )
 
 achievement(
     title = "More Bombs", description = "Obtain your first bomb upgrade in the first quest", points = 3,
     id = 33406, badge = "62774", published = "2/29/2016 4:26:57 PM", modified = "8/3/2019 3:43:40 AM",
-    trigger = byte(0x00067C) == 0x0C && byte(0x000012) == 0x05 &&
-              ((byte(0x000016) == 0x00 && byte(0x00062D) == 0x00) ||
-               (byte(0x000016) == 0x01 && byte(0x00062E) == 0x00) ||
-               (byte(0x000016) == 0x02 && byte(0x00062F) == 0x00))
+    trigger = byte(0x00067C) == 0x0C && gameMode() == 0x05 &&
+              ((currentSaveSlot() == 0x00 && save1Quest() == 0x00) ||
+               (currentSaveSlot() == 0x01 && save2Quest() == 0x00) ||
+               (currentSaveSlot() == 0x02 && save3Quest() == 0x00))
 )
 
 achievement(
     title = "So Many Bombs", description = "Obtain your second bomb upgrade in the first quest", points = 5,
     id = 33413, badge = "62775", published = "2/29/2016 4:34:01 PM", modified = "8/3/2019 3:43:44 AM",
-    trigger = byte(0x00067C) == 0x10 && byte(0x000012) == 0x05 &&
-              ((byte(0x000016) == 0x00 && byte(0x00062D) == 0x00) ||
-               (byte(0x000016) == 0x01 && byte(0x00062E) == 0x00) ||
-               (byte(0x000016) == 0x02 && byte(0x00062F) == 0x00))
+    trigger = byte(0x00067C) == 0x10 && gameMode() == 0x05 &&
+              ((currentSaveSlot() == 0x00 && save1Quest() == 0x00) ||
+               (currentSaveSlot() == 0x01 && save2Quest() == 0x00) ||
+               (currentSaveSlot() == 0x02 && save3Quest() == 0x00))
 )
 
 achievement(
     title = "Heart Master", description = "Obtain all 16 heart containers in the first quest", points = 10,
     id = 3757, badge = "62776", published = "12/7/2013 7:09:47 AM", modified = "8/3/2019 3:43:47 AM",
-    trigger = high4(0x00066F) == 0xF && byte(0x000012) == 0x05 &&
-              ((byte(0x000016) == 0x00 && byte(0x00062D) == 0x00) ||
-               (byte(0x000016) == 0x01 && byte(0x00062E) == 0x00) ||
-               (byte(0x000016) == 0x02 && byte(0x00062F) == 0x00))
+    trigger = high4(0x00066F) == 0xF && gameMode() == 0x05 &&
+              ((currentSaveSlot() == 0x00 && save1Quest() == 0x00) ||
+               (currentSaveSlot() == 0x01 && save2Quest() == 0x00) ||
+               (currentSaveSlot() == 0x02 && save3Quest() == 0x00))
 )
 
 // Ticket 28215: This triggered when I completed the Dungeon Explorer achievement.<br>MD5: Unknown<br>Emulator: RANes
@@ -324,90 +324,90 @@ achievement(
     title = "Dungeon Cartographer", description = "Find all compasses and maps in the first quest", points = 25,
     id = 22744, badge = "62777", published = "5/10/2015 7:23:27 PM", modified = "10/2/2019 4:30:02 PM",
     trigger = byte(0x000667) == 0xFF && byte(0x000668) == 0xFF && byte(0x000669) == 0x01 && byte(0x00066A) == 0x01 &&
-              ((byte(0x00062D) == 0x00) ||
-               (byte(0x00062E) == 0x00) ||
-               (byte(0x00062F) == 0x00))
+              ((save1Quest() == 0x00) ||
+               (save2Quest() == 0x00) ||
+               (save3Quest() == 0x00))
 )
 
 achievement(
     title = "Eagle Novice", description = "Complete the Eagle dungeon in the first quest", points = 5,
     id = 3737, badge = "62778", published = "12/6/2013 4:11:41 AM", modified = "5/9/2018 2:21:14 AM",
     trigger = byte(0x000671) > prev(byte(0x000671)) && byte(0x000526) == 0x37 && byte(0x0000EB) == 0x36 &&
-              ((byte(0x000016) == 0x00 && byte(0x00062D) == 0x00) ||
-               (byte(0x000016) == 0x01 && byte(0x00062E) == 0x00) ||
-               (byte(0x000016) == 0x02 && byte(0x00062F) == 0x00))
+              ((currentSaveSlot() == 0x00 && save1Quest() == 0x00) ||
+               (currentSaveSlot() == 0x01 && save2Quest() == 0x00) ||
+               (currentSaveSlot() == 0x02 && save3Quest() == 0x00))
 )
 
 achievement(
     title = "Moon Novice", description = "Complete the Moon dungeon in the first quest", points = 5,
     id = 3742, badge = "62779", published = "12/6/2013 6:26:26 AM", modified = "5/9/2018 2:21:36 AM",
     trigger = byte(0x000671) > prev(byte(0x000671)) && byte(0x000526) == 0x3C && byte(0x0000EB) == 0x0D &&
-              ((byte(0x00062D) == 0x00 && byte(0x000016) == 0x00) ||
-               (byte(0x00062E) == 0x00 && byte(0x000016) == 0x01) ||
-               (byte(0x00062F) == 0x00 && byte(0x000016) == 0x02))
+              ((save1Quest() == 0x00 && currentSaveSlot() == 0x00) ||
+               (save2Quest() == 0x00 && currentSaveSlot() == 0x01) ||
+               (save3Quest() == 0x00 && currentSaveSlot() == 0x02))
 )
 
 achievement(
     title = "Manji Novice", description = "Complete the Manji dungeon in the first quest", points = 5,
     id = 3744, badge = "62780", published = "12/6/2013 6:54:44 AM", modified = "5/9/2018 2:21:56 AM",
     trigger = byte(0x000671) > prev(byte(0x000671)) && byte(0x000526) == 0x74 && byte(0x0000EB) == 0x3D &&
-              ((byte(0x000016) == 0x00 && byte(0x00062D) == 0x00) ||
-               (byte(0x000016) == 0x01 && byte(0x00062E) == 0x00) ||
-               (byte(0x000016) == 0x02 && byte(0x00062F) == 0x00))
+              ((currentSaveSlot() == 0x00 && save1Quest() == 0x00) ||
+               (currentSaveSlot() == 0x01 && save2Quest() == 0x00) ||
+               (currentSaveSlot() == 0x02 && save3Quest() == 0x00))
 )
 
 achievement(
     title = "Snake Novice", description = "Complete the Snake dungeon in the first quest", points = 5,
     id = 3747, badge = "62781", published = "12/6/2013 7:51:09 AM", modified = "5/9/2018 2:22:21 AM",
     trigger = byte(0x000671) > prev(byte(0x000671)) && byte(0x000526) == 0x45 && byte(0x0000EB) == 0x03 &&
-              ((byte(0x00062D) == 0x00 && byte(0x000016) == 0x00) ||
-               (byte(0x00062E) == 0x00 && byte(0x000016) == 0x01) ||
-               (byte(0x00062F) == 0x00 && byte(0x000016) == 0x02))
+              ((save1Quest() == 0x00 && currentSaveSlot() == 0x00) ||
+               (save2Quest() == 0x00 && currentSaveSlot() == 0x01) ||
+               (save3Quest() == 0x00 && currentSaveSlot() == 0x02))
 )
 
 achievement(
     title = "Lizard Novice", description = "Complete the Lizard dungeon in the first quest", points = 10,
     id = 3749, badge = "62782", published = "12/7/2013 3:51:29 AM", modified = "10/11/2019 6:35:02 PM",
     trigger = byte(0x000671) > prev(byte(0x000671)) && byte(0x000526) == 0x0B && byte(0x0000EB) == 0x14 &&
-              ((byte(0x000016) == 0x00 && byte(0x00062D) == 0x00) ||
-               (byte(0x000016) == 0x01 && byte(0x00062E) == 0x00) ||
-               (byte(0x000016) == 0x02 && byte(0x00062F) == 0x00))
+              ((currentSaveSlot() == 0x00 && save1Quest() == 0x00) ||
+               (currentSaveSlot() == 0x01 && save2Quest() == 0x00) ||
+               (currentSaveSlot() == 0x02 && save3Quest() == 0x00))
 )
 
 achievement(
     title = "Dragon Novice", description = "Complete the Dragon dungeon in the first quest", points = 10,
     id = 3752, badge = "62783", published = "12/7/2013 4:20:00 AM", modified = "10/2/2019 4:30:02 PM",
     trigger = byte(0x000671) > prev(byte(0x000671)) && byte(0x000526) == 0x22 && byte(0x0000EB) == 0x0C &&
-              ((byte(0x00062D) == 0x00 && byte(0x000016) == 0x00) ||
-               (byte(0x00062E) == 0x00 && byte(0x000016) == 0x01) ||
-               (byte(0x00062F) == 0x00 && byte(0x000016) == 0x02))
+              ((save1Quest() == 0x00 && currentSaveSlot() == 0x00) ||
+               (save2Quest() == 0x00 && currentSaveSlot() == 0x01) ||
+               (save3Quest() == 0x00 && currentSaveSlot() == 0x02))
 )
 
 achievement(
     title = "Demon Novice", description = "Complete the Demon dungeon in the first quest", points = 10,
     id = 3753, badge = "62784", published = "12/7/2013 5:21:22 AM", modified = "8/3/2019 3:44:36 AM",
     trigger = byte(0x000671) > prev(byte(0x000671)) && byte(0x000526) == 0x42 && byte(0x0000EB) == 0x2B &&
-              ((byte(0x000016) == 0x00 && byte(0x00062D) == 0x00) ||
-               (byte(0x000016) == 0x01 && byte(0x00062E) == 0x00) ||
-               (byte(0x000016) == 0x02 && byte(0x00062F) == 0x00))
+              ((currentSaveSlot() == 0x00 && save1Quest() == 0x00) ||
+               (currentSaveSlot() == 0x01 && save2Quest() == 0x00) ||
+               (currentSaveSlot() == 0x02 && save3Quest() == 0x00))
 )
 
 achievement(
     title = "Lion Novice", description = "Complete the Lion dungeon in the first quest", points = 10,
     id = 3754, badge = "62785", published = "12/7/2013 5:42:21 AM", modified = "8/3/2019 3:44:40 AM",
     trigger = byte(0x000671) > prev(byte(0x000671)) && byte(0x000526) == 0x6D && byte(0x0000EB) == 0x2C &&
-              ((byte(0x00062D) == 0x00 && byte(0x000016) == 0x00) ||
-               (byte(0x00062E) == 0x00 && byte(0x000016) == 0x01) ||
-               (byte(0x00062F) == 0x00 && byte(0x000016) == 0x02))
+              ((save1Quest() == 0x00 && currentSaveSlot() == 0x00) ||
+               (save2Quest() == 0x00 && currentSaveSlot() == 0x01) ||
+               (save3Quest() == 0x00 && currentSaveSlot() == 0x02))
 )
 
 achievement(
     title = "The Quest is Over", description = "Defeat Ganon in Death Mountain in the first quest", points = 25,
     id = 3758, badge = "62786", published = "12/7/2013 7:13:11 AM", modified = "10/2/2019 4:30:02 PM",
     trigger = byte(0x000526) == 0x05 && byte(0x0000EB) == 0x32 &&
-              ((byte(0x000016) == 0x00 && byte(0x00062D) == 0x00) ||
-               (byte(0x000016) == 0x01 && byte(0x00062E) == 0x00) ||
-               (byte(0x000016) == 0x02 && byte(0x00062F) == 0x00))
+              ((currentSaveSlot() == 0x00 && save1Quest() == 0x00) ||
+               (currentSaveSlot() == 0x01 && save2Quest() == 0x00) ||
+               (currentSaveSlot() == 0x02 && save3Quest() == 0x00))
 )
 
 achievement(
@@ -524,7 +524,7 @@ achievement(
 achievement(
     title = "Bounty Hunter", description = "Receive money from every hidden moblin in the first quest", points = 10,
     id = 33226, badge = "62802", published = "2/24/2016 8:35:56 PM", modified = "11/30/2019 8:49:26 PM",
-    trigger = byte(0x000012) == 0x0B && (prev(bit4(0x0006E6)) + prev(bit4(0x00068E)) + prev(bit4(0x0006EA)) +
+    trigger = gameMode() == 0x0B && (prev(bit4(0x0006E6)) + prev(bit4(0x00068E)) + prev(bit4(0x0006EA)) +
                prev(bit4(0x0006E1)) + prev(bit4(0x0006D5)) + prev(bit4(0x0006AC)) + prev(bit4(0x0006DA)) +
                prev(bit4(0x0006BC)) + prev(bit4(0x0006CD)) + prev(bit4(0x0006A7)) + prev(bit4(0x0006C7)) +
                prev(bit4(0x000692)) + prev(bit4(0x0006F0)) + prev(bit4(0x0006D0))) == 0x13 && (bit4(0x0006E6) +
@@ -536,8 +536,8 @@ achievement(
 achievement(
     title = "It's Not Easy Being Green", description = "Beat the game without obtaining a ring in the first quest", points = 25,
     id = 33233, badge = "62803", published = "2/24/2016 10:15:25 PM", modified = "10/23/2019 10:01:02 PM",
-    trigger = byte(0x000526) == 0x05 && byte(0x0000EB) == 0x32 && byte(0x000662) == 0x00 && byte(0x000012) == 0x05 && 
-              byte(0x000012) != 0x01
+    trigger = byte(0x000526) == 0x05 && byte(0x0000EB) == 0x32 && ring() == 0x00 && gameMode() == 0x05 && 
+              gameMode() != 0x01
 )
 
 achievement(
@@ -545,37 +545,37 @@ achievement(
     id = 33775, badge = "62804", published = "3/14/2016 10:27:01 AM", modified = "10/23/2019 10:01:02 PM",
     trigger = byte(0x0000EB) == 0x42 && byte(0x000657) == 0x00 && byte(0x000010) == 0x09 && byte(0x000526) == 0x05 && 
               never(once(byte(0x000657) > 0x00)) &&
-              ((byte(0x00062D) == 0x00 && byte(0x000016) == 0x00) ||
-               (byte(0x00062E) == 0x00 && byte(0x000016) == 0x01) ||
-               (byte(0x00062F) == 0x00 && byte(0x000016) == 0x02))
+              ((save1Quest() == 0x00 && currentSaveSlot() == 0x00) ||
+               (save2Quest() == 0x00 && currentSaveSlot() == 0x01) ||
+               (save3Quest() == 0x00 && currentSaveSlot() == 0x02))
 )
 
 achievement(
     title = "Boy, This is Really Expensive! Too", description = "Equip the blue ring in the second quest", points = 5,
     id = 33322, badge = "62805", published = "2/26/2016 9:46:37 AM", modified = "9/23/2019 3:23:01 PM",
-    trigger = byte(0x000662) == 0x01 && byte(0x000012) == 0x0B &&
-              ((byte(0x000016) == 0x00 && byte(0x00062D) == 0x01) ||
-               (byte(0x000016) == 0x01 && byte(0x00062E) == 0x01) ||
-               (byte(0x000016) == 0x02 && byte(0x00062F) == 0x01))
+    trigger = ring() == 0x01 && gameMode() == 0x0B &&
+              ((currentSaveSlot() == 0x00 && save1Quest() == 0x01) ||
+               (currentSaveSlot() == 0x01 && save2Quest() == 0x01) ||
+               (currentSaveSlot() == 0x02 && save3Quest() == 0x01))
 )
 
 achievement(
     title = "Heart Master 2", description = "Obtain all 16 heart containers in the second quest", points = 25,
     id = 33416, badge = "62806", published = "3/1/2016 12:00:57 AM", modified = "10/23/2019 10:01:02 PM",
-    trigger = high4(0x00066F) == 0xF && byte(0x000012) == 0x05 &&
-              ((byte(0x000016) == 0x00 && byte(0x00062D) == 0x01) ||
-               (byte(0x000016) == 0x01 && byte(0x00062E) == 0x01) ||
-               (byte(0x000016) == 0x02 && byte(0x00062F) == 0x01))
+    trigger = high4(0x00066F) == 0xF && gameMode() == 0x05 &&
+              ((currentSaveSlot() == 0x00 && save1Quest() == 0x01) ||
+               (currentSaveSlot() == 0x01 && save2Quest() == 0x01) ||
+               (currentSaveSlot() == 0x02 && save3Quest() == 0x01))
 )
 
 achievement(
     title = "Dungeon Explorer", description = "Find all compasses and maps in the second quest", points = 25,
     id = 22743, badge = "62807", published = "5/10/2015 7:23:19 PM", modified = "10/23/2019 10:01:02 PM",
     trigger = byte(0x000667) == 0xFF && byte(0x000668) == 0xFF && byte(0x000669) == 0x01 && byte(0x00066A) == 0x01 && 
-              byte(0x000012) == 0x05 &&
-              ((byte(0x00062D) == 0x01 && byte(0x000016) == 0x00) ||
-               (byte(0x00062E) == 0x01 && byte(0x000016) == 0x01) ||
-               (byte(0x00062F) == 0x01 && byte(0x000016) == 0x02))
+              gameMode() == 0x05 &&
+              ((save1Quest() == 0x01 && currentSaveSlot() == 0x00) ||
+               (save2Quest() == 0x01 && currentSaveSlot() == 0x01) ||
+               (save3Quest() == 0x01 && currentSaveSlot() == 0x02))
 )
 
 achievement(
@@ -583,92 +583,92 @@ achievement(
     id = 33237, badge = "62808", published = "2/25/2016 1:50:32 PM", modified = "10/23/2019 10:01:02 PM",
     trigger = byte(0x000657) == 0x03 && byte(0x000659) == 0x02 && byte(0x00065A) == 0x01 && byte(0x00065B) == 0x02 && 
               byte(0x00065C) == 0x01 && byte(0x00065D) == 0x01 && byte(0x00065F) == 0x01 && byte(0x000660) == 0x01 && byte(0x000661) == 0x01 && 
-              byte(0x000662) == 0x02 && byte(0x000663) == 0x01 && byte(0x000664) == 0x01 && byte(0x000665) == 0x01 && byte(0x000666) >= 0x01 && 
-              byte(0x000675) == 0x01 && byte(0x000676) == 0x01 && byte(0x00067C) == 0x10 && byte(0x000012) != 0x01 && byte(0x000012) != 0x00 &&
-              ((byte(0x000016) == 0x00 && byte(0x00062D) == 0x01) ||
-               (byte(0x000016) == 0x01 && byte(0x00062E) == 0x01) ||
-               (byte(0x000016) == 0x02 && byte(0x00062F) == 0x01))
+              ring() == 0x02 && byte(0x000663) == 0x01 && byte(0x000664) == 0x01 && byte(0x000665) == 0x01 && byte(0x000666) >= 0x01 && 
+              byte(0x000675) == 0x01 && byte(0x000676) == 0x01 && byte(0x00067C) == 0x10 && gameMode() != 0x01 && gameMode() != 0x00 &&
+              ((currentSaveSlot() == 0x00 && save1Quest() == 0x01) ||
+               (currentSaveSlot() == 0x01 && save2Quest() == 0x01) ||
+               (currentSaveSlot() == 0x02 && save3Quest() == 0x01))
 )
 
 achievement(
     title = "Eagle Expert", description = "Complete the Eagle dungeon in the second quest", points = 10,
     id = 3760, badge = "62809", published = "12/7/2013 7:35:54 AM", modified = "10/20/2019 9:05:01 PM",
     trigger = byte(0x000671) > prev(byte(0x000671)) && byte(0x000526) == 0x37 && byte(0x0000EB) == 0x08 &&
-              ((byte(0x000016) == 0x00 && byte(0x00062D) == 0x01) ||
-               (byte(0x000016) == 0x01 && byte(0x00062E) == 0x01) ||
-               (byte(0x000016) == 0x02 && byte(0x00062F) == 0x01))
+              ((currentSaveSlot() == 0x00 && save1Quest() == 0x01) ||
+               (currentSaveSlot() == 0x01 && save2Quest() == 0x01) ||
+               (currentSaveSlot() == 0x02 && save3Quest() == 0x01))
 )
 
 achievement(
     title = "Moon Expert", description = "Complete the Moon dungeon in the second quest", points = 10,
     id = 3776, badge = "62810", published = "12/7/2013 8:19:57 PM", modified = "10/20/2019 9:05:01 PM",
     trigger = byte(0x000671) > prev(byte(0x000671)) && byte(0x000526) == 0x34 && byte(0x0000EB) == 0x1B &&
-              ((byte(0x00062D) == 0x01 && byte(0x000016) == 0x00) ||
-               (byte(0x00062E) == 0x01 && byte(0x000016) == 0x01) ||
-               (byte(0x00062F) == 0x01 && byte(0x000016) == 0x02))
+              ((save1Quest() == 0x01 && currentSaveSlot() == 0x00) ||
+               (save2Quest() == 0x01 && currentSaveSlot() == 0x01) ||
+               (save3Quest() == 0x01 && currentSaveSlot() == 0x02))
 )
 
 achievement(
     title = "Manji Expert", description = "Complete the Manji dungeon in the second quest", points = 10,
     id = 3864, badge = "62811", published = "12/9/2013 7:47:12 PM", modified = "8/3/2019 3:47:31 AM",
     trigger = byte(0x000671) > prev(byte(0x000671)) && byte(0x000526) == 0x3C && byte(0x0000EB) == 0x20 &&
-              ((byte(0x000016) == 0x00 && byte(0x00062D) == 0x01) ||
-               (byte(0x000016) == 0x01 && byte(0x00062E) == 0x01) ||
-               (byte(0x000016) == 0x02 && byte(0x00062F) == 0x01))
+              ((currentSaveSlot() == 0x00 && save1Quest() == 0x01) ||
+               (currentSaveSlot() == 0x01 && save2Quest() == 0x01) ||
+               (currentSaveSlot() == 0x02 && save3Quest() == 0x01))
 )
 
 achievement(
     title = "Snake Expert", description = "Complete the Snake dungeon in the second quest", points = 10,
     id = 3865, badge = "62812", published = "12/9/2013 8:48:28 PM", modified = "9/23/2019 3:23:01 PM",
     trigger = byte(0x000671) > prev(byte(0x000671)) && byte(0x000526) == 0x1B && byte(0x0000EB) == 0x4F &&
-              ((byte(0x00062D) == 0x01 && byte(0x000016) == 0x00) ||
-               (byte(0x00062E) == 0x01 && byte(0x000016) == 0x01) ||
-               (byte(0x00062F) == 0x01 && byte(0x000016) == 0x02))
+              ((save1Quest() == 0x01 && currentSaveSlot() == 0x00) ||
+               (save2Quest() == 0x01 && currentSaveSlot() == 0x01) ||
+               (save3Quest() == 0x01 && currentSaveSlot() == 0x02))
 )
 
 achievement(
     title = "Lizard Expert", description = "Complete the Lizard dungeon in the second quest", points = 10,
     id = 3979, badge = "62813", published = "12/12/2013 8:45:05 PM", modified = "9/23/2019 3:23:01 PM",
     trigger = byte(0x000671) > prev(byte(0x000671)) && byte(0x000526) == 0x45 && byte(0x0000EB) == 0x00 &&
-              ((byte(0x000016) == 0x00 && byte(0x00062D) == 0x01) ||
-               (byte(0x000016) == 0x01 && byte(0x00062E) == 0x01) ||
-               (byte(0x000016) == 0x02 && byte(0x00062F) == 0x01))
+              ((currentSaveSlot() == 0x00 && save1Quest() == 0x01) ||
+               (currentSaveSlot() == 0x01 && save2Quest() == 0x01) ||
+               (currentSaveSlot() == 0x02 && save3Quest() == 0x01))
 )
 
 achievement(
     title = "Dragon Expert", description = "Complete the Dragon dungeon in the second quest", points = 10,
     id = 3980, badge = "62814", published = "12/12/2013 9:25:39 PM", modified = "10/23/2019 10:01:02 PM",
     trigger = byte(0x000671) > prev(byte(0x000671)) && byte(0x000526) == 0x30 && byte(0x0000EB) == 0x16 &&
-              ((byte(0x00062D) == 0x01 && byte(0x000016) == 0x00) ||
-               (byte(0x00062E) == 0x01 && byte(0x000016) == 0x01) ||
-               (byte(0x00062F) == 0x01 && byte(0x000016) == 0x02))
+              ((save1Quest() == 0x01 && currentSaveSlot() == 0x00) ||
+               (save2Quest() == 0x01 && currentSaveSlot() == 0x01) ||
+               (save3Quest() == 0x01 && currentSaveSlot() == 0x02))
 )
 
 achievement(
     title = "Demon Expert", description = "Complete the Demon dungeon in the second quest", points = 10,
     id = 3981, badge = "62815", published = "12/12/2013 9:53:57 PM", modified = "9/23/2019 3:23:01 PM",
     trigger = byte(0x000671) > prev(byte(0x000671)) && byte(0x000526) == 0x6C && byte(0x0000EB) == 0x1B &&
-              ((byte(0x000016) == 0x00 && byte(0x00062D) == 0x01) ||
-               (byte(0x000016) == 0x01 && byte(0x00062E) == 0x01) ||
-               (byte(0x000016) == 0x02 && byte(0x00062F) == 0x01))
+              ((currentSaveSlot() == 0x00 && save1Quest() == 0x01) ||
+               (currentSaveSlot() == 0x01 && save2Quest() == 0x01) ||
+               (currentSaveSlot() == 0x02 && save3Quest() == 0x01))
 )
 
 achievement(
     title = "Lion Expert", description = "Complete the Lion dungeon in the second quest", points = 10,
     id = 3982, badge = "62816", published = "12/12/2013 10:19:10 PM", modified = "10/8/2019 5:52:02 PM",
     trigger = byte(0x000671) > prev(byte(0x000671)) && byte(0x000526) == 0x19 && byte(0x0000EB) == 0x2D &&
-              ((byte(0x00062D) == 0x01 && byte(0x000016) == 0x00) ||
-               (byte(0x00062E) == 0x01 && byte(0x000016) == 0x01) ||
-               (byte(0x00062F) == 0x01 && byte(0x000016) == 0x02))
+              ((save1Quest() == 0x01 && currentSaveSlot() == 0x00) ||
+               (save2Quest() == 0x01 && currentSaveSlot() == 0x01) ||
+               (save3Quest() == 0x01 && currentSaveSlot() == 0x02))
 )
 
 achievement(
     title = "Quest Master", description = "Defeat Ganon in Death Mountain in the second quest", points = 25,
     id = 3983, badge = "62817", published = "12/12/2013 10:41:36 PM", modified = "10/23/2019 10:01:02 PM",
     trigger = byte(0x000526) == 0x00 && byte(0x0000EB) == 0x07 &&
-              ((byte(0x00062D) == 0x01 && byte(0x000016) == 0x00) ||
-               (byte(0x00062E) == 0x01 && byte(0x000016) == 0x01) ||
-               (byte(0x00062F) == 0x01 && byte(0x000016) == 0x02))
+              ((save1Quest() == 0x01 && currentSaveSlot() == 0x00) ||
+               (save2Quest() == 0x01 && currentSaveSlot() == 0x01) ||
+               (save3Quest() == 0x01 && currentSaveSlot() == 0x02))
 )
 
 achievement(
@@ -682,18 +682,18 @@ achievement(
     id = 33776, badge = "62819", published = "3/14/2016 10:27:05 AM", modified = "10/23/2019 10:01:02 PM",
     trigger = byte(0x0000EB) == 0x17 && byte(0x000657) == 0x00 && byte(0x000010) == 0x09 && byte(0x000526) == 0x00 && 
               never(once(byte(0x000657) > 0x00)) &&
-              ((byte(0x00062D) == 0x01 && byte(0x000016) == 0x00) ||
-               (byte(0x00062E) == 0x01 && byte(0x000016) == 0x01) ||
-               (byte(0x00062F) == 0x01 && byte(0x000016) == 0x02))
+              ((save1Quest() == 0x01 && currentSaveSlot() == 0x00) ||
+               (save2Quest() == 0x01 && currentSaveSlot() == 0x01) ||
+               (save3Quest() == 0x01 && currentSaveSlot() == 0x02))
 )
 
 achievement(
     title = "8-Bit Master", description = "Defeat Ganon in either quest without being killed", points = 50,
     id = 3759, badge = "62820", published = "12/7/2013 7:13:16 AM", modified = "10/14/2019 7:21:02 PM",
     trigger = byte(0x0000EB) == 0x32 && byte(0x000526) == 0x05 && byte(0x000609) != 0x00 &&
-              ((byte(0x000016) == 0x00 && byte(0x000630) == 0x00) ||
-               (byte(0x000016) == 0x01 && byte(0x000631) == 0x00) ||
-               (byte(0x000016) == 0x02 && byte(0x000632) == 0x00))
+              ((currentSaveSlot() == 0x00 && byte(0x000630) == 0x00) ||
+               (currentSaveSlot() == 0x01 && byte(0x000631) == 0x00) ||
+               (currentSaveSlot() == 0x02 && byte(0x000632) == 0x00))
 )
 
 achievement(
@@ -701,9 +701,9 @@ achievement(
     id = 33790, badge = "34736", published = "3/17/2016 11:07:05 PM", modified = "3/17/2016 11:07:05 PM",
     trigger = byte(0x000526) == 0x05 && byte(0x0000EB) == 0x32 && byte(0x00066F) <= 0x22 && 
               never(once(byte(0x00066F) > 0x22)) &&
-              ((byte(0x00062D) == 0x00 && byte(0x000016) == 0x00) ||
-               (byte(0x00062E) == 0x00 && byte(0x000016) == 0x01) ||
-               (byte(0x00062F) == 0x00 && byte(0x000016) == 0x02))
+              ((save1Quest() == 0x00 && currentSaveSlot() == 0x00) ||
+               (save2Quest() == 0x00 && currentSaveSlot() == 0x01) ||
+               (save3Quest() == 0x00 && currentSaveSlot() == 0x02))
 )
 
 achievement(
@@ -716,9 +716,9 @@ achievement(
     title = "Keymaster", description = "Defeat Ganon in Death Mountain in the First Quest with 20 keys or more", points = 30,
     id = 22746, badge = "04313", published = "5/10/2015 7:25:41 PM", modified = "5/10/2015 7:25:41 PM",
     trigger = byte(0x000526) == 0x05 && byte(0x0000EB) == 0x32 && byte(0x00066E) >= 0x14 &&
-              ((byte(0x000016) == 0x00 && byte(0x00062D) == 0x00) ||
-               (byte(0x000016) == 0x01 && byte(0x00062E) == 0x00) ||
-               (byte(0x000016) == 0x02 && byte(0x00062F) == 0x00))
+              ((currentSaveSlot() == 0x00 && save1Quest() == 0x00) ||
+               (currentSaveSlot() == 0x01 && save2Quest() == 0x00) ||
+               (currentSaveSlot() == 0x02 && save3Quest() == 0x00))
 )
 
 achievement(
@@ -732,11 +732,11 @@ achievement(
     id = 33238, badge = "34030", published = "2/25/2016 1:54:41 PM", modified = "3/3/2016 5:11:31 PM",
     trigger = byte(0x000657) == 0x03 && byte(0x000659) == 0x02 && byte(0x00065A) == 0x01 && byte(0x00065B) == 0x02 && 
               byte(0x00065C) == 0x01 && byte(0x00065D) == 0x01 && byte(0x00065F) == 0x01 && byte(0x000660) == 0x01 && byte(0x000661) == 0x01 && 
-              byte(0x000662) == 0x02 && byte(0x000663) == 0x01 && byte(0x000664) == 0x01 && byte(0x000665) == 0x01 && byte(0x000666) >= 0x01 && 
-              byte(0x000675) == 0x01 && byte(0x000676) == 0x01 && byte(0x00067C) == 0x10 && byte(0x000012) != 0x00 && byte(0x000012) != 0x01 &&
-              ((byte(0x000016) == 0x00 && byte(0x00062D) == 0x00) ||
-               (byte(0x000016) == 0x01 && byte(0x00062E) == 0x00) ||
-               (byte(0x000016) == 0x02 && byte(0x00062F) == 0x00))
+              ring() == 0x02 && byte(0x000663) == 0x01 && byte(0x000664) == 0x01 && byte(0x000665) == 0x01 && byte(0x000666) >= 0x01 && 
+              byte(0x000675) == 0x01 && byte(0x000676) == 0x01 && byte(0x00067C) == 0x10 && gameMode() != 0x00 && gameMode() != 0x01 &&
+              ((currentSaveSlot() == 0x00 && save1Quest() == 0x00) ||
+               (currentSaveSlot() == 0x01 && save2Quest() == 0x00) ||
+               (currentSaveSlot() == 0x02 && save3Quest() == 0x00))
 )
 
 achievement(
@@ -749,9 +749,9 @@ achievement(
     title = "Recommended to the old woman 2", description = "find the letter in the second quest", points = 3,
     id = 33323, badge = "34095", published = "2/26/2016 9:53:52 AM", modified = "3/1/2016 1:32:42 PM",
     trigger = byte(0x000526) == 0xFF && byte(0x0000EB) == 0x11 && byte(0x000666) == 0x01 &&
-              ((byte(0x000016) == 0x00 && byte(0x00062D) == 0x01) ||
-               (byte(0x000016) == 0x01 && byte(0x00062E) == 0x01) ||
-               (byte(0x000016) == 0x02 && byte(0x00062F) == 0x01))
+              ((currentSaveSlot() == 0x00 && save1Quest() == 0x01) ||
+               (currentSaveSlot() == 0x01 && save2Quest() == 0x01) ||
+               (currentSaveSlot() == 0x02 && save3Quest() == 0x01))
 )
 
 achievement(
@@ -764,9 +764,9 @@ achievement(
     title = "Boomerang Pro 2", description = "Obtain the magical boomerang in the second quest", points = 2,
     id = 33327, badge = "34140", published = "2/26/2016 10:32:57 AM", modified = "3/1/2016 8:30:58 PM",
     trigger = byte(0x000526) == 0x3C && byte(0x0000EB) == 0x15 && byte(0x000675) == 0x01 &&
-              ((byte(0x000016) == 0x00 && byte(0x00062D) == 0x01) ||
-               (byte(0x000016) == 0x01 && byte(0x00062E) == 0x01) ||
-               (byte(0x000016) == 0x02 && byte(0x00062F) == 0x01))
+              ((currentSaveSlot() == 0x00 && save1Quest() == 0x01) ||
+               (currentSaveSlot() == 0x01 && save2Quest() == 0x01) ||
+               (currentSaveSlot() == 0x02 && save3Quest() == 0x01))
 )
 
 achievement(
@@ -804,36 +804,36 @@ achievement(
     id = 33778, badge = "34724", published = "3/14/2016 10:28:27 PM", modified = "3/16/2016 7:25:53 AM",
     trigger = byte(0x000526) == 0x00 && byte(0x0000EB) == 0x07 && byte(0x00066F) <= 0x22 && 
               never(once(byte(0x00066F) > 0x22)) &&
-              ((byte(0x00062D) == 0x01 && byte(0x000016) == 0x00) ||
-               (byte(0x00062E) == 0x01 && byte(0x000016) == 0x01) ||
-               (byte(0x00062F) == 0x01 && byte(0x000016) == 0x02))
+              ((save1Quest() == 0x01 && currentSaveSlot() == 0x00) ||
+               (save2Quest() == 0x01 && currentSaveSlot() == 0x01) ||
+               (save3Quest() == 0x01 && currentSaveSlot() == 0x02))
 )
 
 achievement(
     title = "Heart Master 1st quest", description = "Obtain all 16 Heart Containers in the first quest", points = 10,
     id = 33417, badge = "04337", published = "3/1/2016 12:01:53 AM", modified = "3/1/2016 12:07:49 AM",
-    trigger = high4(0x00066F) == 0xF && byte(0x000012) == 0x05 &&
-              ((byte(0x000016) == 0x00 && byte(0x00062D) == 0x00) ||
-               (byte(0x000016) == 0x01 && byte(0x00062E) == 0x00) ||
-               (byte(0x000016) == 0x02 && byte(0x00062F) == 0x00))
+    trigger = high4(0x00066F) == 0xF && gameMode() == 0x05 &&
+              ((currentSaveSlot() == 0x00 && save1Quest() == 0x00) ||
+               (currentSaveSlot() == 0x01 && save2Quest() == 0x00) ||
+               (currentSaveSlot() == 0x02 && save3Quest() == 0x00))
 )
 
 achievement(
     title = "16 bombs max (2nd quest)", description = "Obtain your second bomb upgrade in the second quest", points = 3,
     id = 33412, badge = "34240", published = "2/29/2016 4:33:54 PM", modified = "3/3/2016 5:07:01 PM",
-    trigger = byte(0x00067C) == 0x10 && byte(0x000012) == 0x05 &&
-              ((byte(0x000016) == 0x00 && byte(0x00062D) == 0x01) ||
-               (byte(0x000016) == 0x01 && byte(0x00062E) == 0x01) ||
-               (byte(0x000016) == 0x02 && byte(0x00062F) == 0x01))
+    trigger = byte(0x00067C) == 0x10 && gameMode() == 0x05 &&
+              ((currentSaveSlot() == 0x00 && save1Quest() == 0x01) ||
+               (currentSaveSlot() == 0x01 && save2Quest() == 0x01) ||
+               (currentSaveSlot() == 0x02 && save3Quest() == 0x01))
 )
 
 achievement(
     title = "12 bombs max (2nd quest)", description = "Obtain your first bomb upgrade in the second quest", points = 3,
     id = 33407, badge = "34239", published = "2/29/2016 4:28:34 PM", modified = "3/3/2016 5:04:54 PM",
-    trigger = byte(0x00067C) == 0x0C && byte(0x000012) == 0x05 &&
-              ((byte(0x000016) == 0x00 && byte(0x00062D) == 0x01) ||
-               (byte(0x000016) == 0x01 && byte(0x00062E) == 0x01) ||
-               (byte(0x000016) == 0x02 && byte(0x00062F) == 0x01))
+    trigger = byte(0x00067C) == 0x0C && gameMode() == 0x05 &&
+              ((currentSaveSlot() == 0x00 && save1Quest() == 0x01) ||
+               (currentSaveSlot() == 0x01 && save2Quest() == 0x01) ||
+               (currentSaveSlot() == 0x02 && save3Quest() == 0x01))
 )
 
 achievement(
@@ -845,7 +845,7 @@ achievement(
 achievement(
     title = "Red hype 2", description = "Obtain the red ring in the second quest", points = 2,
     id = 33335, badge = "34088", published = "2/26/2016 12:54:28 PM", modified = "3/1/2016 9:24:59 AM",
-    trigger = byte(0x000526) == 0x00 && byte(0x0000EB) == 0x77 && byte(0x000662) == 0x02
+    trigger = byte(0x000526) == 0x00 && byte(0x0000EB) == 0x77 && ring() == 0x02
 )
 
 achievement(
@@ -866,7 +866,7 @@ achievement(
     trigger = never(once(low4(0x00066F) < prev(low4(0x00066F)))) && never(once(byte(0x000670) < prev(byte(0x000670)))) && 
               once(byte(0x0000EB) == 0x52) && byte(0x000526) == 0x05 && byte(0x0000BF) < prev(byte(0x0000BF)) && 
               never(once(byte(0x0000EB) > prev(byte(0x0000EB)))) &&
-              ((byte(0x000016) == 0x00 && byte(0x00062D) == 0x00) ||
-               (byte(0x000016) == 0x01 && byte(0x00062E) == 0x00) ||
-               (byte(0x000016) == 0x02 && byte(0x00062F) == 0x00))
+              ((currentSaveSlot() == 0x00 && save1Quest() == 0x00) ||
+               (currentSaveSlot() == 0x01 && save2Quest() == 0x00) ||
+               (currentSaveSlot() == 0x02 && save3Quest() == 0x00))
 )
