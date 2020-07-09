@@ -402,6 +402,8 @@ enemies = {
 "Leo Cantus": { "id": 0xf, "name": "Leo Cantus", },
 "Pteropus Canor": { "id": 0x8, "name": "Pteropus Canor", },
 "Uzuki Yashiro": { "id": 0x1d, "name": "Uzuki Yashiro", },
+"Koki Kariya": { "id": 0x1c, "name": "Koki Kariya", },
+"Koki Kariya and Uzuki Yashiro": { "id": 0x1e, "name": "Koki Kariya and Uzuki Yashiro", },
 }
 
 function GetEnemyByName(name)
@@ -1537,6 +1539,27 @@ function IsPartnerWearingAnyOfTheGivenThreads(givenThreads)
     return result
 }
 
+function IsPartnerWearingNoThreads()
+{
+    result = always_false()
+    
+    for i in [ "Shiki", "Joshua", "Beat" ]
+    {
+        subresult = always_true()
+        partnerId = GetPartnerByName(i)
+        slot1Addr = GetThread1AddrForPartner(partnerId)
+        for slotId in range(0, 3)
+        {
+            threadSlotAddr = GetThreadAddressBySlot(slotId, slot1Addr)
+            
+            subresult = subresult && word(threadSlotAddr) == 0xffff
+        }
+        result = result || subresult && partner() == partnerId
+    }
+    
+    return result
+}
+
 function DoesNekuHaveBrandEquipped(brand)
 {
     threadsInBrand = GetAllThreadsOfBrand(brand)
@@ -1773,6 +1796,7 @@ dayAchievements = [
     { "name": "Sense from Nonsense", "description": "Reach the end of Week 3, Day 1.", "chapterCompleted": "Beat, Day 1", "points": 1 },
     { "name": "No Style in the Dark", "description": "Reach the end of Week 3, Day 2.", "chapterCompleted": "Beat, Day 2", "points": 1 },
     { "name": "Play On, Maestro", "description": "Reach the end of Week 3, Day 3.", "chapterCompleted": "Beat, Day 3", "points": 1 },
+    { "name": "Unpardonable", "description": "Reach the end of Week 3, Day 4.", "chapterCompleted": "Beat, Day 4", "points": 1 }
 ]
 
 for cheevo in dayAchievements
@@ -2045,10 +2069,18 @@ for i in brands
     array_push(equippedBrands, DoesNekuHaveBrandEquipped(i))
 }
 
-achievement(title = "It's My Asskicking Outfit, Bitch!", points = 0,
-    description = "Defeat X while Neku is wearing threads from four different brands.",
+achievement(title = "It's My Asskicking Outfit, Bitch!", points = 5,
+    description = "Defeat Koki Kariya while Neku is wearing threads from four different brands (Normal or higher; Level 27 or below).",
     trigger = tally(4, equippedBrands) && never(HasNekuClothingChanged())
-        //&& EnterBattleCheckpointValid() && IsRankingRevealed()
+        && EnterBattleCheckpointValid() && IsRankingRevealed()
+        && enemyId() == GetEnemyIdByName("Koki Kariya")
+)
+
+achievement(title = "Inner Peace", points = 10,
+    description = "Defeat Koki Kariya and Uzuki Yashiro while your partner is not wearing any threads (Normal or higher; Level 27 or below).",
+    trigger = enemyId() == GetEnemyIdByName("Koki Kariya and Uzuki Yashiro") && EnterBattleCheckpointValid()
+        && IsAtLeastOnDifficulty("Normal") && currentLevel() <= 27 && IsRankingRevealed()
+        && IsPartnerWearingNoThreads()
 )
 
 // Tin Pin Slammer achievements
