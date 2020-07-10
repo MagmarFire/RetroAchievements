@@ -404,6 +404,7 @@ enemies = {
 "Uzuki Yashiro": { "id": 0x1d, "name": "Uzuki Yashiro", },
 "Koki Kariya": { "id": 0x1c, "name": "Koki Kariya", },
 "Koki Kariya and Uzuki Yashiro": { "id": 0x1e, "name": "Koki Kariya and Uzuki Yashiro", },
+"Koki Kariya and Uzuki Yashiro 2": { "id": 0x1f, "name": "Koki Kariya and Uzuki Yashiro 2", },
 }
 
 function GetEnemyByName(name)
@@ -1796,7 +1797,8 @@ dayAchievements = [
     { "name": "Sense from Nonsense", "description": "Reach the end of Week 3, Day 1.", "chapterCompleted": "Beat, Day 1", "points": 1 },
     { "name": "No Style in the Dark", "description": "Reach the end of Week 3, Day 2.", "chapterCompleted": "Beat, Day 2", "points": 1 },
     { "name": "Play On, Maestro", "description": "Reach the end of Week 3, Day 3.", "chapterCompleted": "Beat, Day 3", "points": 1 },
-    { "name": "Unpardonable", "description": "Reach the end of Week 3, Day 4.", "chapterCompleted": "Beat, Day 4", "points": 1 }
+    { "name": "Unpardonable", "description": "Reach the end of Week 3, Day 4.", "chapterCompleted": "Beat, Day 4", "points": 1 },
+    { "name": "A Matter of Perspective", "description": "Reach the end of Week 3, Day 5.", "chapterCompleted": "Beat, Day 5", "points": 1 }
 ]
 
 for cheevo in dayAchievements
@@ -2078,7 +2080,8 @@ achievement(title = "It's My Asskicking Outfit, Bitch!", points = 5,
 
 achievement(title = "Inner Peace", points = 10,
     description = "Defeat Koki Kariya and Uzuki Yashiro while your partner is not wearing any threads (Normal or higher; Level 27 or below).",
-    trigger = enemyId() == GetEnemyIdByName("Koki Kariya and Uzuki Yashiro") && EnterBattleCheckpointValid()
+    trigger = tally(1, enemyId() == GetEnemyIdByName("Koki Kariya and Uzuki Yashiro") || enemyId() == GetEnemyIdByName("Koki Kariya and Uzuki Yashiro 2"))
+        && EnterBattleCheckpointValid()
         && IsAtLeastOnDifficulty("Normal") && currentLevel() <= 27 && IsRankingRevealed()
         && IsPartnerWearingNoThreads()
 )
