@@ -140,6 +140,7 @@ function GenerateSaveProtectedAchievementFromConditions_Naive(cheevo, conditions
 function screen() => word(0x066a30)
 function IsBooting() => screen() == 0x0 || screen() == 0x1
 function IsOnResultsScreen() => screen() == 0x2c
+function IsInBattle() => screen() == 0x3
 function WasInOverworld() => Delta(screen()) == 0x1e
 function IsInOverworld() => screen() == 0x1e
 function IsOnTinPinResultsScreen() => screen() == 0x2
@@ -405,6 +406,10 @@ enemies = {
 "Koki Kariya": { "id": 0x1c, "name": "Koki Kariya", },
 "Koki Kariya and Uzuki Yashiro": { "id": 0x1e, "name": "Koki Kariya and Uzuki Yashiro", },
 "Koki Kariya and Uzuki Yashiro 2": { "id": 0x1f, "name": "Koki Kariya and Uzuki Yashiro 2", },
+"Sho Minamimoto": { "id": 0x21, "name": "Sho Minamimoto", },
+"Tigris Cantus": { "id": 0xa, "name": "Tigris Cantus", },
+"Megumi Kitaniji": { "id": 0x1b, "name": "Megumi Kitaniji", },
+"Anguis Cantus": { "id": 0x14, "name": "Anguis Cantus", },
 }
 
 function GetEnemyByName(name)
@@ -1798,7 +1803,8 @@ dayAchievements = [
     { "name": "No Style in the Dark", "description": "Reach the end of Week 3, Day 2.", "chapterCompleted": "Beat, Day 2", "points": 1 },
     { "name": "Play On, Maestro", "description": "Reach the end of Week 3, Day 3.", "chapterCompleted": "Beat, Day 3", "points": 1 },
     { "name": "Unpardonable", "description": "Reach the end of Week 3, Day 4.", "chapterCompleted": "Beat, Day 4", "points": 1 },
-    { "name": "A Matter of Perspective", "description": "Reach the end of Week 3, Day 5.", "chapterCompleted": "Beat, Day 5", "points": 1 }
+    { "name": "A Matter of Perspective", "description": "Reach the end of Week 3, Day 5.", "chapterCompleted": "Beat, Day 5", "points": 1 },
+    { "name": "One Last Step Before the Gates", "description": "Reach the end of Week 3, Day 6.", "chapterCompleted": "Beat, Day 6", "points": 1 }
 ]
 
 for cheevo in dayAchievements
@@ -2084,6 +2090,51 @@ achievement(title = "Inner Peace", points = 10,
         && EnterBattleCheckpointValid()
         && IsAtLeastOnDifficulty("Normal") && currentLevel() <= 27 && IsRankingRevealed()
         && IsPartnerWearingNoThreads()
+)
+
+timeLimit = 163 // 2.72 minutes ~= e minutes
+achievement(title = "Logarithmic Time", points = 5,
+    description = "Defeat Sho Minamimoto on Week 3, Day 6, within " + SecondsToFormat(timeLimit) + " (Normal or higher; Level 30 or below).",
+    trigger = enemyId() == GetEnemyIdByName("Sho Minamimoto")
+        && EnterBattleCheckpointValid()
+        && IsAtLeastOnDifficulty("Normal") && currentLevel() <= 30 && IsRankingRevealed()
+        && battleTime() <= SecondsToFrames(timeLimit)
+)
+
+function tigrisCantusHP() => word(0x3918b8)
+achievement(title = "Cannibalism Denied", points = 25,
+    description = "Defeat Tigris Cantus before it heals itself more than seven times (Normal or higher; Level 33 or below).",
+    trigger = enemyId() == GetEnemyIdByName("Tigris Cantus")
+        && EnterBattleCheckpointValid()
+        && IsAtLeastOnDifficulty("Normal") && currentLevel() <= 33 && IsRankingRevealed()
+        && never(repeated(7, Delta(tigrisCantusHP()) < tigrisCantusHP() && Delta(tigrisCantusHP()) != 0))
+)
+
+achievement(title = "Stylish Coup", points = 5,
+    description = "Earn a C ranking or higher against Megumi Kitaniji (Normal or higher; Level 33 or below).",
+    trigger = enemyId() == GetEnemyIdByName("Megumi Kitaniji")
+        && EnterBattleCheckpointValid()
+        && IsAtLeastOnDifficulty("Normal") && currentLevel() <= 33 && IsRankingRevealed()
+        && AcquiredAtLeastRank("C")
+)
+
+function shikiFusionLevelVsAnguisCantus() => byte(0x3714cd)
+function beatFusionLevelVsAnguisCantus() => byte(0x370d65)
+function PerformedAFusionOfAGivenLevelVersusAnguisCantus(level)
+{
+    return tally(1, [(shikiFusionLevelVsAnguisCantus() == 0 && Delta(shikiFusionLevelVsAnguisCantus()) == level),
+            (beatFusionLevelVsAnguisCantus() == 0 && Delta(beatFusionLevelVsAnguisCantus()) == level)])
+}
+achievement(title = "Trust Your Partner", points = 10,
+    description = "Perform a LV1, LV2, and LV3 Fusion against Anguis Cantus (Normal or higher; Level 35 or below).",
+    trigger = enemyId() == GetEnemyIdByName("Anguis Cantus")
+        && EnterBattleCheckpointValid()
+        && IsAtLeastOnDifficulty("Normal") && currentLevel() <= 35
+        && PerformedAFusionOfAGivenLevelVersusAnguisCantus(1)
+        && PerformedAFusionOfAGivenLevelVersusAnguisCantus(2)
+        && PerformedAFusionOfAGivenLevelVersusAnguisCantus(3)
+        && IsInBattle()
+        && never(IsOnResultsScreen())
 )
 
 // Tin Pin Slammer achievements
