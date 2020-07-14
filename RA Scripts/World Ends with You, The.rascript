@@ -1797,7 +1797,7 @@ dayAchievements = [
     { "name": "Play to Win", "description": "Reach the end of Week 2, Day 1.", "chapterCompleted": "Joshua, Day 1", "points": 1 },
     { "name": "Stalkers", "description": "Reach the end of Week 2, Day 2.", "chapterCompleted": "Joshua, Day 2", "points": 1 },
     { "name": "The Heart of a Cook", "description": "Reach the end of Week 2, Day 3.", "chapterCompleted": "Joshua, Day 3", "points": 1 },
-    { "name": "A Witness to Murder", "description": "Reach the end of Week 2, Day 4.", "chapterCompleted": "Joshua, Day 4", "points": 1 },
+    { "name": "Blood Run Cold", "description": "Reach the end of Week 2, Day 4.", "chapterCompleted": "Joshua, Day 4", "points": 1 },
     { "name": "Dual Partnership", "description": "Reach the end of Week 2, Day 5.", "chapterCompleted": "Joshua, Day 5", "points": 1 },
     { "name": "Prey on the Run", "description": "Reach the end of Week 2, Day 6.", "chapterCompleted": "Joshua, Day 6", "points": 1 },
     { "name": "Best of Three", "description": "Survive Week 2 of the Reapers' Game.", "chapterCompleted": "Joshua, Day 7", "points": 5 },
@@ -2154,22 +2154,47 @@ achievement(title = "Carried by Support", points = 25,
 
 // Tin Pin Slammer achievements
 
-// May there be a better way to detect this, since this is haaaaaacky.
-function IsInSinglesMatch() => tpsFfaTimeRemaining() == 0x2374e80
+// For now, I'm assuming that 3P is never in singles matches, so these conditions being met
+// is a good giveaway that that it's a free-for-all match.
+function IsInFreeForAllMatch()
+{
+    return P3Spawned()
+}
+
+function P1KnockedOut() => p1PinState() == 0x4
+function P1Spawning() => p1PinState() == 0x5
+function P1Spawned()
+{
+    return once(Delta(p1PinState()) == 0x5 // spawning
+        && p1PinState() == 0x1) // active
+}
+
+function P2Spawned()
+{
+    return once(Delta(p2PinState()) == 0x5 // spawning
+        && p2PinState() == 0x1) // active
+}
+
+function P3Spawned()
+{
+    return once(Delta(p3PinState()) == 0x5 // spawning
+        && p3PinState() == 0x1) // active
+}
 
 function ptrP1TinPinCurrentPinId() => tbyte(0x39b964)
 function ptrP2TinPinCurrentPinId() => tbyte(0x398ea4)
 function tpsTimeRemaining() => dword(0x37a1dc)
 function tpsFfaTimeRemaining() => dword(0x374e5c)
 function voidPinId() => 0x130
-function tpsTimeSet() => Delta(tpsTimeRemaining()) < tpsTimeRemaining()
+function slamOnTimer() => word(0x39b95c)
 function EnterTinPinCheckpointValid()
 {
-    return once(tpsTimeSet()) // The time limit is set to its max when a match starts.
-        && never(IsInOverworld())
+    return once(WasInOverworld() && IsInTinPinMatch()) && never(IsInOverworld())
 }
 function p1PinState() => byte(0x39b8f0)
 function p2PinState() => byte(0x398e30)
+function p3PinState() => byte(0x396470)
+function p4PinState() => byte(0x393ab0)
 function P1PinLost() => Delta(ptrP1TinPinCurrentPinId()) != ptrP1TinPinCurrentPinId()
 function P2PinLost() => Delta(ptrP2TinPinCurrentPinId()) != ptrP2TinPinCurrentPinId()
 function P1Invincible() => word(0x39b960) > 0
@@ -2179,13 +2204,28 @@ function p1PPGained() => word(0x39b9a4)
 function p2PPGained() => word(0x398ee4)
 function p3PPGained() => word(0x396524)
 function p4PPGained() => word(0x393b64)
+
+function FreeForAllPauseLock()
+{
+    return unless(IsInFreeForAllMatch())
+        || (always_false() || never(IsInOverworld())
+    )
+}
+
+function WonTinPinGame()
+{
+    return IsOnTinPinResultsScreen() &&
+        (IsInFreeForAllMatch() && p1PPGained() >= p2PPGained() && p1PPGained() >= p3PPGained() && p1PPGained() >= p4PPGained()
+        || unless(IsInFreeForAllMatch()) && p1PPGained() >= p2PPGained())
+}
+
 function WonSinglesTinPinGame()
 {
-    return IsOnTinPinResultsScreen() && IsInSinglesMatch() && p1PPGained() >= p2PPGained()
+    return IsOnTinPinResultsScreen() && p1PPGained() >= p2PPGained()
 }
 function WonFreeForAllTinPinGame()
 {
-    return IsOnTinPinResultsScreen() && !IsInSinglesMatch() && p1PPGained() >= p2PPGained()
+    return IsOnTinPinResultsScreen() && IsInFreeForAllMatch() && p1PPGained() >= p2PPGained()
         && p1PPGained() >= p3PPGained() && p1PPGained() >= p4PPGained()
 }
 function p1Stingers() => word(0x39b970)
@@ -2208,21 +2248,21 @@ function P1UsingWhammy()
 }
 
 achievement(title = "C'mon and Slam!", points = 5,
-    description = "Win a 1v1 game of Tin Pin Slammer with all of your pins intact.",
-    trigger = EnterTinPinCheckpointValid() && never(once(P1PinLost()))
-        && WonSinglesTinPinGame()
+    description = "Win a game of Tin Pin Slammer with all of your pins intact.",
+    trigger = EnterTinPinCheckpointValid() && never(once(P1KnockedOut()))
+        && WonTinPinGame()
 )
 
 achievement(title = "And Welcome to the Jam!", points = 10,
     description = "Win a game of Tin Pin Slammer without using any whammies.",
     trigger = EnterTinPinCheckpointValid()
-        && never(P1UsingWhammy()) && (WonSinglesTinPinGame() || WonFreeForAllTinPinGame())
+        && never(P1UsingWhammy()) && WonTinPinGame()
 )
 
-achievement(title = "Hey, You, Whatcha Gonna Do?", points = 5,
+achievement(title = "Hey, You, Whatchu Gonna Do?", points = 5,
     description = "Stun the opponent with a whammy ten times in a single 1v1 game of Tin Pin Slammer.",
     trigger = EnterTinPinCheckpointValid() && repeated(10, Delta(p2StunTimer()) == 0x0 && p2StunTimer() > 0)
-         && IsInSinglesMatch()
+         && FreeForAllPauseLock()
 )
 
 achievement(title = "Watch Me Flex", points = 5,
@@ -2231,7 +2271,7 @@ achievement(title = "Watch Me Flex", points = 5,
 )
 
 timeLimit = 60
-achievement(title = "Let It Rip!", points = 10,
+achievement(title = "Let It Rip!", points = 5,
     description = "Win a game of Tin Pin Slammer within " + timeLimit + " seconds.",
     trigger = EnterTinPinCheckpointValid()
         && (WonSinglesTinPinGame() && never(repeated(SecondsToFrames(timeLimit), Delta(tpsTimeRemaining()) > tpsTimeRemaining()))
@@ -2257,8 +2297,9 @@ for i in pinsOfWeight2
 achievement(title = "Flyweight", points = 5,
     description = "Win a game of Tin Pin Slammer using only pins with weights no greater than 2.",
     trigger = EnterTinPinCheckpointValid()
-        && never(!GivenPinsIncludesIdAtAddress(allowedPins, ptrP1TinPinCurrentPinId()))
-        && (WonSinglesTinPinGame() || WonFreeForAllTinPinGame())
+        // Checking if we're not spawning and if the pin's state is 0 ensures the checkpoint doesn't get reset at the beginning of the match.
+        && never(!GivenPinsIncludesIdAtAddress(allowedPins, ptrP1TinPinCurrentPinId()) && !P1Spawning() && Delta(p1PinState()) != 0x0)
+        && WonTinPinGame()
 )
 
 allowedPins = {}
@@ -2279,31 +2320,31 @@ for i in pinsOfWeight9
 achievement(title = "Heavyweight", points = 5,
     description = "Win a game of Tin Pin Slammer using only pins with weights no lower than 9.",
     trigger = EnterTinPinCheckpointValid()
-        && never(!GivenPinsIncludesIdAtAddress(allowedPins, ptrP1TinPinCurrentPinId()))
-        && (WonSinglesTinPinGame() || WonFreeForAllTinPinGame())
+        // Checking if we're not spawning and if the pin's state is 0 ensures the checkpoint doesn't get reset at the beginning of the match.
+        && never(!GivenPinsIncludesIdAtAddress(allowedPins, ptrP1TinPinCurrentPinId()) && !P1Spawning() && Delta(p1PinState()) != 0x0)
+        && WonTinPinGame()
 )
 
 achievement(title = "Flawless Slammer", points = 5,
     description = "Win a game of Tin Pin Slammer without getting hit by a whammy.",
     trigger = EnterTinPinCheckpointValid()
         && never(p1StunTimer() > 0)
-        && (WonSinglesTinPinGame() || WonFreeForAllTinPinGame())
+        && WonTinPinGame()
 )
 
 achievement(title = "Spawn Camper", points = 25,
-    description = "Send a pin off the edge within six seconds of it respawning in a 1v1 game of Tin Pin Slammer.",
+    description = "Knock out a pin within six seconds of it spawning in a 1v1 game of Tin Pin Slammer.",
     trigger = IsInTinPinMatch() && unless(repeated(SecondsToFrames(6), !P2Invincible()))
-        && once(P2PinKnockedOut() || P2IsUsingHelpingHand())
-        && (always_true() || never(P2Invincible()))
-        && IsInSinglesMatch()
+        && once(p1PPGained() == Delta(p1PPGained()) + 2)
+        //&& unless(IsInFreeForAllMatch())
+        && (never(IsInOverworld()) && always_false() || never(P2Invincible()) && unless(IsInFreeForAllMatch()))
 )
 
 achievement(title = "Pacifist", points = 5,
-    description = "Win a 1v1 game of Tin Pin Slammer without knocking out any pins.",
+    description = "Win a 1v1 game of Tin Pin Slammer without being credited for knocking out a pin.",
     trigger = EnterTinPinCheckpointValid()
         && never(once(p1PPGained() == Delta(p1PPGained()) + 2) && P2PinLost())
-        && WonSinglesTinPinGame()
+        && FreeForAllPauseLock() && IsOnTinPinResultsScreen()
 )
 
 // End Tin Pin Slammer achievements
-
