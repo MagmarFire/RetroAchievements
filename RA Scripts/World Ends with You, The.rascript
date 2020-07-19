@@ -284,6 +284,7 @@ function CurrentChapterIs(name)
 
 // $073AA4: Play time (32-bit)
 function playTime() => dword(0x073aa4)
+function FrameElapsed() => Delta(playTime()) < playTime()
 
 // $07415C: Overworld x-coordinate (32-bit)
 // $074160: Overworld y-coordinate (32-bit)
@@ -2158,7 +2159,7 @@ achievement(title = "Carried by Support", points = 25,
 )
 
 tinPinMatchConditions = {
-    1: { "countsWhen": (WasBitflagSet(bit1(0x074173)) && CurrentChapterIs("Another Day")), "recalculateWhen": (WasBitflagSet(bit1(0x074173)) && CurrentChapterIs("Another Day")) } // vs. Shiki
+    1: { "countsWhen": (WasBitflagSet(bit4(0x074174)) && CurrentChapterIs("Another Day")), "recalculateWhen": WasBitflagSet(bit4(0x074174)) } // vs. the Prince
 }
 
 GenerateSaveProtectedAchievementFromConditions({
@@ -2171,6 +2172,9 @@ GenerateSaveProtectedAchievementFromConditions({
 // Tin Pin Slammer achievements
 
 function p1Ptr() => tbyte(0x3a0130)
+function p2Ptr() => tbyte(0x39fa50)
+function p3Ptr() => tbyte(0x39f390)
+function p4Ptr() => tbyte(0x39ecd0)
 
 function GetTinPinPlayerFromAddr(addr)
 {
@@ -2183,10 +2187,9 @@ function GetTinPinPlayerFromAddr(addr)
     distanceFromStingersRemainingToDiveBombersRemaining = 0x2
     distanceFromDiveBombersRemainingToSledgehammersRemaining = 0x2
     distanceFromSledgehammersRemainingToHelpingHandsRemaining = 0x2
-    distanceFromHelpingHandsRemainingToStingersRemaining = 0x2
-    distanceFromStingersRemainingToPPGained = 0x2c
+    distanceFromHelpingHandsRemainingToPPGained = 0x2e
     return {
-        "pinStatus": byte(addr + distanceFromBaseToPinStatus),
+        "pinState": byte(addr + distanceFromBaseToPinStatus),
         "stunTimer": word(addr + distanceFromBaseToPinStatus + distanceFromPinStatusToStunTimer),
         "slamOnTimer": word(addr + distanceFromBaseToPinStatus + distanceFromPinStatusToStunTimer + distanceFromStunTimerToSlamOnTimer),
         "invincibilityRemaining": dword(addr + distanceFromBaseToPinStatus + distanceFromPinStatusToStunTimer
@@ -2209,27 +2212,18 @@ function GetTinPinPlayerFromAddr(addr)
             + distanceFromInvincibilityRemainingToPointerToCurrentPin + distanceFromPointerToCurrentPinToStingersRemaining
             + distanceFromStingersRemainingToDiveBombersRemaining + distanceFromDiveBombersRemainingToSledgehammersRemaining
             + distanceFromSledgehammersRemainingToHelpingHandsRemaining),
-        "stingersRemaining": word(addr + distanceFromBaseToPinStatus + distanceFromPinStatusToStunTimer
-            + distanceFromStunTimerToSlamOnTimer + distanceFromSlamOnTimerToInvincibilityRemaining
-            + distanceFromInvincibilityRemainingToPointerToCurrentPin + distanceFromPointerToCurrentPinToStingersRemaining
-            + distanceFromStingersRemainingToDiveBombersRemaining + distanceFromDiveBombersRemainingToSledgehammersRemaining
-            + distanceFromSledgehammersRemainingToHelpingHandsRemaining + distanceFromHelpingHandsRemainingToStingersRemaining),
         "ppGained": word(addr + distanceFromBaseToPinStatus + distanceFromPinStatusToStunTimer
             + distanceFromStunTimerToSlamOnTimer + distanceFromSlamOnTimerToInvincibilityRemaining
             + distanceFromInvincibilityRemainingToPointerToCurrentPin + distanceFromPointerToCurrentPinToStingersRemaining
             + distanceFromStingersRemainingToDiveBombersRemaining + distanceFromDiveBombersRemainingToSledgehammersRemaining
-            + distanceFromSledgehammersRemainingToHelpingHandsRemaining + distanceFromHelpingHandsRemainingToStingersRemaining
-            + distanceFromStingersRemainingToPPGained),
+            + distanceFromSledgehammersRemainingToHelpingHandsRemaining + distanceFromHelpingHandsRemainingToPPGained),
     }
 }
 
-tinPinOffsetConstant = 0x39B7F8
-tinPinFakeOffset = dword(0x2b7820) // Use as a substitute for TinPinOffset() in case of emergency/testing.
-tinPinFakeOffsetScalar = -0x40
-function tinPinOffsetBaseAddr() => tbyte(0x3a0130)
-
-//function TinPinOffset() => tinPinOffsetBaseAddr() - tinPinOffsetConstant // todo: This line should be used, but it results in unclear "Cannot convert to an address" errors.
-function TinPinOffset() => tinPinFakeOffset + tinPinFakeOffsetScalar
+p1Object = GetTinPinPlayerFromAddr(p1Ptr())
+p2Object = GetTinPinPlayerFromAddr(p2Ptr())
+p3Object = GetTinPinPlayerFromAddr(p3Ptr())
+p4Object = GetTinPinPlayerFromAddr(p4Ptr())
 
 // For now, I'm assuming that 3P is never in singles matches, so these conditions being met
 // is a good giveaway that it's a free-for-all match.
@@ -2258,29 +2252,27 @@ function P3Spawned()
         && p3PinState() == 0x1) // active
 }
 
-function ptrP1TinPinCurrentPinId() => tbyte(0x39b964 + TinPinOffset())
-function ptrP2TinPinCurrentPinId() => tbyte(0x398ea4+ TinPinOffset())
-//function tpsTimeRemaining() => dword(0x37a1dc )
-//function tpsFfaTimeRemaining() => dword(0x374e5c )
+function ptrP1TinPinCurrentPinId() => p1Object["pointerToCurrentPin"]
+function ptrP2TinPinCurrentPinId() => p2Object["pointerToCurrentPin"]
 function voidPinId() => 0x130
-function slamOnTimer() => word(0x39b95c + TinPinOffset())
+function slamOnTimer() => p1Object["slamOnTimer"]
 function EnterTinPinCheckpointValid()
 {
     return once(WasInOverworld() && IsInTinPinMatch()) && never(IsInOverworld())
 }
-function p1PinState() => byte(0x39b8f0 + TinPinOffset())
-function p2PinState() => byte(0x398e30 + TinPinOffset())
-function p3PinState() => byte(0x396470 + TinPinOffset())
-function p4PinState() => byte(0x393ab0 + TinPinOffset())
+function p1PinState() => p1Object["pinState"]
+function p2PinState() => p2Object["pinState"]
+function p3PinState() => p3Object["pinState"]
+function p4PinState() => p4Object["pinState"]
 function P1PinLost() => Delta(ptrP1TinPinCurrentPinId()) != ptrP1TinPinCurrentPinId()
 function P2PinLost() => Delta(ptrP2TinPinCurrentPinId()) != ptrP2TinPinCurrentPinId()
-function P1Invincible() => word(0x39b960 + TinPinOffset()) > 0
-function P2Invincible() => word(0x398ea0 + TinPinOffset()) > 0
+function P1Invincible() => p1Object["invincibilityRemaining"] > 0
+function P2Invincible() => p2Object["invincibilityRemaining"] > 0
 function P1LostAllPins() => word(ptrP1TinPinCurrentPin()) >= voidPinId()
-function p1PPGained() => word(0x39b9a4 + TinPinOffset())
-function p2PPGained() => word(0x398ee4 + TinPinOffset())
-function p3PPGained() => word(0x396524 + TinPinOffset())
-function p4PPGained() => word(0x393b64 + TinPinOffset())
+function p1PPGained() => p1Object["ppGained"]
+function p2PPGained() => p2Object["ppGained"]
+function p3PPGained() => p3Object["ppGained"]
+function p4PPGained() => p4Object["ppGained"]
 
 function FreeForAllPauseLock()
 {
@@ -2292,36 +2284,37 @@ function FreeForAllPauseLock()
 function WonTinPinGame()
 {
     return IsOnTinPinResultsScreen() &&
-        (IsInFreeForAllMatch() && p1PPGained() >= p2PPGained() && p1PPGained() >= p3PPGained() && p1PPGained() >= p4PPGained()
-        ||     unless(IsInFreeForAllMatch()) && p1PPGained() >= p2PPGained())
+        (IsInFreeForAllMatch() && p1PPGained() - p2PPGained() >= 0 && p1PPGained() - p3PPGained() >= 0 && p1PPGained() - p4PPGained() >= 0
+        ||     unless(IsInFreeForAllMatch()) && p1PPGained() - p2PPGained() >= 0)
 }
 
 function WonSinglesTinPinGame()
 {
-    return IsOnTinPinResultsScreen() && p1PPGained() >= p2PPGained()
+    return IsOnTinPinResultsScreen() && p1PPGained() - p2PPGained() >= 0
 }
 function WonFreeForAllTinPinGame()
 {
     return IsOnTinPinResultsScreen() && IsInFreeForAllMatch() && p1PPGained() >= p2PPGained()
         && p1PPGained() >= p3PPGained() && p1PPGained() >= p4PPGained()
 }
-function p1Stingers() => word(0x39b970 + TinPinOffset())
-function p1DiveBombers() => word(0x39b972 + TinPinOffset())
-function p1Sledgehammers() => word(0x39b974 + TinPinOffset())
-function p1HelpingHands() => word(0x39b976 + TinPinOffset())
 function P1PinKnockedOut() => p1PinState() == 0x4
 function P2PinKnockedOut() => p2PinState() == 0x4
 function P2IsUsingHelpingHand() => p2PinState() == 0x9
 
-function p1StunTimer() => word(0x39b940 + TinPinOffset())
-function p2StunTimer() => word(0x398e80 + TinPinOffset())
+function p1StunTimer() => p1Object["stunTimer"]
+function p2StunTimer() => p2Object["stunTimer"]
+
+// Ensure no fewer than a given number of frames elapses before resetting a Tin Pin checkpoint.
+// The pointer pointing to player objects may not be immediately set as the game begins, so this makes sure
+// checkpoints aren't reset right as the game begins.
+function CheckpointSafeguard() => repeated(10, FrameElapsed())
 
 function P1UsingWhammy()
 {
-    return p1PinState() == 0x6
-        || p1PinState() == 0x7
-        || p1PinState() == 0x8
-        || p1PinState() == 0x9
+    return CheckpointSafeguard() && p1PinState() == 0x6
+        || CheckpointSafeguard() && p1PinState() == 0x7
+        || CheckpointSafeguard() && p1PinState() == 0x8
+        || CheckpointSafeguard() && p1PinState() == 0x9
 }
 
 achievement(title = "C'mon and Slam!", points = 5,
@@ -2372,10 +2365,7 @@ for i in pinsOfWeight2
 
 achievement(title = "Flyweight", points = 5,
     description = "Win a game of Tin Pin Slammer using only pins with weights no greater than 2.",
-    trigger = EnterTinPinCheckpointValid()
-        // Checking if we're not spawning and if the pin's state is 0 ensures the checkpoint doesn't get reset at the beginning of the match.
-        && never(!GivenPinsIncludesIdAtAddress(allowedPins, ptrP1TinPinCurrentPinId()) && !P1Spawning() && Delta(p1PinState()) != 0x0)
-        && WonTinPinGame()
+    trigger = EnterTinPinCheckpointValid() && WonTinPinGame() && never(CheckpointSafeguard() && !GivenPinsIncludesIdAtAddress(allowedPins, ptrP1TinPinCurrentPinId()))
 )
 
 allowedPins = {}
@@ -2395,16 +2385,13 @@ for i in pinsOfWeight9
 }
 achievement(title = "Heavyweight", points = 5,
     description = "Win a game of Tin Pin Slammer using only pins with weights no lower than 9.",
-    trigger = EnterTinPinCheckpointValid()
-        // Checking if we're not spawning and if the pin's state is 0 ensures the checkpoint doesn't get reset at the beginning of the match.
-        && never(!GivenPinsIncludesIdAtAddress(allowedPins, ptrP1TinPinCurrentPinId()) && !P1Spawning() && Delta(p1PinState()) != 0x0)
-        && WonTinPinGame()
+    trigger = EnterTinPinCheckpointValid() && WonTinPinGame() && never(CheckpointSafeguard() && !GivenPinsIncludesIdAtAddress(allowedPins, ptrP1TinPinCurrentPinId()))
 )
 
 achievement(title = "Flawless Slammer", points = 5,
     description = "Win a game of Tin Pin Slammer without getting hit by a whammy.",
     trigger = EnterTinPinCheckpointValid()
-        && never(p1StunTimer() > 0)
+        && never(CheckpointSafeguard() && p1StunTimer() > 0)
         && WonTinPinGame()
 )
 
@@ -2417,11 +2404,9 @@ achievement(title = "Spawn Camper", points = 25,
 
 achievement(title = "Pacifist", points = 5,
     description = "Win a 1v1 game of Tin Pin Slammer without being credited for knocking out a pin.",
-    trigger = EnterTinPinCheckpointValid()
-        && never(once(p1PPGained() == Delta(p1PPGained()) + 2) && P2PinLost())
-        && FreeForAllPauseLock() && IsOnTinPinResultsScreen()
+    trigger = EnterTinPinCheckpointValid() && WonSinglesTinPinGame()
+        && never(CheckpointSafeguard() && once(p1PPGained() == Delta(p1PPGained()) + 2) && P2PinLost())
+        && FreeForAllPauseLock()
 )
 
 // End Tin Pin Slammer achievements
-
-
