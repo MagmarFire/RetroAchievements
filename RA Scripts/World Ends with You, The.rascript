@@ -945,8 +945,8 @@ function IsDeckPinMasteredByAddr(baseAddr)
         result = result ||
             Delta(level) != level // Trigger only if the level changes.
             && level == maxLevel // Trigger if the level is changed to the max level.
-            && once(pinAlt) // Trigger if we're dealing with any of the pins in this level class.
-            && Delta(id) == id // Don't trigger if we're just moving mastered pins around.
+            && repeated(0, pinAlt) // Trigger if we're dealing with any of the pins in this level class.
+            && Delta(id) == id // Don't trigger if we're just moving mastered pins around or if the pin evolved.
     }
 
     return result
@@ -1824,7 +1824,7 @@ for cheevo in dayAchievements
     )
 }
 
-achievement(title = "The Endless Horizon", description = "Survive the Reapers' Game.", points = 25,
+achievement(title = "The Annexed Horizon", description = "Survive the Reapers' Game.", points = 25,
     trigger = WasInOverworld() && IsOnCreditsScreen() && unless(once(PlayerHasAccessedChapterSelectMenuBefore()))
 )
 
@@ -1832,7 +1832,7 @@ achievement(title = "The Endless Horizon", description = "Survive the Reapers' G
 
 achievement(title = "Psychic Escalation", points = 3,
     description = "Master a pin in your deck.",
-    trigger = IsAnyDeckPinMastered() && isOnTitleScreen() == 0x0 && never(HasPinLoadoutChanged())
+    trigger = IsAnyDeckPinMastered() && isOnTitleScreen() == 0x0
 )
 
 achievement(title = "Unnatural Selection", points = 5,
