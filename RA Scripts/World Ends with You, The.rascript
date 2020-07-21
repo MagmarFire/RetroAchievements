@@ -1828,6 +1828,10 @@ achievement(title = "The Annexed Horizon", description = "Survive the Reapers' G
     trigger = WasInOverworld() && IsOnCreditsScreen() && unless(once(PlayerHasAccessedChapterSelectMenuBefore()))
 )
 
+achievement(title = "The Heart of the Pins", description = "Solve the Tin Pin caper in Another Day.", points = 5,
+    trigger = WasBitflagSetInGame(bit4(0x074172)) && CurrentChapterIs("Another Day")
+)
+
 // End day progression achievements
 
 achievement(title = "Psychic Escalation", points = 3,
@@ -2158,15 +2162,44 @@ achievement(title = "Carried by Support", points = 25,
         && never(NumberOfTheGivenPinsAreEquipped(offensivePins, 3))
 )
 
-tinPinMatchConditions = {
-    1: { "countsWhen": (WasBitflagSet(bit4(0x074174)) && CurrentChapterIs("Another Day")), "recalculateWhen": WasBitflagSet(bit4(0x074174)) } // vs. the Prince
+tinPinMatchBits = [
+    bit4(0x074174), // vs. the Prince
+    bit4(0x074175), // vs. the Pin Prof.
+    bit2(0x074174), // vs. Mina
+    bit3(0x074174), // vs. Nao-Nao
+    bit5(0x074174), // vs. Ai
+    bit6(0x074174), // vs. Futoshi
+    bit5(0x074175), // vs. the Vice Wizard of Slam
+    bit1(0x07416d), // vs. Yammer
+    bit0(0x07416d), // vs. Mrs. K
+    bit1(0x074175), // vs. "Shrimp"
+    bit3(0x074175), // vs. Sota
+    bit2(0x074175), // vs. Kitaniji
+    bit0(0x074175), // vs. Makoto
+    bit7(0x074174), // vs. Def March
+    bit7(0x07416c), // vs. Higashizawa
+    bit2(0x074170), // vs. Tutorial Guy
+    bit3(0x074170), // vs. Rhyme
+    bit4(0x074170), // vs. Uzuki
+    bit5(0x074170), // vs. Kariya
+    bit6(0x074170), // vs. Higashizawa (Miyashita Park, first match)
+    bit4(0x074172), // vs. Higashizawa (Miyashita Park, second match)
+    bit5(0x074171), // vs. Shooter
+    bit7(0x074171), // vs. the Wizard of Slam
+]
+
+tinPinMatchConditions = {}
+
+for i in range(0, length(tinPinMatchBits) - 1)
+{
+    tinPinMatchConditions[i] = { "countsWhen": (tinPinMatchBits[i] == 0x1 && CurrentChapterIs("Another Day")), "recalculateWhen": WasBitflagSet(tinPinMatchBits[i]) }
 }
 
 GenerateSaveProtectedAchievementFromConditions({
     "name": "The Slammer of Shibuya",
-    "description": "Play against twenty-five opponents in Tin Pin Slammer around Shibuya on Another Day.",
-    "threshold": 25,
-    "points": 5
+    "description": "Win twenty-three Tin Pin Slammer matches following the slam-off on Another Day.",
+    "threshold": 23,
+    "points": 10
 }, tinPinMatchConditions)
 
 // Tin Pin Slammer achievements
@@ -2340,10 +2373,16 @@ achievement(title = "Watch Me Flex", points = 5,
     trigger = EnterTinPinCheckpointValid() && p1PPGained() >= 30 && IsOnTinPinResultsScreen()
 )
 
+// Since there's no consistent address to keep track of time or victory state, the only workaround we can use is add the amount of time
+// it takes to transition from the overworld to the match and from the match to the results screen and add that to the actual time limit.
 timeLimit = 50
+framesBetweenTPSVictoryScreenAndResultsScreen = 171
+framesBetweenTPSTransitionAndStart = 4
 achievement(title = "Let It Rip!", points = 5,
     description = "Win a game of Tin Pin Slammer within " + timeLimit + " seconds.",
-    trigger = EnterTinPinCheckpointValid() && never(repeated(SecondsToFrames(timeLimit), Delta(playTime()) < playTime()))
+    trigger = EnterTinPinCheckpointValid()
+        && never(repeated(SecondsToFrames(timeLimit) + framesBetweenTPSVictoryScreenAndResultsScreen + framesBetweenTPSTransitionAndStart,
+            Delta(playTime()) < playTime()))
         && WonTinPinGame()
 )
 
