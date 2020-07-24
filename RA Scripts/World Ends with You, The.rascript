@@ -240,28 +240,28 @@ function WasShopkeeperLeveledUpToLevel(level)
 }
 
 chapters = {
-0x0: { "id": 0x0, "name": "Shiki, Day 1", },
-0x1: { "id": 0x1, "name": "Shiki, Day 2", },
-0x2: { "id": 0x2, "name": "Shiki, Day 3", },
-0x3: { "id": 0x3, "name": "Shiki, Day 4", },
-0x4: { "id": 0x4, "name": "Shiki, Day 5", },
-0x5: { "id": 0x5, "name": "Shiki, Day 6", },
-0x6: { "id": 0x6, "name": "Shiki, Day 7", },
-0x7: { "id": 0x7, "name": "Joshua, Day 1", },
-0x8: { "id": 0x8, "name": "Joshua, Day 2", },
-0x9: { "id": 0x9, "name": "Joshua, Day 3", },
-0xA: { "id": 0xA, "name": "Joshua, Day 4", },
-0xB: { "id": 0xB, "name": "Joshua, Day 5", },
-0xC: { "id": 0xC, "name": "Joshua, Day 6", },
-0xD: { "id": 0xD, "name": "Joshua, Day 7", },
-0xE: { "id": 0xE, "name": "Beat, Day 1", },
-0xF: { "id": 0xF, "name": "Beat, Day 2", },
-0x10: { "id": 0x10, "name": "Beat, Day 3", },
-0x11: { "id": 0x11, "name": "Beat, Day 4", },
-0x12: { "id": 0x12, "name": "Beat, Day 5", },
-0x13: { "id": 0x13, "name": "Beat, Day 6", },
-0x14: { "id": 0x14, "name": "Beat, Day 7", },
-0x15: { "id": 0x15, "name": "Another Day", },
+0x0: { "id": 0x0, "name": "Shiki, Day 1", "secretReportConditions": 1 },
+0x1: { "id": 0x1, "name": "Shiki, Day 2", "secretReportConditions": 3 },
+0x2: { "id": 0x2, "name": "Shiki, Day 3", "secretReportConditions": 4 },
+0x3: { "id": 0x3, "name": "Shiki, Day 4", "secretReportConditions": 4 },
+0x4: { "id": 0x4, "name": "Shiki, Day 5", "secretReportConditions": 4 },
+0x5: { "id": 0x5, "name": "Shiki, Day 6", "secretReportConditions": 4 },
+0x6: { "id": 0x6, "name": "Shiki, Day 7", "secretReportConditions": 4 },
+0x7: { "id": 0x7, "name": "Joshua, Day 1", "secretReportConditions": 1 },
+0x8: { "id": 0x8, "name": "Joshua, Day 2", "secretReportConditions": 4 },
+0x9: { "id": 0x9, "name": "Joshua, Day 3", "secretReportConditions": 4 },
+0xA: { "id": 0xA, "name": "Joshua, Day 4", "secretReportConditions": 4 },
+0xB: { "id": 0xB, "name": "Joshua, Day 5", "secretReportConditions": 4 },
+0xC: { "id": 0xC, "name": "Joshua, Day 6", "secretReportConditions": 4 },
+0xD: { "id": 0xD, "name": "Joshua, Day 7", "secretReportConditions": 4 },
+0xE: { "id": 0xE, "name": "Beat, Day 1", "secretReportConditions": 4 },
+0xF: { "id": 0xF, "name": "Beat, Day 2", "secretReportConditions": 4 },
+0x10: { "id": 0x10, "name": "Beat, Day 3", "secretReportConditions": 4 },
+0x11: { "id": 0x11, "name": "Beat, Day 4", "secretReportConditions": 3 },
+0x12: { "id": 0x12, "name": "Beat, Day 5", "secretReportConditions": 4 },
+0x13: { "id": 0x13, "name": "Beat, Day 6", "secretReportConditions": 4 },
+0x14: { "id": 0x14, "name": "Beat, Day 7", "secretReportConditions": 4 },
+0x15: { "id": 0x15, "name": "Another Day", "secretReportConditions": 4 },
 }
 
 function GetChapterByName(name)
@@ -1829,7 +1829,7 @@ achievement(title = "The Annexed Horizon", description = "Survive the Reapers' G
 )
 
 achievement(title = "The Heart of the Pins", description = "Solve the Tin Pin caper in Another Day.", points = 5,
-    trigger = WasBitflagSetInGame(bit4(0x074172)) && CurrentChapterIs("Another Day")
+    trigger = WasBitflagSetInGame(bit4(0x074172)) && never(!CurrentChapterIs("Another Day"))
 )
 
 // End day progression achievements
@@ -1989,7 +1989,7 @@ achievement(title = "Don't Kill Me Slowly", points = 5,
         && IsAtLeastOnDifficulty("Normal") && currentLevel() <= 2
 )
 
-function fusionLevel() => byte(0x37212d)
+function fusionLevel() => byte(tbyte(0x3918c8) + 1)
 
 achievement(title = "No 1 2 Trust", points = 5,
     description = "Defeat the Vespertilio Canor without activating a Fusion (Normal or higher; Level 3 or below).",
@@ -2449,3 +2449,57 @@ achievement(title = "Pacifist", points = 5,
 )
 
 // End Tin Pin Slammer achievements
+
+// Secret Report achievements
+
+reportConditionsBaseAddr = 0x073fdc
+
+function CreateSecretReportConditionsForGivenDay(day)
+{
+    chapter = GetChapterByName(day)
+    baseAddr = reportConditionsBaseAddr + 4 * chapter["id"]
+    
+    conditions = always_true()
+    
+    for i in range(0, chapter["secretReportConditions"] - 1)
+    {
+        conditions = conditions && byte(baseAddr + i) == 0x1
+    }
+    
+    return conditions
+}
+
+function AnySecretReportConditionUpdated()
+{
+    updated = always_false()
+    
+    for i in range(0, length(chapters) * 4 - 1)
+    {
+        updated = updated || WasValueSet(byte(reportConditionsBaseAddr + i), 0, 1)
+    }
+    
+    return updated
+}
+
+secretReportAchievements = [
+    { "name": "Public Domain", "description": "View the Chapters menu with a Secret Report unlocked.", "threshold": 1, "points": 3 },
+    { "name": "Internal Privilege", "description": "View the Chapters menu with five Secret Reports unlocked.", "threshold": 5, "points": 5 },
+    { "name": "Classified Briefing", "description": "View the Chapters menu with fourteen Secret Reports unlocked.", "threshold": 14, "points": 10 },
+    { "name": "Restricted Access", "description": "View the Chapters menu with all Secret Reports unlocked.", "threshold": 22, "points": 25 }
+]
+
+secretReportConditions = {}
+reportIndex = 0
+for i in chapters
+{
+    chapter = chapters[i]
+    secretReportConditions[chapter["id"]] = { "countsWhen": CreateSecretReportConditionsForGivenDay(chapter["name"]), "recalculateWhen": AnySecretReportConditionUpdated() }
+    reportIndex = reportIndex + 1
+}
+
+for cheevo in secretReportAchievements
+{
+    GenerateSaveProtectedAchievementFromConditions(cheevo, secretReportConditions)
+}
+
+// End Secret Report achievements
