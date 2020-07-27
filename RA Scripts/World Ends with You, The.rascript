@@ -421,6 +421,8 @@ enemies = {
 "Reaper Beat": { "id": 0x1a, "name": "Reaper Beat", "isOptional": 1, },
 "Progfox": { "id": 0x49, "name": "Progfox", "isOptional": 1, },
 "Grindcore Minks": { "id": 0x24, "name": "Grindcore Minks", "isOptional": 1, },
+"Woolly AOR": { "id": 0x30, "name": "Woolly AOR", "isOptional": 1, },
+"Goth Metal Drake": { "id": 0x31, "name": "Goth Metal Drake", "isOptional": 1, },
 }
 
 function IsEnemyOptional(id)
@@ -2066,13 +2068,13 @@ achievement(title = "Enervated Escargot", points = 10,
         && never(tally(5, pinsEquipped)) && AnyOfTheGivenPinsAreEquipped(GetPinsByTrait("Name", "Red Skull"))
 )
 
-positivePins = GetPinsByTrait("Element", "Pos")
-positivePins[0xffff] = emptySlot
+positivePinsAndEmptySlot = GetPinsByTrait("Element", "Pos")
+positivePinsAndEmptySlot[0xffff] = emptySlot
 achievement(title = "Yoctometers Apart", points = 10,
     description = "Defeat the Dub Rhino with at most four, Positive-type pins equipped (Normal or higher; Level 8 or below).",
     trigger = enemyId() == GetEnemyIdByName("Dub Rhino") && EnterBattleCheckpointValid()
         && IsAtLeastOnDifficulty("Normal") && currentLevel() <= 8 && IsRankingRevealed()
-        && never(tally(5, pinsEquipped)) && OnlyTheGivenPinsAreEquipped(positivePins)
+        && never(tally(5, pinsEquipped)) && OnlyTheGivenPinsAreEquipped(positivePinsAndEmptySlot)
 )
 
 achievement(title = "If You Want Something Done Right...", points = 5,
@@ -2532,6 +2534,7 @@ achievement(title = "Looks Like We Don't Have a Choice!", points = 10,
         && IsAtLeastOnDifficulty("Ultimate") && IsRankingRevealed()
 )
 
+positivePins = GetPinsByTrait("Element", "Pos")
 achievement(title = "At Arm's Length", points = 10,
     description = "Defeat Reaper Beat without any Positive-type pins equipped (Normal or higher; Level 35 or below).",
     trigger = enemyId() == GetEnemyIdByName("Reaper Beat") && EnterBattleCheckpointValid()
@@ -2552,6 +2555,21 @@ achievement(title = "Grindcore Scarves", points = 5,
     trigger = enemyId() == GetEnemyIdByName("Grindcore Minks") && EnterBattleCheckpointValid()
         && IsAtLeastOnDifficulty("Hard") && currentLevel() <= 35 && IsRankingRevealed()
         && partner() == GetPartnerByName("Shiki")
+)
+
+negativePins = GetPinsByTrait("Element", "Neg")
+achievement(title = "Mammoth Wrangler", points = 10,
+    description = "With Beat as your partner, defeat the Woolly AOR without any Negative-type pins equipped (Normal or higher; Level 35 or below).",
+    trigger = enemyId() == GetEnemyIdByName("Woolly AOR") && EnterBattleCheckpointValid()
+        && IsAtLeastOnDifficulty("Normal") && currentLevel() <= 35 && IsRankingRevealed()
+        && never(AnyOfTheGivenPinsAreEquipped(negativePins)) && partner() == GetPartnerByName("Beat")
+)
+
+achievement(title = "Worthiness in Threes", points = 10,
+    description = "Defeat the Goth Metal Drake with at most three pins equipped (Normal or higher; Level 35 or below).",
+    trigger = enemyId() == GetEnemyIdByName("Goth Metal Drake") && EnterBattleCheckpointValid()
+        && IsAtLeastOnDifficulty("Normal") && currentLevel() <= 35 && IsRankingRevealed()
+        && never(tally(4, pinsEquipped))
 )
 
 // End optional boss achievements
