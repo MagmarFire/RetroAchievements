@@ -1862,7 +1862,7 @@ achievement(title = "The Annexed Horizon", description = "Survive the Reapers' G
     trigger = WasInOverworld() && IsOnCreditsScreen() && unless(once(PlayerHasAccessedChapterSelectMenuBefore()))
 )
 
-achievement(title = "The Heart of the Pins", description = "Solve the Tin Pin caper in Another Day.", points = 5,
+achievement(title = "The Heart of the Pins", description = "Solve the Tin Pin caper on Another Day.", points = 5,
     trigger = WasBitflagSetInGame(bit4(0x074172)) && never(!CurrentChapterIs("Another Day"))
 )
 
@@ -2075,7 +2075,7 @@ achievement(title = "Two Birds with One Car", points = 10,
 )
 
 achievement(title = "Enervated Escargot", points = 10,
-    description = "Defeat the Ovis Cantus with at most four pins equipped, one of which being the Red Skull pin (Normal or higher; Level 8 or below).",
+    description = "Defeat Ovis Cantus with at most four pins equipped, one of which being the Red Skull pin (Normal or higher; Level 8 or below).",
     trigger = enemyId() == GetEnemyIdByName("Ovis Cantus") && EnterBattleCheckpointValid()
         && IsAtLeastOnDifficulty("Normal") && currentLevel() <= 8 && IsRankingRevealed()
         && never(tally(5, pinsEquipped)) && AnyOfTheGivenPinsAreEquipped(GetPinsByTrait("Name", "Red Skull"))
@@ -2099,7 +2099,7 @@ achievement(title = "If You Want Something Done Right...", points = 5,
 
 apportPins = GetPinsByTrait("Psych", "Apport")
 achievement(title = "Drop the Freaking Moon!", points = 10,
-    description = "Defeat the Leo Cantus with at most five pins equipped, at least two of which having the Apport psych (Normal or higher; Level 20 or below).",
+    description = "Defeat Leo Cantus with at most five pins equipped, at least two of which having the Apport psych (Normal or higher; Level 20 or below).",
     trigger = enemyId() == GetEnemyIdByName("Leo Cantus") && EnterBattleCheckpointValid()
         && IsAtLeastOnDifficulty("Normal") && currentLevel() <= 20 && IsRankingRevealed()
         && NumberOfTheGivenPinsAreEquipped(apportPins, 2) && never(tally(6, pinsEquipped))
