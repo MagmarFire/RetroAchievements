@@ -1716,15 +1716,15 @@ function _BaseJustGotNumberOfItemsByName(name, count)
         idSubclause = always_false()
         if (count == 1)
         {
-            idSubclause = Delta(word(addr)) == 0xffff
+            idSubclause = never(word(addr) != 0xffff && Delta(word(addr)) == 0xffff)
         }
         else
         {
-            idSubclause = Delta(word(addr)) == item["id"] // We don't want achievements to trigger if the inventory is sorted.
+            idSubclause = never(Delta(word(addr)) != item["id"] && word(addr) == item["id"]) // We don't want achievements to trigger if the inventory is sorted.
         }
         
         result = result || word(addr) == item["id"] && WasValueSetInGame(low4(addr + 2), count - 1, count)
-            && idSubclause 
+            && idSubclause
     }
     
     return result
@@ -1889,10 +1889,10 @@ achievement(title = "Crushing on the Clerk", points = 10,
 )
 
 // TODO: Optimize; searching for items is VERY SLOW
-//achievement(title = "With All Six Pins", points = 5,
-//    description = "Obtain four Extra Slot stickers.",
-//    trigger = JustGotNumberOfItemsByName("(S) Extra Slot", 4)
-//)
+achievement(title = "With All Six Pins", points = 5, id = 120560,
+    description = "Obtain four Extra Slot stickers.",
+    trigger = JustGotNumberOfItemsByName("(S) Extra Slot", 4)
+)
 
 // Music achievements
 musicAchievements = [
@@ -1905,12 +1905,12 @@ musicAchievements = [
 musicConditions = {}
 for i in range(0, itemSlots - 1)
 {
-    //musicConditions[i] = { "countsWhen": ItemInSlotIsACD(i), "recalculateWhen": ItemInSlotJustGotFilledWithACD(i) }
+    musicConditions[i] = { "countsWhen": ItemInSlotIsACD(i), "recalculateWhen": ItemInSlotJustGotFilledWithACD(i) }
 }
 
 for cheevo in musicAchievements
 {
-    //GenerateSaveProtectedAchievementFromConditions_Naive(cheevo, musicConditions)
+    GenerateSaveProtectedAchievementFromConditions_Naive(cheevo, musicConditions)
 }
 
 // End music achievements
@@ -2018,7 +2018,7 @@ achievement(title = "The Pendulum Swings", points = 25,
 timeLimit = 30
 achievement(title = "Don't Kill Me Slowly", points = 5,
     description = "Defeat the Metal Corehog within " + SecondsToFormat(timeLimit)
-        + " (Normal or higher; Level 2 or below).",
+        + " (Normal or higher, Level 2 or below).",
     trigger = enemyId() == GetEnemyIdByName("Metal Corehog") && IsRankingRevealed() && battleTime() <= SecondsToFrames(timeLimit)
         && IsAtLeastOnDifficulty("Normal") && currentLevel() <= 2
 )
@@ -2027,14 +2027,14 @@ function fusionAddr() => tbyte(0x3918c8)
 function fusionLevel() => byte(fusionAddr() + 1)
 
 achievement(title = "No 1 2 Trust", points = 5,
-    description = "Defeat the Vespertilio Canor without activating a Fusion (Normal or higher; Level 3 or below).",
+    description = "Defeat the Vespertilio Canor without activating a Fusion (Normal or higher, Level 3 or below).",
     trigger = enemyId() == GetEnemyIdByName("Vespertilio Canor") && EnterBattleCheckpointValid()
         && IsAtLeastOnDifficulty("Normal") && currentLevel() <= 3 && never(Delta(fusionLevel()) > fusionLevel())
         && IsRankingRevealed()
 )
 
 achievement(title = "Avenged", points = 25,
-    description = "Defeat the Swing Shark without any recovery pins equipped (Normal or higher; Level 4 or below).",
+    description = "Defeat the Swing Shark without any recovery pins equipped (Normal or higher, Level 4 or below).",
     trigger = enemyId() == GetEnemyIdByName("Swing Shark") && EnterBattleCheckpointValid()
         && IsAtLeastOnDifficulty("Normal") && currentLevel() <= 4 && IsRankingRevealed() && !HasRecoveryPinsEquipped()
 )
@@ -2046,7 +2046,7 @@ for slotId in range(0, 5)
 }
 achievement(title = "Empty Wardrobes", points = 5,
     description = "Defeat the Circle Pit Grizzly without Neku wearing threads and with no"
-        + " more than two pins equipped (Normal or higher; Level 5 or below).",
+        + " more than two pins equipped (Normal or higher, Level 5 or below).",
     trigger = enemyId() == GetEnemyIdByName("Circle Pit Grizzly") && EnterBattleCheckpointValid()
         && IsAtLeastOnDifficulty("Normal") && currentLevel() <= 5 && IsRankingRevealed()
         && never(tally(3, pinsEquipped)) && !DoesNekuHaveThreadsEquipped()
@@ -2068,14 +2068,14 @@ for i in GetPinsByPsych("Psychokinesis")
 psychokinesisAndRecoveryPins[0xffff] = emptySlot
 
 achievement(title = "Two Birds with One Car", points = 10,
-    description = "Defeat the Cornix Canor while having only Psychokinesis or recovery pins equipped (Normal or higher; Level 8 or below).",
+    description = "Defeat the Cornix Canor while having only Psychokinesis or recovery pins equipped (Normal or higher, Level 8 or below).",
     trigger = enemyId() == GetEnemyIdByName("Cornix Canor") && EnterBattleCheckpointValid()
         && IsAtLeastOnDifficulty("Normal") && currentLevel() <= 8 && IsRankingRevealed()
         && OnlyTheGivenPinsAreEquipped(psychokinesisAndRecoveryPins)
 )
 
 achievement(title = "Enervated Escargot", points = 10,
-    description = "Defeat Ovis Cantus with at most four pins equipped, one of which being the Red Skull pin (Normal or higher; Level 8 or below).",
+    description = "Defeat Ovis Cantus with at most four pins equipped, one of which being the Red Skull pin (Normal or higher, Level 8 or below).",
     trigger = enemyId() == GetEnemyIdByName("Ovis Cantus") && EnterBattleCheckpointValid()
         && IsAtLeastOnDifficulty("Normal") && currentLevel() <= 8 && IsRankingRevealed()
         && never(tally(5, pinsEquipped)) && AnyOfTheGivenPinsAreEquipped(GetPinsByTrait("Name", "Red Skull"))
@@ -2084,14 +2084,14 @@ achievement(title = "Enervated Escargot", points = 10,
 positivePinsAndEmptySlot = GetPinsByTrait("Element", "Pos")
 positivePinsAndEmptySlot[0xffff] = emptySlot
 achievement(title = "Yoctometers Apart", points = 10,
-    description = "Defeat the Dub Rhino with at most four, Positive-type pins equipped (Normal or higher; Level 8 or below).",
+    description = "Defeat the Dub Rhino with at most four, Positive-type pins equipped (Normal or higher, Level 8 or below).",
     trigger = enemyId() == GetEnemyIdByName("Dub Rhino") && EnterBattleCheckpointValid()
         && IsAtLeastOnDifficulty("Normal") && currentLevel() <= 8 && IsRankingRevealed()
         && never(tally(5, pinsEquipped)) && OnlyTheGivenPinsAreEquipped(positivePinsAndEmptySlot)
 )
 
 achievement(title = "If You Want Something Done Right...", points = 5,
-    description = "Defeat the Wall of Grizzly using only Neku (Normal or higher; Level 20 or below).",
+    description = "Defeat the Wall of Grizzly using only Neku (Normal or higher, Level 20 or below).",
     trigger = enemyId() == GetEnemyIdByName("Wall of Grizzly") && EnterBattleCheckpointValid()
         && IsAtLeastOnDifficulty("Normal") && currentLevel() <= 20 && IsRankingRevealed()
         && bottomScreenOnlyWin() == 1
@@ -2099,14 +2099,14 @@ achievement(title = "If You Want Something Done Right...", points = 5,
 
 apportPins = GetPinsByTrait("Psych", "Apport")
 achievement(title = "Drop the Freaking Moon!", points = 10,
-    description = "Defeat Leo Cantus with at most five pins equipped, at least two of which having the Apport psych (Normal or higher; Level 20 or below).",
+    description = "Defeat Leo Cantus with at most five pins equipped, at least two of which having the Apport psych (Normal or higher, Level 20 or below).",
     trigger = enemyId() == GetEnemyIdByName("Leo Cantus") && EnterBattleCheckpointValid()
         && IsAtLeastOnDifficulty("Normal") && currentLevel() <= 20 && IsRankingRevealed()
         && NumberOfTheGivenPinsAreEquipped(apportPins, 2) && never(tally(6, pinsEquipped))
 )
 
 achievement(title = "Agnus Dei", points = 25,
-    description = "Defeat the Pteropus Canor with both Holy Light and Sacrifice pins equipped and no recovery pins (Normal or higher; Level 23 or below).",
+    description = "Defeat the Pteropus Canor with both Holy Light and Sacrifice pins equipped and no recovery pins (Normal or higher, Level 23 or below).",
     trigger = enemyId() == GetEnemyIdByName("Pteropus Canor") && EnterBattleCheckpointValid()
         && IsAtLeastOnDifficulty("Normal") && currentLevel() <= 23 && IsRankingRevealed()
         && AnyOfTheGivenPinsAreEquipped(GetPinsByTrait("Psych", "Sacrifice"))
@@ -2116,7 +2116,7 @@ achievement(title = "Agnus Dei", points = 25,
 
 comboPanelMinus1Threads = GetThreadsByTrait("ability", "Combo Panel -1")
 achievement(title = "Hyperfocus", points = 5,
-    description = "Defeat Uzuki Yashiro without your partner wearing threads that normally have the Combo Panel -1 ability (Normal or higher; Level 27 or below).",
+    description = "Defeat Uzuki Yashiro without your partner wearing threads that normally have the Combo Panel -1 ability (Normal or higher, Level 27 or below).",
     trigger = enemyId() == GetEnemyIdByName("Uzuki Yashiro") && EnterBattleCheckpointValid()
         && IsAtLeastOnDifficulty("Normal") && currentLevel() <= 27 && IsRankingRevealed()
         && never(IsPartnerWearingAnyOfTheGivenThreads(comboPanelMinus1Threads))
@@ -2129,14 +2129,14 @@ for i in brands
 }
 
 achievement(title = "It's My Asskicking Outfit, Bitch!", points = 5,
-    description = "Defeat Koki Kariya while Neku is wearing threads from four different brands (Normal or higher; Level 27 or below).",
+    description = "Defeat Koki Kariya while Neku is wearing threads from four different brands (Normal or higher, Level 27 or below).",
     trigger = tally(4, equippedBrands) && never(HasNekuClothingChanged())
         && EnterBattleCheckpointValid() && IsRankingRevealed()
         && enemyId() == GetEnemyIdByName("Koki Kariya")
 )
 
 achievement(title = "Inner Peace", points = 10,
-    description = "Defeat Koki Kariya and Uzuki Yashiro while your partner is not wearing any threads (Normal or higher; Level 27 or below).",
+    description = "Defeat Koki Kariya and Uzuki Yashiro while your partner is not wearing any threads (Normal or higher, Level 27 or below).",
     trigger = tally(1, enemyId() == GetEnemyIdByName("Koki Kariya and Uzuki Yashiro") || enemyId() == GetEnemyIdByName("Koki Kariya and Uzuki Yashiro 2"))
         && EnterBattleCheckpointValid()
         && IsAtLeastOnDifficulty("Normal") && currentLevel() <= 27 && IsRankingRevealed()
@@ -2145,7 +2145,7 @@ achievement(title = "Inner Peace", points = 10,
 
 timeLimit = 163 // 2.72 minutes ~= e minutes
 achievement(title = "Logarithmic Time", points = 5,
-    description = "Defeat Sho Minamimoto on Week 3, Day 6, within " + SecondsToFormat(timeLimit) + " (Normal or higher; Level 30 or below).",
+    description = "Defeat Sho Minamimoto on Week 3, Day 6, within " + SecondsToFormat(timeLimit) + " (Normal or higher, Level 30 or below).",
     trigger = enemyId() == GetEnemyIdByName("Sho Minamimoto")
         && EnterBattleCheckpointValid()
         && IsAtLeastOnDifficulty("Normal") && currentLevel() <= 30 && IsRankingRevealed()
@@ -2154,7 +2154,7 @@ achievement(title = "Logarithmic Time", points = 5,
 
 function bossHP() => word(0x3918b8)
 achievement(title = "Cannibalism Denied", points = 25,
-    description = "Defeat Tigris Cantus before it heals itself more than seven times (Normal or higher; Level 33 or below).",
+    description = "Defeat Tigris Cantus before it heals itself more than seven times (Normal or higher, Level 33 or below).",
     trigger = enemyId() == GetEnemyIdByName("Tigris Cantus")
         && EnterBattleCheckpointValid()
         && IsAtLeastOnDifficulty("Normal") && currentLevel() <= 33 && IsRankingRevealed()
@@ -2162,7 +2162,7 @@ achievement(title = "Cannibalism Denied", points = 25,
 )
 
 achievement(title = "Stylish Coup", points = 5,
-    description = "Earn a C ranking or higher against Megumi Kitaniji (Normal or higher; Level 33 or below).",
+    description = "Earn a C ranking or higher against Megumi Kitaniji (Normal or higher, Level 33 or below).",
     trigger = enemyId() == GetEnemyIdByName("Megumi Kitaniji")
         && EnterBattleCheckpointValid()
         && IsAtLeastOnDifficulty("Normal") && currentLevel() <= 33 && IsRankingRevealed()
@@ -2176,7 +2176,7 @@ function PerformedAFusionOfAGivenLevelVersusAnguisCantus(level)
     return tally(1, fusionLevel() == 0 && Delta(fusionLevel()) == level)
 }
 achievement(title = "Trust Your Partner", points = 10,
-    description = "Perform a LV1, LV2, and LV3 Fusion against Anguis Cantus (Normal or higher; Level 35 or below).",
+    description = "Perform a LV1, LV2, and LV3 Fusion against Anguis Cantus (Normal or higher, Level 35 or below).",
     trigger = enemyId() == GetEnemyIdByName("Anguis Cantus")
         && EnterBattleCheckpointValid()
         && IsAtLeastOnDifficulty("Normal") && currentLevel() <= 35
@@ -2190,7 +2190,7 @@ achievement(title = "Trust Your Partner", points = 10,
 
 offensivePins = GetPinsByTrait("Spec", "Attack")
 achievement(title = "Carried by Support", points = 25,
-    description = "Defeat Draco Cantus with at most two offensive pins equipped (Normal or higher; Level 35 or below).",
+    description = "Defeat Draco Cantus with at most two offensive pins equipped (Normal or higher, Level 35 or below).",
     trigger = enemyId() == GetEnemyIdByName("Draco Cantus")
         && EnterBattleCheckpointValid()
         && IsAtLeastOnDifficulty("Normal") && currentLevel() <= 35 && IsRankingRevealed()
@@ -2549,7 +2549,7 @@ achievement(title = "Looks Like We Don't Have a Choice!", points = 10,
 
 positivePins = GetPinsByTrait("Element", "Pos")
 achievement(title = "At Arm's Length", points = 10,
-    description = "Defeat Reaper Beat without any Positive-type pins equipped (Normal or higher; Level 35 or below).",
+    description = "Defeat Reaper Beat without any Positive-type pins equipped (Normal or higher, Level 35 or below).",
     trigger = enemyId() == GetEnemyIdByName("Reaper Beat") && EnterBattleCheckpointValid()
         && IsAtLeastOnDifficulty("Normal") && currentLevel() <= 35 && IsRankingRevealed()
         && never(AnyOfTheGivenPinsAreEquipped(positivePins))
@@ -2557,14 +2557,14 @@ achievement(title = "At Arm's Length", points = 10,
 
 hpDrainPins = GetPinsByTrait("Inflicts HP Drain?", 1)
 achievement(title = "Coagulant", points = 10,
-    description = "Defeat the Progfox without equipping any pins that can inflict HP Drain (Normal or higher; Level 35 or below).",
+    description = "Defeat the Progfox without equipping any pins that can inflict HP Drain (Normal or higher, Level 35 or below).",
     trigger = enemyId() == GetEnemyIdByName("Progfox") && EnterBattleCheckpointValid()
         && IsAtLeastOnDifficulty("Normal") && currentLevel() <= 35 && IsRankingRevealed()
         && never(AnyOfTheGivenPinsAreEquipped(hpDrainPins))
 )
 
 achievement(title = "Grindcore Scarves", points = 5,
-    description = "Defeat the Grindcore Minks with Shiki as your partner (Hard or higher; Level 35 or below).",
+    description = "Defeat the Grindcore Minks with Shiki as your partner (Hard or higher, Level 35 or below).",
     trigger = enemyId() == GetEnemyIdByName("Grindcore Minks") && EnterBattleCheckpointValid()
         && IsAtLeastOnDifficulty("Hard") && currentLevel() <= 35 && IsRankingRevealed()
         && partner() == GetPartnerByName("Shiki")
@@ -2572,14 +2572,14 @@ achievement(title = "Grindcore Scarves", points = 5,
 
 negativePins = GetPinsByTrait("Element", "Neg")
 achievement(title = "Mammoth Wrangler", points = 10,
-    description = "With Beat as your partner, defeat the Woolly AOR without any Negative-type pins equipped (Normal or higher; Level 35 or below).",
+    description = "With Beat as your partner, defeat the Woolly AOR without any Negative-type pins equipped (Normal or higher, Level 35 or below).",
     trigger = enemyId() == GetEnemyIdByName("Woolly AOR") && EnterBattleCheckpointValid()
         && IsAtLeastOnDifficulty("Normal") && currentLevel() <= 35 && IsRankingRevealed()
         && never(AnyOfTheGivenPinsAreEquipped(negativePins)) && partner() == GetPartnerByName("Beat")
 )
 
-achievement(title = "Worthiness in Threes", points = 10,
-    description = "Defeat the Goth Metal Drake with at most three pins equipped (Normal or higher; Level 35 or below).",
+achievement(title = "Drake's Misfortune", points = 10,
+    description = "Defeat the Goth Metal Drake with at most three pins equipped (Normal or higher, Level 35 or below).",
     trigger = enemyId() == GetEnemyIdByName("Goth Metal Drake") && EnterBattleCheckpointValid()
         && IsAtLeastOnDifficulty("Normal") && currentLevel() <= 35 && IsRankingRevealed()
         && never(tally(4, pinsEquipped))
@@ -2587,7 +2587,7 @@ achievement(title = "Worthiness in Threes", points = 10,
 
 edenPins = GetPinsByTrait("Eden?", 1)
 achievement(title = "Rejection of Heaven", points = 50,
-    description = "Defeat Panthera Cantus without the Eden pin set equipped (Normal or higher; Level 60 or below).",
+    description = "Defeat Panthera Cantus without the Eden pin set equipped (Normal or higher, Level 60 or below).",
     trigger = enemyId() == GetEnemyIdByName("Panthera Cantus") && EnterBattleCheckpointValid()
         && IsAtLeastOnDifficulty("Normal") && currentLevel() <= 60 && IsRankingRevealed()
         && never(NumberOfTheGivenPinsAreEquipped(edenPins, 5))
