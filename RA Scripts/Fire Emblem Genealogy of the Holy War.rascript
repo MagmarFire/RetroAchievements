@@ -117,6 +117,41 @@ function turnsElapsedInChapter10() => word(0x000DA7)
 // $000DA9: [2 Byte] Total Days - Endgame
 function turnsElapsedInEndgame() => word(0x000DA9)
 
+function gen1UnitBaseAddr() => 0x002d31 // Sigurd's arena LV address in actuality.
+function GetGen1UnitObjectByAddr(addr)
+{
+    // For the purposes of keeping things uniform, we're assuming that arena LV is the head address for each unit.
+    return {
+        "arenaLevel": byte(addr),
+        "status": byte(addr + 1),
+        "isDead": bit1(addr + 1),
+        "lover": byte(addr + 3),
+        "condition": byte(addr + 8),
+        "bonusStats": byte(addr + 10),
+        "hp": byte(addr + 13),
+        "maxHp": byte(addr + 15),
+        "strength": byte(addr + 16),
+        "magic": byte(addr + 17),
+        "skill": byte(addr + 18),
+        "speed": byte(addr + 19),
+        "defense": byte(addr + 20),
+        "resistance": byte(addr + 21),
+        "luck": byte(addr + 22),
+        "classId": byte(addr + 23),
+        "level": byte(addr + 24),
+        "authority": byte(addr + 25),
+        "gold": word(addr + 27),
+        "exp": byte(addr + 28),
+        "talkTo": byte(addr + 29)
+    }
+}
+
+function GetGen1UnitObjectByIndex(index)
+{
+    // Gen 1 units are 0x24 bytes wide, and so to get the next one in a sequence, simply subtract 0x24.
+    return GetGen1UnitObjectByAddr(gen1UnitBaseAddr() - index * 0x24)
+}
+
 // $001075: Cursor - X coord relative position (copy)
 // $001076: Cursor - X coord shift
 // $001095: Cursor - Y coord relative position (copy)
@@ -680,6 +715,56 @@ GenerateSaveProtectedAchievementFromConditions({
 }, {
     0x0: { "countsWhen": (sigurdKills() > 0), "recalculateWhen": (Delta(sigurdKills()) != sigurdKills()) }
 })
+
+gen1UnitMetadata = {
+"Sigurd": { "index": 0, "name": "Sigurd", },
+"Noish": { "index": 1, "name": "Noish", },
+"Alec": { "index": 2, "name": "Alec", },
+"Arden": { "index": 3, "name": "Arden", },
+"Azel": { "index": 4, "name": "Azel", },
+"Lex": { "index": 5, "name": "Lex", },
+"Quan": { "index": 6, "name": "Quan", },
+"Finn": { "index": 7, "name": "Finn", },
+"Ethlyn": { "index": 8, "name": "Ethlyn", },
+"Midir": { "index": 9, "name": "Midir", },
+"Ayra": { "index": 10, "name": "Ayra", },
+"Aideen": { "index": 11, "name": "Aideen", },
+"Dew": { "index": 12, "name": "Dew", },
+"Jamke": { "index": 13, "name": "Jamke", },
+"Deirdre": { "index": 14, "name": "Deirdre", },
+"Raquesis": { "index": 15, "name": "Raquesis", },
+"Holin": { "index": 16, "name": "Holin", },
+"Beowulf": { "index": 17, "name": "Beowulf", },
+"Levin": { "index": 18, "name": "Levin", },
+"Sylvia": { "index": 19, "name": "Sylvia", },
+"Erin": { "index": 20, "name": "Erin", },
+"Brigid": { "index": 21, "name": "Brigid", },
+"Taillte": { "index": 22, "name": "Taillte", },
+"Claude": { "index": 23, "name": "Claude", },
+}
+
+function GetGen1UnitMetadataByIndex(index)
+{
+    for name in gen1UnitMetadata
+    {
+        meta = gen1UnitMetadata[name]
+        if (meta["index"] == index)
+        {
+            return meta
+        }
+    }
+}
+
+for i in range(0, 23)
+{
+    unit = GetGen1UnitObjectByIndex(i)
+    unitMeta = GetGen1UnitMetadataByIndex(i)
+    achievement(title = unitMeta["name"] + " Test", description = "Level up " + unitMeta["name"] + "'s arena level to trigger.",
+        points = 0,
+        trigger = WasValueSetInGame(unit["arenaLevel"], 0, 1)
+    )
+}
+
 
 function GetRescuableVillagesByChapterIds(chapterIds)
 {
