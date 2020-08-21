@@ -22,8 +22,28 @@ function Delta(addr) => prev(addr)
 
 function WasBitflagSetInGame(bit)
 {
-    return once(Delta(bit) != bit && bit == 1)
+    return WasValueSetInGame(bit, 0, 1)
+}
+
+function WasBitflagSet(bit)
+{
+    return WasValueSet(bit, 0, 1)
+}
+
+function WasValueSetInGame(mem, oldValue, newValue)
+{
+    return WasValueSet(mem, oldValue, newValue)
         && never(IsLoadingSaveFile())
+}
+
+function WasValueSet(mem, oldValue, newValue)
+{
+    return once(Delta(mem) == oldValue && mem == newValue)
+}
+
+function DidValueBecomeGreaterThanGivenInGame(mem, value)
+{
+    return once(Delta(mem) <= value && mem > value) && never(IsLoadingSaveFile())
 }
 
 function SecondsToFormat(value)
@@ -36,11 +56,51 @@ function SecondsToFormat(value)
     return value / 60 + ":" + leadingZero + value % 60
 }
 
-// $0ee520: 0x1 = in game, more or less. Seems to be 0 during the opening cutscenes, but that's probably fine for our purposes.
-function IsLoadingSaveFile() => obyte(0x0ee520) == 0x0
+// $0ee3a1: 0x1 = in game, more or less. Seems to be 0 during the opening cutscenes, but that's probably fine for our purposes.
+function IsLoadingSaveFile() => obyte(0x0ee3a1) == 0x0
 
 // $1b2e20: Current location (US)
 function currentLocation() => obyte(0x1b2e20)
+
+// This function allows the creation of achievements with built-in save protection that deal with a collection of values being set
+// throughout the game. The schemas for both parameters are as follows:
+//
+// cheevo: "name": title
+//         "description": self-explanatory
+//         "points": self-explanatory
+//         "threshold": how many values in the "addresses" dictionary must be set before this achievement is triggered
+//
+// conditions: "countsWhen": the condition that must be true in order for it to be counted in the total
+//             "recalculateWhen": the condition that indicates that relevant values in the condition have changed,
+//                                and so everything must be recalculated
+function GenerateSaveProtectedAchievementFromConditions(cheevo, conditions)
+{
+    loadedCounts = []
+    totalCounts = []
+    resetAlt = always_false()
+
+    for i in conditions
+    {
+        condition = conditions[i]
+        
+        // This is the score when the game is loaded. If the loaded score is greater than or equal to the threshold--that is,
+        // if the save file would satisfy enough conditions to trigger the achievement on load--this should trigger a
+        // permanant pauselock to serve as save protection.
+        array_push(loadedCounts, once(condition["countsWhen"] && IsLoadingSaveFile()))
+        
+        // We want both loaded and session counts here (that is, we don't care if we're loading a save file when these are tallied).
+        // This way, loading a save doesn't invalidate the achievement outright if a player hasn't actually earned it yet.
+        array_push(totalCounts, once(condition["countsWhen"]))
+        
+        resetAlt = resetAlt || condition["recalculateWhen"]
+    }
+
+    achievement(title = cheevo["name"], description = cheevo["description"], points = cheevo["points"],
+        trigger = never(IsLoadingSaveFile())
+            && measured(tally(cheevo["threshold"], totalCounts)) && unless(tally(cheevo["threshold"], loadedCounts))
+            && never(resetAlt)
+    )
+}
 
 // $1B2E60: Current Location [8-bit]
 //          61 = Main Menu
@@ -182,6 +242,40 @@ locations = {
 achievement(title = "Permission Shmermission", points = 1,
     description = "Learn swordplay from Oshus after raiding his storage.",
     trigger = WasBitflagSetInGame(learnedSwordplay())
+)
+
+// "Treasure Hunter"
+pinkCoralCountAddr = 0x1ba56c
+totalTreasureTypes = 8
+totalConditions = 0
+treasureConditions = {}
+
+for i in range(0, totalTreasureTypes - 1)
+{
+    treasureCount = obyte(pinkCoralCountAddr + i)
+    treasureTypeRegistered = treasureCount != 0xff
+    treasureTypeWasUnregistered = Delta(treasureCount) == 0xff
+    treasureConditions[totalConditions] = { "countsWhen": treasureTypeRegistered, "recalculateWhen": (treasureTypeWasUnregistered && treasureTypeRegistered) }
+    totalConditions = totalConditions + 1
+}
+
+GenerateSaveProtectedAchievementFromConditions({
+    "name": "Treasure Hunter",
+    "description": "Obtain one of every type of treasure.",
+    "points": 5,
+    "threshold": totalTreasureTypes
+}, treasureConditions)
+
+// Power, Wisdom, and Courage Gem achievements
+
+achievement(title = "Seeker of Power", points = 5,
+    description = "Collect 10 Power Gems.",
+    trigger = WasValueSetInGame(powerGems(), 9, 10)
+)
+
+achievement(title = "Omnipotence", points = 10,
+    description = "Collect all 20 Power Gems.",
+    trigger = WasValueSetInGame(powerGems(), 19, 20)
 )
 
 mapLookup = {}
