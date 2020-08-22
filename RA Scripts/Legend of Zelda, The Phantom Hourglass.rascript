@@ -235,8 +235,10 @@ function hasOshusSword() => obyte(0x1BA604)
 // $263DE8: Bit0=Oshus' Sword Chest
 
 locations = {
-    0x11: { "id": 0x11, "name": "West Exit Bus Terminal", },
-    0x12: { "id": 0x12, "name": "Station Underpass", },
+    0xb: { "id": 0xb, "name": "On Mercay Island", "code": "Mercay", },
+0x27: { "id": 0x27, "name": "Trekking the Mountain Passage", "code": "Passage", },
+0x26: { "id": 0x26, "name": "At the entrance to Temple of the Ocean King", "code": "OceanKingLobby", },
+0x25: { "id": 0x25, "name": "In the Temple of the Ocean King", "code": "OceanKing", },
 }
 
 achievement(title = "Permission Shmermission", points = 1,
@@ -270,26 +272,51 @@ GenerateSaveProtectedAchievementFromConditions({
 
 achievement(title = "Seeker of Power", points = 5,
     description = "Collect 10 Power Gems.",
-    trigger = WasValueSetInGame(powerGems(), 9, 10)
+    trigger = WasValueSetInGame(powerGems(), 9, 10) && measured(powerGems() == 10)
 )
 
 achievement(title = "Omnipotence", points = 10,
     description = "Collect all 20 Power Gems.",
-    trigger = WasValueSetInGame(powerGems(), 19, 20)
+    trigger = WasValueSetInGame(powerGems(), 19, 20) && measured(powerGems() == 20)
 )
 
+// SEA CHART ACHIEVEMENTS
+// $1ba608: Bit 1: Sea Chart - Southwest quadrant
+//          Bit 2: Sea Chart - Northwest quadrant
+//          Bit 3: Sea Chart - Southeast quadrant
+//          Bit 4: Sea Chart - Northeast quadrant
+seaChartBaseAddr = 0x1ba608
+// The title should reflect Seneca's names for the classical compass winds in Latin, to match the Latin origin for Bellum's name.
+achievement(title = "Africus", points = 3,
+    description = "Acquire the Southwestern Sea Chart.",
+    trigger = WasBitflagSetInGame(obit1(seaChartBaseAddr))
+)
+
+achievement(title = "Corus", points = 3,
+    description = "Acquire the Northwestern Sea Chart.",
+    trigger = WasBitflagSetInGame(obit2(seaChartBaseAddr))
+)
+
+achievement(title = "Vulturnus", points = 3,
+    description = "Acquire the Southeastern Sea Chart.",
+    trigger = WasBitflagSetInGame(obit3(seaChartBaseAddr))
+)
+
+achievement(title = "Caecias", points = 3,
+    description = "Acquire the Northeastern Sea Chart.",
+    trigger = WasBitflagSetInGame(obit4(seaChartBaseAddr))
+)
+
+// End Sea Chart achievements
+
+// RICH PRESENCE
 mapLookup = {}
 for i in locations {
     location = locations[i]
     mapLookup[i] = location["name"]
 }
 
-rich_presence_conditional_display(obyte(0x1B2E60) == 0x00, "In the Titlescreen")
-
-rich_presence_conditional_display(obyte(0x1B2E60) == 0x00, "In the File Select")
-
-rich_presence_display("Link is {0} [❤️{1}] [💰{2}]",
-    rich_presence_lookup("map", obyte(0x1B2E60), mapLookup, fallback="somewhere"),
-    rich_presence_value("num", obyte(0x1BA388) / 4),
-    rich_presence_value("num", rupees())
+rich_presence_conditional_display(currentLocation() == 0x00, "On the title screen")
+rich_presence_display("{0}",
+    rich_presence_lookup("map", currentLocation(), mapLookup, fallback="Somewhere on the Great Sea...")
 )
