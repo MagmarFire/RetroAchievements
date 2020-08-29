@@ -5,6 +5,8 @@
 // in mind early to limit the pain to implement later.
 function GetGlobalOffset() => 0x0
 
+function systemTimer() => odword(0x3ffc3c)
+
 function obit0(addr) => bit0(addr + GetGlobalOffset())
 function obit1(addr) => bit1(addr + GetGlobalOffset())
 function obit2(addr) => bit2(addr + GetGlobalOffset())
@@ -33,7 +35,7 @@ function WasBitflagSet(bit)
 function WasValueSetInGame(mem, oldValue, newValue)
 {
     return WasValueSet(mem, oldValue, newValue)
-        && never(IsLoadingSaveFile())
+        && never(!IsInGame()) && never(IsLoadingSaveFile())
 }
 
 function WasValueSet(mem, oldValue, newValue)
@@ -43,7 +45,7 @@ function WasValueSet(mem, oldValue, newValue)
 
 function DidValueBecomeGreaterThanGivenInGame(mem, value)
 {
-    return once(Delta(mem) <= value && mem > value) && never(IsLoadingSaveFile())
+    return once(Delta(mem) <= value && mem > value) && never(!IsInGame())
 }
 
 function SecondsToFormat(value)
@@ -56,11 +58,25 @@ function SecondsToFormat(value)
     return value / 60 + ":" + leadingZero + value % 60
 }
 
-// $0ee3a1: 0x1 = in game, more or less. Seems to be 0 during the opening cutscenes, but that's probably fine for our purposes.
-function IsLoadingSaveFile() => obyte(0x0ee3a1) == 0x0
+// $19f998: 0x3 = is loading save file(?)
+function IsLoadingSaveFile() => obyte(0x19f998) == 0x3
+
+function IsInGame() => !IsInLocationWithCode("File") && !WasInLocationWithCode("File")
+    && !IsInLocationWithCode("WFC") && !IsInLocationWithCode("Title")
+    && !IsInLocationWithCode("Battle")
+
+// $1b7f9c: File selection menu (16-bit)
+//          0x1 = File selection
+//          0x2 = Copy, Erase, Start
+//          0x3 = Adventure or Battle Mode
+//          0x4 = Battle
+//          0xb = Big Plays
+//          0xc = Return fr Battle Mode
+//          0x75 = Battle Mode
+function MayHaveBeenInBootState() => oword(0x1b7f9c) == 0x0
 
 // $1b2e20: Current location (US)
-function currentLocation() => obyte(0x1b2e20)
+function currentLocation() => oword(0x1b2e20)
 
 // This function allows the creation of achievements with built-in save protection that deal with a collection of values being set
 // throughout the game. The schemas for both parameters are as follows:
@@ -96,7 +112,8 @@ function GenerateSaveProtectedAchievementFromConditions(cheevo, conditions)
     }
 
     achievement(title = cheevo["name"], description = cheevo["description"], points = cheevo["points"],
-        trigger = never(IsLoadingSaveFile())
+        trigger = never(!IsInGame())
+            && never(MayHaveBeenInBootState()) // Prevent save protection from failing in the event of a manual game reset.
             && measured(tally(cheevo["threshold"], totalCounts)) && unless(tally(cheevo["threshold"], loadedCounts))
             && never(resetAlt)
     )
@@ -235,10 +252,39 @@ function hasOshusSword() => obyte(0x1BA604)
 // $263DE8: Bit0=Oshus' Sword Chest
 
 locations = {
-    0xb: { "id": 0xb, "name": "On Mercay Island", "code": "Mercay", },
+0xb: { "id": 0xb, "name": "On Mercay Island", "code": "Mercay", },
 0x27: { "id": 0x27, "name": "Trekking the Mountain Passage", "code": "Passage", },
 0x26: { "id": 0x26, "name": "At the entrance to Temple of the Ocean King", "code": "OceanKingLobby", },
 0x25: { "id": 0x25, "name": "In the Temple of the Ocean King", "code": "OceanKing", },
+0x65: { "id": 0x65, "name": "On the file select screen", "code": "File", },
+0x0: { "id": 0x0, "name": "Starting the game", "code": "Boot", },
+0xcccc: { "id": 0xcccc, "name": "On the Nintendo WFC Setup screen", "code": "WFC", },
+0x409: { "id": 0x409, "name": "In Battle Mode", "code": "Battle", },
+0x35: { "id": 0x35, "name": "On the title screen", "code": "Title", },
+
+}
+
+function GetLocationByCode(code)
+{
+    for id in locations
+    {
+        if (locations[id]["code"] == code)
+        {
+            return locations[id]
+        }
+    }
+}
+
+function IsInLocationWithCode(code)
+{
+    location = GetLocationByCode(code)
+    return currentLocation() == location["id"]
+}
+
+function WasInLocationWithCode(code)
+{
+    location = GetLocationByCode(code)
+    return Delta(currentLocation()) == location["id"]
 }
 
 achievement(title = "Permission Shmermission", points = 1,
@@ -278,6 +324,16 @@ achievement(title = "Seeker of Power", points = 5,
 achievement(title = "Omnipotence", points = 10,
     description = "Collect all 20 Power Gems.",
     trigger = WasValueSetInGame(powerGems(), 19, 20) && measured(powerGems() == 20)
+)
+
+achievement(title = "Seeker of Courage", points = 5,
+    description = "Collect 10 Courage Gems.",
+    trigger = WasValueSetInGame(courageGems(), 9, 10) && measured(courageGems() == 10)
+)
+
+achievement(title = "Omnibenevolence", points = 10,
+    description = "Collect all 20 Courage Gems.",
+    trigger = WasValueSetInGame(courageGems(), 19, 20) && measured(courageGems() == 20)
 )
 
 // SEA CHART ACHIEVEMENTS
