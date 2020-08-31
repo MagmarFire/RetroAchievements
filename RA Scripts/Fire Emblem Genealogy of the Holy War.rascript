@@ -51,19 +51,19 @@ function gameClearTimes() => byte(0x000CC2)
 function chapter() => byte(0x000D6A)
 
 chapters = {
-    0x0: { "name": "Prologue: Birth of a Crusader", "rescuableVillageSlotIds": [ 3, 4, 5, 6, 7 ] },
-    0x1: { "name": "Chapter 1: The Spirit Forest's Maiden", "rescuableVillageSlotIds": [ ] },
-    0x2: { "name": "Chapter 2: Crisis in Agustria", "rescuableVillageSlotIds": [ ] },
-    0x3: { "name": "Chapter 3: Eldigan the Lionheart", "rescuableVillageSlotIds": [ ] },
-    0x4: { "name": "Chapter 4: Dance in the Skies", "rescuableVillageSlotIds": [ ] },
-    0x5: { "name": "Chapter 5: Threshold of Fate", "rescuableVillageSlotIds": [ ] },
-    0x6: { "name": "Chapter 6: Heirs to the Light", "rescuableVillageSlotIds": [ ] },
-    0x7: { "name": "Chapter 7: Beyond the Desert", "rescuableVillageSlotIds": [ ] },
-    0x8: { "name": "Chapter 8: The Dracoknights of Thracia", "rescuableVillageSlotIds": [ ] },
-    0x9: { "name": "Chapter 9: For Whose Sake", "rescuableVillageSlotIds": [ ] },
-    0xA: { "name": "Chapter 10: Light and Darkness", "rescuableVillageSlotIds": [ ] },
-    0xB: { "name": "Endgame: The Final Holy War", "rescuableVillageSlotIds": [ ] },
-    0xF: { "name": "Credits", "rescuableVillageSlotIds": [ ] },
+    0x0: { "pretitle": "Prologue", "name": "Birth of a Crusader", "rescuableVillageSlotIds": [ 3, 4, 5, 6, 7 ], "keepIds": [ 0, 1, 2 ] },
+    0x1: { "pretitle": "Chapter 1", "name": "The Spirit Forest's Maiden", "rescuableVillageSlotIds": [ ], "keepIds": [] },
+    0x2: { "pretitle": "Chapter 2", "name": "Crisis in Agustria", "rescuableVillageSlotIds": [ ], "keepIds": [] },
+    0x3: { "pretitle": "Chapter 3", "name": "Eldigan the Lionheart", "rescuableVillageSlotIds": [ ], "keepIds": [] },
+    0x4: { "pretitle": "Chapter 4", "name": "Dance in the Skies", "rescuableVillageSlotIds": [ ], "keepIds": [] },
+    0x5: { "pretitle": "Chapter 5", "name": "Threshold of Fate", "rescuableVillageSlotIds": [ ], "keepIds": [] },
+    0x6: { "pretitle": "Chapter 6", "name": "Heirs to the Light", "rescuableVillageSlotIds": [ ], "keepIds": [] },
+    0x7: { "pretitle": "Chapter 7", "name": "Beyond the Desert", "rescuableVillageSlotIds": [ ], "keepIds": [] },
+    0x8: { "pretitle": "Chapter 8", "name": "The Dracoknights of Thracia", "rescuableVillageSlotIds": [ ], "keepIds": [] },
+    0x9: { "pretitle": "Chapter 9", "name": "For Whose Sake", "rescuableVillageSlotIds": [ ], "keepIds": [] },
+    0xA: { "pretitle": "Chapter 10", "name": "Light and Darkness", "rescuableVillageSlotIds": [ ], "keepIds": [] },
+    0xB: { "pretitle": "Endgame", "name": "The Final Holy War", "rescuableVillageSlotIds": [ ], "keepIds": [] },
+    0xF: { "pretitle": "", "name": "Credits", "rescuableVillageSlotIds": [ ], "keepIds": [] },
 }
 
 function GetChapterIds()
@@ -82,6 +82,7 @@ function turns() => word(0x000D8F)
 // $000D91: Turf's Phase
 
 // $000D93: [2 Byte] Total Days - Prologue
+function turnsElapsedInPrologueBaseAddr() => 0x000D93
 function turnsElapsedInPrologue() => word(0x000D93)
 
 // $000D95: [2 Byte] Total Days - Chapter 1
@@ -647,8 +648,7 @@ function state1() => byte(0x000302)
 //          0x8 = loading a game (if on the load menu)
 function state2() => byte(0x000304)
 
-//function IsLoadingSaveFile() => state2() == 0x8 && tally(0, state1() == 0x6 || state1() == 0x0)
-function IsLoadingSaveFile() => state2() == 0x8
+function IsLoadingSaveFile() => state2() == 0x8 || state2() == 0x23
 
 function IsBooting() => state1() == 0x2 || state1() == 0x3 && state2() == 0x0
 
@@ -755,6 +755,15 @@ function GetGen1UnitMetadataByIndex(index)
     }
 }
 
+function GetGen1UnitObjectByName(name)
+{
+    meta = gen1UnitMetadata[name]
+    return GetGen1UnitObjectByIndex(meta["index"])
+}
+
+// Do Gen 1 unit-related things here.
+gen1UnitLeveledUpTo10 = always_false()
+gen2UnitLeveledUpTo10 = always_false()
 for i in range(0, 23)
 {
     unit = GetGen1UnitObjectByIndex(i)
@@ -763,8 +772,14 @@ for i in range(0, 23)
         points = 0,
         trigger = WasValueSetInGame(unit["arenaLevel"], 0, 1)
     )
+    
+    gen1UnitLeveledUpTo10 = gen1UnitLeveledUpTo10 || Delta(unit["level"]) < 10 && unit["level"] >= 10
 }
 
+achievement(title = "It Gets Worse from Here", points = 3,
+    description = "Raise a unit to Level 10.",
+    trigger = never(IsLoadingSaveFile()) && (gen1UnitLeveledUpTo10 || gen2UnitLeveledUpTo10)
+)
 
 function GetRescuableVillagesByChapterIds(chapterIds)
 {
@@ -785,12 +800,37 @@ function GetRescuableVillagesByChapterIds(chapterIds)
     return rescueConditions
 }
 
+function GetSeizableKeepsByChapterIds(chapterIds)
+{
+    rescueConditions = always_false()
+    rescueConditionIndex = 0
+    for i in chapterIds
+    {
+        chapter = chapters[i]
+        for j in chapter["keepIds"]
+        {
+            buildingAttrAddr = GetBuildingAttrAddrBySlot(j)
+            rescueConditions = rescueConditions ||
+                // Count only when the player's army seizes a keep.
+                bit0(buildingAttrAddr) == 0 && bit1(buildingAttrAddr) == 0 && bit2(buildingAttrAddr) == 0 && chapter() == i
+                && Delta(bit6(buildingAttrAddr)) == 0 && WasBitflagSetInGame(bit6(buildingAttrAddr))
+        }
+    }
+    
+    return rescueConditions
+}
+
 GenerateSaveProtectedAchievementFromConditions({
     "name": "Village Savior",
     "description": "Rescue a village before it is razed to the ground.",
     "points": 1,
-    "threshold": 1
+    "threshold": 1,
 }, GetRescuableVillagesByChapterIds(GetChapterIds()))
+
+achievement(title = "Conqueror", points = 1,
+    description = "Seize a keep from an enemy faction's control.",
+    trigger = GetSeizableKeepsByChapterIds(GetChapterIds())
+)
 
 GenerateSaveProtectedAchievementFromConditions({
     "name": "Defender of Chalphy",
@@ -798,6 +838,55 @@ GenerateSaveProtectedAchievementFromConditions({
     "points": 5,
     "threshold": 5
 }, GetRescuableVillagesByChapterIds([ 0 ]))
+
+// CHAPTER-RELATED CHEEVOS
+blitzkriegCheevos = {
+    0: { "turnLimit": 24, "points": 5 } // my record: 21 turns
+}
+
+chapterCheevos = {
+    0: { "name": "And So the Crusade Begins", "description": "Complete the prologue.", "points": 3 }
+}
+
+for i in blitzkriegCheevos
+{
+    chapter = chapters[i]
+    cheevo = blitzkriegCheevos[i]
+    turnsElapsed = word(turnsElapsedInPrologueBaseAddr() + 2 * i)
+    achievement(title = "Blitzkrieg (" + chapter["pretitle"] + ")", points = cheevo["points"],
+        description = "Complete '" + chapter["name"] + "' within " + cheevo["turnLimit"] + " turns.",
+        trigger = chapter() == i && Delta(turnsElapsed) == 0 && turnsElapsed > 0 && turnsElapsed <= cheevo["turnLimit"] && never(IsLoadingSaveFile())
+    )
+    
+    cheevo = chapterCheevos[i]
+    description = ""
+    if (cheevo["description"] == "")
+    {
+        description = "Complete " + chapter["pretitle"] + "."
+    }
+    else
+    {
+        description = cheevo["description"]
+    }
+    
+    achievement(title = cheevo["name"], points = cheevo["points"],
+        description = description,
+        trigger = chapter() == i && Delta(turnsElapsed) == 0 && turnsElapsed > 0 && never(IsLoadingSaveFile())
+    )
+}
+// End of chapter-related cheevos
+
+// CHAPTER CHEEVOS
+
+
+for i in chapterCheevos
+{
+    chapter = chapters[i]
+    cheevo = chapterCheevos[i]
+    
+    
+}
+// End of chapter cheevos
 
 achievement(title = "A Father to His Men", points = 25,
     description = "Complete the game with all possible recruits and without any of them dying.",
@@ -815,7 +904,33 @@ function GetChapterNamesForRichPresence()
     return retValue
 }
 
-rich_presence_display("{0} | Turn {1}",
-    rich_presence_lookup("Chapter", low4(0x000D6A), GetChapterNamesForRichPresence()),
+function GetChapterPretitlesForRichPresence()
+{
+    retValue = {}
+    for chapterId in chapters
+    {
+        chapter = chapters[chapterId]
+        if (chapter["pretitle"] != "")
+        {
+            retValue[chapterId] = chapter["pretitle"] + ": "
+        }
+        else
+        {
+            retValue[chapterId] = ""
+        }
+    }
+    return retValue
+}
+
+function ShouldShowTurnNumber() => state1() != 0xf && turns() < 65535 && turns() > 0
+
+rich_presence_conditional_display(!ShouldShowTurnNumber(), "{0}{1}",
+    rich_presence_lookup("ChapterPretitles", chapter(), GetChapterPretitlesForRichPresence()),
+    rich_presence_lookup("Chapter", chapter(), GetChapterNamesForRichPresence())
+)
+
+rich_presence_display("{0}{1} | Turn {2}",
+    rich_presence_lookup("ChapterPretitles", chapter(), GetChapterPretitlesForRichPresence()),
+    rich_presence_lookup("Chapter", chapter(), GetChapterNamesForRichPresence()),
     rich_presence_value("Turn", turns())
 )
