@@ -52,7 +52,7 @@ function chapter() => byte(0x000D6A)
 
 chapters = {
     0x0: { "pretitle": "Prologue", "name": "Birth of a Crusader", "rescuableVillageSlotIds": [ 3, 4, 5, 6, 7 ], "keepIds": [ 0, 1, 2 ] },
-    0x1: { "pretitle": "Chapter 1", "name": "The Spirit Forest's Maiden", "rescuableVillageSlotIds": [ ], "keepIds": [] },
+    0x1: { "pretitle": "Chapter 1", "name": "The Spirit Forest's Maiden", "rescuableVillageSlotIds": [ 5, 6, 7 ], "keepIds": [ 0, 1, 2, 3, 4 ] },
     0x2: { "pretitle": "Chapter 2", "name": "Crisis in Agustria", "rescuableVillageSlotIds": [ ], "keepIds": [] },
     0x3: { "pretitle": "Chapter 3", "name": "Eldigan the Lionheart", "rescuableVillageSlotIds": [ ], "keepIds": [] },
     0x4: { "pretitle": "Chapter 4", "name": "Dance in the Skies", "rescuableVillageSlotIds": [ ], "keepIds": [] },
@@ -127,6 +127,7 @@ function GetGen1UnitObjectByAddr(addr)
         "status": byte(addr + 1),
         "isDead": bit1(addr + 1),
         "lover": byte(addr + 3),
+        "affiliation": byte(addr + 6),
         "condition": byte(addr + 8),
         "bonusStats": byte(addr + 10),
         "hp": byte(addr + 13),
@@ -839,6 +840,13 @@ GenerateSaveProtectedAchievementFromConditions({
     "threshold": 5
 }, GetRescuableVillagesByChapterIds([ 0 ]))
 
+GenerateSaveProtectedAchievementFromConditions({
+    "name": "Verdanian Annexation",
+    "description": "Rescue all villages in Chapter 1.",
+    "points": 5,
+    "threshold": 5
+}, GetRescuableVillagesByChapterIds([ 1 ]))
+
 // CHAPTER-RELATED CHEEVOS
 blitzkriegCheevos = {
     0: { "turnLimit": 24, "points": 5 } // my record: 21 turns
@@ -874,20 +882,18 @@ for i in blitzkriegCheevos
         trigger = chapter() == i && Delta(turnsElapsed) == 0 && turnsElapsed > 0 && never(IsLoadingSaveFile())
     )
 }
+
 // End of chapter-related cheevos
 
-// CHAPTER CHEEVOS
+// RECRUITMENT CHEEVOS
 
+ayra = GetGen1UnitObjectByName("Ayra")
+achievement(title = "Lady of Wrath", points = 5,
+    description = "Recruit Ayra.",
+    trigger = chapter() == 1 && WasValueSetInGame(ayra["affiliation"], 3, 0) 
+)
 
-for i in chapterCheevos
-{
-    chapter = chapters[i]
-    cheevo = chapterCheevos[i]
-    
-    
-}
-// End of chapter cheevos
-
+// End recruitment cheevos
 achievement(title = "A Father to His Men", points = 25,
     description = "Complete the game with all possible recruits and without any of them dying.",
     trigger = always_false()
