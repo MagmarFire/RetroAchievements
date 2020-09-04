@@ -126,6 +126,7 @@ function GetGen1UnitObjectByAddr(addr)
         "arenaLevel": byte(addr),
         "status": byte(addr + 1),
         "isDead": bit1(addr + 1),
+        "isRecruited": bit7(addr + 1),
         "lover": byte(addr + 3),
         "affiliation": byte(addr + 6),
         "condition": byte(addr + 8),
@@ -833,19 +834,21 @@ achievement(title = "Conqueror", points = 1,
     trigger = GetSeizableKeepsByChapterIds(GetChapterIds())
 )
 
+prologueVillages = GetRescuableVillagesByChapterIds([ 0 ])
 GenerateSaveProtectedAchievementFromConditions({
     "name": "Defender of Chalphy",
     "description": "Rescue all villages in the Prologue.",
     "points": 5,
-    "threshold": 5
-}, GetRescuableVillagesByChapterIds([ 0 ]))
+    "threshold": length(prologueVillages)
+}, prologueVillages)
 
+chapter1Villages = GetRescuableVillagesByChapterIds([ 1 ])
 GenerateSaveProtectedAchievementFromConditions({
-    "name": "Verdanian Annexation",
+    "name": "Verdanite Annexation",
     "description": "Rescue all villages in Chapter 1.",
     "points": 5,
-    "threshold": 5
-}, GetRescuableVillagesByChapterIds([ 1 ]))
+    "threshold": length(chapter1Villages)
+}, chapter1Villages)
 
 // CHAPTER-RELATED CHEEVOS
 blitzkriegCheevos = {
@@ -891,6 +894,18 @@ ayra = GetGen1UnitObjectByName("Ayra")
 achievement(title = "Lady of Wrath", points = 5,
     description = "Recruit Ayra.",
     trigger = chapter() == 1 && WasValueSetInGame(ayra["affiliation"], 3, 0) 
+)
+
+jamke = GetGen1UnitObjectByName("Jamke")
+achievement(title = "The Traitorous Prince", points = 10,
+    description = "Recruit Jamke.",
+    trigger = chapter() == 1 && WasValueSetInGame(jamke["affiliation"], 3, 0) 
+)
+
+deirdre = GetGen1UnitObjectByName("Deirdre")
+achievement(title = "The Maiden of the Forest", points = 3,
+    description = "Recruit Deirdre.",
+    trigger = chapter() == 1 && WasBitflagSetInGame(deirdre["isRecruited"]) 
 )
 
 // End recruitment cheevos
