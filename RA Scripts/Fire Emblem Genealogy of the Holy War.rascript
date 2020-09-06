@@ -53,7 +53,7 @@ function chapter() => byte(0x000D6A)
 chapters = {
     0x0: { "pretitle": "Prologue", "name": "Birth of a Crusader", "rescuableVillageSlotIds": [ 3, 4, 5, 6, 7 ], "keepIds": [ 0, 1, 2 ] },
     0x1: { "pretitle": "Chapter 1", "name": "The Spirit Forest's Maiden", "rescuableVillageSlotIds": [ 5, 6, 7 ], "keepIds": [ 0, 1, 2, 3, 4 ] },
-    0x2: { "pretitle": "Chapter 2", "name": "Crisis in Agustria", "rescuableVillageSlotIds": [ ], "keepIds": [] },
+    0x2: { "pretitle": "Chapter 2", "name": "Crisis in Agustria", "rescuableVillageSlotIds": [ 6, 8, 9, 10, 11, 12, 13, 14, 15 ], "keepIds": [ 0, 1, 2, 3, 4, 5 ] },
     0x3: { "pretitle": "Chapter 3", "name": "Eldigan the Lionheart", "rescuableVillageSlotIds": [ ], "keepIds": [] },
     0x4: { "pretitle": "Chapter 4", "name": "Dance in the Skies", "rescuableVillageSlotIds": [ ], "keepIds": [] },
     0x5: { "pretitle": "Chapter 5", "name": "Threshold of Fate", "rescuableVillageSlotIds": [ ], "keepIds": [] },
@@ -123,10 +123,10 @@ function GetGen1UnitObjectByAddr(addr)
 {
     // For the purposes of keeping things uniform, we're assuming that arena LV is the head address for each unit.
     return {
-        "arenaLevel": byte(addr),
+        "arenaLevel": low4(addr),
         "status": byte(addr + 1),
         "isDead": bit1(addr + 1),
-        "isRecruited": bit7(addr + 1),
+        "isSortied": bit7(addr + 1),
         "lover": byte(addr + 3),
         "affiliation": byte(addr + 6),
         "condition": byte(addr + 8),
@@ -650,6 +650,9 @@ function state1() => byte(0x000302)
 //          0x8 = loading a game (if on the load menu)
 function state2() => byte(0x000304)
 
+function IsOutsideGameplay() => state1() == 0x2 || state1() == 0x3 && state2() == 0x0 || state1() == 0x5 && state2() == 0x0
+    || state1() == 0x6 || state1() == 0x1b && state2() == 0x0
+
 function IsLoadingSaveFile() => state2() == 0x8 || state2() == 0x23
 
 function IsBooting() => state1() == 0x2 || state1() == 0x3 && state2() == 0x0
@@ -719,30 +722,30 @@ GenerateSaveProtectedAchievementFromConditions({
 })
 
 gen1UnitMetadata = {
-"Sigurd": { "index": 0, "name": "Sigurd", },
-"Noish": { "index": 1, "name": "Noish", },
-"Alec": { "index": 2, "name": "Alec", },
-"Arden": { "index": 3, "name": "Arden", },
-"Azel": { "index": 4, "name": "Azel", },
-"Lex": { "index": 5, "name": "Lex", },
-"Quan": { "index": 6, "name": "Quan", },
-"Finn": { "index": 7, "name": "Finn", },
-"Ethlyn": { "index": 8, "name": "Ethlyn", },
-"Midir": { "index": 9, "name": "Midir", },
-"Ayra": { "index": 10, "name": "Ayra", },
-"Aideen": { "index": 11, "name": "Aideen", },
-"Dew": { "index": 12, "name": "Dew", },
-"Jamke": { "index": 13, "name": "Jamke", },
-"Deirdre": { "index": 14, "name": "Deirdre", },
-"Raquesis": { "index": 15, "name": "Raquesis", },
-"Holin": { "index": 16, "name": "Holin", },
-"Beowulf": { "index": 17, "name": "Beowulf", },
-"Levin": { "index": 18, "name": "Levin", },
-"Sylvia": { "index": 19, "name": "Sylvia", },
-"Erin": { "index": 20, "name": "Erin", },
-"Brigid": { "index": 21, "name": "Brigid", },
-"Taillte": { "index": 22, "name": "Taillte", },
-"Claude": { "index": 23, "name": "Claude", },
+"Sigurd": { "index": 0, "name": "Sigurd", }, 
+"Noish": { "index": 1, "name": "Noish", }, 
+"Alec": { "index": 2, "name": "Alec", }, 
+"Arden": { "index": 3, "name": "Arden", }, 
+"Azel": { "index": 4, "name": "Azel", }, 
+"Lex": { "index": 5, "name": "Lex", }, 
+"Quan": { "index": 6, "name": "Quan", }, 
+"Finn": { "index": 7, "name": "Finn", }, 
+"Ethlyn": { "index": 8, "name": "Ethlyn", }, 
+"Midir": { "index": 9, "name": "Midir", }, 
+"Ayra": { "index": 10, "name": "Ayra", }, 
+"Aideen": { "index": 11, "name": "Aideen", }, 
+"Dew": { "index": 12, "name": "Dew", }, 
+"Jamke": { "index": 13, "name": "Jamke", }, 
+"Deirdre": { "index": 14, "name": "Deirdre", }, 
+"Raquesis": { "index": 15, "name": "Raquesis", }, 
+"Holyn": { "index": 16, "name": "Holyn", }, 
+"Beowulf": { "index": 17, "name": "Beowulf", }, 
+"Levin": { "index": 18, "name": "Levin", }, 
+"Sylvia": { "index": 19, "name": "Sylvia", }, 
+"Erin": { "index": 20, "name": "Erin", }, 
+"Brigid": { "index": 21, "name": "Brigid", }, 
+"Taillte": { "index": 22, "name": "Taillte", }, 
+"Claude": { "index": 23, "name": "Claude", }, 
 }
 
 function GetGen1UnitMetadataByIndex(index)
@@ -765,22 +768,26 @@ function GetGen1UnitObjectByName(name)
 
 // Do Gen 1 unit-related things here.
 gen1UnitLeveledUpTo10 = always_false()
+gen1UnitMaxedOutArena = always_false()
 gen2UnitLeveledUpTo10 = always_false()
+gen2UnitMaxedOutArena = always_false()
 for i in range(0, 23)
 {
     unit = GetGen1UnitObjectByIndex(i)
     unitMeta = GetGen1UnitMetadataByIndex(i)
-    achievement(title = unitMeta["name"] + " Test", description = "Level up " + unitMeta["name"] + "'s arena level to trigger.",
-        points = 0,
-        trigger = WasValueSetInGame(unit["arenaLevel"], 0, 1)
-    )
     
-    gen1UnitLeveledUpTo10 = gen1UnitLeveledUpTo10 || Delta(unit["level"]) < 10 && unit["level"] >= 10
+    gen1UnitLeveledUpTo10 = gen1UnitLeveledUpTo10 || WasValueSetInGame(unit["level"], 9, 10)
+    gen1UnitMaxedOutArena = gen1UnitMaxedOutArena || WasValueSetInGame(unit["arenaLevel"], 6, 7)
 }
 
-achievement(title = "It Gets Worse from Here", points = 3,
+achievement(title = "It Gets Harder", points = 3,
     description = "Raise a unit to Level 10.",
-    trigger = never(IsLoadingSaveFile()) && (gen1UnitLeveledUpTo10 || gen2UnitLeveledUpTo10)
+    trigger = gen1UnitLeveledUpTo10 || gen2UnitLeveledUpTo10
+)
+
+achievement(title = "Gladiator", description = "Max out a unit's arena level.",
+    points = 5,
+    trigger = gen1UnitMaxedOutArena || gen2UnitMaxedOutArena
 )
 
 function GetRescuableVillagesByChapterIds(chapterIds)
@@ -812,14 +819,18 @@ function GetSeizableKeepsByChapterIds(chapterIds)
         for j in chapter["keepIds"]
         {
             buildingAttrAddr = GetBuildingAttrAddrBySlot(j)
-            rescueConditions = rescueConditions ||
-                // Count only when the player's army seizes a keep.
-                bit0(buildingAttrAddr) == 0 && bit1(buildingAttrAddr) == 0 && bit2(buildingAttrAddr) == 0 && chapter() == i
-                && Delta(bit6(buildingAttrAddr)) == 0 && WasBitflagSetInGame(bit6(buildingAttrAddr))
+            rescueConditions = rescueConditions || PlayerHasCapturedKeepBySlot(j) && chapter() == i
         }
     }
     
     return rescueConditions
+}
+
+function PlayerHasCapturedKeepBySlot(slotId)
+{
+    buildingAttrAddr = GetBuildingAttrAddrBySlot(slotId)
+    return bit0(buildingAttrAddr) == 0 && bit1(buildingAttrAddr) == 0 && bit2(buildingAttrAddr) == 0
+                && Delta(bit6(buildingAttrAddr)) == 0 && WasBitflagSetInGame(bit6(buildingAttrAddr))
 }
 
 GenerateSaveProtectedAchievementFromConditions({
@@ -850,13 +861,24 @@ GenerateSaveProtectedAchievementFromConditions({
     "threshold": length(chapter1Villages)
 }, chapter1Villages)
 
+chapter2Villages = GetRescuableVillagesByChapterIds([ 2 ])
+GenerateSaveProtectedAchievementFromConditions({
+    "name": "Nordion Calls for Aid",
+    "description": "Rescue all villages in Chapter 2.",
+    "points": 10,
+    "threshold": length(chapter2Villages)
+}, chapter2Villages)
+
 // CHAPTER-RELATED CHEEVOS
 blitzkriegCheevos = {
-    0: { "turnLimit": 24, "points": 5 } // my record: 21 turns
+    0: { "turnLimit": 24, "points": 5 }, // my record: 21 turns
+    1: { "turnLimit": 40, "points": 10 }, // my record: 40 turns
 }
 
 chapterCheevos = {
-    0: { "name": "And So the Crusade Begins", "description": "Complete the prologue.", "points": 3 }
+    0: { "name": "And So the Crusade Begins", "description": "Complete the prologue.", "points": 3 },
+    1: { "name": "The Red Twine Unravels", "description": "", "points": 3 },
+    2: { "name": "[Crisis in Agustria]", "description": "", "points": 3 }
 }
 
 for i in blitzkriegCheevos
@@ -868,8 +890,13 @@ for i in blitzkriegCheevos
         description = "Complete '" + chapter["name"] + "' within " + cheevo["turnLimit"] + " turns.",
         trigger = chapter() == i && Delta(turnsElapsed) == 0 && turnsElapsed > 0 && turnsElapsed <= cheevo["turnLimit"] && never(IsLoadingSaveFile())
     )
-    
+}
+
+for i in chapterCheevos
+{
+    chapter = chapters[i]
     cheevo = chapterCheevos[i]
+    turnsElapsed = word(turnsElapsedInPrologueBaseAddr() + 2 * i)
     description = ""
     if (cheevo["description"] == "")
     {
@@ -893,26 +920,69 @@ for i in blitzkriegCheevos
 ayra = GetGen1UnitObjectByName("Ayra")
 achievement(title = "Lady of Wrath", points = 5,
     description = "Recruit Ayra.",
-    trigger = chapter() == 1 && WasValueSetInGame(ayra["affiliation"], 3, 0) 
+    trigger = chapter() == 1 && WasValueSetInGame(ayra["affiliation"], 3, 0)
 )
 
 jamke = GetGen1UnitObjectByName("Jamke")
 achievement(title = "The Traitorous Prince", points = 10,
     description = "Recruit Jamke.",
-    trigger = chapter() == 1 && WasValueSetInGame(jamke["affiliation"], 3, 0) 
+    trigger = chapter() == 1 && WasValueSetInGame(jamke["affiliation"], 3, 0)
 )
 
 deirdre = GetGen1UnitObjectByName("Deirdre")
 achievement(title = "The Maiden of the Forest", points = 3,
     description = "Recruit Deirdre.",
-    trigger = chapter() == 1 && WasBitflagSetInGame(deirdre["isRecruited"]) 
+    trigger = chapter() == 1 && WasBitflagSetInGame(deirdre["isSortied"])
+)
+
+holyn = GetGen1UnitObjectByName("Holyn")
+achievement(title = "From Merc to Squire", points = 5,
+    description = "Recruit Holyn.",
+    trigger = chapter() == 2 && WasValueSetInGame(holyn["affiliation"], 7, 0)
+)
+
+raquesis = GetGen1UnitObjectByName("Raquesis")
+achievement(title = "A Princess Conscripted", points = 5,
+    description = "Recruit Raquesis.",
+    trigger = chapter() == 2 && WasValueSetInGame(raquesis["affiliation"], 1, 0)
+)
+
+beowulf = GetGen1UnitObjectByName("Beowulf")
+achievement(title = "Sellsword for Hire", points = 10,
+    description = "Recruit Beowulf.",
+    trigger = chapter() == 2 && WasValueSetInGame(beowulf["affiliation"], 3, 0)
+)
+
+erin = GetGen1UnitObjectByName("Erin")
+achievement(title = "The Oh-So-Serious Retainer", points = 5,
+    description = "Recruit Erin.",
+    trigger = chapter() == 2 && WasValueSetInGame(erin["affiliation"], 5, 0)
 )
 
 // End recruitment cheevos
+
+function deirdreSilenceStaffDurability() => byte(0x004032)
+achievement(title = "A Brief Silence", points = 5,
+    description = "Capture Verdane without using Deirdre's Silence staff more than once.",
+    trigger = chapter() == 1 && deirdreSilenceStaffDurability() >= 2 && PlayerHasCapturedKeepBySlot(4)
+)
+
+//0x003f25: Chapter 1 Brave Axe status (?)
+//
+//          0x1 = collected
+//          0x7 = not collected
+function braveAxeStatus() => byte(0x003f25)
+achievement(title = "The Honest Woodcutter", points = 10,
+    description = "Have Lex retrieve the Brave Axe on the eastern Verdanite peninsula.",
+    trigger = chapter() == 1 && Delta(braveAxeStatus()) == 0x7 && braveAxeStatus() == 0x1
+)
+
 achievement(title = "A Father to His Men", points = 25,
     description = "Complete the game with all possible recruits and without any of them dying.",
     trigger = always_false()
 )
+
+// RICH PRESENCE
 
 function GetChapterNamesForRichPresence()
 {
@@ -944,6 +1014,8 @@ function GetChapterPretitlesForRichPresence()
 }
 
 function ShouldShowTurnNumber() => state1() != 0xf && turns() < 65535 && turns() > 0
+
+rich_presence_conditional_display(IsOutsideGameplay(), "Title Screen/Main Menu")
 
 rich_presence_conditional_display(!ShouldShowTurnNumber(), "{0}{1}",
     rich_presence_lookup("ChapterPretitles", chapter(), GetChapterPretitlesForRichPresence()),
