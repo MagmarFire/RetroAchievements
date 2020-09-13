@@ -31,6 +31,16 @@ function WasValueSetInGame(mem, oldValue, newValue)
         && never(IsLoadingSaveFile())
 }
 
+function WasValueSetInGameFromAny(mem, newValue)
+{
+    return once(Delta(mem) != mem && mem == newValue) && never(IsLoadingSaveFile())
+}
+
+function WasValueChangedInGame(mem)
+{
+    return once(Delta(mem) != mem) && never(IsLoadingSaveFile())
+}
+
 function WasValueSet(mem, oldValue, newValue)
 {
     return once(Delta(mem) == oldValue && mem == newValue)
@@ -54,7 +64,7 @@ chapters = {
     0x0: { "pretitle": "Prologue", "name": "Birth of a Crusader", "rescuableVillageSlotIds": [ 3, 4, 5, 6, 7 ], "keepIds": [ 0, 1, 2 ] },
     0x1: { "pretitle": "Chapter 1", "name": "The Spirit Forest's Maiden", "rescuableVillageSlotIds": [ 5, 6, 7 ], "keepIds": [ 0, 1, 2, 3, 4 ] },
     0x2: { "pretitle": "Chapter 2", "name": "Crisis in Agustria", "rescuableVillageSlotIds": [ 6, 8, 9, 10, 11, 12, 13, 14, 15 ], "keepIds": [ 0, 1, 2, 3, 4, 5 ] },
-    0x3: { "pretitle": "Chapter 3", "name": "Eldigan the Lionheart", "rescuableVillageSlotIds": [ ], "keepIds": [] },
+    0x3: { "pretitle": "Chapter 3", "name": "Eldigan the Lionheart", "rescuableVillageSlotIds": [ 4, 5, 6, 7, 8, 9, 10, 11 ], "keepIds": [ 0, 1, 2, 3 ] },
     0x4: { "pretitle": "Chapter 4", "name": "Dance in the Skies", "rescuableVillageSlotIds": [ ], "keepIds": [] },
     0x5: { "pretitle": "Chapter 5", "name": "Threshold of Fate", "rescuableVillageSlotIds": [ ], "keepIds": [] },
     0x6: { "pretitle": "Chapter 6", "name": "Heirs to the Light", "rescuableVillageSlotIds": [ ], "keepIds": [] },
@@ -140,13 +150,20 @@ function GetGen1UnitObjectByAddr(addr)
         "defense": byte(addr + 20),
         "resistance": byte(addr + 21),
         "luck": byte(addr + 22),
-        "classId": byte(addr + 23),
+        "class": byte(addr + 23),
         "level": byte(addr + 24),
         "authority": byte(addr + 25),
         "gold": word(addr + 27),
         "exp": byte(addr + 28),
         "talkTo": byte(addr + 29)
     }
+}
+
+function UnitJustReceivedItemById(inventoryCountBaseAddr, itemId)
+{
+    count = byte(inventoryCountBaseAddr)
+    itemAddr = inventoryCountBaseAddr + count + 3
+    return Delta(count) != count && WasValueSetInGameFromAny(byte(itemAddr), itemId)
 }
 
 function GetGen1UnitObjectByIndex(index)
@@ -306,6 +323,8 @@ function GetGen1UnitObjectByIndex(index)
 // $003401: Enemy XX - Current Hp
 // $003416: Enemy XX - Current Hp
 // $00342B: Enemy XX - Current Hp
+// $0036ac: Bridget inventory count
+function bridgetInventoryCountAddr() => 0x0036ac
 // $0036BE: Seliph's Weapon Slot equipped
 // $0036BF: Seliph's Inventory Quantity
 // $0036C0: Seliph's 1st item ID
@@ -367,17 +386,25 @@ function GetGen1UnitObjectByIndex(index)
 // $003A74: ?'s Weapon Slot equipped
 // $003A87: ?'s Weapon Slot equipped
 // $003A9A: ?'s Weapon Slot equipped
-// $003AAD: ?'s Weapon Slot equipped
+// $003AAD: Raquesis's Weapon Slot equipped
+function raquesisInventoryCountAddr() => 0x003aae
+function raquesisInventoryCount() => byte(raquesisInventoryCountAddr())
+
+function raquesisInventorySlot1() => byte(0x003ab2)
 // $003AC0: ?'s Weapon Slot equipped
 // $003AD3: ?'s Weapon Slot equipped
-// $003AE6: ?'s Weapon Slot equipped
+// $003AE6: Dew's Weapon Slot equipped
+function dewInventoryCountAddr() => 0x003ae7
 // $003AF9: ?'s Weapon Slot equipped
 // $003B0C: ?'s Weapon Slot equipped
 // $003B1F: ?'s Weapon Slot equipped
 // $003B32: ?'s Weapon Slot equipped
 // $003B45: ?'s Weapon Slot equipped
-// $003B58: ?'s Weapon Slot equipped
-// $003B6B: ?'s Weapon Slot equipped
+// $003B58: Quan's Weapon Slot equipped
+function quanInventoryCountAddr() => 0x003b59
+// $003B6B: Lex's Weapon Slot equipped
+function lexInventoryCountAddr() => 0x003b6c
+
 // $003B7E: ?'s Weapon Slot equipped
 // $003B91: ?'s Weapon Slot equipped
 // $003BA4: ?'s Weapon Slot equipped
@@ -769,8 +796,10 @@ function GetGen1UnitObjectByName(name)
 // Do Gen 1 unit-related things here.
 gen1UnitLeveledUpTo10 = always_false()
 gen1UnitMaxedOutArena = always_false()
+gen1UnitChangedClass = always_false()
 gen2UnitLeveledUpTo10 = always_false()
 gen2UnitMaxedOutArena = always_false()
+gen2UnitChangedClass = always_false()
 for i in range(0, 23)
 {
     unit = GetGen1UnitObjectByIndex(i)
@@ -778,11 +807,17 @@ for i in range(0, 23)
     
     gen1UnitLeveledUpTo10 = gen1UnitLeveledUpTo10 || WasValueSetInGame(unit["level"], 9, 10)
     gen1UnitMaxedOutArena = gen1UnitMaxedOutArena || WasValueSetInGame(unit["arenaLevel"], 6, 7)
+    gen1UnitChangedClass = gen1UnitChangedClass || once(Delta(unit["class"]) != unit["class"] && Delta(unit["class"]) != 0x0) && never(IsLoadingSaveFile())
 }
 
 achievement(title = "It Gets Harder", points = 3,
     description = "Raise a unit to Level 10.",
     trigger = gen1UnitLeveledUpTo10 || gen2UnitLeveledUpTo10
+)
+
+achievement(title = "The Culmination of Years of Training!", points = 5,
+    description = "Change a unit's class.",
+    trigger = gen1UnitChangedClass || gen2UnitChangedClass
 )
 
 achievement(title = "Gladiator", description = "Max out a unit's arena level.",
@@ -869,16 +904,27 @@ GenerateSaveProtectedAchievementFromConditions({
     "threshold": length(chapter2Villages)
 }, chapter2Villages)
 
+chapter3Villages = GetRescuableVillagesByChapterIds([ 3 ])
+GenerateSaveProtectedAchievementFromConditions({
+    "name": "Pirates of Orgahil",
+    "description": "Rescue all villages in Chapter 3.",
+    "points": 10,
+    "threshold": length(chapter3Villages)
+}, chapter3Villages)
+
 // CHAPTER-RELATED CHEEVOS
 blitzkriegCheevos = {
     0: { "turnLimit": 24, "points": 5 }, // my record: 21 turns
     1: { "turnLimit": 40, "points": 10 }, // my record: 40 turns
+    2: { "turnLimit": 51, "points": 25 }, // my record: 51 turns
+    3: { "turnLimit": 40, "points": 10 }, // my record: 40 turns
 }
 
 chapterCheevos = {
     0: { "name": "And So the Crusade Begins", "description": "Complete the prologue.", "points": 3 },
     1: { "name": "The Red Twine Unravels", "description": "", "points": 3 },
-    2: { "name": "[Crisis in Agustria]", "description": "", "points": 3 }
+    2: { "name": "The Agustrian Occupation", "description": "", "points": 3 },
+    3: { "name": "Another Such Victory and We Are Undone", "description": "", "points": 3 },
 }
 
 for i in blitzkriegCheevos
@@ -954,7 +1000,7 @@ achievement(title = "Sellsword for Hire", points = 10,
 )
 
 erin = GetGen1UnitObjectByName("Erin")
-achievement(title = "The Oh-So-Serious Retainer", points = 5,
+achievement(title = "The Oh-So-Serious Knight", points = 5,
     description = "Recruit Erin.",
     trigger = chapter() == 2 && WasValueSetInGame(erin["affiliation"], 5, 0)
 )
@@ -963,18 +1009,45 @@ achievement(title = "The Oh-So-Serious Retainer", points = 5,
 
 function deirdreSilenceStaffDurability() => byte(0x004032)
 achievement(title = "A Brief Silence", points = 5,
-    description = "Capture Verdane without using Deirdre's Silence staff more than once.",
+    description = "Capture Verdane in Chapter 1 without using Deirdre's Silence staff more than once.",
     trigger = chapter() == 1 && deirdreSilenceStaffDurability() >= 2 && PlayerHasCapturedKeepBySlot(4)
 )
 
-//0x003f25: Chapter 1 Brave Axe status (?)
-//
-//          0x1 = collected
-//          0x7 = not collected
-function braveAxeStatus() => byte(0x003f25)
+braveAxeId = 0x45
 achievement(title = "The Honest Woodcutter", points = 10,
-    description = "Have Lex retrieve the Brave Axe on the eastern Verdanite peninsula.",
-    trigger = chapter() == 1 && Delta(braveAxeStatus()) == 0x7 && braveAxeStatus() == 0x1
+    description = "Have Lex retrieve the Brave Axe on the eastern Verdanite peninsula in Chapter 1.",
+    trigger = chapter() == 1 && UnitJustReceivedItemById(lexInventoryCountAddr(), braveAxeId)
+)
+
+windSwordId = 0x24
+achievement(title = "Consolation Loot", points = 10,
+    description = "Have Dew retrieve the Wind Sword from the Tower of Bragi in Chapter 3.",
+    trigger = chapter() == 3 && UnitJustReceivedItemById(dewInventoryCountAddr(), windSwordId)
+)
+
+
+knightRingId = 0x88
+achievement(title = "Into the Deepest Valley", points = 10,
+    description = "Ensure all of Raquesis's retainers survive to the end of Chapter 2.",
+    trigger = chapter() == 2 && UnitJustReceivedItemById(raquesisInventoryCountAddr(), knightRingId)
+)
+
+earthSwordId = 0x22
+achievement(title = "Siblings' Last Quarrel", points = 10,
+    description = "Receive the Earth Sword from Eldigan in Chapter 3.",
+    trigger = chapter() == 3 && UnitJustReceivedItemById(raquesisInventoryCountAddr(), earthSwordId)
+)
+
+gaeBolgId = 0x3e
+achievement(title = "The Spear of Cuhullin", points = 5,
+    description = "Receive Gae Bolg.",
+    trigger = chapter() == 3 && UnitJustReceivedItemById(quanInventoryCountAddr(), gaeBolgId)
+)
+
+yewfelleId = 0x4f
+achievement(title = "Strings of Ullr", points = 5,
+    description = "Receive Yewfelle.",
+    trigger = chapter() == 3 && UnitJustReceivedItemById(bridgetInventoryCountAddr(), yewfelleId)
 )
 
 achievement(title = "A Father to His Men", points = 25,
