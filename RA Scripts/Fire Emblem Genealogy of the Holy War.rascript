@@ -65,7 +65,7 @@ chapters = {
     0x1: { "pretitle": "Chapter 1", "name": "The Spirit Forest's Maiden", "rescuableVillageSlotIds": [ 5, 6, 7 ], "keepIds": [ 0, 1, 2, 3, 4 ] },
     0x2: { "pretitle": "Chapter 2", "name": "Crisis in Agustria", "rescuableVillageSlotIds": [ 6, 8, 9, 10, 11, 12, 13, 14, 15 ], "keepIds": [ 0, 1, 2, 3, 4, 5 ] },
     0x3: { "pretitle": "Chapter 3", "name": "Eldigan the Lionheart", "rescuableVillageSlotIds": [ 4, 5, 6, 7, 8, 9, 10, 11 ], "keepIds": [ 0, 1, 2, 3 ] },
-    0x4: { "pretitle": "Chapter 4", "name": "Dance in the Skies", "rescuableVillageSlotIds": [ ], "keepIds": [] },
+    0x4: { "pretitle": "Chapter 4", "name": "Dance in the Skies", "rescuableVillageSlotIds": [ 4, 5, 6, 7, 8, 9, 10, 11 ], "keepIds": [ 0, 1, 2, 3 ] },
     0x5: { "pretitle": "Chapter 5", "name": "Threshold of Fate", "rescuableVillageSlotIds": [ ], "keepIds": [] },
     0x6: { "pretitle": "Chapter 6", "name": "Heirs to the Light", "rescuableVillageSlotIds": [ ], "keepIds": [] },
     0x7: { "pretitle": "Chapter 7", "name": "Beyond the Desert", "rescuableVillageSlotIds": [ ], "keepIds": [] },
@@ -807,7 +807,8 @@ for i in range(0, 23)
     
     gen1UnitLeveledUpTo10 = gen1UnitLeveledUpTo10 || WasValueSetInGame(unit["level"], 9, 10)
     gen1UnitMaxedOutArena = gen1UnitMaxedOutArena || WasValueSetInGame(unit["arenaLevel"], 6, 7)
-    gen1UnitChangedClass = gen1UnitChangedClass || once(Delta(unit["class"]) != unit["class"] && Delta(unit["class"]) != 0x0) && never(IsLoadingSaveFile())
+    gen1UnitChangedClass = gen1UnitChangedClass || once(Delta(unit["class"]) != unit["class"] && Delta(unit["class"]) != 0x0)
+    && unit["class"] != 0x0 && never(IsLoadingSaveFile())
 }
 
 achievement(title = "It Gets Harder", points = 3,
@@ -880,37 +881,29 @@ achievement(title = "Conqueror", points = 1,
     trigger = GetSeizableKeepsByChapterIds(GetChapterIds())
 )
 
-prologueVillages = GetRescuableVillagesByChapterIds([ 0 ])
-GenerateSaveProtectedAchievementFromConditions({
-    "name": "Defender of Chalphy",
-    "description": "Rescue all villages in the Prologue.",
-    "points": 5,
-    "threshold": length(prologueVillages)
-}, prologueVillages)
+// VILLAGE ACHIEVEMENTS
 
-chapter1Villages = GetRescuableVillagesByChapterIds([ 1 ])
-GenerateSaveProtectedAchievementFromConditions({
-    "name": "Verdanite Annexation",
-    "description": "Rescue all villages in Chapter 1.",
-    "points": 5,
-    "threshold": length(chapter1Villages)
-}, chapter1Villages)
+villageCheevos = {
+    0: { "name": "Defender of Chalphy", "description": "Rescue all villages in the Prologue.", "points": 5 },
+    1: { "name": "Verdanite Annexation", "description": "Rescue all villages in Chapter 1.", "points": 5 },
+    2: { "name": "Nordion Calls for Aid", "description": "Rescue all villages in Chapter 2.", "points": 10 },
+    3: { "name": "Pirates of Orgahil", "description": "Rescue all villages in Chapter 3.", "points": 10 },
+    4: { "name": "Frozen Demolition", "description": "Rescue all villages in Chapter 4.", "points": 10 },
+}
 
-chapter2Villages = GetRescuableVillagesByChapterIds([ 2 ])
-GenerateSaveProtectedAchievementFromConditions({
-    "name": "Nordion Calls for Aid",
-    "description": "Rescue all villages in Chapter 2.",
-    "points": 10,
-    "threshold": length(chapter2Villages)
-}, chapter2Villages)
+for i in villageCheevos
+{
+    cheevo = villageCheevos[i]
+    villages = GetRescuableVillagesByChapterIds([ i ])
+    GenerateSaveProtectedAchievementFromConditions({
+        "name": cheevo["name"],
+        "description": cheevo["description"],
+        "points": cheevo["points"],
+        "threshold": length(villages)
+    }, villages)
+}
 
-chapter3Villages = GetRescuableVillagesByChapterIds([ 3 ])
-GenerateSaveProtectedAchievementFromConditions({
-    "name": "Pirates of Orgahil",
-    "description": "Rescue all villages in Chapter 3.",
-    "points": 10,
-    "threshold": length(chapter3Villages)
-}, chapter3Villages)
+// End village achievements
 
 // CHAPTER-RELATED CHEEVOS
 blitzkriegCheevos = {
@@ -1100,3 +1093,4 @@ rich_presence_display("{0}{1} | Turn {2}",
     rich_presence_lookup("Chapter", chapter(), GetChapterNamesForRichPresence()),
     rich_presence_value("Turn", turns())
 )
+
