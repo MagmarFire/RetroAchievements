@@ -382,8 +382,10 @@ function bridgetInventoryCountAddr() => 0x0036ac
 // $003A28: ?'s Weapon Slot equipped
 // $003A3B: ?'s Weapon Slot equipped
 // $003A4E: ?'s Weapon Slot equipped
-// $003A61: ?'s Weapon Slot equipped
-// $003A74: ?'s Weapon Slot equipped
+// $003A61: Sylvia's Weapon Slot equipped
+function sylviaInventoryCountAddr() => 0x003a62
+// $003A74: Lewyn's Weapon Slot equipped
+function lewynInventoryCountAddr() => 0x003a75
 // $003A87: ?'s Weapon Slot equipped
 // $003A9A: ?'s Weapon Slot equipped
 // $003AAD: Raquesis's Weapon Slot equipped
@@ -911,6 +913,7 @@ blitzkriegCheevos = {
     1: { "turnLimit": 40, "points": 10 }, // my record: 40 turns
     2: { "turnLimit": 51, "points": 25 }, // my record: 51 turns
     3: { "turnLimit": 40, "points": 10 }, // my record: 40 turns
+    4: { "turnLimit": 41, "points": 10 }, // my record: 40 turns
 }
 
 chapterCheevos = {
@@ -918,6 +921,8 @@ chapterCheevos = {
     1: { "name": "The Red Twine Unravels", "description": "", "points": 3 },
     2: { "name": "The Agustrian Occupation", "description": "", "points": 3 },
     3: { "name": "Another Such Victory and We Are Undone", "description": "", "points": 3 },
+    4: { "name": "The Reunification of Silesse", "description": "", "points": 3 },
+    5: { "name": "The Storm After the Calm", "description": "", "points": 3 },
 }
 
 for i in blitzkriegCheevos
@@ -1041,6 +1046,18 @@ yewfelleId = 0x4f
 achievement(title = "Strings of Ullr", points = 5,
     description = "Receive Yewfelle.",
     trigger = chapter() == 3 && UnitJustReceivedItemById(bridgetInventoryCountAddr(), yewfelleId)
+)
+
+shieldSwordId = 0x20
+achievement(title = "Tattered Slippers", points = 5,
+    description = "Have Sylvia retrieve the Shield Sword in Chapter 4.",
+    trigger = chapter() == 4 && UnitJustReceivedItemById(sylviaInventoryCountAddr(), shieldSwordId)
+)
+
+forsetiId = 0x5c
+achievement(title = "Gales of Justice", points = 5,
+    description = "Receive Forseti.",
+    trigger = chapter() == 4 && UnitJustReceivedItemById(lewynInventoryCountAddr(), forsetiId)
 )
 
 achievement(title = "A Father to His Men", points = 25,
