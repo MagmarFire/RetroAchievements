@@ -66,7 +66,7 @@ chapters = {
     0x2: { "pretitle": "Chapter 2", "name": "Crisis in Agustria", "rescuableVillageSlotIds": [ 6, 8, 9, 10, 11, 12, 13, 14, 15 ], "keepIds": [ 0, 1, 2, 3, 4, 5 ] },
     0x3: { "pretitle": "Chapter 3", "name": "Eldigan the Lionheart", "rescuableVillageSlotIds": [ 4, 5, 6, 7, 8, 9, 10, 11 ], "keepIds": [ 0, 1, 2, 3 ] },
     0x4: { "pretitle": "Chapter 4", "name": "Dance in the Skies", "rescuableVillageSlotIds": [ 4, 5, 6, 7, 8, 9, 10, 11 ], "keepIds": [ 0, 1, 2, 3 ] },
-    0x5: { "pretitle": "Chapter 5", "name": "Threshold of Fate", "rescuableVillageSlotIds": [ ], "keepIds": [] },
+    0x5: { "pretitle": "Chapter 5", "name": "Threshold of Fate", "rescuableVillageSlotIds": [ 5, 6, 7, 8, 9, 10, 11 ], "keepIds": [ 0, 1, 2, 3, 4 ] },
     0x6: { "pretitle": "Chapter 6", "name": "Heirs to the Light", "rescuableVillageSlotIds": [ ], "keepIds": [] },
     0x7: { "pretitle": "Chapter 7", "name": "Beyond the Desert", "rescuableVillageSlotIds": [ ], "keepIds": [] },
     0x8: { "pretitle": "Chapter 8", "name": "The Dracoknights of Thracia", "rescuableVillageSlotIds": [ ], "keepIds": [] },
@@ -89,7 +89,10 @@ function GetChapterIds()
 // $000D8F: [2 Byte] Days
 function turns() => word(0x000D8F)
 
-// $000D91: Turf's Phase
+// $000D91: Current Phase
+function phase() => byte(0x000d91)
+
+function IsAlliedPhase() => phase() == 0x1
 
 // $000D93: [2 Byte] Total Days - Prologue
 function turnsElapsedInPrologueBaseAddr() => 0x000D93
@@ -414,6 +417,7 @@ function lexInventoryCountAddr() => 0x003b6c
 // $003BB8: Noish number of items in inventory
 // $003BCA: Sigurd's Weapon Slot equipped
 // $003BCB: Sigurd's  Inventory Quantity
+function sigurdInventoryCountAddr() => 0x003bcb
 // $003BCC: Sigurd's 1st item ID
 // $003BCD: Sigurd's 2nd item ID
 // $003BCE: Sigurd's 3rd item ID
@@ -751,30 +755,30 @@ GenerateSaveProtectedAchievementFromConditions({
 })
 
 gen1UnitMetadata = {
-"Sigurd": { "index": 0, "name": "Sigurd", }, 
-"Noish": { "index": 1, "name": "Noish", }, 
-"Alec": { "index": 2, "name": "Alec", }, 
-"Arden": { "index": 3, "name": "Arden", }, 
-"Azel": { "index": 4, "name": "Azel", }, 
-"Lex": { "index": 5, "name": "Lex", }, 
-"Quan": { "index": 6, "name": "Quan", }, 
-"Finn": { "index": 7, "name": "Finn", }, 
-"Ethlyn": { "index": 8, "name": "Ethlyn", }, 
-"Midir": { "index": 9, "name": "Midir", }, 
-"Ayra": { "index": 10, "name": "Ayra", }, 
-"Aideen": { "index": 11, "name": "Aideen", }, 
-"Dew": { "index": 12, "name": "Dew", }, 
-"Jamke": { "index": 13, "name": "Jamke", }, 
-"Deirdre": { "index": 14, "name": "Deirdre", }, 
-"Raquesis": { "index": 15, "name": "Raquesis", }, 
-"Holyn": { "index": 16, "name": "Holyn", }, 
-"Beowulf": { "index": 17, "name": "Beowulf", }, 
-"Levin": { "index": 18, "name": "Levin", }, 
-"Sylvia": { "index": 19, "name": "Sylvia", }, 
-"Erin": { "index": 20, "name": "Erin", }, 
-"Brigid": { "index": 21, "name": "Brigid", }, 
-"Taillte": { "index": 22, "name": "Taillte", }, 
-"Claude": { "index": 23, "name": "Claude", }, 
+"Sigurd": { "index": 0, "name": "Sigurd", "mandatedRomance": 1, }, 
+"Noish": { "index": 1, "name": "Noish", "mandatedRomance": 0, }, 
+"Alec": { "index": 2, "name": "Alec", "mandatedRomance": 0, }, 
+"Arden": { "index": 3, "name": "Arden", "mandatedRomance": 0, }, 
+"Azel": { "index": 4, "name": "Azel", "mandatedRomance": 0, }, 
+"Lex": { "index": 5, "name": "Lex", "mandatedRomance": 0, }, 
+"Quan": { "index": 6, "name": "Quan", "mandatedRomance": 1, }, 
+"Finn": { "index": 7, "name": "Finn", "mandatedRomance": 0, }, 
+"Ethlyn": { "index": 8, "name": "Ethlyn", "mandatedRomance": 1, }, 
+"Midir": { "index": 9, "name": "Midir", "mandatedRomance": 0, }, 
+"Ayra": { "index": 10, "name": "Ayra", "mandatedRomance": 0, }, 
+"Aideen": { "index": 11, "name": "Aideen", "mandatedRomance": 0, }, 
+"Dew": { "index": 12, "name": "Dew", "mandatedRomance": 0, }, 
+"Jamke": { "index": 13, "name": "Jamke", "mandatedRomance": 0, }, 
+"Deirdre": { "index": 14, "name": "Deirdre", "mandatedRomance": 1, }, 
+"Raquesis": { "index": 15, "name": "Raquesis", "mandatedRomance": 0, }, 
+"Holyn": { "index": 16, "name": "Holyn", "mandatedRomance": 0, }, 
+"Beowulf": { "index": 17, "name": "Beowulf", "mandatedRomance": 0, }, 
+"Levin": { "index": 18, "name": "Levin", "mandatedRomance": 0, }, 
+"Sylvia": { "index": 19, "name": "Sylvia", "mandatedRomance": 0, }, 
+"Erin": { "index": 20, "name": "Erin", "mandatedRomance": 0, }, 
+"Brigid": { "index": 21, "name": "Brigid", "mandatedRomance": 0, }, 
+"Taillte": { "index": 22, "name": "Taillte", "mandatedRomance": 0, }, 
+"Claude": { "index": 23, "name": "Claude", "mandatedRomance": 0, }, 
 }
 
 function GetGen1UnitMetadataByIndex(index)
@@ -797,20 +801,31 @@ function GetGen1UnitObjectByName(name)
 
 // Do Gen 1 unit-related things here.
 gen1UnitLeveledUpTo10 = always_false()
+gen1UnitLeveledUpTo30 = always_false()
 gen1UnitMaxedOutArena = always_false()
 gen1UnitChangedClass = always_false()
+gen1OptionalUnitFellInLove = always_false()
 gen2UnitLeveledUpTo10 = always_false()
+gen2UnitLeveledUpTo30 = always_false()
 gen2UnitMaxedOutArena = always_false()
 gen2UnitChangedClass = always_false()
+gen2UnitFellInLove = always_false()
 for i in range(0, 23)
 {
     unit = GetGen1UnitObjectByIndex(i)
     unitMeta = GetGen1UnitMetadataByIndex(i)
     
     gen1UnitLeveledUpTo10 = gen1UnitLeveledUpTo10 || WasValueSetInGame(unit["level"], 9, 10)
+    gen1UnitLeveledUpTo30 = gen1UnitLeveledUpTo30 || WasValueSetInGame(unit["level"], 29, 30)
     gen1UnitMaxedOutArena = gen1UnitMaxedOutArena || WasValueSetInGame(unit["arenaLevel"], 6, 7)
-    gen1UnitChangedClass = gen1UnitChangedClass || once(Delta(unit["class"]) != unit["class"] && Delta(unit["class"]) != 0x0)
-    && unit["class"] != 0x0 && never(IsLoadingSaveFile())
+    gen1UnitChangedClass = gen1UnitChangedClass || once(Delta(unit["class"]) != unit["class"] && Delta(unit["class"]) != 0x0) && never(chapter() > 5)
+        && unit["class"] != 0x0 && never(IsLoadingSaveFile())
+    
+    if (unitMeta["mandatedRomance"] == 0)
+    {
+        gen1OptionalUnitFellInLove = gen1OptionalUnitFellInLove || once(Delta(unit["lover"]) != unit["lover"] && Delta(unit["lover"]) == 0x0)
+            && unit["lover"] != 0x0 && never(IsLoadingSaveFile())
+    }
 }
 
 achievement(title = "It Gets Harder", points = 3,
@@ -818,9 +833,19 @@ achievement(title = "It Gets Harder", points = 3,
     trigger = gen1UnitLeveledUpTo10 || gen2UnitLeveledUpTo10
 )
 
+achievement(title = "The Key to Mastery", points = 5,
+    description = "Raise a unit to Level 30.",
+    trigger = gen1UnitLeveledUpTo30 || gen2UnitLeveledUpTo30
+)
+
 achievement(title = "The Culmination of Years of Training!", points = 5,
     description = "Change a unit's class.",
     trigger = gen1UnitChangedClass || gen2UnitChangedClass
+)
+
+achievement(title = "That Special Someone", points = 5,
+    description = "Have two units fall in love with each other, excluding predetermined romances.",
+    trigger = gen1OptionalUnitFellInLove || gen2UnitFellInLove
 )
 
 achievement(title = "Gladiator", description = "Max out a unit's arena level.",
@@ -891,6 +916,7 @@ villageCheevos = {
     2: { "name": "Nordion Calls for Aid", "description": "Rescue all villages in Chapter 2.", "points": 10 },
     3: { "name": "Pirates of Orgahil", "description": "Rescue all villages in Chapter 3.", "points": 10 },
     4: { "name": "Frozen Demolition", "description": "Rescue all villages in Chapter 4.", "points": 10 },
+    5: { "name": "Traveler of Belhalla", "description": "Rescue all villages in Chapter 5.", "points": 5 },
 }
 
 for i in villageCheevos
@@ -914,6 +940,7 @@ blitzkriegCheevos = {
     2: { "turnLimit": 51, "points": 25 }, // my record: 51 turns
     3: { "turnLimit": 40, "points": 10 }, // my record: 40 turns
     4: { "turnLimit": 41, "points": 10 }, // my record: 40 turns
+    5: { "turnLimit": 45, "points": 25 }, // my record: 45 turns
 }
 
 chapterCheevos = {
@@ -922,7 +949,7 @@ chapterCheevos = {
     2: { "name": "The Agustrian Occupation", "description": "", "points": 3 },
     3: { "name": "Another Such Victory and We Are Undone", "description": "", "points": 3 },
     4: { "name": "The Reunification of Silesse", "description": "", "points": 3 },
-    5: { "name": "The Storm After the Calm", "description": "", "points": 3 },
+    5: { "name": "Night Is Darkest", "description": "", "points": 3 }, //The Storm After the Calm/
 }
 
 for i in blitzkriegCheevos
@@ -1036,6 +1063,11 @@ achievement(title = "Siblings' Last Quarrel", points = 10,
     trigger = chapter() == 3 && UnitJustReceivedItemById(raquesisInventoryCountAddr(), earthSwordId)
 )
 
+achievement(title = "Arden's Resolve", points = 3,
+    description = "Have Arden find the stat boost in Chapter 5.",
+    trigger = chapter() == 5 && WasBitflagSetInGame(bit2(0x0052c8))
+)
+
 gaeBolgId = 0x3e
 achievement(title = "The Spear of Cuhullin", points = 5,
     description = "Receive Gae Bolg.",
@@ -1058,6 +1090,12 @@ forsetiId = 0x5c
 achievement(title = "Gales of Justice", points = 5,
     description = "Receive Forseti.",
     trigger = chapter() == 4 && UnitJustReceivedItemById(lewynInventoryCountAddr(), forsetiId)
+)
+
+brokenTyrfingId = 0x27
+achievement(title = "The Exalted Sword of Curses", points = 5,
+    description = "Receive Tyrfing from Lord Byron within two turns.",
+    trigger = chapter() == 5 && UnitJustReceivedItemById(sigurdInventoryCountAddr(), brokenTyrfingId) && IsAlliedPhase() && turns() <= 2
 )
 
 achievement(title = "A Father to His Men", points = 25,
