@@ -67,7 +67,7 @@ chapters = {
     0x3: { "pretitle": "Chapter 3", "name": "Eldigan the Lionheart", "rescuableVillageSlotIds": [ 4, 5, 6, 7, 8, 9, 10, 11 ], "keepIds": [ 0, 1, 2, 3 ] },
     0x4: { "pretitle": "Chapter 4", "name": "Dance in the Skies", "rescuableVillageSlotIds": [ 4, 5, 6, 7, 8, 9, 10, 11 ], "keepIds": [ 0, 1, 2, 3 ] },
     0x5: { "pretitle": "Chapter 5", "name": "Threshold of Fate", "rescuableVillageSlotIds": [ 5, 6, 7, 8, 9, 10, 11 ], "keepIds": [ 0, 1, 2, 3, 4 ] },
-    0x6: { "pretitle": "Chapter 6", "name": "Heirs to the Light", "rescuableVillageSlotIds": [ ], "keepIds": [] },
+    0x6: { "pretitle": "Chapter 6", "name": "Heirs to the Light", "rescuableVillageSlotIds": [ 5, 6, 7, 8, 9, 10 ], "keepIds": [ 0, 1, 2, 3, 4 ] },
     0x7: { "pretitle": "Chapter 7", "name": "Beyond the Desert", "rescuableVillageSlotIds": [ ], "keepIds": [] },
     0x8: { "pretitle": "Chapter 8", "name": "The Dracoknights of Thracia", "rescuableVillageSlotIds": [ ], "keepIds": [] },
     0x9: { "pretitle": "Chapter 9", "name": "For Whose Sake", "rescuableVillageSlotIds": [ ], "keepIds": [] },
@@ -88,6 +88,8 @@ function GetChapterIds()
 
 // $000D8F: [2 Byte] Days
 function turns() => word(0x000D8F)
+
+function TurnNumberIsPlausible() => turns() < 65535 && turns() > 0
 
 // $000D91: Current Phase
 function phase() => byte(0x000d91)
@@ -132,7 +134,8 @@ function turnsElapsedInChapter10() => word(0x000DA7)
 function turnsElapsedInEndgame() => word(0x000DA9)
 
 function gen1UnitBaseAddr() => 0x002d31 // Sigurd's arena LV address in actuality.
-function GetGen1UnitObjectByAddr(addr)
+function gen2UnitBaseAddr() => 0x0030fd // Seliph's arena LV address in actuality.
+function GetUnitObjectByAddr(addr)
 {
     // For the purposes of keeping things uniform, we're assuming that arena LV is the head address for each unit.
     return {
@@ -172,7 +175,13 @@ function UnitJustReceivedItemById(inventoryCountBaseAddr, itemId)
 function GetGen1UnitObjectByIndex(index)
 {
     // Gen 1 units are 0x24 bytes wide, and so to get the next one in a sequence, simply subtract 0x24.
-    return GetGen1UnitObjectByAddr(gen1UnitBaseAddr() - index * 0x24)
+    return GetUnitObjectByAddr(gen1UnitBaseAddr() - index * 0x24)
+}
+
+function GetGen2UnitObjectByIndex(index)
+{
+    // Gen 2 units are 0x3a bytes wide, and so to get the next one in a sequence, simply subtract 0x3a.
+    return GetUnitObjectByAddr(gen2UnitBaseAddr() - index * 0x3a)
 }
 
 // $001075: Cursor - X coord relative position (copy)
@@ -357,7 +366,8 @@ function bridgetInventoryCountAddr() => 0x0036ac
 // $003814: ?'s Weapon Slot equipped
 // $003827: ?'s Weapon Slot equipped
 // $00383A: ?'s Weapon Slot equipped
-// $00384D: ?'s Weapon Slot equipped
+// $00384D: Julia's Weapon Slot equipped
+function juliaInventoryCountAddr() => 0x00384e
 // $003860: Nanna's Weapon Slot equipped
 // $003873: ?'s Weapon Slot equipped
 // $003886: ?'s Weapon Slot equipped
@@ -781,11 +791,43 @@ gen1UnitMetadata = {
 "Claude": { "index": 23, "name": "Claude", "mandatedRomance": 0, }, 
 }
 
+gen2UnitMetadata = {
+    "Seliph": { "index": 0, "name": "Seliph", "mandatedRomance": 0, }, 
+"Leif": { "index": 1, "name": "Leif", "mandatedRomance": 0, }, 
+"Altena": { "index": 2, "name": "Altena", "mandatedRomance": 0, }, 
+"Faval": { "index": 3, "name": "Faval", "mandatedRomance": 0, }, 
+"Patty": { "index": 4, "name": "Patty", "mandatedRomance": 0, }, 
+"Lester": { "index": 5, "name": "Lester", "mandatedRomance": 0, }, 
+"Lana": { "index": 6, "name": "Lana", "mandatedRomance": 0, }, 
+"Cairpre": { "index": 7, "name": "Cairpre", "mandatedRomance": 0, }, 
+"Lene": { "index": 8, "name": "Lene", "mandatedRomance": 0, }, 
+"Arthur": { "index": 9, "name": "Arthur", "mandatedRomance": 0, }, 
+"Tinni": { "index": 10, "name": "Tinni", "mandatedRomance": 0, }, 
+"Ced": { "index": 11, "name": "Ced", "mandatedRomance": 0, }, 
+"Fee": { "index": 12, "name": "Fee", "mandatedRomance": 0, }, 
+"Ulster": { "index": 13, "name": "Ulster", "mandatedRomance": 0, }, 
+"Larcei": { "index": 14, "name": "Larcei", "mandatedRomance": 0, }, 
+"Durmott": { "index": 15, "name": "Durmott", "mandatedRomance": 0, }, 
+"Nanna": { "index": 16, "name": "Nanna", "mandatedRomance": 0, }, 
+}
+
 function GetGen1UnitMetadataByIndex(index)
 {
     for name in gen1UnitMetadata
     {
         meta = gen1UnitMetadata[name]
+        if (meta["index"] == index)
+        {
+            return meta
+        }
+    }
+}
+
+function GetGen2UnitMetadataByIndex(index)
+{
+    for name in gen2UnitMetadata
+    {
+        meta = gen2UnitMetadata[name]
         if (meta["index"] == index)
         {
             return meta
@@ -818,12 +860,30 @@ for i in range(0, 23)
     gen1UnitLeveledUpTo10 = gen1UnitLeveledUpTo10 || WasValueSetInGame(unit["level"], 9, 10)
     gen1UnitLeveledUpTo30 = gen1UnitLeveledUpTo30 || WasValueSetInGame(unit["level"], 29, 30)
     gen1UnitMaxedOutArena = gen1UnitMaxedOutArena || WasValueSetInGame(unit["arenaLevel"], 6, 7)
-    gen1UnitChangedClass = gen1UnitChangedClass || once(Delta(unit["class"]) != unit["class"] && Delta(unit["class"]) != 0x0) && never(chapter() > 5)
+    gen1UnitChangedClass = gen1UnitChangedClass || once(Delta(unit["class"]) != unit["class"] && Delta(unit["class"]) != 0x0) && never(!TurnNumberIsPlausible())
         && unit["class"] != 0x0 && never(IsLoadingSaveFile())
     
     if (unitMeta["mandatedRomance"] == 0)
     {
         gen1OptionalUnitFellInLove = gen1OptionalUnitFellInLove || once(Delta(unit["lover"]) != unit["lover"] && Delta(unit["lover"]) == 0x0)
+            && unit["lover"] != 0x0 && never(IsLoadingSaveFile())
+    }
+}
+
+for i in range(0, 16)
+{
+    unit = GetGen2UnitObjectByIndex(i)
+    unitMeta = GetGen2UnitMetadataByIndex(i)
+    
+    gen2UnitLeveledUpTo10 = gen2UnitLeveledUpTo10 || WasValueSetInGame(unit["level"], 9, 10)
+    gen2UnitLeveledUpTo30 = gen2UnitLeveledUpTo30 || WasValueSetInGame(unit["level"], 29, 30)
+    gen2UnitMaxedOutArena = gen2UnitMaxedOutArena || WasValueSetInGame(unit["arenaLevel"], 6, 7)
+    gen2UnitChangedClass = gen2UnitChangedClass || once(Delta(unit["class"]) != unit["class"] && Delta(unit["class"]) != 0x0) && never(chapter() <= 5)
+        && unit["class"] != 0x0 && never(IsLoadingSaveFile()) && never(!TurnNumberIsPlausible())
+    
+    if (unitMeta["mandatedRomance"] == 0)
+    {
+        gen2UnitFellInLove = gen2UnitFellInLove || once(Delta(unit["lover"]) != unit["lover"] && Delta(unit["lover"]) == 0x0)
             && unit["lover"] != 0x0 && never(IsLoadingSaveFile())
     }
 }
@@ -917,6 +977,7 @@ villageCheevos = {
     3: { "name": "Pirates of Orgahil", "description": "Rescue all villages in Chapter 3.", "points": 10 },
     4: { "name": "Frozen Demolition", "description": "Rescue all villages in Chapter 4.", "points": 10 },
     5: { "name": "Traveler of Belhalla", "description": "Rescue all villages in Chapter 5.", "points": 5 },
+    6: { "name": "The Liberation of Isaach", "description": "Rescue all villages in Chapter 6.", "points": 10 },
 }
 
 for i in villageCheevos
@@ -1030,6 +1091,15 @@ achievement(title = "The Oh-So-Serious Knight", points = 5,
     trigger = chapter() == 2 && WasValueSetInGame(erin["affiliation"], 5, 0)
 )
 
+// Johan's and Johalvier's data showed up in in the area where Noish's and Alec's data was originally located.
+// This *may* change between playthroughs; if it does, the following achievement should be scrapped/demoted.
+johan = GetGen1UnitObjectByName("Noish")
+johalvier = GetGen1UnitObjectByName("Alec")
+achievement(title = "Combatting Roosters", points = 5,
+    description = "Recruit Johan or Johalvier.",
+    trigger = chapter() == 6 && (WasValueSetInGame(johalvier["affiliation"], 2, 0) || WasValueSetInGame(johan["affiliation"], 3, 0))
+)
+
 // End recruitment cheevos
 
 function deirdreSilenceStaffDurability() => byte(0x004032)
@@ -1098,8 +1168,24 @@ achievement(title = "The Exalted Sword of Curses", points = 5,
     trigger = chapter() == 5 && UnitJustReceivedItemById(sigurdInventoryCountAddr(), brokenTyrfingId) && IsAlliedPhase() && turns() <= 2
 )
 
+nosferatuId = 0x5f
+achievement(title = "Lifelight from Your Eyes", points = 5,
+    description = "Receive Nosferatu for Julia after capturing Isaach.",
+    trigger = chapter() == 6 && UnitJustReceivedItemById(juliaInventoryCountAddr(), nosferatuId)
+)
+
 achievement(title = "A Father to His Men", points = 25,
-    description = "Complete the game with all possible recruits and without any of them dying.",
+    description = "Complete the game without any of your units dying in battle.",
+    trigger = always_false() // We can probably use the Survival ranking to check for this.
+)
+
+achievement(title = "Master Tactician", points = 50,
+    description = "Complete the game with an overall game ranking of A.",
+    trigger = always_false()
+)
+
+achievement(title = "Chastity", points = 50,
+    description = "Complete the game without conceiving any plot-optional biological children.",
     trigger = always_false()
 )
 
@@ -1134,7 +1220,7 @@ function GetChapterPretitlesForRichPresence()
     return retValue
 }
 
-function ShouldShowTurnNumber() => state1() != 0xf && turns() < 65535 && turns() > 0
+function ShouldShowTurnNumber() => state1() != 0xf && TurnNumberIsPlausible()
 
 rich_presence_conditional_display(IsOutsideGameplay(), "Title Screen/Main Menu")
 
