@@ -15,9 +15,19 @@ function Min(x, y)
     }
 }
 
+function IsBitflagSetInGame(bit)
+{
+    return IsValueSetInGame(bit, 0, 1)
+}
+
 function WasBitflagSetInGame(bit)
 {
     return WasValueSetInGame(bit, 0, 1)
+}
+
+function IsValueSetInGame(bit)
+{
+    return IsValueSet(bit, 0, 1)
 }
 
 function WasBitflagSet(bit)
@@ -28,6 +38,12 @@ function WasBitflagSet(bit)
 function WasValueSetInGame(mem, oldValue, newValue)
 {
     return WasValueSet(mem, oldValue, newValue)
+        && never(IsLoadingSaveFile())
+}
+
+function IsValueSetInGame(mem, oldValue, newValue)
+{
+    return IsValueSet(mem, oldValue, newValue)
         && never(IsLoadingSaveFile())
 }
 
@@ -44,6 +60,11 @@ function WasValueChangedInGame(mem)
 function WasValueSet(mem, oldValue, newValue)
 {
     return once(Delta(mem) == oldValue && mem == newValue)
+}
+
+function IsValueSet(mem, oldValue, newValue)
+{
+    return Delta(mem) == oldValue && mem == newValue
 }
 
 function DidValueBecomeGreaterThanGivenInGame(mem, value)
@@ -94,6 +115,7 @@ function TurnNumberIsPlausible() => turns() < 65535 && turns() > 0
 // $000D91: Current Phase
 function phase() => byte(0x000d91)
 
+function IsPlayerPhase() => phase() == 0x0
 function IsAlliedPhase() => phase() == 0x1
 
 // $000D93: [2 Byte] Total Days - Prologue
@@ -952,8 +974,14 @@ function GetSeizableKeepsByChapterIds(chapterIds)
 function PlayerHasCapturedKeepBySlot(slotId)
 {
     buildingAttrAddr = GetBuildingAttrAddrBySlot(slotId)
-    return bit0(buildingAttrAddr) == 0 && bit1(buildingAttrAddr) == 0 && bit2(buildingAttrAddr) == 0
+    return KeepIsUnderControlByPlayer(slotId)
                 && Delta(bit6(buildingAttrAddr)) == 0 && WasBitflagSetInGame(bit6(buildingAttrAddr))
+}
+
+function KeepIsUnderControlByPlayer(slotId)
+{
+    buildingAttrAddr = GetBuildingAttrAddrBySlot(slotId)
+    return bit0(buildingAttrAddr) == 0 && bit1(buildingAttrAddr) == 0 && bit2(buildingAttrAddr) == 0
 }
 
 GenerateSaveProtectedAchievementFromConditions({
@@ -1092,7 +1120,7 @@ achievement(title = "The Oh-So-Serious Knight", points = 5,
 )
 
 // Johan's and Johalvier's data showed up in in the area where Noish's and Alec's data was originally located.
-// This *may* change between playthroughs; if it does, the following achievement should be scrapped/demoted.
+// This *may* change between playthroughs; if it does, the following achievement should be scrapped.
 johan = GetGen1UnitObjectByName("Noish")
 johalvier = GetGen1UnitObjectByName("Alec")
 achievement(title = "Combatting Roosters", points = 5,
@@ -1109,17 +1137,24 @@ achievement(title = "A Brief Silence", points = 5,
 )
 
 braveAxeId = 0x45
-achievement(title = "The Honest Woodcutter", points = 10,
+function lexGotBraveAxe() => bit3(0x0052c8)
+achievement(title = "The Honest Woodcutter", points = 3,
     description = "Have Lex retrieve the Brave Axe on the eastern Verdanite peninsula in Chapter 1.",
-    trigger = chapter() == 1 && UnitJustReceivedItemById(lexInventoryCountAddr(), braveAxeId)
+    trigger = chapter() == 1 && WasBitflagSetInGame(lexGotBraveAxe())
+)
+
+function ardenGotPursuitBand() => bit1(0x0052c9)
+achievement(title = "Arden's Ambition", points = 3,
+    description = "Have Arden find the Pursuit Band on the western Agustrian peninsula in Chapter 2.",
+    trigger = chapter() == 2 && WasBitflagSetInGame(ardenGotPursuitBand())
 )
 
 windSwordId = 0x24
+function dewReceivedWindSword() => bit4(0x0052c7)
 achievement(title = "Consolation Loot", points = 10,
     description = "Have Dew retrieve the Wind Sword from the Tower of Bragi in Chapter 3.",
-    trigger = chapter() == 3 && UnitJustReceivedItemById(dewInventoryCountAddr(), windSwordId)
+    trigger = chapter() == 3 && IsBitflagSetInGame(dewReceivedWindSword())
 )
-
 
 knightRingId = 0x88
 achievement(title = "Into the Deepest Valley", points = 10,
@@ -1128,9 +1163,10 @@ achievement(title = "Into the Deepest Valley", points = 10,
 )
 
 earthSwordId = 0x22
+function raquesisRetrievedEarthSword() => bit7(0x0052c4)
 achievement(title = "Siblings' Last Quarrel", points = 10,
     description = "Receive the Earth Sword from Eldigan in Chapter 3.",
-    trigger = chapter() == 3 && UnitJustReceivedItemById(raquesisInventoryCountAddr(), earthSwordId)
+    trigger = chapter() == 3 && WasBitflagSetInGame(raquesisRetrievedEarthSword())
 )
 
 achievement(title = "Arden's Resolve", points = 3,
@@ -1139,39 +1175,50 @@ achievement(title = "Arden's Resolve", points = 3,
 )
 
 gaeBolgId = 0x3e
+ethlyn = GetGen1UnitObjectByName("Ethlyn")
 achievement(title = "The Spear of Cuhullin", points = 5,
     description = "Receive Gae Bolg.",
-    trigger = chapter() == 3 && UnitJustReceivedItemById(quanInventoryCountAddr(), gaeBolgId)
+    trigger = chapter() == 3 && IsPlayerPhase() && WasValueSetInGame(ethlyn["talkTo"], 0x6, 0x0) && TurnNumberIsPlausible()
 )
 
 yewfelleId = 0x4f
+aideen = GetGen1UnitObjectByName("Aideen")
 achievement(title = "Strings of Ullr", points = 5,
-    description = "Receive Yewfelle.",
-    trigger = chapter() == 3 && UnitJustReceivedItemById(bridgetInventoryCountAddr(), yewfelleId)
+    description = "Have Aideen bestow Yewfelle to Bridget following their reunion.",
+    trigger = chapter() == 3 && IsPlayerPhase() && WasValueSetInGame(aideen["talkTo"], 0x18, 0x0) && TurnNumberIsPlausible()
 )
 
-shieldSwordId = 0x20
-achievement(title = "Tattered Slippers", points = 5,
-    description = "Have Sylvia retrieve the Shield Sword in Chapter 4.",
-    trigger = chapter() == 4 && UnitJustReceivedItemById(sylviaInventoryCountAddr(), shieldSwordId)
-)
+// Archived due to item gift addresses being inconsistent and there being no bitflag for me to use here.
+// Perhaps I could get this to work if I figure out what unit is selected...
+if (1 == 0)
+{
+    shieldSwordId = 0x20
+    achievement(title = "Tattered Slippers", points = 5,
+        description = "Have Sylvia retrieve the Shield Sword in Chapter 4.",
+        trigger = chapter() == 4 && UnitJustReceivedItemById(sylviaInventoryCountAddr(), shieldSwordId)
+    )   
+}
 
 forsetiId = 0x5c
+function lewynReceivedForseti() => bit1(0x0052c6)
 achievement(title = "Gales of Justice", points = 5,
     description = "Receive Forseti.",
-    trigger = chapter() == 4 && UnitJustReceivedItemById(lewynInventoryCountAddr(), forsetiId)
+    trigger = chapter() == 4 && IsBitflagSetInGame(lewynReceivedForseti())
 )
 
 brokenTyrfingId = 0x27
+function byronGiftedTyrfingToSigurd() => bit5(0x0052c6)
 achievement(title = "The Exalted Sword of Curses", points = 5,
     description = "Receive Tyrfing from Lord Byron within two turns.",
-    trigger = chapter() == 5 && UnitJustReceivedItemById(sigurdInventoryCountAddr(), brokenTyrfingId) && IsAlliedPhase() && turns() <= 2
+    trigger = chapter() == 5 && IsBitflagSetInGame(byronGiftedTyrfingToSigurd()) && IsAlliedPhase() && turns() <= 2
 )
 
 nosferatuId = 0x5f
+function juliaAndSeliphDiscussToGetItemInChapter6() => bit2(0x0052c7)
+function IsaachIsControlledByPlayer() => KeepIsUnderControlByPlayer(3)
 achievement(title = "Lifelight from Your Eyes", points = 5,
     description = "Receive Nosferatu for Julia after capturing Isaach.",
-    trigger = chapter() == 6 && UnitJustReceivedItemById(juliaInventoryCountAddr(), nosferatuId)
+    trigger = chapter() == 6 && IsaachIsControlledByPlayer() && IsBitflagSetInGame(juliaAndSeliphDiscussToGetItemInChapter6())
 )
 
 achievement(title = "A Father to His Men", points = 25,
