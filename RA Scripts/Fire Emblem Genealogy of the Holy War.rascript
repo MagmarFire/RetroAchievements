@@ -89,10 +89,10 @@ chapters = {
     0x4: { "pretitle": "Chapter 4", "name": "Dance in the Skies", "rescuableVillageSlotIds": [ 4, 5, 6, 7, 8, 9, 10, 11 ], "keepIds": [ 0, 1, 2, 3 ] },
     0x5: { "pretitle": "Chapter 5", "name": "Threshold of Fate", "rescuableVillageSlotIds": [ 5, 6, 7, 8, 9, 10, 11 ], "keepIds": [ 0, 1, 2, 3, 4 ] },
     0x6: { "pretitle": "Chapter 6", "name": "Heirs to the Light", "rescuableVillageSlotIds": [ 5, 6, 7, 8, 9, 10 ], "keepIds": [ 0, 1, 2, 3, 4 ] },
-    0x7: { "pretitle": "Chapter 7", "name": "Beyond the Desert", "rescuableVillageSlotIds": [ ], "keepIds": [] },
-    0x8: { "pretitle": "Chapter 8", "name": "The Dracoknights of Thracia", "rescuableVillageSlotIds": [ ], "keepIds": [] },
-    0x9: { "pretitle": "Chapter 9", "name": "For Whose Sake", "rescuableVillageSlotIds": [ ], "keepIds": [] },
-    0xA: { "pretitle": "Chapter 10", "name": "Light and Darkness", "rescuableVillageSlotIds": [ ], "keepIds": [] },
+    0x7: { "pretitle": "Chapter 7", "name": "Beyond the Desert", "rescuableVillageSlotIds": [ 6, 7, 8, 9, 10, 11 ], "keepIds": [ 0, 1, 2, 3, 4, 5] },
+    0x8: { "pretitle": "Chapter 8", "name": "The Dracoknights of Thracia", "rescuableVillageSlotIds": [ 5, 6, 7, 8, 9, 10 ], "keepIds": [ 0, 1, 2, 3, 4 ] },
+    0x9: { "pretitle": "Chapter 9", "name": "For Whose Sake", "rescuableVillageSlotIds": [ 5, 6, 7, 8, 9, 10 ], "keepIds": [ 0, 1, 2, 3, 4 ] },
+    0xA: { "pretitle": "Chapter 10", "name": "Light and Darkness", "rescuableVillageSlotIds": [ 5, 6, 7, 8, 9 ], "keepIds": [ 0, 1, 2, 3, 4 ] },
     0xB: { "pretitle": "Endgame", "name": "The Final Holy War", "rescuableVillageSlotIds": [ ], "keepIds": [] },
     0xF: { "pretitle": "", "name": "Credits", "rescuableVillageSlotIds": [ ], "keepIds": [] },
 }
@@ -161,6 +161,7 @@ function GetUnitObjectByAddr(addr)
 {
     // For the purposes of keeping things uniform, we're assuming that arena LV is the head address for each unit.
     return {
+        "header": byte(addr - 1),
         "arenaLevel": low4(addr),
         "status": byte(addr + 1),
         "isDead": bit1(addr + 1),
@@ -777,15 +778,6 @@ function GenerateSaveProtectedAchievementFromConditions(cheevo, conditions)
 // $018410: Option Settings - Auto Cursor: 0=On, 1=Off
 // $018412: Option Settings - Enemy AI Level: 0=Normal, 1=Clever
 
-GenerateSaveProtectedAchievementFromConditions({
-    "name": "Save Protection Test",
-    "description": "If this triggers when the game loads, save protection is broken!",
-    "points": 0,
-    "threshold": 1
-}, {
-    0x0: { "countsWhen": (sigurdKills() > 0), "recalculateWhen": (Delta(sigurdKills()) != sigurdKills()) }
-})
-
 gen1UnitMetadata = {
 "Sigurd": { "index": 0, "name": "Sigurd", "mandatedRomance": 1, }, 
 "Noish": { "index": 1, "name": "Noish", "mandatedRomance": 0, }, 
@@ -882,7 +874,9 @@ for i in range(0, 23)
     gen1UnitLeveledUpTo10 = gen1UnitLeveledUpTo10 || WasValueSetInGame(unit["level"], 9, 10)
     gen1UnitLeveledUpTo30 = gen1UnitLeveledUpTo30 || WasValueSetInGame(unit["level"], 29, 30)
     gen1UnitMaxedOutArena = gen1UnitMaxedOutArena || WasValueSetInGame(unit["arenaLevel"], 6, 7)
-    gen1UnitChangedClass = gen1UnitChangedClass || once(Delta(unit["class"]) != unit["class"] && Delta(unit["class"]) != 0x0) && never(!TurnNumberIsPlausible())
+    gen1UnitChangedClass = gen1UnitChangedClass || once(Delta(unit["class"]) != unit["class"] && Delta(unit["header"]) == 0x7e)
+        // We need to check for header being equal to 0x7e to ensure the achievement doesn't pop the moment a unit's level loads into memory.
+        && never(!TurnNumberIsPlausible())
         && unit["class"] != 0x0 && never(IsLoadingSaveFile())
     
     if (unitMeta["mandatedRomance"] == 0)
@@ -900,7 +894,9 @@ for i in range(0, 16)
     gen2UnitLeveledUpTo10 = gen2UnitLeveledUpTo10 || WasValueSetInGame(unit["level"], 9, 10)
     gen2UnitLeveledUpTo30 = gen2UnitLeveledUpTo30 || WasValueSetInGame(unit["level"], 29, 30)
     gen2UnitMaxedOutArena = gen2UnitMaxedOutArena || WasValueSetInGame(unit["arenaLevel"], 6, 7)
-    gen2UnitChangedClass = gen2UnitChangedClass || once(Delta(unit["class"]) != unit["class"] && Delta(unit["class"]) != 0x0) && never(chapter() <= 5)
+    gen2UnitChangedClass = gen2UnitChangedClass || once(Delta(unit["class"]) != unit["class"] && Delta(unit["header"]) == 0x7e)
+        // We need to check for header being equal to 0x7e to ensure the achievement doesn't pop the moment a unit's level loads into memory.
+        && never(chapter() <= 5)
         && unit["class"] != 0x0 && never(IsLoadingSaveFile()) && never(!TurnNumberIsPlausible())
     
     if (unitMeta["mandatedRomance"] == 0)
@@ -1006,6 +1002,10 @@ villageCheevos = {
     4: { "name": "Frozen Demolition", "description": "Rescue all villages in Chapter 4.", "points": 10 },
     5: { "name": "Traveler of Belhalla", "description": "Rescue all villages in Chapter 5.", "points": 5 },
     6: { "name": "The Liberation of Isaach", "description": "Rescue all villages in Chapter 6.", "points": 10 },
+    7: { "name": "Oasis Rescue", "description": "Rescue all villages in Chapter 7.", "points": 5 },
+    8: { "name": "Thracia's Plea", "description": "Rescue all villages in Chapter 8.", "points": 5 },
+    9: { "name": "The City's Evacuation", "description": "Rescue all villages in Chapter 9.", "points": 3 },
+    10: { "name": "Adoration of the New Crusaders", "description": "Rescue all villages in Chapter 10.", "points": 3 },
 }
 
 for i in villageCheevos
@@ -1024,12 +1024,16 @@ for i in villageCheevos
 
 // CHAPTER-RELATED CHEEVOS
 blitzkriegCheevos = {
-    0: { "turnLimit": 24, "points": 5 }, // my record: 21 turns
-    1: { "turnLimit": 40, "points": 10 }, // my record: 40 turns
-    2: { "turnLimit": 51, "points": 25 }, // my record: 51 turns
-    3: { "turnLimit": 40, "points": 10 }, // my record: 40 turns
-    4: { "turnLimit": 41, "points": 10 }, // my record: 40 turns
-    5: { "turnLimit": 45, "points": 25 }, // my record: 45 turns
+    0: { "turnLimit": 24, "points": 10 }, // my record: 21 turns
+    1: { "turnLimit": 40, "points": 5 }, // my record: 40 turns
+    2: { "turnLimit": 51, "points": 5 }, // my record: 51 turns
+    3: { "turnLimit": 40, "points": 5 }, // my record: 40 turns
+    4: { "turnLimit": 41, "points": 5 }, // my record: 40 turns
+    5: { "turnLimit": 45, "points": 5 }, // my record: 45 turns
+    6: { "turnLimit": 38, "points": 5 }, // my record: 38 turns
+    7: { "turnLimit": 55, "points": 5 }, // my record: 55 turns
+    8: { "turnLimit": 25, "points": 10 }, // my record: 25 turns
+    9: { "turnLimit": 53, "points": 5 }, // my record: 53 turns
 }
 
 chapterCheevos = {
@@ -1039,6 +1043,10 @@ chapterCheevos = {
     3: { "name": "Another Such Victory and We Are Undone", "description": "", "points": 3 },
     4: { "name": "The Reunification of Silesse", "description": "", "points": 3 },
     5: { "name": "Night Is Darkest", "description": "", "points": 3 }, //The Storm After the Calm/
+    6: { "name": "From the Brink", "description": "", "points": 3 },
+    7: { "name": "Merging of Theatres", "description": "", "points": 3 },
+    8: { "name": "An Unpleasant Peninsula Around You", "description": "", "points": 3 },
+    9: { "name": "For Those We've Lost", "description": "", "points": 3 },
 }
 
 for i in blitzkriegCheevos
@@ -1120,12 +1128,48 @@ achievement(title = "The Oh-So-Serious Knight", points = 5,
 )
 
 // Johan's and Johalvier's data showed up in in the area where Noish's and Alec's data was originally located.
-// This *may* change between playthroughs; if it does, the following achievement should be scrapped.
+// This *may* change between playthroughs; therefore, this should be refactored to use bitflags.
 johan = GetGen1UnitObjectByName("Noish")
 johalvier = GetGen1UnitObjectByName("Alec")
 achievement(title = "Combatting Roosters", points = 5,
     description = "Recruit Johan or Johalvier.",
     trigger = chapter() == 6 && (WasValueSetInGame(johalvier["affiliation"], 2, 0) || WasValueSetInGame(johan["affiliation"], 3, 0))
+)
+
+function aresRescuesDancerFromDarna() => bit6(0x0052c6)
+achievement(title = "Atonement Almost Lost", points = 3,
+    description = "Have Ares rescue Lene or Laylea from Darna.",
+    trigger = chapter() == 7 && WasBitflagSetInGame(aresRescuesDancerFromDarna())
+)
+
+function arthurRecruitsTinni() => bit0(0x0052c7)
+achievement(title = "A Long-Belated Reunion", points = 10,
+    description = "Reunite Arthur or Amid with Tinni or Linda.",
+    trigger = chapter() == 7 && WasBitflagSetInGame(arthurRecruitsTinni())
+)
+
+function pattyRecruitsFavel() => bit2(0x0052c7)
+achievement(title = "Back to His Senses", points = 5,
+    description = "Have Patty or Daisy recruit Faval or Asaello.",
+    trigger = chapter() == 8 && WasBitflagSetInGame(pattyRecruitsFavel())
+)
+    
+function seliphRecruitsCed() => bit1(0x0052c7)
+achievement(title = "Face Death with Valor", points = 3,
+    description = "Have Seliph recruit Ced or Hawke.",
+    trigger = chapter() == 8 && WasBitflagSetInGame(seliphRecruitsCed())
+)
+
+function altenaJoinsSeliph() => bit2(0x0052c7)
+achievement(title = "The Legacy of Leonster", points = 3,
+    description = "Have Altena join your army.",
+    trigger = chapter() == 9 && WasBitflagSetInGame(altenaJoinsSeliph())
+)
+
+function cairpreRecruitsHannibal() => bit1(0x0052c7)
+achievement(title = "Not by Blood but by Spirit", points = 10,
+    description = "Recruit Hannibal.",
+    trigger = chapter() == 9 && WasBitflagSetInGame(cairpreRecruitsHannibal())
 )
 
 // End recruitment cheevos
@@ -1149,17 +1193,18 @@ achievement(title = "Arden's Ambition", points = 3,
     trigger = chapter() == 2 && WasBitflagSetInGame(ardenGotPursuitBand())
 )
 
+knightRingId = 0x88
+function raquesisRetainersSurvived() => bit2(0x0052c8)
+achievement(title = "Into the Deepest Valley", points = 10,
+    description = "Ensure all of Raquesis's retainers survive to the end of Chapter 2.",
+    trigger = chapter() == 2 && IsBitflagSetInGame(raquesisRetainersSurvived())
+)
+
 windSwordId = 0x24
 function dewReceivedWindSword() => bit4(0x0052c7)
 achievement(title = "Consolation Loot", points = 10,
     description = "Have Dew retrieve the Wind Sword from the Tower of Bragi in Chapter 3.",
     trigger = chapter() == 3 && IsBitflagSetInGame(dewReceivedWindSword())
-)
-
-knightRingId = 0x88
-achievement(title = "Into the Deepest Valley", points = 10,
-    description = "Ensure all of Raquesis's retainers survive to the end of Chapter 2.",
-    trigger = chapter() == 2 && UnitJustReceivedItemById(raquesisInventoryCountAddr(), knightRingId)
 )
 
 earthSwordId = 0x22
@@ -1176,14 +1221,14 @@ achievement(title = "Arden's Resolve", points = 3,
 
 gaeBolgId = 0x3e
 ethlyn = GetGen1UnitObjectByName("Ethlyn")
-achievement(title = "The Spear of Cuhullin", points = 5,
+achievement(title = "The Spear of Cuhullin", points = 3,
     description = "Receive Gae Bolg.",
     trigger = chapter() == 3 && IsPlayerPhase() && WasValueSetInGame(ethlyn["talkTo"], 0x6, 0x0) && TurnNumberIsPlausible()
 )
 
 yewfelleId = 0x4f
 aideen = GetGen1UnitObjectByName("Aideen")
-achievement(title = "Strings of Ullr", points = 5,
+achievement(title = "Strings of Ullr", points = 3,
     description = "Have Aideen bestow Yewfelle to Bridget following their reunion.",
     trigger = chapter() == 3 && IsPlayerPhase() && WasValueSetInGame(aideen["talkTo"], 0x18, 0x0) && TurnNumberIsPlausible()
 )
@@ -1219,6 +1264,12 @@ function IsaachIsControlledByPlayer() => KeepIsUnderControlByPlayer(3)
 achievement(title = "Lifelight from Your Eyes", points = 5,
     description = "Receive Nosferatu for Julia after capturing Isaach.",
     trigger = chapter() == 6 && IsaachIsControlledByPlayer() && IsBitflagSetInGame(juliaAndSeliphDiscussToGetItemInChapter6())
+)
+
+shanan = GetGen1UnitObjectByName("Lex") // Lex and Shanan share the same memory space.
+achievement(title = "Bane of Fafnir", points = 3,
+    description = "Receive Balmung.",
+    trigger = chapter() == 7 && IsPlayerPhase() && WasValueSetInGame(shanan["talkTo"], 0x39, 0x0) && TurnNumberIsPlausible()
 )
 
 achievement(title = "A Father to His Men", points = 25,
