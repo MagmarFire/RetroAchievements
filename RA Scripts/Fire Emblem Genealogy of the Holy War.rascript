@@ -92,9 +92,9 @@ chapters = {
     0x7: { "pretitle": "Chapter 7", "name": "Beyond the Desert", "rescuableVillageSlotIds": [ 6, 7, 8, 9, 10, 11 ], "keepIds": [ 0, 1, 2, 3, 4, 5] },
     0x8: { "pretitle": "Chapter 8", "name": "The Dracoknights of Thracia", "rescuableVillageSlotIds": [ 5, 6, 7, 8, 9, 10 ], "keepIds": [ 0, 1, 2, 3, 4 ] },
     0x9: { "pretitle": "Chapter 9", "name": "For Whose Sake", "rescuableVillageSlotIds": [ 5, 6, 7, 8, 9, 10 ], "keepIds": [ 0, 1, 2, 3, 4 ] },
-    0xA: { "pretitle": "Chapter 10", "name": "Light and Darkness", "rescuableVillageSlotIds": [ 5, 6, 7, 8, 9 ], "keepIds": [ 0, 1, 2, 3, 4 ] },
-    0xB: { "pretitle": "Endgame", "name": "The Final Holy War", "rescuableVillageSlotIds": [ ], "keepIds": [] },
-    0xF: { "pretitle": "", "name": "Credits", "rescuableVillageSlotIds": [ ], "keepIds": [] },
+    0xA: { "pretitle": "Chapter 10", "name": "Light and Darkness", "rescuableVillageSlotIds": [ 5, 6, 7, 8, 9, 10 ], "keepIds": [ 0, 1, 2, 3, 4 ] },
+    0xB: { "pretitle": "Endgame", "name": "The Final Holy War", "rescuableVillageSlotIds": [ 6, 7 ], "keepIds": [ 0, 1, 2, 3, 4, 5 ] },
+    0xFF: { "pretitle": "", "name": "Epilogue/Credits", "rescuableVillageSlotIds": [ ], "keepIds": [] },
 }
 
 function GetChapterIds()
@@ -165,6 +165,7 @@ function GetUnitObjectByAddr(addr)
         "arenaLevel": low4(addr),
         "status": byte(addr + 1),
         "isDead": bit1(addr + 1),
+        "isTurnOver": bit6(addr + 1),
         "isSortied": bit7(addr + 1),
         "lover": byte(addr + 3),
         "affiliation": byte(addr + 6),
@@ -212,7 +213,8 @@ function GetGen2UnitObjectByIndex(index)
 // $001095: Cursor - Y coord relative position (copy)
 // $001096: Cursor - Y coord shift
 // $001864: Save Game menu - File Cursor
-// $001B19: Timer (Related to clock?)
+// $001B19: Play Time
+function playTime() => dword(0x001b19)
 // $0029F5: Claude's Arena Progress
 // $002A19: Taillte's Arena Progress
 // $002A3D: Brigid's Arena Progress
@@ -547,7 +549,9 @@ function sigurdKills() => word(0x003D23)
 // $003D7F: [2 Byte] Lene - Kills
 // $003D81: [2 Byte] Nanna - Kills
 // $003D83: [2 Byte] Player Rank - Experience (collective exp of all characters)
+function experiencePlayerRank() => word(0x3D83)
 // $003D85: Player Rank - Survival (characters joined and alive)
+function survivalPlayerRank() => word(0x3D85)
 // $003D8B: Weapon 01 - ID
 // $003D8C: Weapon 01 - Usage
 // $003D8D: Weapon 01 - Location
@@ -716,6 +720,8 @@ function state1() => byte(0x000302)
 //          0x8 = loading a game (if on the load menu)
 function state2() => byte(0x000304)
 
+function IsPlayerRankShown() => state1() == 0x37 && state2() == 0x10
+
 function IsOutsideGameplay() => state1() == 0x2 || state1() == 0x3 && state2() == 0x0 || state1() == 0x5 && state2() == 0x0
     || state1() == 0x6 || state1() == 0x1b && state2() == 0x0
 
@@ -779,50 +785,72 @@ function GenerateSaveProtectedAchievementFromConditions(cheevo, conditions)
 // $018412: Option Settings - Enemy AI Level: 0=Normal, 1=Clever
 
 gen1UnitMetadata = {
-"Sigurd": { "index": 0, "name": "Sigurd", "mandatedRomance": 1, }, 
-"Noish": { "index": 1, "name": "Noish", "mandatedRomance": 0, }, 
-"Alec": { "index": 2, "name": "Alec", "mandatedRomance": 0, }, 
-"Arden": { "index": 3, "name": "Arden", "mandatedRomance": 0, }, 
-"Azel": { "index": 4, "name": "Azel", "mandatedRomance": 0, }, 
-"Lex": { "index": 5, "name": "Lex", "mandatedRomance": 0, }, 
-"Quan": { "index": 6, "name": "Quan", "mandatedRomance": 1, }, 
-"Finn": { "index": 7, "name": "Finn", "mandatedRomance": 0, }, 
-"Ethlyn": { "index": 8, "name": "Ethlyn", "mandatedRomance": 1, }, 
-"Midir": { "index": 9, "name": "Midir", "mandatedRomance": 0, }, 
-"Ayra": { "index": 10, "name": "Ayra", "mandatedRomance": 0, }, 
-"Aideen": { "index": 11, "name": "Aideen", "mandatedRomance": 0, }, 
-"Dew": { "index": 12, "name": "Dew", "mandatedRomance": 0, }, 
-"Jamke": { "index": 13, "name": "Jamke", "mandatedRomance": 0, }, 
-"Deirdre": { "index": 14, "name": "Deirdre", "mandatedRomance": 1, }, 
-"Raquesis": { "index": 15, "name": "Raquesis", "mandatedRomance": 0, }, 
-"Holyn": { "index": 16, "name": "Holyn", "mandatedRomance": 0, }, 
-"Beowulf": { "index": 17, "name": "Beowulf", "mandatedRomance": 0, }, 
-"Levin": { "index": 18, "name": "Levin", "mandatedRomance": 0, }, 
-"Sylvia": { "index": 19, "name": "Sylvia", "mandatedRomance": 0, }, 
-"Erin": { "index": 20, "name": "Erin", "mandatedRomance": 0, }, 
-"Brigid": { "index": 21, "name": "Brigid", "mandatedRomance": 0, }, 
-"Taillte": { "index": 22, "name": "Taillte", "mandatedRomance": 0, }, 
-"Claude": { "index": 23, "name": "Claude", "mandatedRomance": 0, }, 
+"Sigurd": { "index": 0, "name": "Sigurd", "mandatedRomance": 1, "deathStatusIndex": 0, }, 
+"Noish": { "index": 1, "name": "Noish", "mandatedRomance": 0, "deathStatusIndex": 1, }, 
+"Alec": { "index": 2, "name": "Alec", "mandatedRomance": 0, "deathStatusIndex": 2, }, 
+"Arden": { "index": 3, "name": "Arden", "mandatedRomance": 0, "deathStatusIndex": 3, }, 
+"Azel": { "index": 4, "name": "Azel", "mandatedRomance": 0, "deathStatusIndex": 9, }, 
+"Lex": { "index": 5, "name": "Lex", "mandatedRomance": 0, "deathStatusIndex": 13, }, 
+"Quan": { "index": 6, "name": "Quan", "mandatedRomance": 1, "deathStatusIndex": 5, }, 
+"Finn": { "index": 7, "name": "Finn", "mandatedRomance": 0, "deathStatusIndex": 4, }, 
+"Ethlyn": { "index": 8, "name": "Ethlyn", "mandatedRomance": 1, "deathStatusIndex": 16, }, 
+"Midir": { "index": 9, "name": "Midir", "mandatedRomance": 0, "deathStatusIndex": 6, }, 
+"Ayra": { "index": 10, "name": "Ayra", "mandatedRomance": 0, "deathStatusIndex": 18, }, 
+"Aideen": { "index": 11, "name": "Aideen", "mandatedRomance": 0, "deathStatusIndex": 22, }, 
+"Dew": { "index": 12, "name": "Dew", "mandatedRomance": 0, "deathStatusIndex": 14, }, 
+"Jamke": { "index": 13, "name": "Jamke", "mandatedRomance": 0, "deathStatusIndex": 10, }, 
+"Deirdre": { "index": 14, "name": "Deirdre", "mandatedRomance": 1, "deathStatusIndex": 15, }, 
+"Raquesis": { "index": 15, "name": "Raquesis", "mandatedRomance": 0, "deathStatusIndex": 17, }, 
+"Holyn": { "index": 16, "name": "Holyn", "mandatedRomance": 0, "deathStatusIndex": 8, }, 
+"Beowulf": { "index": 17, "name": "Beowulf", "mandatedRomance": 0, "deathStatusIndex": 12, }, 
+"Lewyn": { "index": 18, "name": "Lewyn", "mandatedRomance": 0, "deathStatusIndex": 7, }, 
+"Sylvia": { "index": 19, "name": "Sylvia", "mandatedRomance": 0, "deathStatusIndex": 21, }, 
+"Erin": { "index": 20, "name": "Erin", "mandatedRomance": 0, "deathStatusIndex": 19, }, 
+"Bridget": { "index": 21, "name": "Bridget", "mandatedRomance": 0, "deathStatusIndex": 23, }, 
+"Taillte": { "index": 22, "name": "Taillte", "mandatedRomance": 0, "deathStatusIndex": 20, }, 
+"Claude": { "index": 23, "name": "Claude", "mandatedRomance": 0, "deathStatusIndex": 11, }, 
 }
 
 gen2UnitMetadata = {
-    "Seliph": { "index": 0, "name": "Seliph", "mandatedRomance": 0, }, 
-"Leif": { "index": 1, "name": "Leif", "mandatedRomance": 0, }, 
-"Altena": { "index": 2, "name": "Altena", "mandatedRomance": 0, }, 
-"Faval": { "index": 3, "name": "Faval", "mandatedRomance": 0, }, 
-"Patty": { "index": 4, "name": "Patty", "mandatedRomance": 0, }, 
-"Lester": { "index": 5, "name": "Lester", "mandatedRomance": 0, }, 
-"Lana": { "index": 6, "name": "Lana", "mandatedRomance": 0, }, 
-"Cairpre": { "index": 7, "name": "Cairpre", "mandatedRomance": 0, }, 
-"Lene": { "index": 8, "name": "Lene", "mandatedRomance": 0, }, 
-"Arthur": { "index": 9, "name": "Arthur", "mandatedRomance": 0, }, 
-"Tinni": { "index": 10, "name": "Tinni", "mandatedRomance": 0, }, 
-"Ced": { "index": 11, "name": "Ced", "mandatedRomance": 0, }, 
-"Fee": { "index": 12, "name": "Fee", "mandatedRomance": 0, }, 
-"Ulster": { "index": 13, "name": "Ulster", "mandatedRomance": 0, }, 
-"Larcei": { "index": 14, "name": "Larcei", "mandatedRomance": 0, }, 
-"Durmott": { "index": 15, "name": "Durmott", "mandatedRomance": 0, }, 
-"Nanna": { "index": 16, "name": "Nanna", "mandatedRomance": 0, }, 
+"Seliph": { "index": 0, "name": "Seliph", "mandatedRomance": 0, "deathStatusIndex": 24, "bred": 0, }, 
+"Leif": { "index": 1, "name": "Leif", "mandatedRomance": 0, "deathStatusIndex": 28, "bred": 0, }, 
+"Altena": { "index": 2, "name": "Altena", "mandatedRomance": 0, "deathStatusIndex": 43, "bred": 0, }, 
+"Faval": { "index": 3, "name": "Faval", "mandatedRomance": 0, "deathStatusIndex": 50, "bred": 1, }, 
+"Patty": { "index": 4, "name": "Patty", "mandatedRomance": 0, "deathStatusIndex": 56, "bred": 1, }, 
+"Lester": { "index": 5, "name": "Lester", "mandatedRomance": 0, "deathStatusIndex": 54, "bred": 1, }, 
+"Lana": { "index": 6, "name": "Lana", "mandatedRomance": 0, "deathStatusIndex": 58, "bred": 1, }, 
+"Cairpre": { "index": 7, "name": "Cairpre", "mandatedRomance": 0, "deathStatusIndex": 51, "bred": 1, }, 
+"Lene": { "index": 8, "name": "Lene", "mandatedRomance": 0, "deathStatusIndex": 61, "bred": 1, }, 
+"Arthur": { "index": 9, "name": "Arthur", "mandatedRomance": 0, "deathStatusIndex": 55, "bred": 1, }, 
+"Tinni": { "index": 10, "name": "Tinni", "mandatedRomance": 0, "deathStatusIndex": 60, "bred": 1, }, 
+"Ced": { "index": 11, "name": "Ced", "mandatedRomance": 0, "deathStatusIndex": 52, "bred": 1, }, 
+"Fee": { "index": 12, "name": "Fee", "mandatedRomance": 0, "deathStatusIndex": 59, "bred": 1, }, 
+"Ulster": { "index": 13, "name": "Ulster", "mandatedRomance": 0, "deathStatusIndex": 49, "bred": 1, }, 
+"Larcei": { "index": 14, "name": "Larcei", "mandatedRomance": 0, "deathStatusIndex": 57, "bred": 1, }, 
+"Dermott": { "index": 15, "name": "Dermott", "mandatedRomance": 0, "deathStatusIndex": 53, "bred": 1, }, 
+"Nanna": { "index": 16, "name": "Nanna", "mandatedRomance": 0, "deathStatusIndex": 62, "bred": 1, }, 
+"Shanan": { "index": 17, "name": "Shanan", "mandatedRomance": 0, "deathStatusIndex": 25, "bred": 0, }, 
+"Rodolbahn": { "index": 18, "name": "Rodolbahn", "mandatedRomance": 0, "deathStatusIndex": 26, "bred": 0, }, 
+"Asaello": { "index": 19, "name": "Asaello", "mandatedRomance": 0, "deathStatusIndex": 27, "bred": 0, }, 
+"Johan": { "index": 20, "name": "Johan", "mandatedRomance": 0, "deathStatusIndex": 29, "bred": 0, }, 
+"Sharlow": { "index": 21, "name": "Sharlow", "mandatedRomance": 0, "deathStatusIndex": 30, "bred": 0, }, 
+"Hawke": { "index": 22, "name": "Hawke", "mandatedRomance": 0, "deathStatusIndex": 31, "bred": 0, }, 
+"Tristan": { "index": 23, "name": "Tristan", "mandatedRomance": 0, "deathStatusIndex": 32, "bred": 0, }, 
+"Dimna": { "index": 24, "name": "Dimna", "mandatedRomance": 0, "deathStatusIndex": 34, "bred": 0, }, 
+"Hannibal": { "index": 25, "name": "Hannibal", "mandatedRomance": 0, "deathStatusIndex": 35, "bred": 0, }, 
+"Ares": { "index": 26, "name": "Ares", "mandatedRomance": 0, "deathStatusIndex": 36, "bred": 0, }, 
+"Amid": { "index": 27, "name": "Amid", "mandatedRomance": 0, "deathStatusIndex": 37, "bred": 0, }, 
+"Oifey": { "index": 28, "name": "Oifey", "mandatedRomance": 0, "deathStatusIndex": 38, "bred": 0, }, 
+"Daisy": { "index": 29, "name": "Daisy", "mandatedRomance": 0, "deathStatusIndex": 39, "bred": 0, }, 
+"Radney": { "index": 30, "name": "Radney", "mandatedRomance": 0, "deathStatusIndex": 40, "bred": 0, }, 
+"Mana": { "index": 31, "name": "Mana", "mandatedRomance": 0, "deathStatusIndex": 41, "bred": 0, }, 
+"Julia": { "index": 32, "name": "Julia", "mandatedRomance": 0, "deathStatusIndex": 42, "bred": 0, }, 
+"Femina": { "index": 33, "name": "Femina", "mandatedRomance": 0, "deathStatusIndex": 44, "bred": 0, }, 
+"Linda": { "index": 34, "name": "Linda", "mandatedRomance": 0, "deathStatusIndex": 45, "bred": 0, }, 
+"Leylia": { "index": 35, "name": "Leylia", "mandatedRomance": 0, "deathStatusIndex": 46, "bred": 0, }, 
+"Jeanne": { "index": 36, "name": "Jeanne", "mandatedRomance": 0, "deathStatusIndex": 47, "bred": 0, }, 
+"Johalvier": { "index": 37, "name": "Johalvier", "mandatedRomance": 0, "deathStatusIndex": 48, "bred": 0, }, 
+"Finn (older)": { "index": 38, "name": "Finn (older)", "mandatedRomance": 0, "deathStatusIndex": 33, "bred": 0, }, 
 }
 
 function GetGen1UnitMetadataByIndex(index)
@@ -847,6 +875,21 @@ function GetGen2UnitMetadataByIndex(index)
             return meta
         }
     }
+}
+
+function GetBredBiologicalChildren()
+{
+    substitutes = []
+    for name in gen2UnitMetadata
+    {
+        meta = gen2UnitMetadata[name]
+        if (meta["bred"] == 1)
+        {
+            array_push(substitutes, meta)
+        }
+    }
+    
+    return substitutes
 }
 
 function GetGen1UnitObjectByName(name)
@@ -1006,6 +1049,7 @@ villageCheevos = {
     8: { "name": "Thracia's Plea", "description": "Rescue all villages in Chapter 8.", "points": 5 },
     9: { "name": "The City's Evacuation", "description": "Rescue all villages in Chapter 9.", "points": 3 },
     10: { "name": "Adoration of the New Crusaders", "description": "Rescue all villages in Chapter 10.", "points": 3 },
+    11: { "name": "Grannvale Spared", "description": "Rescue all villages in the final chapter.", "points": 3 },
 }
 
 for i in villageCheevos
@@ -1024,16 +1068,18 @@ for i in villageCheevos
 
 // CHAPTER-RELATED CHEEVOS
 blitzkriegCheevos = {
-    0: { "turnLimit": 24, "points": 10 }, // my record: 21 turns
-    1: { "turnLimit": 40, "points": 5 }, // my record: 40 turns
-    2: { "turnLimit": 51, "points": 5 }, // my record: 51 turns
-    3: { "turnLimit": 40, "points": 5 }, // my record: 40 turns
-    4: { "turnLimit": 41, "points": 5 }, // my record: 40 turns
-    5: { "turnLimit": 45, "points": 5 }, // my record: 45 turns
-    6: { "turnLimit": 38, "points": 5 }, // my record: 38 turns
-    7: { "turnLimit": 55, "points": 5 }, // my record: 55 turns
-    8: { "turnLimit": 25, "points": 10 }, // my record: 25 turns
-    9: { "turnLimit": 53, "points": 5 }, // my record: 53 turns
+    0: { "turnLimit": 15, "points": 5 }, // my record: 21 turns
+    1: { "turnLimit": 35, "points": 5 }, // my record: 40 turns
+    2: { "turnLimit": 42, "points": 10 }, // my record: 51 turns
+    3: { "turnLimit": 38, "points": 5 }, // my record: 40 turns
+    4: { "turnLimit": 40, "points": 5 }, // my record: 40 turns
+    5: { "turnLimit": 30, "points": 10 }, // my record: 45 turns
+    6: { "turnLimit": 33, "points": 5 }, // my record: 38 turns
+    7: { "turnLimit": 44, "points": 10 }, // my record: 55 turns
+    8: { "turnLimit": 25, "points": 5 }, // my record: 25 turns
+    9: { "turnLimit": 34, "points": 25 }, // my record: 53 turns
+    10: { "turnLimit": 24, "points": 10 }, // my record: 35 turns
+    11: { "turnLimit": 36, "points": 25 }, // my record: 57 turns
 }
 
 chapterCheevos = {
@@ -1042,11 +1088,13 @@ chapterCheevos = {
     2: { "name": "The Agustrian Occupation", "description": "", "points": 3 },
     3: { "name": "Another Such Victory and We Are Undone", "description": "", "points": 3 },
     4: { "name": "The Reunification of Silesse", "description": "", "points": 3 },
-    5: { "name": "Night Is Darkest", "description": "", "points": 3 }, //The Storm After the Calm/
+    5: { "name": "Night Is Darkest", "description": "", "points": 3 },
     6: { "name": "From the Brink", "description": "", "points": 3 },
     7: { "name": "Merging of Theatres", "description": "", "points": 3 },
     8: { "name": "An Unpleasant Peninsula Around You", "description": "", "points": 3 },
     9: { "name": "For Those We've Lost", "description": "", "points": 3 },
+    10: { "name": "The Light Returns Home", "description": "", "points": 3 },
+    //11: { "name": "Before the Dawn", "description": "Complete the final chapter.", "points": 25 },
 }
 
 for i in blitzkriegCheevos
@@ -1080,6 +1128,11 @@ for i in chapterCheevos
         trigger = chapter() == i && Delta(turnsElapsed) == 0 && turnsElapsed > 0 && never(IsLoadingSaveFile())
     )
 }
+
+achievement(title = "Before the Dawn", points = 25,
+    description = "Complete the final chapter.",
+    trigger = chapter() == 0xff && state1() == 0x37 && state2() == 0xe
+)
 
 // End of chapter-related cheevos
 
@@ -1272,19 +1325,155 @@ achievement(title = "Bane of Fafnir", points = 3,
     trigger = chapter() == 7 && IsPlayerPhase() && WasValueSetInGame(shanan["talkTo"], 0x39, 0x0) && TurnNumberIsPlausible()
 )
 
-achievement(title = "A Father to His Men", points = 25,
-    description = "Complete the game without any of your units dying in battle.",
-    trigger = always_false() // We can probably use the Survival ranking to check for this.
+function palmarchGiftedTyrfingToSeliph() => bit3(0x0052c7)
+achievement(title = "Inheritor of Baldur", points = 3,
+    description = "Receive Tyrfing from Palmarch.",
+    trigger = chapter() == 10 && IsBitflagSetInGame(palmarchGiftedTyrfingToSeliph())
 )
+
+function seliphTalkedToHisParents() => bit3(0x0052c8)
+achievement(title = "The Same Loving Smile", points = 5,
+    description = "Have Seliph speak with his parents one last time.",
+    trigger = chapter() == 10 && IsBitflagSetInGame(seliphTalkedToHisParents())
+)
+
+function altenaConvincesArion() => bit5(0x0052c9)
+achievement(title = "Reason Before Pride", points = 5,
+    description = "Convince Arion to take up arms against Julius.",
+    trigger = chapter() == 11 && IsBitflagSetInGame(altenaConvincesArion())
+)
+
+function GetTacticsRankConditions()
+{
+    totalTurns = GetTotalTurns()
+    conditions = []
+    
+    array_push(conditions, once(totalTurns < 1056))
+    array_push(conditions, once(totalTurns < 800))
+    array_push(conditions, once(totalTurns < 550))
+    array_push(conditions, once(totalTurns < 400))
+    return conditions
+}
+
+function GetExperienceRankConditions()
+{
+    exp = experiencePlayerRank()
+    conditions = []
+    
+    array_push(conditions, once(exp > 0x18f))
+    array_push(conditions, once(exp > 0x257))
+    array_push(conditions, once(exp > 0x31f))
+    array_push(conditions, once(exp > 0x3e7))
+    return conditions
+}
+
+function GetSurvivalRankConditions()
+{
+    survival = survivalPlayerRank()
+    conditions = []
+    
+    array_push(conditions, once(survival > 0x28))
+    array_push(conditions, once(survival > 0x29))
+    array_push(conditions, once(survival > 0x2a))
+    array_push(conditions, once(survival > 0x2b))
+    return conditions
+}
+
+function GetCombatRankConditions()
+{
+    totalLosses = GetTotalLosses()
+    conditions = []
+    
+    array_push(conditions, once(totalLosses < 51))
+    array_push(conditions, once(totalLosses < 31))
+    array_push(conditions, once(totalLosses < 11))
+    array_push(conditions, once(totalLosses < 4))
+    return conditions
+}
+
+function GetTotalTurns()
+{
+    turnsBaseAddr = 0x000d93 // Prologue
+    totalTurns = 0
+    
+    for i in chapters
+    {
+        if (i < 0xff)
+        {
+            totalTurns = totalTurns + word(turnsBaseAddr + 2 * i)
+        }
+    }
+    
+    return totalTurns
+}
+
+function GetTotalLosses()
+{
+    lossesBaseAddr = 0x007358
+    totalLossSlots = 0x2f
+    totalLosses = 0
+    
+    for i in range(0, totalLossSlots - 1)
+    {
+        totalLosses = totalLosses + byte(lossesBaseAddr + i)
+    }
+    
+    return totalLosses
+}
+
+function GotExperienceARank() => word(0x3d83) >= 0x3e8
+
+achievement(title = "A Father to His Men", points = 25,
+    description = "Recruit all possible units and ensure they survive to the end of their story.",
+    trigger = tally(4, GetSurvivalRankConditions()) && never(chapter() != 0xFF)
+)
+
+// I've given each letter rank a point value for use in averaging, ranging from 0 (for E) to 4 (for A).
+// To get an overall ranking of A, players need to get a total of fifteen points (meaning one category can be B).
+playerRankConditions = []
+for i in GetTacticsRankConditions()
+{
+    array_push(playerRankConditions, i)
+}
+
+for i in GetExperienceRankConditions()
+{
+    array_push(playerRankConditions, i)
+}
+
+for i in GetSurvivalRankConditions()
+{
+    array_push(playerRankConditions, i)
+}
+
+for i in GetCombatRankConditions()
+{
+    array_push(playerRankConditions, i)
+}
 
 achievement(title = "Master Tactician", points = 50,
-    description = "Complete the game with an overall game ranking of A.",
-    trigger = always_false()
+    description = "Complete the game with an overall player rank of A.",
+    trigger = tally(15, playerRankConditions) && never(!IsPlayerRankShown()) && chapter() == 0xFF
 )
 
+function DidNotRecruitBiologicalChildren()
+{
+    deathStatusBaseAddr = 0x01c54d
+    children = GetBredBiologicalChildren()
+    conditions = always_true()
+    
+    for i in range(0, length(children) - 1)
+    {
+        child = children[i]
+        conditions = conditions && bit6(deathStatusBaseAddr + 2 * child["deathStatusIndex"]) == 1
+    }
+    
+    return conditions
+}
+
 achievement(title = "Chastity", points = 50,
-    description = "Complete the game without conceiving any plot-optional biological children.",
-    trigger = always_false()
+    description = "Complete the game without conceiving any optional biological children.",
+    trigger = DidNotRecruitBiologicalChildren() && chapter() == 0xFF && IsPlayerRankShown()
 )
 
 // RICH PRESENCE
@@ -1327,9 +1516,10 @@ rich_presence_conditional_display(!ShouldShowTurnNumber(), "{0}{1}",
     rich_presence_lookup("Chapter", chapter(), GetChapterNamesForRichPresence())
 )
 
-rich_presence_display("{0}{1} | Turn {2}",
+rich_presence_display("{0}{1} | Turn {2} | Play Time: {3}",
     rich_presence_lookup("ChapterPretitles", chapter(), GetChapterPretitlesForRichPresence()),
     rich_presence_lookup("Chapter", chapter(), GetChapterNamesForRichPresence()),
-    rich_presence_value("Turn", turns())
+    rich_presence_value("Turn", turns()),
+    rich_presence_value("PlayTime", playTime(), "FRAMES")
 )
 
