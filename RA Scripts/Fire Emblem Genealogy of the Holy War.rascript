@@ -107,6 +107,9 @@ function GetChapterIds()
     return chapterIds
 }
 
+// $000D73: Number of player castles captured by the enemy (affects Tactics ranking)
+function playerCastlesCaptured() => byte(0x000d73)
+
 // $000D8F: [2 Byte] Days
 function turns() => word(0x000D8F)
 
@@ -1106,6 +1109,13 @@ for i in blitzkriegCheevos
         description = "Complete '" + chapter["name"] + "' within " + cheevo["turnLimit"] + " turns.",
         trigger = chapter() == i && Delta(turnsElapsed) == 0 && turnsElapsed > 0 && turnsElapsed <= cheevo["turnLimit"] && never(IsLoadingSaveFile())
     )
+    
+    leaderboard(title = chapter["pretitle"] + ": " + chapter["name"], description = "Complete the chapter in as few turns as possible.",
+        start = chapter() == i && Delta(turnsElapsed) == 0 && turnsElapsed > 0 && never(IsLoadingSaveFile()),
+        cancel = IsLoadingSaveFile(),
+        submit = chapter() == i && Delta(turnsElapsed) == 0 && turnsElapsed > 0 && never(IsLoadingSaveFile()),
+        value = turnsElapsed
+    )
 }
 
 for i in chapterCheevos
@@ -1175,18 +1185,15 @@ achievement(title = "Sellsword for Hire", points = 10,
 )
 
 erin = GetGen1UnitObjectByName("Erin")
-achievement(title = "The Oh-So-Serious Knight", points = 5,
+achievement(title = "Devoted but Gullible", points = 5,
     description = "Recruit Erin.",
     trigger = chapter() == 2 && WasValueSetInGame(erin["affiliation"], 5, 0)
 )
 
-// Johan's and Johalvier's data showed up in in the area where Noish's and Alec's data was originally located.
-// This *may* change between playthroughs; therefore, this should be refactored to use bitflags.
-johan = GetGen1UnitObjectByName("Noish")
-johalvier = GetGen1UnitObjectByName("Alec")
+function larceiRecruitsJohanOrJohalvier() => bit5(0x0052c5)
 achievement(title = "Combatting Roosters", points = 5,
     description = "Recruit Johan or Johalvier.",
-    trigger = chapter() == 6 && (WasValueSetInGame(johalvier["affiliation"], 2, 0) || WasValueSetInGame(johan["affiliation"], 3, 0))
+    trigger = chapter() == 6 && WasBitflagSetInGame(larceiRecruitsJohanOrJohalvier())
 )
 
 function aresRescuesDancerFromDarna() => bit6(0x0052c6)
@@ -1214,7 +1221,7 @@ achievement(title = "Face Death with Valor", points = 3,
 )
 
 function altenaJoinsSeliph() => bit2(0x0052c7)
-achievement(title = "The Legacy of Leonster", points = 3,
+achievement(title = "The Luminous Rider", points = 3,
     description = "Have Altena join your army.",
     trigger = chapter() == 9 && WasBitflagSetInGame(altenaJoinsSeliph())
 )
@@ -1306,7 +1313,7 @@ achievement(title = "Gales of Justice", points = 5,
 
 brokenTyrfingId = 0x27
 function byronGiftedTyrfingToSigurd() => bit5(0x0052c6)
-achievement(title = "The Exalted Sword of Curses", points = 5,
+achievement(title = "The Blade of Curses", points = 5,
     description = "Receive Tyrfing from Lord Byron within two turns.",
     trigger = chapter() == 5 && IsBitflagSetInGame(byronGiftedTyrfingToSigurd()) && IsAlliedPhase() && turns() <= 2
 )
@@ -1329,6 +1336,12 @@ function palmarchGiftedTyrfingToSeliph() => bit3(0x0052c7)
 achievement(title = "Inheritor of Baldur", points = 3,
     description = "Receive Tyrfing from Palmarch.",
     trigger = chapter() == 10 && IsBitflagSetInGame(palmarchGiftedTyrfingToSeliph())
+)
+
+function juliaReceivesBookOfNaga() => bit7(0x0052c8)
+achievement(title = "The Light of Heim", points = 3,
+    description = "Receive the Book of Naga.",
+    trigger = chapter() == 11 && IsBitflagSetInGame(juliaReceivesBookOfNaga())
 )
 
 function seliphTalkedToHisParents() => bit3(0x0052c8)
@@ -1453,7 +1466,7 @@ for i in GetCombatRankConditions()
 
 achievement(title = "Master Tactician", points = 50,
     description = "Complete the game with an overall player rank of A.",
-    trigger = tally(15, playerRankConditions) && never(!IsPlayerRankShown()) && chapter() == 0xFF
+    trigger = tally(15, playerRankConditions) && never(!IsPlayerRankShown()) && chapter() == 0xFF && playerCastlesCaptured() == 0 && GetTotalTurns() > 0
 )
 
 function DidNotRecruitBiologicalChildren()
