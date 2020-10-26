@@ -739,6 +739,7 @@ function IsBooting() => state1() == 0x2 || state1() == 0x3 && state2() == 0x0
 //         "description": self-explanatory
 //         "points": self-explanatory
 //         "threshold": how many values in the "addresses" dictionary must be set before this achievement is triggered
+//         "id": the ID of the achievement on the RA server
 //
 // conditions: "countsWhen": the condition that must be true in order for it to be counted in the total
 //             "recalculateWhen": the condition that indicates that relevant values in the condition have changed,
@@ -765,7 +766,7 @@ function GenerateSaveProtectedAchievementFromConditions(cheevo, conditions)
         resetAlt = resetAlt || condition["recalculateWhen"]
     }
 
-    achievement(title = cheevo["name"], description = cheevo["description"], points = cheevo["points"],
+    achievement(title = cheevo["name"], description = cheevo["description"], points = cheevo["points"], id = cheevo["id"],
         trigger = !IsLoadingSaveFile() && never(IsBooting())
             && measured(tally(cheevo["threshold"], totalCounts)) && unless(tally(cheevo["threshold"], loadedCounts))
             && never(resetAlt)
@@ -988,7 +989,7 @@ function GetRescuableVillagesByChapterIds(chapterIds)
         {
             buildingAttrAddr = GetBuildingAttrAddrBySlot(j)
             rescueConditions[rescueConditionIndex]
-                = { "countsWhen": (bit5(buildingAttrAddr) == 1 && chapter() == i), "recalculateWhen": (Delta(bit5(buildingAttrAddr)) != bit5(buildingAttrAddr)) }
+                = { "countsWhen": (bit5(buildingAttrAddr) == 1 && chapter() == i && TurnNumberIsPlausible()), "recalculateWhen": (Delta(bit5(buildingAttrAddr)) != bit5(buildingAttrAddr)) }
             rescueConditionIndex = rescueConditionIndex + 1
         }
     }
@@ -1031,6 +1032,7 @@ GenerateSaveProtectedAchievementFromConditions({
     "description": "Rescue a village before it is razed to the ground.",
     "points": 1,
     "threshold": 1,
+    "id": 130690
 }, GetRescuableVillagesByChapterIds(GetChapterIds()))
 
 achievement(title = "Conqueror", points = 1,
@@ -1041,18 +1043,18 @@ achievement(title = "Conqueror", points = 1,
 // VILLAGE ACHIEVEMENTS
 
 villageCheevos = {
-    0: { "name": "Defender of Chalphy", "description": "Rescue all villages in the Prologue.", "points": 5 },
-    1: { "name": "Verdanite Annexation", "description": "Rescue all villages in Chapter 1.", "points": 5 },
-    2: { "name": "Nordion Calls for Aid", "description": "Rescue all villages in Chapter 2.", "points": 10 },
-    3: { "name": "Pirates of Orgahil", "description": "Rescue all villages in Chapter 3.", "points": 10 },
-    4: { "name": "Frozen Demolition", "description": "Rescue all villages in Chapter 4.", "points": 10 },
-    5: { "name": "Traveler of Belhalla", "description": "Rescue all villages in Chapter 5.", "points": 5 },
-    6: { "name": "The Liberation of Isaach", "description": "Rescue all villages in Chapter 6.", "points": 10 },
-    7: { "name": "Oasis Rescue", "description": "Rescue all villages in Chapter 7.", "points": 5 },
-    8: { "name": "Thracia's Plea", "description": "Rescue all villages in Chapter 8.", "points": 5 },
-    9: { "name": "The City's Evacuation", "description": "Rescue all villages in Chapter 9.", "points": 3 },
-    10: { "name": "Adoration of the New Crusaders", "description": "Rescue all villages in Chapter 10.", "points": 3 },
-    11: { "name": "Grannvale Spared", "description": "Rescue all villages in the final chapter.", "points": 3 },
+    0: { "name": "Defender of Chalphy", "description": "Rescue all villages in the Prologue.", "points": 5, "id": 130691 },
+    1: { "name": "Verdanite Annexation", "description": "Rescue all villages in Chapter 1.", "points": 5, "id": 130697 },
+    2: { "name": "Nordion Calls for Aid", "description": "Rescue all villages in Chapter 2.", "points": 10, "id": 130706 },
+    3: { "name": "Pirates of Orgahil", "description": "Rescue all villages in Chapter 3.", "points": 10, "id": 130714 },
+    4: { "name": "Frozen Demolition", "description": "Rescue all villages in Chapter 4.", "points": 10, "id": 130721 },
+    5: { "name": "Traveler of Belhalla", "description": "Rescue all villages in Chapter 5.", "points": 5, "id": 130727 },
+    6: { "name": "The Liberation of Isaach", "description": "Rescue all villages in Chapter 6.", "points": 10, "id": 130735 },
+    7: { "name": "Oasis Rescue", "description": "Rescue all villages in Chapter 7.", "points": 5, "id": 130741 },
+    8: { "name": "Thracia's Plea", "description": "Rescue all villages in Chapter 8.", "points": 5, "id": 130747 },
+    9: { "name": "The City's Evacuation", "description": "Rescue all villages in Chapter 9.", "points": 3, "id": 130752 },
+    10: { "name": "Adoration of the New Crusaders", "description": "Rescue all villages in Chapter 10.", "points": 3, "id": 130757 },
+    11: { "name": "Grannvale Spared", "description": "Rescue all villages in the final chapter.", "points": 3, "id": 130762 },
 }
 
 for i in villageCheevos
@@ -1060,10 +1062,11 @@ for i in villageCheevos
     cheevo = villageCheevos[i]
     villages = GetRescuableVillagesByChapterIds([ i ])
     GenerateSaveProtectedAchievementFromConditions({
-        "name": cheevo["name"],
+        "name": (cheevo["name"] + " [m]"),
         "description": cheevo["description"],
         "points": cheevo["points"],
-        "threshold": length(villages)
+        "threshold": length(villages),
+        "id": cheevo["id"]
     }, villages)
 }
 
@@ -1071,33 +1074,32 @@ for i in villageCheevos
 
 // CHAPTER-RELATED CHEEVOS
 blitzkriegCheevos = {
-    0: { "turnLimit": 15, "points": 5 }, // my record: 21 turns
-    1: { "turnLimit": 35, "points": 5 }, // my record: 40 turns
-    2: { "turnLimit": 42, "points": 10 }, // my record: 51 turns
-    3: { "turnLimit": 38, "points": 5 }, // my record: 40 turns
-    4: { "turnLimit": 40, "points": 5 }, // my record: 40 turns
-    5: { "turnLimit": 30, "points": 10 }, // my record: 45 turns
-    6: { "turnLimit": 33, "points": 5 }, // my record: 38 turns
-    7: { "turnLimit": 44, "points": 10 }, // my record: 55 turns
-    8: { "turnLimit": 25, "points": 5 }, // my record: 25 turns
-    9: { "turnLimit": 34, "points": 25 }, // my record: 53 turns
-    10: { "turnLimit": 24, "points": 10 }, // my record: 35 turns
-    11: { "turnLimit": 36, "points": 25 }, // my record: 57 turns
+    0: { "turnLimit": 15, "points": 5, "id": 130695 }, // my record: 21 turns
+    1: { "turnLimit": 35, "points": 5, "id": 130701 }, // my record: 40 turns
+    2: { "turnLimit": 42, "points": 10, "id": 130711 }, // my record: 51 turns
+    3: { "turnLimit": 38, "points": 5, "id": 130719 }, // my record: 40 turns
+    4: { "turnLimit": 40, "points": 5, "id": 130723 }, // my record: 40 turns
+    5: { "turnLimit": 30, "points": 10, "id": 130732 }, // my record: 45 turns
+    6: { "turnLimit": 33, "points": 5, "id": 130739 }, // my record: 38 turns
+    7: { "turnLimit": 44, "points": 10, "id": 130745 }, // my record: 55 turns
+    8: { "turnLimit": 25, "points": 5, "id": 130750 }, // my record: 25 turns
+    9: { "turnLimit": 34, "points": 25, "id": 130755 }, // my record: 53 turns
+    10: { "turnLimit": 24, "points": 10, "id": 130759 }, // my record: 35 turns
+    11: { "turnLimit": 36, "points": 25, "id": 130764 }, // my record: 57 turns
 }
 
 chapterCheevos = {
-    0: { "name": "And So the Crusade Begins", "description": "Complete the prologue.", "points": 3 },
-    1: { "name": "The Red Twine Unravels", "description": "", "points": 3 },
-    2: { "name": "The Agustrian Occupation", "description": "", "points": 3 },
-    3: { "name": "Another Such Victory and We Are Undone", "description": "", "points": 3 },
-    4: { "name": "The Reunification of Silesse", "description": "", "points": 3 },
-    5: { "name": "Night Is Darkest", "description": "", "points": 3 },
-    6: { "name": "From the Brink", "description": "", "points": 3 },
-    7: { "name": "Merging of Theatres", "description": "", "points": 3 },
-    8: { "name": "An Unpleasant Peninsula Around You", "description": "", "points": 3 },
-    9: { "name": "For Those We've Lost", "description": "", "points": 3 },
-    10: { "name": "The Light Returns Home", "description": "", "points": 3 },
-    //11: { "name": "Before the Dawn", "description": "Complete the final chapter.", "points": 25 },
+    0: { "name": "And So the Crusade Begins", "description": "Complete the prologue.", "points": 3, "id": 130696 },
+    1: { "name": "The Red Twine Unravels", "description": "", "points": 3, "id": 130702 },
+    2: { "name": "The Agustrian Occupation", "description": "", "points": 3, "id": 130703 },
+    3: { "name": "Another Such Victory and We Are Undone", "description": "", "points": 3, "id": 130720 },
+    4: { "name": "The Reunification of Silesse", "description": "", "points": 3, "id": 130724 },
+    5: { "name": "Night Is Darkest", "description": "", "points": 3, "id": 130726 },
+    6: { "name": "From the Brink", "description": "", "points": 3, "id": 130740 },
+    7: { "name": "Merging of Theatres", "description": "", "points": 3, "id": 130746 },
+    8: { "name": "An Unpleasant Peninsula Around You", "description": "", "points": 3, "id": 130751 },
+    9: { "name": "For Those We've Lost", "description": "", "points": 3, "id": 130760 },
+    10: { "name": "The Light Returns Home", "description": "", "points": 3, "id": 130761 },
 }
 
 for i in blitzkriegCheevos
@@ -1105,7 +1107,7 @@ for i in blitzkriegCheevos
     chapter = chapters[i]
     cheevo = blitzkriegCheevos[i]
     turnsElapsed = word(turnsElapsedInPrologueBaseAddr() + 2 * i)
-    achievement(title = "Blitzkrieg (" + chapter["pretitle"] + ")", points = cheevo["points"],
+    achievement(title = "Blitzkrieg (" + chapter["pretitle"] + ") [m]", points = cheevo["points"], id = cheevo["id"],
         description = "Complete '" + chapter["name"] + "' within " + cheevo["turnLimit"] + " turns.",
         trigger = chapter() == i && Delta(turnsElapsed) == 0 && turnsElapsed > 0 && turnsElapsed <= cheevo["turnLimit"] && never(IsLoadingSaveFile())
     )
