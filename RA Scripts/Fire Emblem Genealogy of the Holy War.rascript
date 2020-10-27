@@ -30,11 +30,6 @@ function IsValueSetInGame(bit)
     return IsValueSet(bit, 0, 1)
 }
 
-function WasBitflagSet(bit)
-{
-    return WasValueSet(bit, 0, 1)
-}
-
 function WasValueSetInGame(mem, oldValue, newValue)
 {
     return WasValueSet(mem, oldValue, newValue)
@@ -45,16 +40,6 @@ function IsValueSetInGame(mem, oldValue, newValue)
 {
     return IsValueSet(mem, oldValue, newValue)
         && never(IsLoadingSaveFile())
-}
-
-function WasValueSetInGameFromAny(mem, newValue)
-{
-    return once(Delta(mem) != mem && mem == newValue) && never(IsLoadingSaveFile())
-}
-
-function WasValueChangedInGame(mem)
-{
-    return once(Delta(mem) != mem) && never(IsLoadingSaveFile())
 }
 
 function WasValueSet(mem, oldValue, newValue)
@@ -190,13 +175,6 @@ function GetUnitObjectByAddr(addr)
         "exp": byte(addr + 28),
         "talkTo": byte(addr + 29)
     }
-}
-
-function UnitJustReceivedItemById(inventoryCountBaseAddr, itemId)
-{
-    count = byte(inventoryCountBaseAddr)
-    itemAddr = inventoryCountBaseAddr + count + 3
-    return Delta(count) != count && WasValueSetInGameFromAny(byte(itemAddr), itemId)
 }
 
 function GetGen1UnitObjectByIndex(index)
@@ -730,7 +708,8 @@ function IsOutsideGameplay() => state1() == 0x2 || state1() == 0x3 && state2() =
 
 function IsLoadingSaveFile() => state2() == 0x8 || state2() == 0x23
 
-function IsBooting() => state1() == 0x2 || state1() == 0x3 && state2() == 0x0
+// 0x55 on immediate boot is unique to the Snes9x line of cores.
+function IsBooting() => state1() == 0x2 || state1() == 0x3 && state2() == 0x0 || state1() == 0x55
 
 // This function allows the creation of achievements with built-in save protection that deal with a collection of values being set
 // throughout the game. The schemas for both parameters are as follows:
@@ -1035,9 +1014,9 @@ GenerateSaveProtectedAchievementFromConditions({
     "id": 130690
 }, GetRescuableVillagesByChapterIds(GetChapterIds()))
 
-achievement(title = "Conqueror", points = 1,
+achievement(title = "Conqueror", points = 1, id = 130694, badge = "143891",
     description = "Seize a keep from an enemy faction's control.",
-    trigger = GetSeizableKeepsByChapterIds(GetChapterIds())
+    trigger = GetSeizableKeepsByChapterIds(GetChapterIds()) && never(IsBooting())
 )
 
 // VILLAGE ACHIEVEMENTS
