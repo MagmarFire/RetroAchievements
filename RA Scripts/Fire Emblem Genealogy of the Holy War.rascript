@@ -922,7 +922,7 @@ for i in range(0, 16)
     gen2UnitMaxedOutArena = gen2UnitMaxedOutArena || WasValueSetInGame(unit["arenaLevel"], 6, 7)
     gen2UnitChangedClass = gen2UnitChangedClass || once(Delta(unit["class"]) != unit["class"] && Delta(unit["header"]) == 0x7e)
         // We need to check for header being equal to 0x7e to ensure the achievement doesn't pop the moment a unit's level loads into memory.
-        && never(chapter() <= 5)
+        && chapter() > 5
         && unit["class"] != 0x0 && never(IsLoadingSaveFile()) && never(!TurnNumberIsPlausible())
     
     if (unitMeta["mandatedRomance"] == 0)
@@ -942,7 +942,7 @@ achievement(title = "The Key to Mastery", points = 5,
     trigger = gen1UnitLeveledUpTo30 || gen2UnitLeveledUpTo30
 )
 
-achievement(title = "The Culmination of Years of Training!", points = 5,
+achievement(title = "The Culmination of Years of Training!", points = 5, badge = "143910", id = 130713,
     description = "Change a unit's class.",
     trigger = gen1UnitChangedClass || gen2UnitChangedClass
 )
