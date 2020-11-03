@@ -1294,9 +1294,9 @@ achievement(title = "Gales of Justice", points = 5,
 
 brokenTyrfingId = 0x27
 function byronGiftedTyrfingToSigurd() => bit5(0x0052c6)
-achievement(title = "The Blade of Curses", points = 5,
+achievement(title = "The Blade of Curses [m]", points = 5, badge = "143925", id = 130728,
     description = "Receive Tyrfing from Lord Byron within two turns.",
-    trigger = chapter() == 5 && IsBitflagSetInGame(byronGiftedTyrfingToSigurd()) && IsAlliedPhase() && turns() <= 2
+    trigger = chapter() == 5 && IsBitflagSetInGame(byronGiftedTyrfingToSigurd()) && turns() <= 2
 )
 
 nosferatuId = 0x5f
