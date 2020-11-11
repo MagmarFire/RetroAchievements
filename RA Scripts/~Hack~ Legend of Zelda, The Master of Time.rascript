@@ -103,6 +103,10 @@ function status() => byte(0x11b92c)
 // $11B4A7: Bit 5: Sagnol Village cutscene (first time exiting the inn)
 // $11B4F9: Bit 0: Magic Jar (first time)
 // $1CA1D8: Chest flags for the current area
+// $11a642: Top 4: Shield equipped
+function shield() => high4(0x11a642)
+function HasShieldEquipped() => shield() > 0
+
 // $11a6a2: Gold Skulltula tokens collected (16-bit)
 function goldSkulltulas() => word(0x11a6a2)
 
@@ -157,6 +161,62 @@ function WasItemSlotFilled(mem)
     return Delta(mem) == 0xff && mem != 0xff
 }
 
+function areaId() => word(0x1c8546)
+
+locations = [
+{ "name": "Sagnol Village", "id": 0x28, "conj": "in", },
+{ "name": "Sagnol Village", "id": 0x2b, "conj": "in", },
+{ "name": "Sagnol Village Shop", "id": 0x2d, "conj": "browsing the", },
+{ "name": "Scrub Cliff", "id": 0x29, "conj": "climbing", },
+{ "name": "Sagnol Village Inn", "id": 0x34, "conj": "visiting", },
+{ "name": "Path of Gods", "id": 0x4a, "conj": "walking the", },
+{ "name": "Sagnol Tomb", "id": 0x2a, "conj": "raiding the", },
+{ "name": "Title Screen", "id": 0x27, "conj": "", },
+{ "name": "Song Cave", "id": 0x3e, "conj": "in the", },
+{ "name": "Temple of Agility Boss Room", "id": 0x11, "conj": "in the", },
+{ "name": "Abello Field", "id": 0x1f, "conj": "in", },
+{ "name": "a grotto in Abello Field", "id": 0x3e, "conj": "in", },
+{ "name": "Abello Field", "id": 0x46, "conj": "in", },
+{ "name": "Abello Field", "id": 0x32, "conj": "in", },
+{ "name": "Abello gatehouse", "id": 0x21, "conj": "in an", },
+{ "name": "Abello Sewers", "id": 0x8, "conj": "in the", },
+{ "name": "Abello Lake", "id": 0x36, "conj": "at", },
+{ "name": "Canyon", "id": 0x4e, "conj": "at the", },
+{ "name": "Temple of Strength", "id": 0x1, "conj": "in the", },
+{ "name": "Temple of Agility Boss Room", "id": 0x0, "conj": "in the", },
+{ "name": "Abello Town", "id": 0x39, "conj": "at", },
+{ "name": "Abello Shooting Gallery", "id": 0x42, "conj": "at the", },
+]
+
+function GetLocationByName(name)
+{
+    for location in locations
+    {
+        if (location["name"] == name)
+        {
+            return location
+        }
+    }
+}
+
+function GetLocationById(id)
+{
+    for location in locations
+    {
+        if (location["id"] == id)
+        {
+            return location
+        }
+    }
+}
+
+function IsInLocation(name)
+{
+    location = GetLocationByName(name)
+    return areaId() == location["id"]
+}
+
+
 achievement(title = "Save Protection Test", description = "If this pops when the game loads, save protection is broken.", points = 0,
     trigger = DidValueBecomeGreaterThanGivenInGame(rupees(), 0) || DidValueBecomeGreaterThanGivenInGame(goldSkulltulas(), 0)
 )
@@ -195,3 +255,122 @@ for cheevo in skulltulaCheevos
         trigger = Delta(goldSkulltulas()) == cheevo["threshold"] - 1 && measured(goldSkulltulas() == cheevo["threshold"]) && never(IsLoadingSaveFile())
     )
 }
+
+function bracelet() => bit6(0x11a670)
+achievement(title = "Nighthawk", points = 3, description = "Obtain the bracelet from the Sagnol Tomb.",
+    trigger = WasBitflagSetInGame(bracelet())
+)
+
+function maxHP() => word(0x11a5fc)
+achievement(title = "Heartthrob", points = 25, description = "Complete and obtain seventeen Heart Containers.",
+    trigger = WasValueSetInGame(maxHP(), 0x130, 0x140)
+)
+
+// We need to check for both here in case the player leaves the room immediately after entering; one of the flags is set upon leaving, for some reason.
+function stalfosChestAppearFlag() => bit0(0x1ca1e0)
+function stalfosChestFlag() => bit0(0x1ca1dc)
+achievement(title = "No Guard [m]", points = 10, description = "Defeat the Stalfos in the Temple of Agility without having a shield equipped.",
+    trigger = never(!IsInLocation("Temple of Agility Boss Room")) && WasBitflagSetInGame(stalfosChestAppearFlag()) && WasBitflagSetInGame(stalfosChestFlag()) && !HasShieldEquipped()
+)
+
+function stoneOfAgility() => bit2(0x11a676)
+achievement(title = "Swift Run", points = 5, description = "Acquire the Stone of Agility",
+    trigger = WasBitflagSetInGame(stoneOfAgility())
+)
+
+// RICH PRESENCE
+function IsOutsideGameplay() => status() != 0
+function GetCharactersForRichPresence()
+{
+    characters = {
+        0xab: "A",
+        0xac: "B",
+        0xad: "C",
+        0xae: "D",
+        0xaf: "E",
+        0xb0: "F",
+        0xb1: "G",
+        0xb2: "H",
+        0xb3: "I",
+        0xb4: "J",
+        0xb5: "K",
+        0xb6: "L",
+        0xb7: "M",
+        0xb8: "N",
+        0xb9: "O",
+        0xba: "P",
+        0xbb: "Q",
+        0xbc: "R",
+        0xbd: "S",
+        0xbe: "T",
+        0xbf: "U",
+        0xc0: "V",
+        0xc1: "W",
+        0xc2: "X",
+        0xc3: "Y",
+        0xc4: "Z",
+        0xc5: "a",
+        0xc6: "b",
+        0xc7: "c",
+        0xc8: "d",
+        0xc9: "e",
+        0xca: "f",
+        0xcb: "g",
+        0xcc: "h",
+        0xcd: "i",
+        0xce: "j",
+        0xcf: "k",
+        0xd0: "l",
+        0xd1: "m",
+        0xd2: "n",
+        0xd3: "o",
+        0xd4: "p",
+        0xd5: "q",
+        0xd6: "r",
+        0xd7: "s",
+        0xd8: "t",
+        0xd9: "u",
+        0xda: "v",
+        0xdb: "w",
+        0xdc: "x",
+        0xdd: "y",
+        0xde: "z",
+        0x1: "1",
+        0x2: "2",
+        0x3: "3",
+        0x4: "4",
+        0x5: "5",
+        0x6: "6",
+        0x7: "7",
+        0x8: "8",
+        0x9: "9",
+        0x0: "0",
+        0xea: ".",
+        0xe4: "-",
+    }
+    return characters
+}
+
+function GetLocationsForRichPresence()
+{
+    rpLocations = {}
+    for location in locations
+    {
+        rpLocations[location["id"]] = location["conj"] + " " + location["name"]
+    }
+    return rpLocations
+}
+
+rich_presence_conditional_display(IsOutsideGameplay(), "Title Screen/Main Menu")
+
+rich_presence_display("{0}{1}{2}{3}{4}{5}{6}{7} is {8}",
+    rich_presence_lookup("Characters", char1(), GetCharactersForRichPresence()),
+    rich_presence_lookup("Characters", char2(), GetCharactersForRichPresence()),
+    rich_presence_lookup("Characters", char3(), GetCharactersForRichPresence()),
+    rich_presence_lookup("Characters", char4(), GetCharactersForRichPresence()),
+    rich_presence_lookup("Characters", char5(), GetCharactersForRichPresence()),
+    rich_presence_lookup("Characters", char6(), GetCharactersForRichPresence()),
+    rich_presence_lookup("Characters", char7(), GetCharactersForRichPresence()),
+    rich_presence_lookup("Characters", char8(), GetCharactersForRichPresence()),
+    rich_presence_lookup("Locations", areaId(), GetLocationsForRichPresence(), "somewhere in the world")
+)
