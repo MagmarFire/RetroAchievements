@@ -184,8 +184,18 @@ locations = [
 { "name": "Canyon", "id": 0x4e, "conj": "at the", },
 { "name": "Temple of Strength", "id": 0x1, "conj": "in the", },
 { "name": "Temple of Agility Boss Room", "id": 0x0, "conj": "in the", },
-{ "name": "Abello Town", "id": 0x39, "conj": "at", },
+{ "name": "Abello Town", "id": 0x39, "conj": "in", },
 { "name": "Abello Shooting Gallery", "id": 0x42, "conj": "at the", },
+{ "name": "Abello Town", "id": 0x26, "conj": "somewhere in", },
+{ "name": "???", "id": 0x23, "conj": "in", },
+{ "name": "Abello Town Tavern", "id": 0x33, "conj": "at the", },
+{ "name": "Bazaar", "id": 0x2c, "conj": "at the", },
+{ "name": "Bombchu Bowling Alley", "id": 0x4b, "conj": "at the", },
+{ "name": "Abello Castle", "id": 0x1e, "conj": "at", },
+{ "name": "Abello Castle", "id": 0x45, "conj": "inside", },
+{ "name": "Abello Castle", "id": 0x5c, "conj": "deep inside", },
+{ "name": "Zora Lair", "id": 0x22, "conj": "at", },
+{ "name": "Zora Lair shop", "id": 0x2f, "conj": "at the", },
 ]
 
 function GetLocationByName(name)
@@ -276,6 +286,18 @@ achievement(title = "No Guard [m]", points = 10, description = "Defeat the Stalf
 function stoneOfAgility() => bit2(0x11a676)
 achievement(title = "Swift Run", points = 5, description = "Acquire the Stone of Agility",
     trigger = WasBitflagSetInGame(stoneOfAgility())
+)
+
+function ShootingGalleryGameIsOver() => byte(0x1e3326) == 2
+function ArrowsRemainingInShootingGalleryGame() => byte(0x1da2ff) - 1
+function shootingGalleryScore() => byte(0x1e3324)
+achievement(title = "Sniper of Legend", points = 10, description = "Get a perfect score at the Abello Shooting Gallery using at most eleven arrows.",
+    trigger = IsInLocation("Abello Shooting Gallery") && ShootingGalleryGameIsOver() && ArrowsRemainingInShootingGalleryGame() >= 4 && shootingGalleryScore() == 0xa
+)
+
+function abelloSong() => bit3(0x11a675)
+achievement(title = "Thievery Rewarded", points = 3, description = "Learn Abello's Song from King Routelika.",
+    trigger = WasBitflagSetInGame(abelloSong())
 )
 
 // RICH PRESENCE
