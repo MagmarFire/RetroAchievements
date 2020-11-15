@@ -183,19 +183,25 @@ locations = [
 { "name": "Abello Lake", "id": 0x36, "conj": "at", },
 { "name": "Canyon", "id": 0x4e, "conj": "at the", },
 { "name": "Temple of Strength", "id": 0x1, "conj": "in the", },
-{ "name": "Temple of Agility Boss Room", "id": 0x0, "conj": "in the", },
+{ "name": "Temple of Agility", "id": 0x0, "conj": "in the", },
 { "name": "Abello Town", "id": 0x39, "conj": "in", },
 { "name": "Abello Shooting Gallery", "id": 0x42, "conj": "at the", },
 { "name": "Abello Town", "id": 0x26, "conj": "somewhere in", },
 { "name": "???", "id": 0x23, "conj": "in", },
 { "name": "Abello Town Tavern", "id": 0x33, "conj": "at the", },
-{ "name": "Bazaar", "id": 0x2c, "conj": "at the", },
+{ "name": "Abello Town Bazaar", "id": 0x2c, "conj": "at the", },
 { "name": "Bombchu Bowling Alley", "id": 0x4b, "conj": "at the", },
 { "name": "Abello Castle", "id": 0x1e, "conj": "at", },
 { "name": "Abello Castle", "id": 0x45, "conj": "inside", },
 { "name": "Abello Castle", "id": 0x5c, "conj": "deep inside", },
 { "name": "Zora Lair", "id": 0x22, "conj": "at", },
 { "name": "Zora Lair shop", "id": 0x2f, "conj": "at the", },
+{ "name": "Coastal Fortress", "id": 0x3a, "conj": "at the", },
+{ "name": "Kalki’s Forest", "id": 0x37, "conj": "in", },
+{ "name": "Kalki’s Forest", "id": 0x40, "conj": "deep inside", },
+{ "name": "Patrick’s Manor", "id": 0x3, "conj": "in", },
+{ "name": "Abello Castle Hospital", "id": 0x31, "conj": "in the", },
+{ "name": "Temple of Wisdom", "id": 0x2, "conj": "in the", },
 ]
 
 function GetLocationByName(name)
@@ -226,6 +232,13 @@ function IsInLocation(name)
     return areaId() == location["id"]
 }
 
+function GenerateChestAchievement(name, description, points, chestInfo)
+{
+    achievement(title = name, description = description, points = points,
+        trigger = WasBitflagSetInGame(bit(chestInfo["bit"], chestInfo["buffer"])) && unless(bit(chestInfo["bit"], chestInfo["storage"]) == 1)
+    )
+}
+
 
 achievement(title = "Save Protection Test", description = "If this pops when the game loads, save protection is broken.", points = 0,
     trigger = DidValueBecomeGreaterThanGivenInGame(rupees(), 0) || DidValueBecomeGreaterThanGivenInGame(goldSkulltulas(), 0)
@@ -233,12 +246,15 @@ achievement(title = "Save Protection Test", description = "If this pops when the
 
 function currentAreaChestBuffer() => byte(0x1ca1d8)
 chestFlags = {
-    "medicine": { "storage": 0x11ab58, "buffer": 0x1ca1d8, "bit": 7 }
+    "medicine": { "storage": 0x11ab58, "buffer": 0x1ca1d8, "bit": 7 },
+    "Giant's Knife": { "storage": 0x11aa78, "buffer": 0x1ca1d8, "bit": 1 }
 }
 
-medicineChest = chestFlags["medicine"]
-achievement(title = "Are You Proud of Yourself?", description = "Raid the chest in the sleeping man's room in Sagnol Village.", points = 1,
-    trigger = WasBitflagSetInGame(bit(medicineChest["bit"], medicineChest["buffer"])) && unless(bit(medicineChest["bit"], medicineChest["storage"]) == 1)
+GenerateChestAchievement(
+    name = "Are You Proud of Yourself?",
+    description = "Raid the chest in the sleeping man's room in Sagnol Village.",
+    points = 1,
+    chestInfo = chestFlags["medicine"]
 )
 
 function bottle1() => byte(0x11a655)
@@ -284,7 +300,7 @@ achievement(title = "No Guard [m]", points = 10, description = "Defeat the Stalf
 )
 
 function stoneOfAgility() => bit2(0x11a676)
-achievement(title = "Swift Run", points = 5, description = "Acquire the Stone of Agility",
+achievement(title = "Swift Run", points = 5, description = "Acquire the Stone of Agility.",
     trigger = WasBitflagSetInGame(stoneOfAgility())
 )
 
@@ -298,6 +314,43 @@ achievement(title = "Sniper of Legend", points = 10, description = "Get a perfec
 function abelloSong() => bit3(0x11a675)
 achievement(title = "Thievery Rewarded", points = 3, description = "Learn Abello's Song from King Routelika.",
     trigger = WasBitflagSetInGame(abelloSong())
+)
+
+function lensOfTruthSlot() => byte(0x11a652)
+achievement(title = "Peering from the Shadows", points = 3, description = "Obtain the Lens of Truth.",
+    trigger = WasValueSetInGame(lensOfTruthSlot(), 0xff, 0xf)
+)
+
+function masterSong() => bit4(0x11a675)
+achievement(title = "Tale as Old as Time", points = 3, description = "Learn the Master Song.",
+    trigger = WasBitflagSetInGame(masterSong())
+)
+
+function preludeOfForest() => bit6(0x11a674)
+achievement(title = "First Step Towards a Jailbreak", points = 3, description = "Learn the Prelude of Forest.",
+    trigger = WasBitflagSetInGame(preludeOfForest())
+)
+
+function hookshotSlot() => byte(0x11a64e)
+achievement(title = "The Hooks!", points = 3, description = "Obtain the Hookshot.",
+    trigger = WasValueSetInGame(hookshotSlot(), 0xff, 0xa)
+)
+
+function faroresWindSlot() => byte(0x11a64c)
+achievement(title = "Old Kokiri Magic", points = 5, description = "Learn the Skull Kid's Wind spell.",
+    trigger = WasValueSetInGame(faroresWindSlot(), 0xff, 0xd)
+)
+
+function forestMedallion() => bit0(0x11a674)
+achievement(title = "Empty Cells", points = 5, description = "Rescue the imprisoned Kokiri and obtain the Forest Medallion.",
+    trigger = WasBitflagSetInGame(forestMedallion())
+)
+
+GenerateChestAchievement(
+    name = "Remains of a Butcher",
+    description = "Open the chest in the basement of the macabre house in Abello Town.",
+    points = 5,
+    chestInfo = chestFlags["Giant's Knife"]
 )
 
 // RICH PRESENCE
