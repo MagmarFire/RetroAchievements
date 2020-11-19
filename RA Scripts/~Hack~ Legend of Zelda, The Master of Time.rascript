@@ -95,6 +95,8 @@ function char5() => byte(0x11A5FB)
 
 function rupees() => word(0x11a606)
 
+function musicId() => word(0x124e54)
+
 // $11b92c: 00: Boot, Gameplay
 //          01: Title Screen
 //          02: File select
@@ -109,6 +111,8 @@ function HasShieldEquipped() => shield() > 0
 
 // $11a6a2: Gold Skulltula tokens collected (16-bit)
 function goldSkulltulas() => word(0x11a6a2)
+
+function equippedTunic() => low4(0x11a643)
 
 // This function allows the creation of achievements with built-in save protection that deal with a collection of values being set
 // throughout the game. The schemas for both parameters are as follows:
@@ -201,7 +205,14 @@ locations = [
 { "name": "Kalki’s Forest", "id": 0x40, "conj": "deep inside", },
 { "name": "Patrick’s Manor", "id": 0x3, "conj": "in", },
 { "name": "Abello Castle Hospital", "id": 0x31, "conj": "in the", },
-{ "name": "Temple of Wisdom", "id": 0x2, "conj": "in the", },
+{ "name": "somewhere damp", "id": 0x2, "conj": "", },
+{ "name": "Goron Cave", "id": 0x38, "conj": "in", },
+{ "name": "Goron Cave shop", "id": 0x23, "conj": "in the", },
+{ "name": "Moblin’s Lair", "id": 0x3f, "conj": "at", },
+{ "name": "Moblin’s Lair", "id": 0x20, "conj": "at", },
+{ "name": "confronting his fate", "id": 0x5f, "conj": "", },
+{ "name": "the Temple of Wisdom", "id": 0x30, "conj": "in", },
+{ "name": "Fire Temple", "id": 0x4, "conj": "in the", },
 ]
 
 function GetLocationByName(name)
@@ -239,10 +250,6 @@ function GenerateChestAchievement(name, description, points, chestInfo)
     )
 }
 
-
-achievement(title = "Save Protection Test", description = "If this pops when the game loads, save protection is broken.", points = 0,
-    trigger = DidValueBecomeGreaterThanGivenInGame(rupees(), 0) || DidValueBecomeGreaterThanGivenInGame(goldSkulltulas(), 0)
-)
 
 function currentAreaChestBuffer() => byte(0x1ca1d8)
 chestFlags = {
@@ -296,7 +303,8 @@ achievement(title = "Heartthrob", points = 25, description = "Complete and obtai
 function stalfosChestAppearFlag() => bit0(0x1ca1e0)
 function stalfosChestFlag() => bit0(0x1ca1dc)
 achievement(title = "No Guard [m]", points = 10, description = "Defeat the Stalfos in the Temple of Agility without having a shield equipped.",
-    trigger = never(!IsInLocation("Temple of Agility Boss Room")) && WasBitflagSetInGame(stalfosChestAppearFlag()) && WasBitflagSetInGame(stalfosChestFlag()) && !HasShieldEquipped()
+    trigger = never(!IsInLocation("Temple of Agility Boss Room")) && WasBitflagSetInGame(stalfosChestAppearFlag()) && WasBitflagSetInGame(stalfosChestFlag())
+        && !HasShieldEquipped()
 )
 
 function stoneOfAgility() => bit2(0x11a676)
@@ -352,6 +360,40 @@ GenerateChestAchievement(
     points = 5,
     chestInfo = chestFlags["Giant's Knife"]
 )
+
+function iceArrowSlot() => byte(0x11a64d)
+achievement(title = "Frozen Flesh", points = 3, description = "Obtain the Ice Arrow.",
+    trigger = WasValueSetInGame(iceArrowSlot(), 0xff, 0xc)
+)
+
+function moblinMarch() => bit7(0x11a674)
+achievement(title = "One, Two, One, Two", points = 3, description = "Learn the Moblin March.",
+    trigger = WasBitflagSetInGame(moblinMarch())
+)
+
+function badEnding() => bit4(0x11b4b1)
+achievement(title = "A Quick Drop", points = 10, description = "Unlock the bad ending.",
+    trigger = WasBitflagSetInGame(badEnding()) && IsInLocation("confronting his fate") && musicId() == 0x3f // The "music ID" is checked to trigger the cheevo on the last shot.
+)
+
+function stoneOfWisdom() => bit4(0x11a676)
+achievement(title = "Outsmarting a Goddess", points = 5, description = "Acquire the Stone of Wisdom.",
+    trigger = WasBitflagSetInGame(stoneOfWisdom())
+)
+
+function flareDancerDefeate() => bit7(0x1ca1dc)
+function GoronTunicIsEquipped() => equippedTunic() == 2
+achievement(title = "My Bow Runs Hot [m]", points = 10, description = "Defeat the Flare Dancer in the Fire Temple without the Goron Tunic equipped.",
+    trigger = once(Delta(musicId()) == 0x67 && musicId() == 0x38) // Checkpoint for when the battle with the flare Dancer begins.
+        && Delta(musicId()) == 0x38 && musicId() == 0x67 // Trigger when the battle ends.
+        && WasBitflagSetInGame(flareDancerDefeate())
+        && never(!IsInLocation("Fire Temple") || GoronTunicIsEquipped())
+)
+
+function bombBagObtained() => bit3(0x11a670)
+achievement(title = "One Errant Twitch...", points = 3, description = "Obtain the Bomb Bag.",
+    trigger = WasBitflagSetInGame(bombBagObtained())
+)   
 
 // RICH PRESENCE
 function IsOutsideGameplay() => status() != 0
