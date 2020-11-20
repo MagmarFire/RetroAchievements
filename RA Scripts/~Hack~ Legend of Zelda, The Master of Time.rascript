@@ -213,6 +213,9 @@ locations = [
 { "name": "confronting his fate", "id": 0x5f, "conj": "", },
 { "name": "the Temple of Wisdom", "id": 0x30, "conj": "in", },
 { "name": "Fire Temple", "id": 0x4, "conj": "in the", },
+{ "name": "Fire Temple", "id": 0x15, "conj": "in the", },
+{ "name": "the Temple of Strength", "id": 0x12, "conj": "in the", },
+{ "name": "the Temple of Strength", "id": 0x60, "conj": "in the", },
 ]
 
 function GetLocationByName(name)
@@ -354,6 +357,11 @@ achievement(title = "Empty Cells", points = 5, description = "Rescue the impriso
     trigger = WasBitflagSetInGame(forestMedallion())
 )
 
+function fireMedallion() => bit1(0x11a674)
+achievement(title = "Vengeance for the Gorons", points = 5, description = "Obtain the Fire Medallion.",
+    trigger = WasBitflagSetInGame(fireMedallion())
+)
+
 GenerateChestAchievement(
     name = "Remains of a Butcher",
     description = "Open the chest in the basement of the macabre house in Abello Town.",
@@ -383,7 +391,7 @@ achievement(title = "Outsmarting a Goddess", points = 5, description = "Acquire 
 
 function flareDancerDefeate() => bit7(0x1ca1dc)
 function GoronTunicIsEquipped() => equippedTunic() == 2
-achievement(title = "My Bow Runs Hot [m]", points = 10, description = "Defeat the Flare Dancer in the Fire Temple without the Goron Tunic equipped.",
+achievement(title = "My Bow Runs Hot [m]", points = 10, description = "Defeat any Flare Dancer in the Fire Temple without the Goron Tunic equipped.",
     trigger = once(Delta(musicId()) == 0x67 && musicId() == 0x38) // Checkpoint for when the battle with the flare Dancer begins.
         && Delta(musicId()) == 0x38 && musicId() == 0x67 // Trigger when the battle ends.
         && WasBitflagSetInGame(flareDancerDefeate())
@@ -393,7 +401,12 @@ achievement(title = "My Bow Runs Hot [m]", points = 10, description = "Defeat th
 function bombBagObtained() => bit3(0x11a670)
 achievement(title = "One Errant Twitch...", points = 3, description = "Obtain the Bomb Bag.",
     trigger = WasBitflagSetInGame(bombBagObtained())
-)   
+)
+
+function stoneOfStrength() => bit3(0x11a676)
+achievement(title = "Blood and Tears", points = 5, description = "Acquire the Stone of Strength.",
+    trigger = WasBitflagSetInGame(stoneOfStrength())
+)
 
 // RICH PRESENCE
 function IsOutsideGameplay() => status() != 0
