@@ -13,6 +13,8 @@ function battlefieldId() => word(0x0BB0F4)
 // $0BB0F8: Enemy ID
 function enemyId() => word(0x0BB0F8)
 
+function chapter() => byte(0x0BAC60)
+
 // $0BC920: Gold Prize (32-bit)
 function goldPrize() => word(0x0BC920)
 
@@ -503,19 +505,35 @@ achievement(
                (word(0x052C30) == 0x0266 && prev(bit3(0x0BAD64)) == 0x0 && bit3(0x0BAD64) == 0x1))
 )
 
+// == UPDATED DUE TO 33633 ==
+// We're using the display values here, since they appear to be more stable.
+function vegetableTimeDisplay() => word(0x0BDF20)
+function playerVeggiesChopped() => word(0x0bdf10)
+function playerTotalChops() => word(0x0bdf14)
+function opponentVeggiesChopped() => word(0x0bdf18)
+function opponentTotalChops() => word(0x0bdf1c)
+
+function PlayerHasSameVeggiesButMoreChops()
+{
+    return playerVeggiesChopped() == opponentVeggiesChopped() // Same veggies
+        && (playerTotalChops() - opponentTotalChops()) > 0 // More chops
+        && (playerTotalChops() - opponentTotalChops()) < 0x8000 // Check to ensure signed underflow doesn't happen.
+}
+
+function PlayerHasMoreVeggies()
+{
+    return ((playerVeggiesChopped() - opponentVeggiesChopped()) > 0 // More veggies
+        && (playerVeggiesChopped() - opponentVeggiesChopped()) < 0x8000) // Check to ensure signed underflow doesn't happen.
+}
+
 achievement(
     title = "Slap Chopper", description = "Win the Vegetable Julienne Contest on the Queen Fury.", points = 5,
     id = 95197, badge = "106725", published = "1/18/2020 7:42:37 AM", modified = "2/4/2020 11:11:00 PM",
-    trigger = word(0x052C30) == 0x0119 && never(word(0x0BDF20) > 0x0000) && never(prev(word(0x0BDF20)) != 0x0001) &&
-              (((word(0x16C8C4) - word(0x16C514)) == 0x0000 && (word(0x16D80C) - word(0x16D45C)) > 0x0000 && 
-                (word(0x16D80C) - word(0x16D45C)) < 0x8000 && unless(byte(0x0BAC60) > 0x01)) ||
-               ((word(0x16C8C4) - word(0x16C514)) > 0x0000 && (word(0x16C8C4) - word(0x16C514)) < 0x8000 && 
-                unless(byte(0x0BAC60) > 0x01)) ||
-               ((word(0x16CA74) - word(0x16C6C4)) == 0x0000 && (word(0x16D9BC) - word(0x16D60C)) > 0x0000 && 
-                (word(0x16D60C) - word(0x16D60C)) < 0x8000 && unless(byte(0x0BAC60) == 0x01)) ||
-               ((word(0x16CA74) - word(0x16C6C4)) > 0x0000 && (word(0x16CA74) - word(0x16C6C4)) < 0x8000 && 
-                unless(byte(0x0BAC60) == 0x01)))
+    trigger = mapId() == 0x0119 && never(vegetableTimeDisplay() > 0) && never(prev(vegetableTimeDisplay()) != 1) &&
+              (PlayerHasSameVeggiesButMoreChops() || PlayerHasMoreVeggies())
 )
+
+// END SLAP CHOPPER
 
 achievement(
     title = "The Flash", description = "In Fletz, survive against Lenus for ten turns in Dragoon form, and then defeat her.", points = 25,
