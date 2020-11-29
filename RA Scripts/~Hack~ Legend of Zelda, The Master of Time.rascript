@@ -211,11 +211,20 @@ locations = [
 { "name": "Moblin’s Lair", "id": 0x3f, "conj": "at", },
 { "name": "Moblin’s Lair", "id": 0x20, "conj": "at", },
 { "name": "confronting his fate", "id": 0x5f, "conj": "", },
-{ "name": "the Temple of Wisdom", "id": 0x30, "conj": "in", },
+{ "name": "Temple of Wisdom", "id": 0x30, "conj": "in the", },
 { "name": "Fire Temple", "id": 0x4, "conj": "in the", },
 { "name": "Fire Temple", "id": 0x15, "conj": "in the", },
-{ "name": "the Temple of Strength", "id": 0x12, "conj": "in the", },
-{ "name": "the Temple of Strength", "id": 0x60, "conj": "in the", },
+{ "name": "Temple of Strength", "id": 0x12, "conj": "in the", },
+{ "name": "Temple of Strength", "id": 0x60, "conj": "in the", },
+{ "name": "house by Abello Lake", "id": 0x1c, "conj": "in the", },
+{ "name": "Lozan", "id": 0x41, "conj": "in", },
+{ "name": "Ice Cavern", "id": 0x9, "conj": "in the", },
+{ "name": "Lozan Castle", "id": 0x4c, "conj": "in", },
+{ "name": "Lozan Castle", "id": 0x4d, "conj": "at", },
+{ "name": "Death Temple", "id": 0x5, "conj": "in the", },
+{ "name": "Lozan Jail", "id": 0x48, "conj": "in the", },
+{ "name": "fortress at the Canyon", "id": 0x1b, "conj": "in the", },
+{ "name": "Bombchu shop in the Canyon", "id": 0x24, "conj": "at the", },
 ]
 
 function GetLocationByName(name)
@@ -406,6 +415,37 @@ achievement(title = "One Errant Twitch...", points = 3, description = "Obtain th
 function stoneOfStrength() => bit3(0x11a676)
 achievement(title = "Blood and Tears", points = 5, description = "Acquire the Stone of Strength.",
     trigger = WasBitflagSetInGame(stoneOfStrength())
+)
+
+function bombchuBowlingState() => byte(0x0eb24d)
+function bombchusRemainingInBowling() => byte(0x1da2fe)
+achievement(title = "No-Tap", points = 10, description = "Win a game at the Bombchu Bowling Alley using no more than six Bombchus.",
+    trigger = IsInLocation("Bombchu Bowling Alley") && bombchuBowlingState() == 2 && bombchusRemainingInBowling() >= 4
+)
+
+function requiemOfIce() => bit0(0x11a675)
+achievement(title = "Anthem of a Fallen Kingdom", points = 3, description = "Learn the Requiem of Ice.",
+    trigger = WasBitflagSetInGame(requiemOfIce())
+)
+
+function iceMedallion() => bit2(0x11a674)
+achievement(title = "Snowy Fate", points = 5, description = "Obtain the Ice Medallion.",
+    trigger = WasBitflagSetInGame(iceMedallion())
+)
+
+function hoverBoots() => bit6(0x11a66f)
+achievement(title = "On Cloud Nine", points = 10, description = "Obtain the Hover Boots from the Lozan Jail.",
+    trigger = WasBitflagSetInGame(hoverBoots())
+)
+
+function cowsLullaby() => bit5(0x11a675)
+achievement(title = "Bovine Bliss", points = 5, description = "Learn the Cow's Lullaby.",
+    trigger = WasBitflagSetInGame(cowsLullaby())
+)
+
+function bombchuSlot() => byte(0x11a64f)
+achievement(title = "Boom Guy", points = 5, description = "Obtain Bombchus.",
+    trigger = WasValueSetInGame(bombchuSlot(), 0xff, 0x9)
 )
 
 // RICH PRESENCE
