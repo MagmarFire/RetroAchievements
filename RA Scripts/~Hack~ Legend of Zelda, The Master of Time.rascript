@@ -287,7 +287,7 @@ GenerateChestAchievement(
     points = 1,
     chestInfo = chestFlags["medicine"],
     badge = "147845",
-    addlLogic = IsInLocation("Sagnol Village (indoors)")
+    addlLogic = never(!IsInLocation("Sagnol Village (indoors)"))
 )
 
 function bottle1() => byte(0x11a655)
@@ -407,7 +407,7 @@ GenerateChestAchievement(
     points = 5,
     chestInfo = chestFlags["Giant's Knife"],
     badge = "147860",
-    addlLogic = IsInLocation("Abello Town butcher shop")
+    addlLogic = never(!IsInLocation("Abello Town butcher shop"))
 )
 
 function iceArrowSlot() => byte(0x11a64d)
