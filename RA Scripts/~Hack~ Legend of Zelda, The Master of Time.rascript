@@ -166,13 +166,14 @@ function WasItemSlotFilled(mem)
 }
 
 function areaId() => word(0x1c8546)
+function actualAreaId() => word(0x120c42)
 
 locations = [
 { "name": "Sagnol Village", "id": 0x28, "conj": "in", },
-{ "name": "Sagnol Village", "id": 0x2b, "conj": "in", },
+{ "name": "Sagnol Village (indoors)", "id": 0x2b, "conj": "in", },
 { "name": "Sagnol Village Shop", "id": 0x2d, "conj": "browsing the", },
 { "name": "Scrub Cliff", "id": 0x29, "conj": "climbing", },
-{ "name": "Sagnol Village Inn", "id": 0x34, "conj": "visiting", },
+{ "name": "Sagnol Village Inn", "id": 0x34, "conj": "visiting the", },
 { "name": "Path of Gods", "id": 0x4a, "conj": "walking the", },
 { "name": "Sagnol Tomb", "id": 0x2a, "conj": "raiding the", },
 { "name": "Title Screen", "id": 0x27, "conj": "", },
@@ -191,7 +192,7 @@ locations = [
 { "name": "Abello Town", "id": 0x39, "conj": "in", },
 { "name": "Abello Shooting Gallery", "id": 0x42, "conj": "at the", },
 { "name": "Abello Town", "id": 0x26, "conj": "somewhere in", },
-{ "name": "???", "id": 0x23, "conj": "in", },
+{ "name": "Abello Town butcher shop", "id": 0x23, "conj": "in the", },
 { "name": "Abello Town Tavern", "id": 0x33, "conj": "at the", },
 { "name": "Abello Town Bazaar", "id": 0x2c, "conj": "at the", },
 { "name": "Bombchu Bowling Alley", "id": 0x4b, "conj": "at the", },
@@ -223,8 +224,18 @@ locations = [
 { "name": "Lozan Castle", "id": 0x4d, "conj": "at", },
 { "name": "Death Temple", "id": 0x5, "conj": "in the", },
 { "name": "Lozan Jail", "id": 0x48, "conj": "in the", },
-{ "name": "fortress at the Canyon", "id": 0x1b, "conj": "in the", },
+{ "name": "bomb factory at the Canyon", "id": 0x1b, "conj": "in the", },
 { "name": "Bombchu shop in the Canyon", "id": 0x24, "conj": "at the", },
+{ "name": "Coastal Fortress", "id": 0xb, "conj": "inside the", },
+{ "name": "Jafre Desert", "id": 0x50, "conj": "in", },
+{ "name": "Light Temple", "id": 0x6, "conj": "in the", },
+{ "name": "Light Temple", "id": 0x17, "conj": "in the", },
+{ "name": "Water Temple", "id": 0x7, "conj": "in the", },
+{ "name": "Water Temple", "id": 0x18, "conj": "in the", },
+{ "name": "?", "id": 0x25, "conj": "in", },
+{ "name": "edge of the world", "id": 0x5e, "conj": "at the", },
+{ "name": "Space Link", "id": 0x3c, "conj": "playing", },
+{ "name": "Defenseless", "id": 0x10, "conj": "playing", },
 ]
 
 function GetLocationByName(name)
@@ -255,10 +266,10 @@ function IsInLocation(name)
     return areaId() == location["id"]
 }
 
-function GenerateChestAchievement(name, description, points, chestInfo)
+function GenerateChestAchievement(id, name, description, points, chestInfo, badge, addlLogic)
 {
-    achievement(title = name, description = description, points = points,
-        trigger = WasBitflagSetInGame(bit(chestInfo["bit"], chestInfo["buffer"])) && unless(bit(chestInfo["bit"], chestInfo["storage"]) == 1)
+    achievement(title = name, description = description, points = points, badge = badge, id = id,
+        trigger = WasBitflagSetInGame(bit(chestInfo["bit"], chestInfo["buffer"])) && unless(bit(chestInfo["bit"], chestInfo["storage"]) == 1) && addlLogic
     )
 }
 
@@ -270,17 +281,20 @@ chestFlags = {
 }
 
 GenerateChestAchievement(
+    id = 133579,
     name = "Are You Proud of Yourself?",
     description = "Raid the chest in the sleeping man's room in Sagnol Village.",
     points = 1,
-    chestInfo = chestFlags["medicine"]
+    chestInfo = chestFlags["medicine"],
+    badge = "147845",
+    addlLogic = IsInLocation("Sagnol Village (indoors)")
 )
 
 function bottle1() => byte(0x11a655)
 function bottle2() => byte(0x11a654)
 function bottle3() => byte(0x11a65b)
 function bottle4() => byte(0x11a65a)
-achievement(title = "Take One Down, Pass It Around", description = "Obtain four bottles.", points = 10,
+achievement(title = "Take One Down, Pass It Around", description = "Obtain four bottles.", points = 25,
     // All bottle slots have to be filled with a bottle item, and any one of those slots must have just been an empty slot.
     trigger = SlotHasBottleItem(bottle1()) && SlotHasBottleItem(bottle2()) && SlotHasBottleItem(bottle3()) && SlotHasBottleItem(bottle4()) && 
         (WasItemSlotFilled(bottle1()) || WasItemSlotFilled(bottle2()) || WasItemSlotFilled(bottle3()) || WasItemSlotFilled(bottle4()))
@@ -291,7 +305,7 @@ skulltulaCheevos = [
     { "name": "Rookie Exterminator", "points": 3, "threshold": 10 },
     { "name": "Regular Exterminator", "points": 5, "threshold": 25 },
     { "name": "Veteran Exterminator", "points": 10, "threshold": 50 },
-    { "name": "Legendary Exterminator", "points": 25, "threshold": 100 },
+    { "name": "Legendary Exterminator", "points": 50, "threshold": 100 },
 ]
 
 for cheevo in skulltulaCheevos
@@ -301,13 +315,24 @@ for cheevo in skulltulaCheevos
     )
 }
 
-function bracelet() => bit6(0x11a670)
+function braceletAndGauntletAddr() => 0x11a670
+function bracelet() => bit6(braceletAndGauntletAddr())
 achievement(title = "Nighthawk", points = 3, description = "Obtain the bracelet from the Sagnol Tomb.",
-    trigger = WasBitflagSetInGame(bracelet())
+    trigger = WasBitflagSetInGame(bracelet()) && never(bit7(braceletAndGauntletAddr()) == 1)
+)
+
+achievement(title = "I Have the Power!", points = 10, description = "Obtain the Golden Gauntlets.",
+    trigger = WasBitflagSetInGame(bracelet()) && never(bit7(braceletAndGauntletAddr()) == 0)
+)
+
+function quiverAddr() => 0x11a670
+function largestQuiver() => bit0(quiverAddr())
+achievement(title = "To Blot out the Sun", points = 10, description = "Obtain the Biggest Quiver.",
+    trigger = WasBitflagSetInGame(largestQuiver()) && never(bit1(quiverAddr()) == 0)
 )
 
 function maxHP() => word(0x11a5fc)
-achievement(title = "Heartthrob", points = 25, description = "Complete and obtain seventeen Heart Containers.",
+achievement(title = "Heartthrob", points = 50, description = "Have a total of 20 hearts' worth of life energy.",
     trigger = WasValueSetInGame(maxHP(), 0x130, 0x140)
 )
 
@@ -337,7 +362,7 @@ achievement(title = "Thievery Rewarded", points = 3, description = "Learn Abello
 )
 
 function lensOfTruthSlot() => byte(0x11a652)
-achievement(title = "Peering from the Shadows", points = 3, description = "Obtain the Lens of Truth.",
+achievement(title = "Peering from the Shadows", points = 10, description = "Retrieve the Lens of Truth from the sewers.",
     trigger = WasValueSetInGame(lensOfTruthSlot(), 0xff, 0xf)
 )
 
@@ -356,30 +381,37 @@ achievement(title = "The Hooks!", points = 3, description = "Obtain the Hookshot
     trigger = WasValueSetInGame(hookshotSlot(), 0xff, 0xa)
 )
 
+achievement(title = "More Hooks!", points = 10, description = "Upgrade your Hookshot to the Longshot.",
+    trigger = WasValueSetInGame(hookshotSlot(), 0xa, 0xb)
+)
+
 function faroresWindSlot() => byte(0x11a64c)
 achievement(title = "Old Kokiri Magic", points = 5, description = "Learn the Skull Kid's Wind spell.",
     trigger = WasValueSetInGame(faroresWindSlot(), 0xff, 0xd)
 )
 
 function forestMedallion() => bit0(0x11a674)
-achievement(title = "Empty Cells", points = 5, description = "Rescue the imprisoned Kokiri and obtain the Forest Medallion.",
+achievement(title = "Empty Cells", points = 10, description = "Rescue the imprisoned Kokiri and obtain the Forest Medallion.",
     trigger = WasBitflagSetInGame(forestMedallion())
 )
 
 function fireMedallion() => bit1(0x11a674)
-achievement(title = "Vengeance for the Gorons", points = 5, description = "Obtain the Fire Medallion.",
+achievement(title = "Vengeance for the Gorons", points = 10, description = "Obtain the Fire Medallion.",
     trigger = WasBitflagSetInGame(fireMedallion())
 )
 
 GenerateChestAchievement(
+    id = 133594,
     name = "Remains of a Butcher",
-    description = "Open the chest in the basement of the macabre house in Abello Town.",
+    description = "Open the chest in the basement of the butcher shop in Abello Town.",
     points = 5,
-    chestInfo = chestFlags["Giant's Knife"]
+    chestInfo = chestFlags["Giant's Knife"],
+    badge = "147860",
+    addlLogic = IsInLocation("Abello Town butcher shop")
 )
 
 function iceArrowSlot() => byte(0x11a64d)
-achievement(title = "Frozen Flesh", points = 3, description = "Obtain the Ice Arrow.",
+achievement(title = "Frozen Flesh", points = 10, description = "Obtain the Ice Arrows.",
     trigger = WasValueSetInGame(iceArrowSlot(), 0xff, 0xc)
 )
 
@@ -394,7 +426,7 @@ achievement(title = "A Quick Drop", points = 10, description = "Unlock the bad e
 )
 
 function stoneOfWisdom() => bit4(0x11a676)
-achievement(title = "Outsmarting a Goddess", points = 5, description = "Acquire the Stone of Wisdom.",
+achievement(title = "Outsmarting a Goddess", points = 10, description = "Acquire the Stone of Wisdom.",
     trigger = WasBitflagSetInGame(stoneOfWisdom())
 )
 
@@ -408,12 +440,12 @@ achievement(title = "My Bow Runs Hot [m]", points = 10, description = "Defeat an
 )
 
 function bombBagObtained() => bit3(0x11a670)
-achievement(title = "One Errant Twitch...", points = 3, description = "Obtain the Bomb Bag.",
+achievement(title = "One Errant Twitch...", points = 5, description = "Obtain the Bomb Bag.",
     trigger = WasBitflagSetInGame(bombBagObtained())
 )
 
 function stoneOfStrength() => bit3(0x11a676)
-achievement(title = "Blood and Tears", points = 5, description = "Acquire the Stone of Strength.",
+achievement(title = "Blood and Tears", points = 10, description = "Acquire the Stone of Strength.",
     trigger = WasBitflagSetInGame(stoneOfStrength())
 )
 
@@ -429,7 +461,7 @@ achievement(title = "Anthem of a Fallen Kingdom", points = 3, description = "Lea
 )
 
 function iceMedallion() => bit2(0x11a674)
-achievement(title = "Snowy Fate", points = 5, description = "Obtain the Ice Medallion.",
+achievement(title = "Snowy Fate", points = 10, description = "Obtain the Ice Medallion.",
     trigger = WasBitflagSetInGame(iceMedallion())
 )
 
@@ -446,6 +478,51 @@ achievement(title = "Bovine Bliss", points = 5, description = "Learn the Cow's L
 function bombchuSlot() => byte(0x11a64f)
 achievement(title = "Boom Guy", points = 5, description = "Obtain Bombchus.",
     trigger = WasValueSetInGame(bombchuSlot(), 0xff, 0x9)
+)
+
+function dekuNutUpgrade() => bit5(0x11a672)
+achievement(title = "You're Gonna Love My Nuts", points = 10, description = "Retrieve the Deku Nut upgrade from the Bombchu factory in the Canyon.",
+    trigger = WasBitflagSetInGame(dekuNutUpgrade())
+)
+
+function desertCall() => bit1(0x11a675)
+achievement(title = "Forty Years Wandering", points = 5, description = "Learn the Desert Call.",
+    trigger = WasBitflagSetInGame(desertCall())
+)
+
+function mirrorShield() => bit6(0x11a66e)
+achievement(title = "The Fairest One of All", points = 10, description = "Obtain the Mirror Shield.",
+    trigger = WasBitflagSetInGame(mirrorShield())
+)
+
+function lightMedallion() => bit3(0x11a674)
+achievement(title = "The Desert Rays", points = 10, description = "Obtain the Light Medallion.",
+    trigger = WasBitflagSetInGame(lightMedallion())
+)
+
+function waterMedallion() => bit4(0x11a674)
+achievement(title = "What's in That Water?", points = 10, description = "Obtain the Water Medallion.",
+    trigger = WasBitflagSetInGame(waterMedallion())
+)
+
+function songOfStorms() => bit1(0x11a676)
+achievement(title = "Enter the Tempest", points = 10, description = "Learn the Song of Storms.",
+    trigger = WasBitflagSetInGame(songOfStorms())
+)
+
+function oceanVibes() => bit2(0x11a675)
+achievement(title = "Towards the Tower", points = 10, description = "Learn the Ocean Vibes.",
+    trigger = WasBitflagSetInGame(oceanVibes())
+)
+
+function trueEnding() => bit3(0x11b4b1)
+achievement(title = "The Only Winning Move Is Not to Play", points = 25, description = "Unlock the 'good' ending.",
+    trigger = WasBitflagSetInGame(trueEnding()) && IsInLocation("edge of the world") && musicId() == 0x3f // The "music ID" is checked to trigger the cheevo on the last shot.
+)
+
+function fightingScroll() => bit6(0x11a676)
+achievement(title = "The Art of War", points = 10, description = "Obtain the Fighting Scroll.",
+    trigger = WasBitflagSetInGame(fightingScroll())
 )
 
 // RICH PRESENCE
@@ -531,7 +608,7 @@ function GetLocationsForRichPresence()
     return rpLocations
 }
 
-rich_presence_conditional_display(IsOutsideGameplay(), "Title Screen/Main Menu")
+rich_presence_conditional_display((IsOutsideGameplay() || actualAreaId() == 0), "Title Screen/Main Menu")
 
 rich_presence_display("{0}{1}{2}{3}{4}{5}{6}{7} is {8}",
     rich_presence_lookup("Characters", char1(), GetCharactersForRichPresence()),
