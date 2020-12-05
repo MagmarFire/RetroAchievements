@@ -481,7 +481,8 @@ achievement(title = "Boom Guy", points = 5, description = "Obtain Bombchus.",
 )
 
 function dekuNutUpgrade() => bit5(0x11a672)
-achievement(title = "You're Gonna Love My Nuts", points = 10, description = "Retrieve the Deku Nut upgrade from the Bombchu factory in the Canyon.",
+achievement(title = "You're Gonna Love My Nuts", points = 10, id = 133606, badge = "147872",
+    description = "Upgrade your Deku Nut carrying capacity.",
     trigger = WasBitflagSetInGame(dekuNutUpgrade())
 )
 
