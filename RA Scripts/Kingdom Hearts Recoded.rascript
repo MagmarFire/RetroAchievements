@@ -753,9 +753,49 @@ function luck() => word(0x060B5C)
 // 0xf = in the field
 function status() => word(0x056f50)
 
-function IsFileLoaded() => status() != 0x0 && status() != 0x3 && status() != 0xc
+// Menu ID (?) (16-bit)
+// 
+// 0xffff = transitioning/not in menu
+// 0x0 = Main Menu
+// 0x1 = Stat Matrix
+// 0x2 = Command Matrix
+// 0x3 = Gear Matrix
+// 0x5 = Config
+// 0x6 = Save/Load Menu
+// 0xb = Debug Reports
+// 0xc = Trophies
+// 0xd = Collection
+// 0xe = Story
+// 0xf = Enemy Profiles
+// 0x10 = Character Files
+// 0x12 = Tutorials
+function menuId() => word(0x0bea84)
 
-function IsLoadingSaveFile() => prior(status()) == 0x0 && status() == 0xc
+// Title screen status
+// 
+// 0 = Licensed by Nintendo
+// 1 = Square Enix
+// 2 = h.a.n.d.
+// 3 = lawyer stuff lol
+// 4 = Kingdom Hearts animation
+// 5 = Title Screen almost ready
+// 6 = Title Screen ready
+// 8 = Load Menu
+function titleScreenStatus() => byte(0x19c494)
+
+function IsFileLoaded() => status() != 0x0 && status() != 0x3 && !IsOnSaveOrLoadMenu()
+
+function IsLoadingSaveFile() => prior(titleScreenStatus()) == 0x8 && titleScreenStatus() == 0
+
+function IsOnSaveOrLoadMenu() => menuId() == 0x6
+
+function IsOnLoadMenu() => titleScreenStatus() == 8
+
+function TitleScreenAlmostReady() => titleScreenStatus() == 5
+
+function TitleScreenReady() => titleScreenStatus() == 6
+
+function IsOnTitleScreen() => TitleScreenAlmostReady() || TitleScreenReady()
 
 // This function allows the creation of achievements with built-in save protection that deal with a collection of values being set
 // throughout the game. The schemas for both parameters are as follows:
@@ -791,9 +831,9 @@ function GenerateSaveProtectedAchievementFromConditions(cheevo, conditions)
     }
 
     achievement(title = cheevo["name"], description = cheevo["description"], points = cheevo["points"],
-        trigger = IsFileLoaded()
+        trigger = !IsOnSaveOrLoadMenu() && never(IsOnLoadMenu())
             && measured(tally(cheevo["threshold"], totalCounts)) && unless(tally(cheevo["threshold"], loadedCounts))
-            && never(resetAlt)
+            && never(resetAlt) && (always_false() || never(IsOnTitleScreen()))
     )
 }
 
@@ -804,7 +844,7 @@ function ShadowCountsWhen()
 
 function ShadowRecalculateWhen()
 {
-    return Delta(bit7(0x195b69)) == 0 || Delta(byte(0x195b6a)) == 0 || Delta(byte(0x195b6b)) == 0
+    return Delta(bit7(0x195b69)) != bit7(0x195b69) || Delta(byte(0x195b6a)) != byte(0x195b6a) || Delta(byte(0x195b6b)) != byte(0x195b6b)
 }
 
 function DarksideCountsWhen()
