@@ -797,6 +797,23 @@ function TitleScreenReady() => titleScreenStatus() == 6
 
 function IsOnTitleScreen() => TitleScreenAlmostReady() || TitleScreenReady()
 
+function IsAlwaysInGame() => !IsOnSaveOrLoadMenu() && never(IsOnLoadMenu()) && never(IsOnTitleScreen())
+
+function WasValueSet(mem, oldValue, newValue)
+{
+    return once(Delta(mem) == oldValue && mem == newValue)
+}
+
+function WasValueSetInGame(mem, oldValue, newValue)
+{
+    return IsAlwaysInGame() && WasValueSet(mem, oldValue, newValue)
+}
+
+function WasBitflagSetInGame(mem)
+{
+    return WasValueSetInGame(mem, 0, 1)
+}
+
 // This function allows the creation of achievements with built-in save protection that deal with a collection of values being set
 // throughout the game. The schemas for both parameters are as follows:
 //
@@ -831,7 +848,7 @@ function GenerateSaveProtectedAchievementFromConditions(cheevo, conditions)
     }
 
     achievement(title = cheevo["name"], description = cheevo["description"], points = cheevo["points"],
-        trigger = !IsOnSaveOrLoadMenu() && never(IsOnLoadMenu())
+        trigger = IsAlwaysInGame()
             && measured(tally(cheevo["threshold"], totalCounts)) && unless(tally(cheevo["threshold"], loadedCounts))
             && never(resetAlt) && (always_false() || never(IsOnTitleScreen()))
     )
@@ -871,3 +888,136 @@ GenerateSaveProtectedAchievementFromConditions({
     "points": 0,
     "threshold": 2
 }, enemiesConditions)
+
+function rarePrizeRoundup() => bit5(0x195c78)
+achievement(title = "Rare Prize Roundup", description = "Collect all items from every rare prize blox in the game.", points = 10,
+    trigger = WasBitflagSetInGame(rarePrizeRoundup())
+)
+
+function lordOfLoot() => bit4(0x195c78)
+achievement(title = "Lord of Loot", description = "Collect at least 80% of enemy item drops.", points = 10,
+    trigger = WasBitflagSetInGame(lordOfLoot())
+)
+
+// todo: add more sector achievements for completion purposes
+
+function sectorSweeper() => bit3(0x195c78)
+achievement(title = "Sector Sweeper", description = "Complete all system sectors.", points = 10,
+    trigger = WasBitflagSetInGame(sectorSweeper())
+)
+
+function sultanOfSlot() => bit2(0x195c78)
+achievement(title = "Sultan of Slot", description = "Install chips in every slot in the Stat Matrix.", points = 10,
+    trigger = WasBitflagSetInGame(sultanOfSlot())
+)
+
+function cheater() => bit1(0x195c78)
+achievement(title = "Cheater", description = "Use every kind of cheat.", points = 5,
+    trigger = WasBitflagSetInGame(cheater())
+)
+
+function championCollector() => bit0(0x195c78)
+achievement(title = "Champion Collector", description = "Collect 70% of all abilities, chips, cheats, weapons, and items.", points = 10,
+    trigger = WasBitflagSetInGame(championCollector())
+)
+
+function avatarCollector() => bit7(0x195c7f)
+achievement(title = "Avatar Collector (?)", description = "Collect 50% avatar parts.", points = 10,
+    trigger = WasBitflagSetInGame(avatarCollector())
+)
+
+function avatarSweeper() => bit6(0x195c7f)
+achievement(title = "Avatar Sweeper (?)", description = "Complete all 100 floors of the Avatar Sector.", points = 25,
+    trigger = WasBitflagSetInGame(avatarSweeper())
+)
+
+function icerOfTitans() => bit5(0x195c7f)
+achievement(title = "Icer of Titans", description = "Defeat the Ice Titan.", points = 10,
+    trigger = WasBitflagSetInGame(icerOfTitans())
+)
+
+function eliminatorsEnd() => bit4(0x195c7f)
+achievement(title = "Eliminator's End", description = "Defeat an Eliminator.", points = 10,
+    trigger = WasBitflagSetInGame(eliminatorsEnd())
+)
+
+function twilightTriumph() => bit3(0x195c7f)
+achievement(title = "Twilight Triumph", description = "Defeat Data-Roxas.", points = 5,
+    trigger = WasBitflagSetInGame(twilightTriumph())
+)
+
+// todo: implement more enemy type cheevos
+
+function justiceForAll() => bit2(0x195c7f)
+achievement(title = "Justice for All", description = "Defeat all enemy types.", points = 25,
+    trigger = WasBitflagSetInGame(justiceForAll())
+)
+
+function weaponWizard() => bit1(0x195c7f)
+achievement(title = "Weapon Wizard", description = "Completely power up every type of Keyblade.", points = 25,
+    trigger = WasBitflagSetInGame(weaponWizard())
+)
+
+function converterLv100() => bit0(0x195c7f)
+achievement(title = "Converter LV 100", description = "Level up a command to Level 100.", points = 5,
+    trigger = WasBitflagSetInGame(converterLv100())
+)
+
+function converterCRLv100() => bit7(0x195c7e)
+achievement(title = "Converter CR LV 100", description = "Level up a command to CR Level 100.", points = 10,
+    trigger = WasBitflagSetInGame(converterCRLv100())
+)
+
+function commandMaster() => bit6(0x195c7e)
+achievement(title = "Command Master", description = "Upgrade every type of attack and magic command to CR.", points = 25,
+    trigger = WasBitflagSetInGame(commandMaster())
+)
+
+function closedBook() => bit5(0x195c7e)
+achievement(title = "Closed Book", description = "Complete the story.", points = 25,
+    trigger = WasBitflagSetInGame(closedBook())
+)
+
+function questBester() => bit4(0x195c7e)
+achievement(title = "Quest Bester", description = "Complete all quests.", points = 25,
+    trigger = WasBitflagSetInGame(questBester())
+)
+
+function proudAchievement() => bit3(0x195c7e)
+achievement(title = "Proud Achievement", description = "Replay and complete every world on Proud Mode.", points = 10,
+    trigger = WasBitflagSetInGame(proudAchievement())
+)
+
+function criticalAcclaim() => bit2(0x195c7e)
+achievement(title = "Critical Acclaim", description = "Replay and complete every world on Critical Mode.", points = 25,
+    trigger = WasBitflagSetInGame(criticalAcclaim())
+)
+
+function fatalFlawless() => bit1(0x195c7e)
+achievement(title = "Fatal Flawless", description = "Replay and complete an episode with the HP Cheat set to 0%.", points = 10,
+    trigger = WasBitflagSetInGame(fatalFlawless())
+)
+
+function technician() => bit0(0x195c7e)
+achievement(title = "Technician", description = "Replay and complete every world at Level 15 or lower.", points = 10,
+    trigger = WasBitflagSetInGame(technician())
+)
+
+speedrunnerTrophies = {
+    1: { "bit": 7, "timeLimit": 5 },
+    2: { "bit": 6, "timeLimit": 15 },
+    3: { "bit": 5, "timeLimit": 15 },
+    4: { "bit": 4, "timeLimit": 10 },
+    5: { "bit": 3, "timeLimit": 15 },
+    6: { "bit": 2, "timeLimit": 15 },
+    7: { "bit": 1, "timeLimit": 30 },
+    8: { "bit": 0, "timeLimit": 10 },
+}
+
+for i in speedrunnerTrophies
+{
+    trophy = speedrunnerTrophies[i]
+    achievement(title = "W" + i + " Speed Runner", description = "Finish World " + i + " in " + trophy["timeLimit"] + ":00 or less.", points = 10,
+        trigger = WasBitflagSetInGame(bit(trophy["bit"], 0x195c7d))
+    )
+}
