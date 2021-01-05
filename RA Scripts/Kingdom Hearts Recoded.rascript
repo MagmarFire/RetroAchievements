@@ -1,6 +1,96 @@
 // Kingdom Hearts Re:coded
 // #ID = 14828
 
+function worldId() => byte(0x19836c)
+function areaId() => byte(0x19836d)
+
+worlds = {
+    0: "Destiny Islands",
+    1: "Traverse Town"
+}
+
+areas = {
+0x0: { "worldId": 0x0, "name": "Null", "display": "Somewhere in the datascape...", "areaId": 0x0, },
+0x1: { "worldId": 0x0, "name": "SoA1", "display": "Station of Awakening", "areaId": 0x1, },
+0x2: { "worldId": 0x0, "name": "SoA2", "display": "Station of Awakening or Destiny Islands System Sector, Floor 1", "areaId": 0x2, },
+0x3: { "worldId": 0x0, "name": "Destiny", "display": "Destiny Islands", "areaId": 0x3, },
+0x5: { "worldId": 0x0, "name": "DestinySecret", "display": "Destiny Islands: Secret Place", "areaId": 0x5, },
+0x12: { "worldId": 0x0, "name": "DISectorF2", "display": "Destiny Islands System Sector, Floor 2", "areaId": 0x12, },
+0x4: { "worldId": 0x0, "name": "DestinyStorm", "display": "Destiny Islands: Storm-tossed Island", "areaId": 0x4, },
+//0x1: { "worldId": 0x1, "name": "TraverseFirst", "display": "First District", "areaId": 0x1, },
+}
+
+function GetLocationByName(name)
+{
+    for i in areas
+    {
+        area = areas[i]
+        if (area["name"] == name)
+        {
+            return area
+        }
+    }
+}
+
+function IsInLocation(name)
+{
+    area = GetLocationByName(name)
+    return areaId() == area["areaId"] && worldId() == area["worldId"]
+}
+
+function GetAreaRPLookup()
+{
+    ret = {}
+    for id in areas
+    {
+        area = areas[id]
+        ret[id] = area["display"]
+    }
+    return ret
+}
+
+function bossScorePointerBaseAddr() => 0x0c0880
+function bossScorePointer() => tbyte(bossScorePointerBaseAddr())
+function IsBossScorePointerActive() => dword(bossScorePointerBaseAddr() + 4) == 0x0 && bossScorePointerBaseAddr() != 0
+function bossScoreDisplayStatusPointer() => bossScorePointer() + 0x10
+function IsBossRankJustDisplayed() => Delta(byte(bossScoreDisplayStatusPointer())) == 0xa && byte(bossScoreDisplayStatusPointer()) == 0x7
+
+// We have a hit target here because the status value cycles through numbers a couple times.
+function IsTotalScoreJustDisplayed() => repeated(2, Delta(byte(bossScoreDisplayStatusPointer())) == 0x3 && byte(bossScoreDisplayStatusPointer()) == 0x4)
+    && never(!IsBossScorePointerActive())
+
+function BossScoreIsDisplayedAndEnoughForStar(threshold)
+{
+    return IsBossScorePointerActive() && dword(bossScorePointer() + 8) >= threshold && IsBossRankJustDisplayed()
+}
+
+// Title screen status
+// 
+// 0 = Licensed by Nintendo
+// 1 = Square Enix
+// 2 = h.a.n.d.
+// 3 = lawyer stuff lol
+// 4 = Kingdom Hearts animation
+// 5 = Title Screen almost ready
+// 6 = Title Screen ready
+// 8 = Load Menu
+function titleScreenStatus() => byte(0x19c494)
+
+function PlayTimeToFrames()
+{
+    return dword(0x056e9c) * 215543160 / 28704724 - 33 * 60
+}
+
+rich_presence_conditional_display(worldId() == 0, "{0} | Play Time: {1}",
+    rich_presence_lookup("Areas", areaId(), GetAreaRPLookup()),
+    rich_presence_value("PlayTime", PlayTimeToFrames(), "FRAMES")
+)
+rich_presence_display("{0}: {1} | Play Time: {2}",
+    rich_presence_lookup("Worlds", worldId(), worlds),
+    rich_presence_lookup("Areas", areaId(), GetAreaRPLookup()),
+    rich_presence_value("PlayTime", PlayTimeToFrames(), "FRAMES")
+)
+
 function Delta(addr) => prev(addr)
 
 // $056130: Steps taken (?) (32-bit)
@@ -385,6 +475,27 @@ function luck() => word(0x060B5C)
 //          - !3 and !4 = slow
 //          - 3 and !4 = normal
 //          - !3 and 4 = fast
+function difficulty() => bit1(0x198310) + bit2(0x198310) + bit2(0x198310) // Can't multiply by 2 because reasons.
+
+function IsAtLeastOnDifficulty(value)
+{
+    if (value == "Beginner")
+    {
+        return difficulty() == 0x0
+    }
+    else if (value == "Standard")
+    {
+        return difficulty() >= 0x1
+    }
+    else if (value == "Proud")
+    {
+        return difficulty() >= 0x2
+    }
+    else if (value == "Critical")
+    {
+        return difficulty() >= 0x3
+    }
+}
 // $198322: Flags for one-time items redeemed in system sectors
 //          Bit 0 - Destiny Islands - Power Armlet
 //          Bit 1 - Destiny Islands - Strength +1
@@ -731,6 +842,8 @@ function luck() => word(0x060B5C)
 //          0x08 - Disappearing due to death
 // $1D8744: Enemy 1's HP outside of system sectors - 32-bit
 // $1D8874: Time until enemy 1 does an action outside of a system sector. Decrements by 0x1000 every two frames - 32-bit
+// $1EFC88: Milliseconds elapsed during boss battle (32-bit)
+function bossMilliseconds() => dword(0x1efc88)
 // $225E48: Index of currently selected command
 // $244058: Main menu - Option index
 // $2EA17B: Health of one rare prize blox
@@ -771,18 +884,6 @@ function status() => word(0x056f50)
 // 0x12 = Tutorials
 function menuId() => word(0x0bea84)
 
-// Title screen status
-// 
-// 0 = Licensed by Nintendo
-// 1 = Square Enix
-// 2 = h.a.n.d.
-// 3 = lawyer stuff lol
-// 4 = Kingdom Hearts animation
-// 5 = Title Screen almost ready
-// 6 = Title Screen ready
-// 8 = Load Menu
-function titleScreenStatus() => byte(0x19c494)
-
 function IsFileLoaded() => status() != 0x0 && status() != 0x3 && !IsOnSaveOrLoadMenu()
 
 function IsLoadingSaveFile() => prior(titleScreenStatus()) == 0x8 && titleScreenStatus() == 0
@@ -801,7 +902,12 @@ function IsAlwaysInGame() => unless(IsOnSaveOrLoadMenu()) && never(IsOnLoadMenu(
 
 function WasValueSet(mem, oldValue, newValue)
 {
-    return once(Delta(mem) == oldValue && mem == newValue)
+    return once(IsValueJustSet(mem, oldValue, newValue))
+}
+
+function IsValueJustSet(mem, oldValue, newValue)
+{
+    return Delta(mem) == oldValue && mem == newValue
 }
 
 function WasValueSetInGame(mem, oldValue, newValue)
@@ -898,6 +1004,59 @@ enemies = {
 
 }
 
+function GetEnemyByName(name)
+{
+    for i in enemies
+    {
+        enemy = enemies[i]
+        if (enemy["name"] == name)
+        {
+            return enemy
+        }
+    }
+}
+
+function GetBitFromBits(bitIndex, bits)
+{
+    for i in bits
+    {
+        if (i == bitIndex)
+        {
+            return bits[i]
+        }
+    }
+}
+
+function JustDefeatedEnemy(name)
+{
+    enemy = GetEnemyByName(name)
+    defeated = always_false()
+    for i in enemy["bits"]
+    {
+        bit = enemy["bits"][i]
+        
+        // We only need to check to see if a bit changes from 0 to 1 because the overall enemy defeated count will only ever increase if it changes in game.
+        // Therefore, we don't also need to check to see if the value goes down at all.
+        defeated = defeated || IsValueJustSet(bit(bit["bit"], bit["addr"]), 0, 1)
+    }
+    return defeated
+}
+
+function DidDefeatEnemy(name)
+{
+    enemy = GetEnemyByName(name)
+    defeated = always_false()
+    for i in enemy["bits"]
+    {
+        bit = enemy["bits"][i]
+        
+        // We only need to check to see if a bit changes from 0 to 1 because the overall enemy defeated count will only ever increase if it changes in game.
+        // Therefore, we don't also need to check to see if the value goes down at all.
+        defeated = defeated || once(IsValueJustSet(bit(bit["bit"], bit["addr"]), 0, 1))
+    }
+    return defeated
+}
+
 enemiesConditions = {}
 
 for i in enemies
@@ -929,6 +1088,38 @@ achievement(title = "The Arguments You Have Presented Seem Believable", descript
     points = 1,
     trigger = WasBitflagSetInGame(mapTutorial()) // Technically triggers after viewing the map tutorial, but the player doesn't need to know that... >.>
 )
+
+function destinyIslandsStoryEntry() => bit4(0x195bda)
+achievement(title = "Typecastaway", description = "Complete Destiny Islands.",
+    points = 3,
+    trigger = WasBitflagSetInGame(destinyIslandsStoryEntry())
+)
+
+function dodgeRollActive() => bit0(0x1986f0)
+achievement(title = "Smooth Operator", description = "Defeat the Darkside without the Dodge Roll ability equipped (Critical Mode; Level 2 or below).",
+    points = 5,
+    trigger = IsAtLeastOnDifficulty("Critical") && dodgeRollActive() == 0 && JustDefeatedEnemy("Darkside") && level() <= 2
+)
+
+achievement(title = "I. AM. THE. NEW. GOD.", description = "Earn a Star rank against the Darkside (Proud Mode or higher; Level 5 or below).",
+    points = 10,
+    trigger = IsAtLeastOnDifficulty("Proud") && level() <= 5 && never(!IsInLocation("DestinyStorm")) && BossScoreIsDisplayedAndEnoughForStar(40000)
+)
+
+sectorRewardsConditions = {
+    0: { "countsWhen": (bit0(0x198322) == 1), "recalculateWhen": (bit0(0x198322) != Delta(bit0(0x198322))) },
+    1: { "countsWhen": (bit1(0x198322) == 1), "recalculateWhen": (bit1(0x198322) != Delta(bit1(0x198322))) },
+    2: { "countsWhen": (bit2(0x198322) == 1), "recalculateWhen": (bit2(0x198322) != Delta(bit2(0x198322))) },
+    3: { "countsWhen": (bit3(0x198322) == 1), "recalculateWhen": (bit3(0x198322) != Delta(bit3(0x198322))) },
+    4: { "countsWhen": (bit4(0x198322) == 1), "recalculateWhen": (bit4(0x198322) != Delta(bit4(0x198322))) },
+}
+
+GenerateSaveProtectedAchievementFromConditions({
+    "name": "Rookie Cryptominer",
+    "description": "Redeem 10% of all sector rewards.",
+    "points": 5,
+    "threshold": 3, // Not sure how many there are yet, but we may be able to infer it via calculations.
+}, sectorRewardsConditions)
 
 function rarePrizeRoundup() => bit5(0x195c78)
 achievement(title = "Rare Prize Roundup", description = "Collect all items from every rare prize blox in the game.", points = 10,
@@ -988,6 +1179,26 @@ achievement(title = "Twilight Triumph", description = "Defeat Data-Roxas.", poin
 )
 
 // todo: implement more enemy type cheevos
+GenerateSaveProtectedAchievementFromConditions({
+    "name": "Justice for Few",
+    "description": "Defeat 10% of all enemy types.",
+    "points": 3,
+    "threshold": (length(enemies) / 10),
+}, enemiesConditions)
+
+GenerateSaveProtectedAchievementFromConditions({
+    "name": "Justice for Some",
+    "description": "Defeat 25% of all enemy types.",
+    "points": 5,
+    "threshold": (length(enemies) / 4)
+}, enemiesConditions)
+
+GenerateSaveProtectedAchievementFromConditions({
+    "name": "Justice for Most",
+    "description": "Defeat 50% of all enemy types.",
+    "points": 10,
+    "threshold": (length(enemies) / 2)
+}, enemiesConditions)
 
 function justiceForAll() => bit2(0x195c7f)
 achievement(title = "Justice for All", description = "Defeat all enemy types.", points = 25,
@@ -1062,3 +1273,17 @@ for i in speedrunnerTrophies
         trigger = WasBitflagSetInGame(bit(trophy["bit"], 0x195c7d))
     )
 }
+
+leaderboard(title = "Time Attack - Darkside", description = "Defeat Darkside as quickly as you can.",
+    start = IsInLocation("DestinyStorm"),
+    cancel = !IsInLocation("DestinyStorm"),
+    submit = IsBossRankJustDisplayed(),
+    value = bossMilliseconds() / 10
+)
+
+leaderboard(title = "Score Attack - Darkside", description = "Get as many points as you can during your battle against Darkside.",
+    start = IsInLocation("DestinyStorm") && IsTotalScoreJustDisplayed(),
+    cancel = !IsInLocation("DestinyStorm"),
+    submit = IsTotalScoreJustDisplayed(),
+    value = dword(bossScorePointer() + 8)
+)
