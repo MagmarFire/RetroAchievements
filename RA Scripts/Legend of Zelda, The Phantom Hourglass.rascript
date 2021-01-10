@@ -254,13 +254,15 @@ function hasOshusSword() => obyte(0x1BA604)
 locations = {
 0xb: { "id": 0xb, "name": "On Mercay Island", "code": "Mercay", },
 0x27: { "id": 0x27, "name": "Trekking the Mountain Passage", "code": "Passage", },
-0x26: { "id": 0x26, "name": "At the entrance to Temple of the Ocean King", "code": "OceanKingLobby", },
+0x26: { "id": 0x26, "name": "At the entrance to the Temple of the Ocean King", "code": "OceanKingLobby", },
 0x25: { "id": 0x25, "name": "In the Temple of the Ocean King", "code": "OceanKing", },
 0x65: { "id": 0x65, "name": "On the file select screen", "code": "File", },
-0x0: { "id": 0x0, "name": "Starting the game", "code": "Boot", },
 0xcccc: { "id": 0xcccc, "name": "On the Nintendo WFC Setup screen", "code": "WFC", },
 0x409: { "id": 0x409, "name": "In Battle Mode", "code": "Battle", },
 0x35: { "id": 0x35, "name": "On the title screen", "code": "Title", },
+0xd: { "id": 0xd, "name": "On the Isle of Ember", "code": "Ember", },
+0x1c: { "id": 0x1c, "name": "In the Temple of Fire", "code": "TempleOfFire", },
+0x2b: { "id": 0x2b, "name": "In Blaaz’s lair…", "code": "Blaaz", },
 
 }
 
@@ -326,6 +328,16 @@ achievement(title = "Omnipotence", points = 10,
     trigger = WasValueSetInGame(powerGems(), 19, 20) && measured(powerGems() == 20)
 )
 
+achievement(title = "Seeker of Wisdom", points = 5,
+    description = "Collect 10 Wisdom Gems.",
+    trigger = WasValueSetInGame(wisdomGems(), 9, 10) && measured(wisdomGems() == 10)
+)
+
+achievement(title = "Omniscience", points = 10,
+    description = "Collect all 20 Wisdom Gems.",
+    trigger = WasValueSetInGame(wisdomGems(), 19, 20) && measured(wisdomGems() == 20)
+)
+
 achievement(title = "Seeker of Courage", points = 5,
     description = "Collect 10 Courage Gems.",
     trigger = WasValueSetInGame(courageGems(), 9, 10) && measured(courageGems() == 10)
@@ -361,6 +373,31 @@ achievement(title = "Vulturnus", points = 3,
 achievement(title = "Caecias", points = 3,
     description = "Acquire the Northeastern Sea Chart.",
     trigger = WasBitflagSetInGame(obit4(seaChartBaseAddr))
+)
+
+function astridRescued() => obit5(0x1b5544)
+achievement(title = "A Vision of Darkness", points = 1,
+    description = "Rescue Astrid, the fortuneteller on the Isle of Ember.",
+    trigger = WasBitflagSetInGame(astridRescued())
+)
+
+function boomerang() => obit2(0x1ba604)
+achievement(title = "Back at Ya!", points = 1,
+    description = "Acquire the boomerang.",
+    trigger = WasBitflagSetInGame(boomerang())
+)
+
+function IsBlaazDying() => obyte(0x25f050) == 0x16
+achievement(title = "Scorching Earth [m]", points = 5,
+    description = "Defeat Blaaz without recovering any life energy.",
+    trigger = once(IsInLocationWithCode("Blaaz") && WasInLocationWithCode("TempleOfFire"))
+        && IsBlaazDying() && never(hp() > Delta(hp()))
+)
+
+function leafAwakened() => obit3(0x1b5554)
+achievement(title = "Hidden in Flame", points = 3,
+    description = "Awaken the Spirit of Power.",
+    trigger = WasBitflagSetInGame(leafAwakened())
 )
 
 // End Sea Chart achievements
