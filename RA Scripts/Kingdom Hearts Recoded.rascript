@@ -10,14 +10,19 @@ worlds = {
 }
 
 areas = {
-0x0: { "worldId": 0x0, "name": "Null", "display": "Somewhere in the datascape...", "areaId": 0x0, },
-0x1: { "worldId": 0x0, "name": "SoA1", "display": "Station of Awakening", "areaId": 0x1, },
-0x2: { "worldId": 0x0, "name": "SoA2", "display": "Station of Awakening or Destiny Islands System Sector, Floor 1", "areaId": 0x2, },
-0x3: { "worldId": 0x0, "name": "Destiny", "display": "Destiny Islands", "areaId": 0x3, },
-0x5: { "worldId": 0x0, "name": "DestinySecret", "display": "Destiny Islands: Secret Place", "areaId": 0x5, },
-0x12: { "worldId": 0x0, "name": "DISectorF2", "display": "Destiny Islands System Sector, Floor 2", "areaId": 0x12, },
-0x4: { "worldId": 0x0, "name": "DestinyStorm", "display": "Destiny Islands: Storm-tossed Island", "areaId": 0x4, },
-//0x1: { "worldId": 0x1, "name": "TraverseFirst", "display": "First District", "areaId": 0x1, },
+0: { "worldId": 0x0, "name": "Null", "display": "Somewhere in the datascape...", "areaId": 0x0, },
+1: { "worldId": 0x0, "name": "SoA1", "display": "Station of Awakening", "areaId": 0x1, },
+2: { "worldId": 0x0, "name": "SoA2", "display": "Station of Awakening or Destiny Islands System Sector, Floor 1", "areaId": 0x2, },
+3: { "worldId": 0x0, "name": "Destiny", "display": "Destiny Islands", "areaId": 0x3, },
+4: { "worldId": 0x0, "name": "DestinySecret", "display": "Destiny Islands: Secret Place", "areaId": 0x5, },
+5: { "worldId": 0x0, "name": "DISectorF2", "display": "Destiny Islands System Sector, Floor 2", "areaId": 0x12, },
+6: { "worldId": 0x0, "name": "DestinyStorm", "display": "Destiny Islands: Storm-tossed Island", "areaId": 0x4, },
+7: { "worldId": 0x1, "name": "TraverseFirst", "display": "First District", "areaId": 0x1, },
+8: { "worldId": 0x1, "name": "TraverseSecond", "display": "Second District", "areaId": 0x2, },
+9: { "worldId": 0x1, "name": "TraverseAlley", "display": "Alleyway", "areaId": 0x4, },
+10: { "worldId": 0x1, "name": "TraverseSector2", "display": "Traverse Town System Sector 2, Floor 1", "areaId": 0x6, },
+11: { "worldId": 0x1, "name": "TraverseSector2F2", "display": "Traverse Town System Sector 2, Floor 2", "areaId": 0x7, },
+12: { "worldId": 0x1, "name": "TraverseSector2F3", "display": "Traverse Town System Sector 2, Floor 3", "areaId": 0xd, },
 }
 
 function GetLocationByName(name)
@@ -38,13 +43,16 @@ function IsInLocation(name)
     return areaId() == area["areaId"] && worldId() == area["worldId"]
 }
 
-function GetAreaRPLookup()
+function GetAreaRPLookup(worldId)
 {
     ret = {}
     for id in areas
     {
         area = areas[id]
-        ret[id] = area["display"]
+        if (area["worldId"] == worldId)
+        {
+            ret[area["areaId"]] = area["display"]
+        }
     }
     return ret
 }
@@ -81,15 +89,25 @@ function PlayTimeToFrames()
     return dword(0x056e9c) * 215543160 / 28704724 - 33 * 60
 }
 
-rich_presence_conditional_display(worldId() == 0, "{0} | Play Time: {1}",
-    rich_presence_lookup("Areas", areaId(), GetAreaRPLookup()),
+soa1 = GetLocationByName("SoA1")
+soa2 = GetLocationByName("SoA2")
+rich_presence_conditional_display(worldId() == 0 && areaId() == 0x1, soa1["display"] + " | Play Time: {0}",
     rich_presence_value("PlayTime", PlayTimeToFrames(), "FRAMES")
 )
-rich_presence_display("{0}: {1} | Play Time: {2}",
-    rich_presence_lookup("Worlds", worldId(), worlds),
-    rich_presence_lookup("Areas", areaId(), GetAreaRPLookup()),
+
+rich_presence_conditional_display(worldId() == 0 && areaId() == 0x2, soa2["display"] + " | Play Time: {0}",
     rich_presence_value("PlayTime", PlayTimeToFrames(), "FRAMES")
 )
+
+for world in worlds
+{
+    rich_presence_conditional_display(worldId() == world, worlds[world] + ": {0} | Play Time: {1}",
+        rich_presence_lookup("Areas" + world, areaId(), GetAreaRPLookup(world)),
+        rich_presence_value("PlayTime", PlayTimeToFrames(), "FRAMES")
+    )
+}
+
+rich_presence_display("Somewhere in the datascape...")
 
 function Delta(addr) => prev(addr)
 
@@ -1106,12 +1124,27 @@ achievement(title = "I. AM. THE. NEW. GOD.", description = "Earn a Star rank aga
     trigger = IsAtLeastOnDifficulty("Proud") && level() <= 5 && never(!IsInLocation("DestinyStorm")) && BossScoreIsDisplayedAndEnoughForStar(40000)
 )
 
-sectorRewardsConditions = {
-    0: { "countsWhen": (bit0(0x198322) == 1), "recalculateWhen": (bit0(0x198322) != Delta(bit0(0x198322))) },
-    1: { "countsWhen": (bit1(0x198322) == 1), "recalculateWhen": (bit1(0x198322) != Delta(bit1(0x198322))) },
-    2: { "countsWhen": (bit2(0x198322) == 1), "recalculateWhen": (bit2(0x198322) != Delta(bit2(0x198322))) },
-    3: { "countsWhen": (bit3(0x198322) == 1), "recalculateWhen": (bit3(0x198322) != Delta(bit3(0x198322))) },
-    4: { "countsWhen": (bit4(0x198322) == 1), "recalculateWhen": (bit4(0x198322) != Delta(bit4(0x198322))) },
+sectorRewards = [
+    bit0(0x198322),
+    bit1(0x198322),
+    bit2(0x198322),
+    bit3(0x198322),
+    bit4(0x198322),
+    bit0(0x198328),
+    bit1(0x198328),
+    bit2(0x198328),
+    bit0(0x19832a),
+    bit1(0x19832a),
+    bit2(0x19832a)
+]
+
+// Generate conditions for sector rewards from the above addresses.
+sectorRewardsConditions = {}
+i = 0
+for addr in sectorRewards
+{
+    sectorRewardsConditions[i] = { "countsWhen": (addr == 1), "recalculateWhen": (addr != Delta(addr)) }
+    i = i + 1
 }
 
 GenerateSaveProtectedAchievementFromConditions({
@@ -1122,7 +1155,7 @@ GenerateSaveProtectedAchievementFromConditions({
 }, sectorRewardsConditions)
 
 function rarePrizeRoundup() => bit5(0x195c78)
-achievement(title = "Rare Prize Roundup", description = "Collect all items from every rare prize blox in the game.", points = 10,
+achievement(title = "Rare Prize Roundup", description = "Collect all items from every rare prize blox in the game and view the Trophies screen.", points = 10,
     trigger = WasBitflagSetInGame(rarePrizeRoundup())
 )
 
