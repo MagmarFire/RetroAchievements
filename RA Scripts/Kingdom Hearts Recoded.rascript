@@ -3,6 +3,8 @@
 
 function worldId() => byte(0x19836c)
 function areaId() => byte(0x19836d)
+function IsInSystemSector() => dword(0x19ecf4) != 0x0
+function KeyholeCheckpointPassed() => Delta(areaId()) == 0x0
 
 worlds = {
     0: "Destiny Islands",
@@ -20,9 +22,14 @@ areas = {
 7: { "worldId": 0x1, "name": "TraverseFirst", "display": "First District", "areaId": 0x1, },
 8: { "worldId": 0x1, "name": "TraverseSecond", "display": "Second District", "areaId": 0x2, },
 9: { "worldId": 0x1, "name": "TraverseAlley", "display": "Alleyway", "areaId": 0x4, },
-10: { "worldId": 0x1, "name": "TraverseSector2", "display": "Traverse Town System Sector 2, Floor 1", "areaId": 0x6, },
-11: { "worldId": 0x1, "name": "TraverseSector2F2", "display": "Traverse Town System Sector 2, Floor 2", "areaId": 0x7, },
+10: { "worldId": 0x1, "name": "TraverseKeyholeSecond", "display": "Keyhole / Second District", "areaId": 0x6, },
+11: { "worldId": 0x1, "name": "TraverseKeyholeThird", "display": "Keyhole / Third District", "areaId": 0x7, },
 12: { "worldId": 0x1, "name": "TraverseSector2F3", "display": "Traverse Town System Sector 2, Floor 3", "areaId": 0xd, },
+13: { "worldId": 0x1, "name": "TraverseThird", "display": "Third District", "areaId": 0x3, },
+14: { "worldId": 0x1, "name": "TraverseSecondCorrupted", "display": "Second District", "areaId": 0xa, },
+15: { "worldId": 0x1, "name": "TraverseKeyholeFirst", "display": "Keyhole / First District", "areaId": 0x5, },
+16: { "worldId": 0x1, "name": "TraverseKeyholeFall", "display": "Keyhole / Terminus", "areaId": 0x8, },
+17: { "worldId": 0x1, "name": "TraverseKeyholeTerminus", "display": "Keyhole / Terminus", "areaId": 0x9, },
 }
 
 function GetLocationByName(name)
@@ -41,6 +48,12 @@ function IsInLocation(name)
 {
     area = GetLocationByName(name)
     return areaId() == area["areaId"] && worldId() == area["worldId"]
+}
+
+function WasInLocation(name)
+{
+    area = GetLocationByName(name)
+    return Delta(areaId()) == area["areaId"] && Delta(worldId()) == area["worldId"]
 }
 
 function GetAreaRPLookup(worldId)
@@ -101,6 +114,9 @@ rich_presence_conditional_display(worldId() == 0 && areaId() == 0x2, soa2["displ
 
 for world in worlds
 {
+    rich_presence_conditional_display(IsInSystemSector() && worldId() == world, worlds[world] + ": System Sector | Play Time: {0}",
+        rich_presence_value("PlayTime", PlayTimeToFrames(), "FRAMES")
+    )
     rich_presence_conditional_display(worldId() == world, worlds[world] + ": {0} | Play Time: {1}",
         rich_presence_lookup("Areas" + world, areaId(), GetAreaRPLookup(world)),
         rich_presence_value("PlayTime", PlayTimeToFrames(), "FRAMES")
@@ -1119,23 +1135,42 @@ achievement(title = "Smooth Operator", description = "Defeat the Darkside withou
     trigger = IsAtLeastOnDifficulty("Critical") && dodgeRollActive() == 0 && JustDefeatedEnemy("Darkside") && level() <= 2
 )
 
-achievement(title = "I. AM. THE. NEW. GOD.", description = "Earn a Star rank against the Darkside (Proud Mode or higher; Level 5 or below).",
+achievement(title = "I Am the New God", description = "Earn a Star rank against the Darkside (Proud Mode or higher; Level 5 or below).",
     points = 10,
     trigger = IsAtLeastOnDifficulty("Proud") && level() <= 5 && never(!IsInLocation("DestinyStorm")) && BossScoreIsDisplayedAndEnoughForStar(40000)
 )
 
+function soraSidescrollingState() => byte(0x2347be)
+function JustFellOrGotCaughtInSidescrollingStages() => soraSidescrollingState() == 0x6 && Delta(soraSidescrollingState()) != soraSidescrollingState()
+function IsAlwaysInTraverseTownKeyhole() => never(!IsInLocation("TraverseKeyholeFirst") && !IsInLocation("TraverseKeyholeSecond")
+        && !IsInLocation("TraverseKeyholeThird") && !IsInLocation("TraverseKeyholeFall") && !IsInLocation("TraverseKeyholeTerminus"))
+achievement(title = "Saved a Framerule", points = 10,
+    description = "Complete the Traverse Town keyhole without falling into pits, getting caught behind blox, or dying (Critical Mode; Level 7 or below).",
+    trigger = IsAtLeastOnDifficulty("Critical") && level() <= 7 && IsAlwaysInTraverseTownKeyhole()
+        && once(KeyholeCheckpointPassed() && IsInLocation("TraverseKeyholeFirst"))
+        && never(hp() <= 0) && JustDefeatedEnemy("Guard Armor") && never(JustFellOrGotCaughtInSidescrollingStages())
+)
+
+function fireLungeUsesLeft() => byte(0x23082a)
+function thunderRainUsesLeft() => byte(0x230866)
+function blizzardDartUsesLeft() => byte(0x2308a2)
+function windSpinDartUsesLeft() => byte(0x2308de)
+function UsedOverlayCommand(addr) => once(Delta(addr) == addr + 1)
+achievement(title = "Dedicated Specialist", points = 5,
+    description = "Complete the Traverse Town keyhole using at most one type of overlay command.",
+    trigger = IsAlwaysInTraverseTownKeyhole() && unless(IsInLocation("TraverseKeyholeFall"))
+        && once(KeyholeCheckpointPassed() && IsInLocation("TraverseKeyholeFirst"))
+        && JustDefeatedEnemy("Guard Armor")
+        && never(tally(2, [ UsedOverlayCommand(fireLungeUsesLeft()), UsedOverlayCommand(thunderRainUsesLeft()), UsedOverlayCommand(blizzardDartUsesLeft()),
+            UsedOverlayCommand(windSpinDartUsesLeft()) ]))
+)
+
 sectorRewards = [
-    bit0(0x198322),
-    bit1(0x198322),
-    bit2(0x198322),
-    bit3(0x198322),
-    bit4(0x198322),
-    bit0(0x198328),
-    bit1(0x198328),
-    bit2(0x198328),
-    bit0(0x19832a),
-    bit1(0x19832a),
-    bit2(0x19832a)
+    bit0(0x198322), bit1(0x198322), bit2(0x198322), bit3(0x198322), bit4(0x198322),
+    bit0(0x198328), bit1(0x198328), bit2(0x198328),
+    bit0(0x19832a), bit1(0x19832a), bit2(0x19832a),
+    bit0(0x19832c), bit1(0x19832c), bit2(0x19832c),
+    bit0(0x19832e), bit1(0x19832e), bit2(0x19832e),
 ]
 
 // Generate conditions for sector rewards from the above addresses.
@@ -1151,7 +1186,7 @@ GenerateSaveProtectedAchievementFromConditions({
     "name": "Rookie Cryptominer",
     "description": "Redeem 10% of all sector rewards.",
     "points": 5,
-    "threshold": 3, // Not sure how many there are yet, but we may be able to infer it via calculations.
+    "threshold": 100, // Not sure how many there are yet, but we may be able to infer it via calculations.
 }, sectorRewardsConditions)
 
 function rarePrizeRoundup() => bit5(0x195c78)
@@ -1172,8 +1207,21 @@ achievement(title = "Sector Sweeper", description = "Complete all system sectors
 )
 
 function sultanOfSlot() => bit2(0x195c78)
-achievement(title = "Sultan of Slot", description = "Install chips in every slot in the Stat Matrix.", points = 10,
-    trigger = WasBitflagSetInGame(sultanOfSlot())
+function chipsInstalled() => byte(0x195c15)
+achievement(title = "Serf of Slot", description = "Install chips in 10% of slots in the Stat Matrix.", points = 3,
+    trigger = WasValueSetInGame(chipsInstalled(), 19, 20) && measured(chipsInstalled() == 20)
+)
+
+achievement(title = "Sheriff of Slot", description = "Install chips in 25% of slots in the Stat Matrix.", points = 5,
+    trigger = WasValueSetInGame(chipsInstalled(), 49, 50) && measured(chipsInstalled() == 50)
+)
+
+achievement(title = "Sergeant of Slot", description = "Install chips in 50% of slots in the Stat Matrix.", points = 10,
+    trigger = WasValueSetInGame(chipsInstalled(), 99, 100) && measured(chipsInstalled() == 100)
+)
+
+achievement(title = "Sultan of Slot", description = "Install chips in every slot in the Stat Matrix.", points = 25,
+    trigger = WasValueSetInGame(chipsInstalled(), 199, 200) && measured(chipsInstalled() == 200)
 )
 
 function cheater() => bit1(0x195c78)
