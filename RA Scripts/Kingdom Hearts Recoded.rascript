@@ -8,7 +8,8 @@ function KeyholeCheckpointPassed() => Delta(areaId()) == 0x0
 
 worlds = {
     0: "Destiny Islands",
-    1: "Traverse Town"
+    1: "Traverse Town",
+    2: "Wonderland"
 }
 
 areas = {
@@ -30,6 +31,7 @@ areas = {
 15: { "worldId": 0x1, "name": "TraverseKeyholeFirst", "display": "Keyhole / First District", "areaId": 0x5, },
 16: { "worldId": 0x1, "name": "TraverseKeyholeFall", "display": "Keyhole / Terminus", "areaId": 0x8, },
 17: { "worldId": 0x1, "name": "TraverseKeyholeTerminus", "display": "Keyhole / Terminus", "areaId": 0x9, },
+18: { "worldId": 0x2, "name": "WonderlandClearing", "display": "Clearing", "areaId": 0x6, },
 }
 
 function GetLocationByName(name)
@@ -70,6 +72,7 @@ function GetAreaRPLookup(worldId)
     return ret
 }
 
+function baseScore() => dword(0x19eda0)
 function bossScorePointerBaseAddr() => 0x0c0880
 function bossScorePointer() => tbyte(bossScorePointerBaseAddr())
 function IsBossScorePointerActive() => dword(bossScorePointerBaseAddr() + 4) == 0x0 && bossScorePointerBaseAddr() != 0
@@ -97,9 +100,11 @@ function BossScoreIsDisplayedAndEnoughForStar(threshold)
 // 8 = Load Menu
 function titleScreenStatus() => byte(0x19c494)
 
+function sessionPlayTime() => dword(0x056e9c)
+function savedPlayTime() => dword(0x198360)
 function PlayTimeToFrames()
 {
-    return dword(0x056e9c) * 215543160 / 28704724 - 33 * 60
+    return sessionPlayTime() * 215543160 / 28704724 + savedPlayTime() * 60
 }
 
 soa1 = GetLocationByName("SoA1")
@@ -509,7 +514,7 @@ function luck() => word(0x060B5C)
 //          - !3 and !4 = slow
 //          - 3 and !4 = normal
 //          - !3 and 4 = fast
-function difficulty() => bit1(0x198310) + bit2(0x198310) + bit2(0x198310) // Can't multiply by 2 because reasons.
+function difficulty() => bit0(0x1986fa) + bit1(0x1986fa) + bit1(0x1986fa) // Can't multiply by 2 because reasons.
 
 function IsAtLeastOnDifficulty(value)
 {
@@ -1118,15 +1123,21 @@ GenerateSaveProtectedAchievementFromConditions({
 }, enemiesConditions)
 
 function mapTutorial() => bit6(0x195c85)
-achievement(title = "The Arguments You Have Presented Seem Believable", description = "Receive your first instructions from King Mickey on Destiny Islands.",
+achievement(title = "The Arguments You Have Presented Seem Believable", description = "Receive your first instructions from King Mickey on the Destiny Islands.",
     points = 1,
     trigger = WasBitflagSetInGame(mapTutorial()) // Technically triggers after viewing the map tutorial, but the player doesn't need to know that... >.>
 )
 
 function destinyIslandsStoryEntry() => bit4(0x195bda)
-achievement(title = "Typecastaway", description = "Complete Destiny Islands.",
+achievement(title = "Typecastaway", description = "Complete the Destiny Islands.",
     points = 3,
     trigger = WasBitflagSetInGame(destinyIslandsStoryEntry())
+)
+
+function traverseTownStoryEntry() => bit3(0x195bda)
+achievement(title = "Town Watch", description = "Complete Traverse Town.",
+    points = 3,
+    trigger = WasBitflagSetInGame(traverseTownStoryEntry())
 )
 
 function dodgeRollActive() => bit0(0x1986f0)
@@ -1144,8 +1155,8 @@ function soraSidescrollingState() => byte(0x2347be)
 function JustFellOrGotCaughtInSidescrollingStages() => soraSidescrollingState() == 0x6 && Delta(soraSidescrollingState()) != soraSidescrollingState()
 function IsAlwaysInTraverseTownKeyhole() => never(!IsInLocation("TraverseKeyholeFirst") && !IsInLocation("TraverseKeyholeSecond")
         && !IsInLocation("TraverseKeyholeThird") && !IsInLocation("TraverseKeyholeFall") && !IsInLocation("TraverseKeyholeTerminus"))
-achievement(title = "Saved a Framerule", points = 10,
-    description = "Complete the Traverse Town keyhole without falling into pits, getting caught behind blox, or dying (Critical Mode; Level 7 or below).",
+achievement(title = "Saved a Framerule", points = 25,
+    description = "Complete the Traverse Town Keyhole without falling into pits, getting caught behind blox, or dying (Critical Mode; Level 7 or below).",
     trigger = IsAtLeastOnDifficulty("Critical") && level() <= 7 && IsAlwaysInTraverseTownKeyhole()
         && once(KeyholeCheckpointPassed() && IsInLocation("TraverseKeyholeFirst"))
         && never(hp() <= 0) && JustDefeatedEnemy("Guard Armor") && never(JustFellOrGotCaughtInSidescrollingStages())
@@ -1157,12 +1168,23 @@ function blizzardDartUsesLeft() => byte(0x2308a2)
 function windSpinDartUsesLeft() => byte(0x2308de)
 function UsedOverlayCommand(addr) => once(Delta(addr) == addr + 1)
 achievement(title = "Dedicated Specialist", points = 5,
-    description = "Complete the Traverse Town keyhole using at most one type of overlay command.",
+    description = "Complete the Traverse Town Keyhole using at most one type of overlay command.",
     trigger = IsAlwaysInTraverseTownKeyhole() && unless(IsInLocation("TraverseKeyholeFall"))
         && once(KeyholeCheckpointPassed() && IsInLocation("TraverseKeyholeFirst"))
         && JustDefeatedEnemy("Guard Armor")
         && never(tally(2, [ UsedOverlayCommand(fireLungeUsesLeft()), UsedOverlayCommand(thunderRainUsesLeft()), UsedOverlayCommand(blizzardDartUsesLeft()),
             UsedOverlayCommand(windSpinDartUsesLeft()) ]))
+)
+
+achievement(title = "Our Princess of Heart Is in Another World", description = "Earn a Star rank against the Guard Armor (Proud Mode or higher; Level 9 or below).",
+    points = 10,
+    trigger = IsAtLeastOnDifficulty("Proud") && level() <= 9 && never(!IsInLocation("TraverseKeyholeTerminus")) && BossScoreIsDisplayedAndEnoughForStar(30000)
+)
+
+function extraCommandSlotsUnlocked() => byte(0x198700)
+achievement(title = "Commander Sora", points = 5,
+    description = "Unlock five extra command slots.",
+    trigger = WasValueSetInGame(extraCommandSlotsUnlocked(), 4, 5) && measured(extraCommandSlotsUnlocked() == 5)
 )
 
 sectorRewards = [
@@ -1365,6 +1387,14 @@ leaderboard(title = "Time Attack - Darkside", description = "Defeat Darkside as 
 leaderboard(title = "Score Attack - Darkside", description = "Get as many points as you can during your battle against Darkside.",
     start = IsInLocation("DestinyStorm") && IsTotalScoreJustDisplayed(),
     cancel = !IsInLocation("DestinyStorm"),
+    submit = IsTotalScoreJustDisplayed(),
+    value = dword(bossScorePointer() + 8)
+)
+
+leaderboard(title = "Score Attack - Traverse Town", description = "Get as many points as you can in the Traverse Town Keyhole.",
+    start = IsInLocation("TraverseKeyholeTerminus") && IsTotalScoreJustDisplayed(),
+    cancel = !IsInLocation("TraverseKeyholeFirst") && !IsInLocation("TraverseKeyholeSecond")
+        && !IsInLocation("TraverseKeyholeThird") && !IsInLocation("TraverseKeyholeFall") && !IsInLocation("TraverseKeyholeTerminus"),
     submit = IsTotalScoreJustDisplayed(),
     value = dword(bossScorePointer() + 8)
 )
