@@ -263,8 +263,24 @@ locations = {
 0xd: { "id": 0xd, "name": "On the Isle of Ember", "code": "Ember", },
 0x1c: { "id": 0x1c, "name": "In the Temple of Fire", "code": "TempleOfFire", },
 0x2b: { "id": 0x2b, "name": "In Blaaz’s lair…", "code": "Blaaz", },
-
+0x13: { "id": 0x13, "name": "On Cannon Island", "code": "Cannon", },
+0x28: { "id": 0x28, "name": "In the Bomb Garden", "code": "BombGarden", },
+0xc: { "id": 0xc, "name": "On Molida Island", "code": "Molida", },
+0xe: { "id": 0xe, "name": "On the Isle of Gust", "code": "Gust", },
 }
+
+// RICH PRESENCE
+mapLookup = {}
+for i in locations {
+    location = locations[i]
+    mapLookup[i] = location["name"]
+}
+
+rich_presence_conditional_display(currentLocation() == 0x00, "On the title screen")
+rich_presence_display("{0}",
+    rich_presence_lookup("map", currentLocation(), mapLookup, fallback="Somewhere on the Great Sea...")
+)
+// END RICH PRESENCE
 
 function GetLocationByCode(code)
 {
@@ -394,22 +410,22 @@ achievement(title = "Scorching Earth [m]", points = 5,
         && IsBlaazDying() && never(hp() > Delta(hp()))
 )
 
-function leafAwakened() => obit3(0x1b5554)
+function leafFreed() => obit3(0x1b5554)
 achievement(title = "Hidden in Flame", points = 3,
-    description = "Awaken the Spirit of Power.",
-    trigger = WasBitflagSetInGame(leafAwakened())
+    description = "Free the Spirit of Power.",
+    trigger = WasBitflagSetInGame(leafFreed())
+)
+
+function phantomHourglass() => obit0(0x1ba608)
+achievement(title = "Tempus Fugit", points = 3,
+    description = "Acquire the Phantom Hourglass.",
+    trigger = WasBitflagSetInGame(phantomHourglass())
+)
+
+function eddoCannon() => byte(0x1ba53f)
+achievement(title = "Open Fire!", points = 3,
+    description = "Buy Eddo's cannon.",
+    trigger = WasValueSetInGame(eddoCannon(), 0xff, 0x1)
 )
 
 // End Sea Chart achievements
-
-// RICH PRESENCE
-mapLookup = {}
-for i in locations {
-    location = locations[i]
-    mapLookup[i] = location["name"]
-}
-
-rich_presence_conditional_display(currentLocation() == 0x00, "On the title screen")
-rich_presence_display("{0}",
-    rich_presence_lookup("map", currentLocation(), mapLookup, fallback="Somewhere on the Great Sea...")
-)
