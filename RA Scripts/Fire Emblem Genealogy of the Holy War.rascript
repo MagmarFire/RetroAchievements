@@ -33,13 +33,13 @@ function IsValueSetInGame(bit)
 function WasValueSetInGame(mem, oldValue, newValue)
 {
     return WasValueSet(mem, oldValue, newValue)
-        && never(IsLoadingSaveFile())
+        && never(IsLoadingSaveFile()) && never(!TurnNumberIsPlausible())
 }
 
 function IsValueSetInGame(mem, oldValue, newValue)
 {
     return IsValueSet(mem, oldValue, newValue)
-        && never(IsLoadingSaveFile())
+        && never(IsLoadingSaveFile()) && never(!TurnNumberIsPlausible())
 }
 
 function WasValueSet(mem, oldValue, newValue)
@@ -932,12 +932,12 @@ for i in range(0, 16)
     }
 }
 
-achievement(title = "It Gets Harder", points = 3,
+achievement(title = "It Gets Harder", points = 3, id = 130693, badge = "143890",
     description = "Raise a unit to Level 10.",
     trigger = gen1UnitLeveledUpTo10 || gen2UnitLeveledUpTo10
 )
 
-achievement(title = "The Key to Mastery", points = 5,
+achievement(title = "The Key to Mastery", points = 5, id = 130731, badge = "143928",
     description = "Raise a unit to Level 30.",
     trigger = gen1UnitLeveledUpTo30 || gen2UnitLeveledUpTo30
 )
@@ -952,7 +952,7 @@ achievement(title = "That Special Someone", points = 5,
     trigger = gen1OptionalUnitFellInLove || gen2UnitFellInLove
 )
 
-achievement(title = "Gladiator", description = "Max out a unit's arena level.",
+achievement(title = "Gladiator", description = "Max out a unit's arena level.", id = 130704, badge = "143901",
     points = 5,
     trigger = gen1UnitMaxedOutArena || gen2UnitMaxedOutArena
 )
@@ -1011,7 +1011,8 @@ GenerateSaveProtectedAchievementFromConditions({
     "description": "Rescue a village before it is razed to the ground.",
     "points": 1,
     "threshold": 1,
-    "id": 130690
+    "id": 130690,
+    "badge": 143887,
 }, GetRescuableVillagesByChapterIds(GetChapterIds()))
 
 achievement(title = "Conqueror", points = 1, id = 130694, badge = "143891",
@@ -1130,31 +1131,31 @@ achievement(title = "Before the Dawn", points = 25,
 // RECRUITMENT CHEEVOS
 
 ayra = GetGen1UnitObjectByName("Ayra")
-achievement(title = "Lady of Wrath", points = 5,
+achievement(title = "Lady of Wrath [m]", points = 5, id = 130698, badge = "143895",
     description = "Recruit Ayra.",
     trigger = chapter() == 1 && WasValueSetInGame(ayra["affiliation"], 3, 0)
 )
 
 jamke = GetGen1UnitObjectByName("Jamke")
-achievement(title = "The Traitorous Prince", points = 10,
+achievement(title = "The Traitorous Prince [m]", points = 10, id = 130699, badge = "143896",
     description = "Recruit Jamke.",
     trigger = chapter() == 1 && WasValueSetInGame(jamke["affiliation"], 3, 0)
 )
 
 deirdre = GetGen1UnitObjectByName("Deirdre")
-achievement(title = "The Maiden of the Forest", points = 3,
+achievement(title = "The Maiden of the Forest", points = 3, id = 130700, badge = "143897",
     description = "Recruit Deirdre.",
     trigger = chapter() == 1 && WasBitflagSetInGame(deirdre["isSortied"])
 )
 
 holyn = GetGen1UnitObjectByName("Holyn")
-achievement(title = "From Merc to Squire", points = 5,
+achievement(title = "From Merc to Squire [m]", points = 5, id = 130705, badge = "143902",
     description = "Recruit Holyn.",
     trigger = chapter() == 2 && WasValueSetInGame(holyn["affiliation"], 7, 0)
 )
 
 raquesis = GetGen1UnitObjectByName("Raquesis")
-achievement(title = "A Princess Conscripted", points = 5,
+achievement(title = "A Princess Conscripted", points = 5, id = 130708, badge = "143905",
     description = "Recruit Raquesis.",
     trigger = chapter() == 2 && WasValueSetInGame(raquesis["affiliation"], 1, 0)
 )
@@ -1166,49 +1167,49 @@ achievement(title = "Sellsword for Hire [m]", points = 10, id = 130709, badge = 
 )
 
 erin = GetGen1UnitObjectByName("Erin")
-achievement(title = "Devoted but Gullible", points = 5,
+achievement(title = "Devoted but Gullible [m]", points = 5, id = 130710, badge = "143907",
     description = "Recruit Erin.",
     trigger = chapter() == 2 && WasValueSetInGame(erin["affiliation"], 5, 0)
 )
 
 function larceiRecruitsJohanOrJohalvier() => bit5(0x0052c5)
-achievement(title = "Combatting Roosters", points = 5,
+achievement(title = "Combatting Roosters [m]", points = 5, id = 130736, badge = "143933",
     description = "Recruit Johan or Johalvier.",
     trigger = chapter() == 6 && WasBitflagSetInGame(larceiRecruitsJohanOrJohalvier())
 )
 
 function aresRescuesDancerFromDarna() => bit6(0x0052c6)
-achievement(title = "Atonement Almost Lost", points = 3,
+achievement(title = "Atonement Almost Lost [m]", points = 3, id = 130743, badge = "143940",
     description = "Have Ares rescue Lene or Laylea from Darna.",
     trigger = chapter() == 7 && WasBitflagSetInGame(aresRescuesDancerFromDarna())
 )
 
 function arthurRecruitsTinni() => bit0(0x0052c7)
-achievement(title = "A Long-Belated Reunion", points = 10,
+achievement(title = "A Long-Belated Reunion [m]", points = 10, id = 130744, badge = "143941",
     description = "Reunite Arthur or Amid with Tinni or Linda.",
     trigger = chapter() == 7 && WasBitflagSetInGame(arthurRecruitsTinni())
 )
 
 function pattyRecruitsFavel() => bit2(0x0052c7)
-achievement(title = "Back to His Senses", points = 5,
+achievement(title = "Back to His Senses [m]", points = 5, id = 130748, badge = "143945",
     description = "Have Patty or Daisy recruit Faval or Asaello.",
     trigger = chapter() == 8 && WasBitflagSetInGame(pattyRecruitsFavel())
 )
     
 function seliphRecruitsCed() => bit1(0x0052c7)
-achievement(title = "Face Death with Valor", points = 3,
+achievement(title = "Face Death with Valor [m]", points = 3, id = 130749, badge = "143946",
     description = "Have Seliph recruit Ced or Hawke.",
     trigger = chapter() == 8 && WasBitflagSetInGame(seliphRecruitsCed())
 )
 
 function altenaJoinsSeliph() => bit2(0x0052c7)
-achievement(title = "The Luminous Rider", points = 3,
+achievement(title = "The Luminous Rider [m]", points = 3, id = 130753, badge = "143950",
     description = "Have Altena join your army.",
     trigger = chapter() == 9 && WasBitflagSetInGame(altenaJoinsSeliph())
 )
 
 function cairpreRecruitsHannibal() => bit1(0x0052c7)
-achievement(title = "Not by Blood but by Spirit", points = 10,
+achievement(title = "Not by Blood but by Spirit [m]", points = 10, id = 130754, badge = "143951",
     description = "Recruit Hannibal.",
     trigger = chapter() == 9 && WasBitflagSetInGame(cairpreRecruitsHannibal())
 )
@@ -1216,61 +1217,61 @@ achievement(title = "Not by Blood but by Spirit", points = 10,
 // End recruitment cheevos
 
 function deirdreSilenceStaffDurability() => byte(0x004032)
-achievement(title = "A Brief Silence", points = 5,
+achievement(title = "A Brief Silence [m]", points = 5, id = 130766, badge = "143964",
     description = "Capture Verdane in Chapter 1 without using Deirdre's Silence staff more than once.",
     trigger = chapter() == 1 && deirdreSilenceStaffDurability() >= 2 && PlayerHasCapturedKeepBySlot(4)
 )
 
 braveAxeId = 0x45
 function lexGotBraveAxe() => bit3(0x0052c8)
-achievement(title = "The Honest Woodcutter", points = 3,
+achievement(title = "The Honest Woodcutter [m]", points = 3, id = 130707, badge = "143904",
     description = "Have Lex retrieve the Brave Axe on the eastern Verdanite peninsula in Chapter 1.",
     trigger = chapter() == 1 && WasBitflagSetInGame(lexGotBraveAxe())
 )
 
 function ardenGotPursuitBand() => bit1(0x0052c9)
-achievement(title = "Arden's Ambition", points = 3,
+achievement(title = "Arden's Ambition [m]", points = 3, id = 130738, badge = "143935",
     description = "Have Arden find the Pursuit Band on the western Agustrian peninsula in Chapter 2.",
     trigger = chapter() == 2 && WasBitflagSetInGame(ardenGotPursuitBand())
 )
 
 knightRingId = 0x88
 function raquesisRetainersSurvived() => bit2(0x0052c8)
-achievement(title = "Into the Deepest Valley", points = 10,
+achievement(title = "Into the Deepest Valley [m]", points = 10, id = 130712, badge = "143909",
     description = "Ensure all of Raquesis's retainers survive to the end of Chapter 2.",
     trigger = chapter() == 2 && IsBitflagSetInGame(raquesisRetainersSurvived())
 )
 
 windSwordId = 0x24
 function dewReceivedWindSword() => bit4(0x0052c7)
-achievement(title = "Consolation Loot", points = 10,
+achievement(title = "Consolation Loot [m]", points = 10, id = 130718, badge = "143915",
     description = "Have Dew retrieve the Wind Sword from the Tower of Bragi in Chapter 3.",
     trigger = chapter() == 3 && IsBitflagSetInGame(dewReceivedWindSword())
 )
 
 earthSwordId = 0x22
 function raquesisRetrievedEarthSword() => bit7(0x0052c4)
-achievement(title = "Siblings' Last Quarrel", points = 10,
+achievement(title = "Siblings' Last Quarrel [m]", points = 10, id = 130715, badge = "143912",
     description = "Receive the Earth Sword from Eldigan in Chapter 3.",
     trigger = chapter() == 3 && WasBitflagSetInGame(raquesisRetrievedEarthSword())
 )
 
-achievement(title = "Arden's Resolve", points = 3,
+achievement(title = "Arden's Resolve", points = 3, id = 130730, badge = "143927",
     description = "Have Arden find the stat boost in Chapter 5.",
     trigger = chapter() == 5 && WasBitflagSetInGame(bit2(0x0052c8))
 )
 
 gaeBolgId = 0x3e
 ethlyn = GetGen1UnitObjectByName("Ethlyn")
-achievement(title = "The Spear of Cuhullin", points = 3,
-    description = "Receive Gae Bolg.",
+achievement(title = "The Spear of Cuhullin [m]", points = 3, id = 130716, badge = "143913",
+    description = "Receive Gae Bolg in Chapter 3.",
     trigger = chapter() == 3 && IsPlayerPhase() && WasValueSetInGame(ethlyn["talkTo"], 0x6, 0x0) && TurnNumberIsPlausible()
 )
 
 yewfelleId = 0x4f
 aideen = GetGen1UnitObjectByName("Aideen")
-achievement(title = "Strings of Ullr", points = 3,
-    description = "Have Aideen bestow Yewfelle to Bridget following their reunion.",
+achievement(title = "Strings of Ullr [m]", points = 3, id = 130717, badge = "143914",
+    description = "Have Aideen bestow Yewfelle to Bridget following their reunion in Chapter 3.",
     trigger = chapter() == 3 && IsPlayerPhase() && WasValueSetInGame(aideen["talkTo"], 0x18, 0x0) && TurnNumberIsPlausible()
 )
 
@@ -1287,53 +1288,53 @@ if (1 == 0)
 
 forsetiId = 0x5c
 function lewynReceivedForseti() => bit1(0x0052c6)
-achievement(title = "Gales of Justice", points = 5,
-    description = "Receive Forseti.",
+achievement(title = "Gales of Justice [m]", points = 5, id = 130722, badge = "143919",
+    description = "Receive Forseti in Chapter 4.",
     trigger = chapter() == 4 && IsBitflagSetInGame(lewynReceivedForseti())
 )
 
 brokenTyrfingId = 0x27
 function byronGiftedTyrfingToSigurd() => bit5(0x0052c6)
 achievement(title = "The Blade of Curses [m]", points = 5, badge = "143925", id = 130728,
-    description = "Receive Tyrfing from Lord Byron within two turns.",
+    description = "Receive Tyrfing from Lord Byron within two turns in Chapter 5.",
     trigger = chapter() == 5 && IsBitflagSetInGame(byronGiftedTyrfingToSigurd()) && turns() <= 2
 )
 
 nosferatuId = 0x5f
 function juliaAndSeliphDiscussToGetItemInChapter6() => bit2(0x0052c7)
 function IsaachIsControlledByPlayer() => KeepIsUnderControlByPlayer(3)
-achievement(title = "Lifelight from Your Eyes", points = 5,
-    description = "Receive Nosferatu for Julia after capturing Isaach.",
+achievement(title = "Lifelight from Your Eyes [m]", points = 5, id = 130737, badge = "143934",
+    description = "Receive Nosferatu for Julia after capturing Isaach in Chapter 6.",
     trigger = chapter() == 6 && IsaachIsControlledByPlayer() && IsBitflagSetInGame(juliaAndSeliphDiscussToGetItemInChapter6())
 )
 
 shanan = GetGen1UnitObjectByName("Lex") // Lex and Shanan share the same memory space.
-achievement(title = "Bane of Fafnir", points = 3,
+achievement(title = "Bane of Fafnir [m]", points = 3, id = 130742, badge = "143939",
     description = "Receive Balmung.",
     trigger = chapter() == 7 && IsPlayerPhase() && WasValueSetInGame(shanan["talkTo"], 0x39, 0x0) && TurnNumberIsPlausible()
 )
 
 function palmarchGiftedTyrfingToSeliph() => bit3(0x0052c7)
-achievement(title = "Inheritor of Baldur", points = 3,
-    description = "Receive Tyrfing from Palmarch.",
+achievement(title = "Inheritor of Baldur [m]", points = 3, id = 130729, badge = "143925",
+    description = "Receive Tyrfing from Palmarch in Chapter 10.",
     trigger = chapter() == 10 && IsBitflagSetInGame(palmarchGiftedTyrfingToSeliph())
 )
 
 function juliaReceivesBookOfNaga() => bit7(0x0052c8)
-achievement(title = "The Light of Heim", points = 3,
-    description = "Receive the Book of Naga.",
+achievement(title = "The Light of Heim [m]", points = 3, id = 130765, badge = "143963",
+    description = "Receive the Book of Naga in the final chapter.",
     trigger = chapter() == 11 && IsBitflagSetInGame(juliaReceivesBookOfNaga())
 )
 
 function seliphTalkedToHisParents() => bit3(0x0052c8)
-achievement(title = "The Same Loving Smile", points = 5,
-    description = "Have Seliph speak with his parents one last time.",
+achievement(title = "The Same Loving Smile [m]", points = 5, id = 130758, badge = "143955",
+    description = "Have Seliph speak with his parents one last time in Chapter 10.",
     trigger = chapter() == 10 && IsBitflagSetInGame(seliphTalkedToHisParents())
 )
 
 function altenaConvincesArion() => bit5(0x0052c9)
-achievement(title = "Reason Before Pride", points = 5,
-    description = "Convince Arion to take up arms against Julius.",
+achievement(title = "Reason Before Pride [m]", points = 5, id = 130763, badge = "143961",
+    description = "Convince Arion to take up arms against Julius in the final chapter.",
     trigger = chapter() == 11 && IsBitflagSetInGame(altenaConvincesArion())
 )
 
@@ -1417,7 +1418,7 @@ function GetTotalLosses()
 
 function GotExperienceARank() => word(0x3d83) >= 0x3e8
 
-achievement(title = "A Father to His Men", points = 25,
+achievement(title = "A Father to His Men [m]", points = 25, id = 130692, badge = "143889",
     description = "Recruit all possible units and ensure they survive to the end of their story.",
     trigger = tally(4, GetSurvivalRankConditions()) && never(chapter() != 0xFF)
 )
@@ -1445,7 +1446,7 @@ for i in GetCombatRankConditions()
     array_push(playerRankConditions, i)
 }
 
-achievement(title = "Master Tactician", points = 50,
+achievement(title = "Master Tactician [m]", points = 50, id = 130733, badge = "143930",
     description = "Complete the game with an overall player rank of A.",
     trigger = tally(15, playerRankConditions) && never(!IsPlayerRankShown()) && chapter() == 0xFF && playerCastlesCaptured() == 0 && GetTotalTurns() > 0
 )
@@ -1465,7 +1466,7 @@ function DidNotRecruitBiologicalChildren()
     return conditions
 }
 
-achievement(title = "Chastity", points = 50,
+achievement(title = "Chastity [m]", points = 50, id = 130734, badge = "143931",
     description = "Complete the game without conceiving any optional biological children.",
     trigger = DidNotRecruitBiologicalChildren() && chapter() == 0xFF && IsPlayerRankShown()
 )
