@@ -61,9 +61,9 @@ function SecondsToFormat(value)
 // $19f998: 0x3 = is loading save file(?)
 function IsLoadingSaveFile() => obyte(0x19f998) == 0x3
 
-function IsInGame() => !IsInLocationWithCode("File") && !WasInLocationWithCode("File")
-    && !IsInLocationWithCode("WFC") && !IsInLocationWithCode("Title")
-    && !IsInLocationWithCode("Battle")
+function IsInGame() => !IsInLocation("File") && !WasInLocation("File")
+    && !IsInLocation("WFC") && !IsInLocation("Title")
+    && !IsInLocation("Battle")
 
 // $1b7f9c: File selection menu (16-bit)
 //          0x1 = File selection
@@ -267,6 +267,10 @@ locations = {
 0x28: { "id": 0x28, "name": "In the Bomb Garden", "code": "BombGarden", },
 0xc: { "id": 0xc, "name": "On Molida Island", "code": "Molida", },
 0xe: { "id": 0xe, "name": "On the Isle of Gust", "code": "Gust", },
+0xa: { "id": 0xa, "name": "On the traveler’s ship", "code": "Traveler", },
+0x0: { "id": 0x0, "name": "Somewhere on the Great Sea…", "code": "Sea", },
+0x1d: { "id": 0x1d, "name": "In the Temple of Wind", "code": "TempleOfWind", },
+0x2a: { "id": 0x2a, "name": "In Cyclok’s lair…", "code": "Cyclok", },
 }
 
 // RICH PRESENCE
@@ -276,7 +280,6 @@ for i in locations {
     mapLookup[i] = location["name"]
 }
 
-rich_presence_conditional_display(currentLocation() == 0x00, "On the title screen")
 rich_presence_display("{0}",
     rich_presence_lookup("map", currentLocation(), mapLookup, fallback="Somewhere on the Great Sea...")
 )
@@ -293,13 +296,13 @@ function GetLocationByCode(code)
     }
 }
 
-function IsInLocationWithCode(code)
+function IsInLocation(code)
 {
     location = GetLocationByCode(code)
     return currentLocation() == location["id"]
 }
 
-function WasInLocationWithCode(code)
+function WasInLocation(code)
 {
     location = GetLocationByCode(code)
     return Delta(currentLocation()) == location["id"]
@@ -406,7 +409,7 @@ achievement(title = "Back at Ya!", points = 1,
 function IsBlaazDying() => obyte(0x25f050) == 0x16
 achievement(title = "Scorching Earth [m]", points = 5,
     description = "Defeat Blaaz without recovering any life energy.",
-    trigger = once(IsInLocationWithCode("Blaaz") && WasInLocationWithCode("TempleOfFire"))
+    trigger = once(IsInLocation("Blaaz") && WasInLocation("TempleOfFire"))
         && IsBlaazDying() && never(hp() > Delta(hp()))
 )
 
@@ -428,4 +431,55 @@ achievement(title = "Open Fire!", points = 3,
     trigger = WasValueSetInGame(eddoCannon(), 0xff, 0x1)
 )
 
+function shovel() => bit3(0x1ba604)
+achievement(title = "Dig to the Center of the Earth!", points = 3,
+    description = "Obtain the shovel.",
+    trigger = WasBitflagSetInGame(shovel())
+)
+
+// This cheevo will trigger whenever you enter the Isle of Gust from the Great Sea, but without a bitflag to prevent this,
+// we'll have to simply lock it out by other means. Best we can do at this point is to check for the existence of an item.
+// We're adding this cheevo simply due to the existence of a microphone-dependent obstacle (MDO) on the island.
+function bombs() => bit4(0x1ba604)
+achievement(title = "Where the Wind Blows", points = 1,
+    description = "Reach the Isle of Gust for the first time.",
+    trigger = WasInLocation("Sea") && IsInLocation("Gust") && bombs() != 1
+)
+
+achievement(title = "And Kablooey!", points = 3,
+    description = "Obtain bombs.",
+    trigger = WasBitflagSetInGame(bombs())
+)
+
+function cyclokState() => obyte(0x255a0c)
+function IsCyclokDying() => cyclokState() == 0x8
+function CyclokStarted() => once(Delta(cyclokState()) == 1 && cyclokState() == 2)
+cyclokFrameLimit = 2700
+function TimeAdvancedAgainstCyclok() => repeated(0, CyclokStarted() && Delta(systemTimer()) != systemTimer())
+achievement(title = "A Short Fuse [m]", points = 10,
+    description = "Defeat Cyclok within " + (cyclokFrameLimit / 60) + " seconds.",
+    trigger = once(IsInLocation("Cyclok") && WasInLocation("TempleOfWind")) && never(!IsInLocation("Cyclok"))
+        && IsCyclokDying() && never(repeated(cyclokFrameLimit, TimeAdvancedAgainstCyclok()))
+)
+
+function neriFreed() => obit4(0x1b5554)
+achievement(title = "Hidden in Wind", points = 3,
+    description = "Free the Spirit of Wisdom.",
+    trigger = WasBitflagSetInGame(neriFreed())
+)
+
+function phantomHourglassMaxTime() => odword(0x1ba4e8)
+maxTime = 25 * 3600
+achievement(title = "The Sands of Time", points = 10,
+    description = "Fill the Phantom Hourglass with 25 minutes' worth of Sand of Hours.",
+    trigger = Delta(phantomHourglassMaxTime()) < maxTime && measured(phantomHourglassMaxTime() == maxTime) && IsInGame()
+)
+
 // End Sea Chart achievements
+
+leaderboard(title = "Time Attack - Cyclok", description = "Defeat Cyclok as quickly as you can.",
+    start = once(IsInLocation("Cyclok") && WasInLocation("TempleOfWind")) && CyclokStarted(),
+    cancel = !IsInLocation("Cyclok"),
+    submit = IsCyclokDying(),
+    value = measured(TimeAdvancedAgainstCyclok())
+)
