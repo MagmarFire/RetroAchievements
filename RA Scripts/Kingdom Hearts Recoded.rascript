@@ -32,6 +32,8 @@ areas = {
 16: { "worldId": 0x1, "name": "TraverseKeyholeFall", "display": "Keyhole / Terminus", "areaId": 0x8, },
 17: { "worldId": 0x1, "name": "TraverseKeyholeTerminus", "display": "Keyhole / Terminus", "areaId": 0x9, },
 18: { "worldId": 0x2, "name": "WonderlandClearing", "display": "Clearing", "areaId": 0x6, },
+19: { "worldId": 0x2, "name": "WonderlandRoseGarden", "display": "Rose Garden", "areaId": 0x9, },
+20: { "worldId": 0x2, "name": "WonderlandLotus", "display": "Lotus Forest", "areaId": 0x8, },
 }
 
 function GetLocationByName(name)
