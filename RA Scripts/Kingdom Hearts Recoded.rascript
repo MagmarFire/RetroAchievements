@@ -4,7 +4,7 @@
 function worldId() => byte(0x19836c)
 function areaId() => byte(0x19836d)
 function IsInSystemSector() => dword(0x19ecf4) != 0x0
-function KeyholeCheckpointPassed() => Delta(areaId()) == 0x0
+function KeyholeCheckpointPassed() => minigamePopupState() == 0x3//Delta(areaId()) == 0x0
 
 worlds = {
     0: "Destiny Islands",
@@ -34,6 +34,15 @@ areas = {
 18: { "worldId": 0x2, "name": "WonderlandClearing", "display": "Clearing", "areaId": 0x6, },
 19: { "worldId": 0x2, "name": "WonderlandRoseGarden", "display": "Rose Garden", "areaId": 0x9, },
 20: { "worldId": 0x2, "name": "WonderlandLotus", "display": "Lotus Forest", "areaId": 0x8, },
+21: { "worldId": 0x2, "name": "WonderlandAimless", "display": "Aimless Path", "areaId": 0x5, },
+22: { "worldId": 0x2, "name": "WonderlandMaze", "display": "Hedge Maze", "areaId": 0x4, },
+23: { "worldId": 0x2, "name": "WonderlandBizarreSmall", "display": "Bizarre Room", "areaId": 0x7, },
+24: { "worldId": 0x2, "name": "WonderlandBizarreBig", "display": "Bizarre Room", "areaId": 0x1, },
+25: { "worldId": 0x2, "name": "WonderlandTea", "display": "Tea Party Garden", "areaId": 0x3, },
+26: { "worldId": 0x2, "name": "WonderlandQueen", "display": "The Queen’s Castle", "areaId": 0x2, },
+27: { "worldId": 0x2, "name": "WonderlandKeyholeFirst", "display": "Keyhole / The Falsewood", "areaId": 0xa, },
+28: { "worldId": 0x2, "name": "WonderlandKeyholeSecond", "display": "Keyhole / Fleeting Forest", "areaId": 0xb, },
+29: { "worldId": 0x2, "name": "WonderlandKeyholeTerminus", "display": "Keyhole / Terminus", "areaId": 0xc, },
 }
 
 function GetLocationByName(name)
@@ -48,10 +57,28 @@ function GetLocationByName(name)
     }
 }
 
+function GetWorldIdByName(name)
+{
+    for i in worlds
+    {
+        world = worlds[i]
+        if (world == name)
+        {
+            return i
+        }
+    }
+}
+
 function IsInLocation(name)
 {
     area = GetLocationByName(name)
     return areaId() == area["areaId"] && worldId() == area["worldId"]
+}
+
+function IsInWorld(name)
+{
+    world = GetWorldIdByName(name)
+    return worldId() == world
 }
 
 function WasInLocation(name)
@@ -184,6 +211,14 @@ function defense() => byte(0x060B5A)
 
 // $060B5C: Sora's Luck - 16-bit
 function luck() => word(0x060B5C)
+
+// 0x0a04cc: Pointer to minigame state (32-bit)
+//           Offset 0x10c to get minigame state (8-bit)
+//           0x1 = "Get Ready!" sliding in
+//           0x2 = "Get Ready!" about stopped
+//           0x3 = "Get Ready!" sliding out
+function minigameStatePointer() => tbyte(0xa04cc)
+function minigamePopupState() => byte(minigameStatePointer() + 0x10c)
 
 // $060B6E: Level of current Keyblade?
 // $0A04A8: Pointer for the clock gauge
@@ -827,6 +862,8 @@ function IsAtLeastOnDifficulty(value)
 // $19EDCC: Amount of times the player has taken damage. Caps at 0x3e7 - 32-bit
 //          
 //          Resets under certain conditions.
+function timesPlayerWasHit() => dword(0x19EDCC)
+function PlayerIsHit() => Delta(timesPlayerWasHit()) < timesPlayerWasHit()
 // $19EDD0: Amount of times the player has used melee attacks. Caps at 0x3e7 - 32-bit
 //          
 //          Resets under certain conditions.
@@ -972,7 +1009,9 @@ function WasBitflagSetInGame(mem)
 // conditions: "countsWhen": the condition that must be true in order for it to be counted in the total
 //             "recalculateWhen": the condition that indicates that relevant values in the condition have changed,
 //                                and so everything must be recalculated
-function GenerateSaveProtectedAchievementFromConditions(cheevo, conditions)
+//
+// onlyAvailableWhen: A condition that must be true in all conditions for the achievement to trigger.
+function GenerateSaveProtectedAchievementFromConditions(cheevo, conditions, onlyAvailableWhen)
 {
     loadedCounts = []
     totalCounts = []
@@ -997,7 +1036,7 @@ function GenerateSaveProtectedAchievementFromConditions(cheevo, conditions)
     achievement(title = cheevo["name"], description = cheevo["description"], points = cheevo["points"],
         trigger = !IsOnSaveOrLoadMenu() &&
             measured(tally(cheevo["threshold"], totalCounts)) && unless(tally(cheevo["threshold"], loadedCounts))
-            && never(resetAlt) && (always_false() || IsAlwaysInGame())
+            && never(resetAlt) && onlyAvailableWhen && (always_false() || IsAlwaysInGame())
     )
 }
 
@@ -1121,8 +1160,8 @@ GenerateSaveProtectedAchievementFromConditions({
     "name": "Enemies Test",
     "description": "Defeat two types of enemies.",
     "points": 0,
-    "threshold": 2
-}, enemiesConditions)
+    "threshold": 2,
+}, enemiesConditions, always_true())
 
 function mapTutorial() => bit6(0x195c85)
 achievement(title = "The Arguments You Have Presented Seem Believable", description = "Receive your first instructions from King Mickey on the Destiny Islands.",
@@ -1183,6 +1222,46 @@ achievement(title = "Our Princess of Heart Is in Another World", description = "
     trigger = IsAtLeastOnDifficulty("Proud") && level() <= 9 && never(!IsInLocation("TraverseKeyholeTerminus")) && BossScoreIsDisplayedAndEnoughForStar(30000)
 )
 
+// The current save protection algorithm won't work here because the bits appear to be loaded after all the other save's data is loaded.
+// This will be on the cutting room floor until I update the save protection to accommodate it, which...honestly, it may be more trouble than it's worth.
+if (1 == 0)
+{
+    i = -1
+    baseInklingAddr1 = 0x19c512
+    baseInklingAddr2 = 0x19c513
+    inklingConditions = { }
+
+    for j in range(0, 7)
+    {
+        bit1 = bit(j, baseInklingAddr1)
+        bit2 = bit(j, baseInklingAddr2)
+    
+        i = i + 1
+        inklingConditions[i] = { "countsWhen": (bit1 == 1), "recalculateWhen": (Delta(bit1) != bit1) }
+    
+        i = i + 1
+        inklingConditions[i] = { "countsWhen": (bit2 == 1), "recalculateWhen": (Delta(bit2) != bit2) }
+    }
+
+    GenerateSaveProtectedAchievementFromConditions({
+        "name": "Forget-Me-Never (backtrack?)",
+        "description": "Find all the Inklings in Wonderland.",
+        "points": 5,
+        "threshold": 16
+    }, inklingConditions, IsInWorld("Wonderland"))
+}
+
+// TODO: We're duplicating the WonderlandKeyholeTerminus check to work around a "Combination of &&s and ||s is too complex" error.
+// This can be simplified after this is fixed.
+function IsAlwaysInWonderlandKeyhole() => never(!IsInLocation("WonderlandKeyholeFirst") && !IsInLocation("WonderlandKeyholeSecond")
+        && !IsInLocation("WonderlandKeyholeTerminus") && !IsInLocation("WonderlandKeyholeTerminus") && !IsInLocation("WonderlandKeyholeTerminus"))
+achievement(title = "Avoided the Guillotine", points = 25,
+    description = "Complete the Wonderland Keyhole on Critical Mode without dying or getting hit more than twelve times.",
+    trigger = IsAtLeastOnDifficulty("Critical") && IsAlwaysInWonderlandKeyhole()
+        && once(KeyholeCheckpointPassed() && IsInLocation("WonderlandKeyholeFirst"))
+        && never(hp() <= 0) && never(repeated(12, PlayerIsHit())) && JustDefeatedEnemy("Trickmaster")
+)
+
 function extraCommandSlotsUnlocked() => byte(0x198700)
 achievement(title = "Commander Sora", points = 5,
     description = "Unlock five extra command slots.",
@@ -1195,6 +1274,9 @@ sectorRewards = [
     bit0(0x19832a), bit1(0x19832a), bit2(0x19832a),
     bit0(0x19832c), bit1(0x19832c), bit2(0x19832c),
     bit0(0x19832e), bit1(0x19832e), bit2(0x19832e),
+    bit0(0x198334), bit1(0x198334), bit2(0x198334), bit3(0x198334), bit4(0x198334),
+    bit0(0x198336), bit1(0x198336), bit2(0x198336), bit3(0x198336),
+    bit0(0x198338), bit1(0x198338), bit2(0x198338), bit3(0x198338), bit4(0x198338)
 ]
 
 // Generate conditions for sector rewards from the above addresses.
@@ -1211,7 +1293,7 @@ GenerateSaveProtectedAchievementFromConditions({
     "description": "Redeem 10% of all sector rewards.",
     "points": 5,
     "threshold": 100, // Not sure how many there are yet, but we may be able to infer it via calculations.
-}, sectorRewardsConditions)
+}, sectorRewardsConditions, always_true())
 
 function rarePrizeRoundup() => bit5(0x195c78)
 achievement(title = "Rare Prize Roundup", description = "Collect all items from every rare prize blox in the game and view the Trophies screen.", points = 10,
@@ -1289,21 +1371,21 @@ GenerateSaveProtectedAchievementFromConditions({
     "description": "Defeat 10% of all enemy types.",
     "points": 3,
     "threshold": (length(enemies) / 10),
-}, enemiesConditions)
+}, enemiesConditions, always_true())
 
 GenerateSaveProtectedAchievementFromConditions({
     "name": "Justice for Some",
     "description": "Defeat 25% of all enemy types.",
     "points": 5,
     "threshold": (length(enemies) / 4)
-}, enemiesConditions)
+}, enemiesConditions, always_true())
 
 GenerateSaveProtectedAchievementFromConditions({
     "name": "Justice for Most",
     "description": "Defeat 50% of all enemy types.",
     "points": 10,
     "threshold": (length(enemies) / 2)
-}, enemiesConditions)
+}, enemiesConditions, always_true())
 
 function justiceForAll() => bit2(0x195c7f)
 achievement(title = "Justice for All", description = "Defeat all enemy types.", points = 25,
