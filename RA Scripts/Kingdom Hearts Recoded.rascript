@@ -217,8 +217,12 @@ function luck() => word(0x060B5C)
 //           0x1 = "Get Ready!" sliding in
 //           0x2 = "Get Ready!" about stopped
 //           0x3 = "Get Ready!" sliding out
-function minigameStatePointer() => tbyte(0xa04cc)
-function minigamePopupState() => byte(minigameStatePointer() + 0x10c)
+minigameStatePointerBaseAddr = 0xa04cc
+popupOffset = 0x10c
+
+function minigameStatePointer() => tbyte(minigameStatePointerBaseAddr)
+function minigameStateHalfPointer() => word(minigameStatePointerBaseAddr)
+function minigamePopupState() => byte(minigameStatePointer() + popupOffset)
 
 // $060B6E: Level of current Keyblade?
 // $0A04A8: Pointer for the clock gauge
@@ -1192,7 +1196,8 @@ achievement(title = "I Am the New God", description = "Earn a Star rank against 
     trigger = IsAtLeastOnDifficulty("Proud") && level() <= 5 && never(!IsInLocation("DestinyStorm")) && BossScoreIsDisplayedAndEnoughForStar(40000)
 )
 
-function soraSidescrollingState() => byte(0x2347be)
+soraSidescrollStateOffset = 0x2d32
+function soraSidescrollingState() => byte(minigameStatePointer() + soraSidescrollStateOffset)
 function JustFellOrGotCaughtInSidescrollingStages() => soraSidescrollingState() == 0x6 && Delta(soraSidescrollingState()) != soraSidescrollingState()
 function IsAlwaysInTraverseTownKeyhole() => never(!IsInLocation("TraverseKeyholeFirst") && !IsInLocation("TraverseKeyholeSecond")
         && !IsInLocation("TraverseKeyholeThird") && !IsInLocation("TraverseKeyholeFall") && !IsInLocation("TraverseKeyholeTerminus"))
@@ -1203,10 +1208,18 @@ achievement(title = "Saved a Framerule", points = 25,
         && never(hp() <= 0) && JustDefeatedEnemy("Guard Armor") && never(JustFellOrGotCaughtInSidescrollingStages())
 )
 
-function fireLungeUsesLeft() => byte(0x23082a)
-function thunderRainUsesLeft() => byte(0x230866)
-function blizzardDartUsesLeft() => byte(0x2308a2)
-function windSpinDartUsesLeft() => byte(0x2308de)
+fireLungeUsesNegativeOffset = 0x1262
+function fireLungeUsesLeft() => byte(minigameStateHalfPointer() + 0x230000 - fireLungeUsesNegativeOffset)
+
+thunderRainUsesNegativeOffset = 0x1226
+function thunderRainUsesLeft() => byte(minigameStateHalfPointer() + 0x230000 - thunderRainUsesNegativeOffset)
+
+blizzardDartUsesNegativeOffset = 0x11ea
+function blizzardDartUsesLeft() => byte(minigameStateHalfPointer() + 0x230000 - blizzardDartUsesNegativeOffset)
+
+windSpinUsesNegativeOffset = 0x11ae
+function windSpinDartUsesLeft() => byte(minigameStateHalfPointer() + 0x230000 - windSpinUsesNegativeOffset)
+
 function UsedOverlayCommand(addr) => once(Delta(addr) == addr + 1)
 achievement(title = "Dedicated Specialist", points = 5,
     description = "Complete the Traverse Town Keyhole using at most one type of overlay command.",
