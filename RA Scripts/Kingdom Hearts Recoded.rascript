@@ -9,17 +9,17 @@ function KeyholeCheckpointPassed() => minigamePopupState() == 0x3//Delta(areaId(
 worlds = {
     0: "Destiny Islands",
     1: "Traverse Town",
-    2: "Wonderland"
+    2: "Wonderland",
+    3: "Olympus Coliseum",
 }
 
 areas = {
 0: { "worldId": 0x0, "name": "Null", "display": "Somewhere in the datascape...", "areaId": 0x0, },
 1: { "worldId": 0x0, "name": "SoA1", "display": "Station of Awakening", "areaId": 0x1, },
-2: { "worldId": 0x0, "name": "SoA2", "display": "Station of Awakening or Destiny Islands System Sector, Floor 1", "areaId": 0x2, },
+2: { "worldId": 0x0, "name": "SoA2", "display": "Station of Awakening", "areaId": 0x2, },
 3: { "worldId": 0x0, "name": "Destiny", "display": "Destiny Islands", "areaId": 0x3, },
-4: { "worldId": 0x0, "name": "DestinySecret", "display": "Destiny Islands: Secret Place", "areaId": 0x5, },
-5: { "worldId": 0x0, "name": "DISectorF2", "display": "Destiny Islands System Sector, Floor 2", "areaId": 0x12, },
-6: { "worldId": 0x0, "name": "DestinyStorm", "display": "Destiny Islands: Storm-tossed Island", "areaId": 0x4, },
+4: { "worldId": 0x0, "name": "DestinySecret", "display": "Secret Place", "areaId": 0x5, },
+6: { "worldId": 0x0, "name": "DestinyStorm", "display": "Storm-tossed Island", "areaId": 0x4, },
 7: { "worldId": 0x1, "name": "TraverseFirst", "display": "First District", "areaId": 0x1, },
 8: { "worldId": 0x1, "name": "TraverseSecond", "display": "Second District", "areaId": 0x2, },
 9: { "worldId": 0x1, "name": "TraverseAlley", "display": "Alleyway", "areaId": 0x4, },
@@ -43,6 +43,8 @@ areas = {
 27: { "worldId": 0x2, "name": "WonderlandKeyholeFirst", "display": "Keyhole / The Falsewood", "areaId": 0xa, },
 28: { "worldId": 0x2, "name": "WonderlandKeyholeSecond", "display": "Keyhole / Fleeting Forest", "areaId": 0xb, },
 29: { "worldId": 0x2, "name": "WonderlandKeyholeTerminus", "display": "Keyhole / Terminus", "areaId": 0xc, },
+30: { "worldId": 0x3, "name": "OlympusOutside", "display": "Outside the Coliseum", "areaId": 0x1d, },
+31: { "worldId": 0x3, "name": "OlympusVestibule", "display": "Vestibule", "areaId": 0x1e, },
 }
 
 function GetLocationByName(name)
@@ -109,10 +111,10 @@ function bossScoreDisplayStatusPointer() => bossScorePointer() + 0x10
 function IsBossRankJustDisplayed() => Delta(byte(bossScoreDisplayStatusPointer())) == 0xa && byte(bossScoreDisplayStatusPointer()) == 0x7
 
 // We have a hit target here because the status value cycles through numbers a couple times.
-function IsTotalScoreJustDisplayed() => repeated(2, Delta(byte(bossScoreDisplayStatusPointer())) == 0x3 && byte(bossScoreDisplayStatusPointer()) == 0x4)
+function IsTotalScoreJustDisplayed() => Delta(byte(bossScoreDisplayStatusPointer())) == 0xa && byte(bossScoreDisplayStatusPointer()) == 0x7
     && never(!IsBossScorePointerActive())
 
-function BossScoreIsDisplayedAndEnoughForStar(threshold)
+function BossScoreIsDisplayedAndAtLeast(threshold)
 {
     return IsBossScorePointerActive() && dword(bossScorePointer() + 8) >= threshold && IsBossRankJustDisplayed()
 }
@@ -1185,6 +1187,12 @@ achievement(title = "Town Watch", description = "Complete Traverse Town.",
     trigger = WasBitflagSetInGame(traverseTownStoryEntry())
 )
 
+function wonderlandStoryEntry() => bit2(0x195bda)
+achievement(title = "Released Candidate", description = "Complete Wonderland.",
+    points = 3,
+    trigger = WasBitflagSetInGame(wonderlandStoryEntry())
+)
+
 function dodgeRollActive() => bit0(0x1986f0)
 achievement(title = "Smooth Operator", description = "Defeat the Darkside without the Dodge Roll ability equipped (Critical Mode; Level 2 or below).",
     points = 5,
@@ -1193,7 +1201,7 @@ achievement(title = "Smooth Operator", description = "Defeat the Darkside withou
 
 achievement(title = "I Am the New God", description = "Earn a Star rank against the Darkside (Proud Mode or higher; Level 5 or below).",
     points = 10,
-    trigger = IsAtLeastOnDifficulty("Proud") && level() <= 5 && never(!IsInLocation("DestinyStorm")) && BossScoreIsDisplayedAndEnoughForStar(40000)
+    trigger = IsAtLeastOnDifficulty("Proud") && level() <= 5 && never(!IsInLocation("DestinyStorm")) && BossScoreIsDisplayedAndAtLeast(40000)
 )
 
 soraSidescrollStateOffset = 0x2d32
@@ -1232,7 +1240,7 @@ achievement(title = "Dedicated Specialist", points = 5,
 
 achievement(title = "Our Princess of Heart Is in Another World", description = "Earn a Star rank against the Guard Armor (Proud Mode or higher; Level 9 or below).",
     points = 10,
-    trigger = IsAtLeastOnDifficulty("Proud") && level() <= 9 && never(!IsInLocation("TraverseKeyholeTerminus")) && BossScoreIsDisplayedAndEnoughForStar(30000)
+    trigger = IsAtLeastOnDifficulty("Proud") && level() <= 9 && never(!IsInLocation("TraverseKeyholeTerminus")) && BossScoreIsDisplayedAndAtLeast(30000)
 )
 
 // The current save protection algorithm won't work here because the bits appear to be loaded after all the other save's data is loaded.
@@ -1273,6 +1281,11 @@ achievement(title = "Avoided the Guillotine", points = 25,
     trigger = IsAtLeastOnDifficulty("Critical") && IsAlwaysInWonderlandKeyhole()
         && once(KeyholeCheckpointPassed() && IsInLocation("WonderlandKeyholeFirst"))
         && never(hp() <= 0) && never(repeated(12, PlayerIsHit())) && JustDefeatedEnemy("Trickmaster")
+)
+
+achievement(title = "Guilt and Penalty", points = 10,
+    description = "Complete the Wonderland Keyhole with a score of 22000 or more (Proud Mode or higher; Level 15 or below).",
+    trigger = IsAtLeastOnDifficulty("Proud") && level() <= 15 && never(!IsInLocation("WonderlandKeyholeTerminus")) && BossScoreIsDisplayedAndAtLeast(22000)
 )
 
 function extraCommandSlotsUnlocked() => byte(0x198700)
@@ -1474,14 +1487,14 @@ for i in speedrunnerTrophies
     )
 }
 
-leaderboard(title = "Time Attack - Darkside", description = "Defeat Darkside as quickly as you can.",
+leaderboard(title = "Time Attack - Destiny Islnds", description = "Seal the Destiny Islands Keyhole as quickly as you can.",
     start = IsInLocation("DestinyStorm"),
     cancel = !IsInLocation("DestinyStorm"),
     submit = IsBossRankJustDisplayed(),
     value = bossMilliseconds() / 10
 )
 
-leaderboard(title = "Score Attack - Darkside", description = "Get as many points as you can during your battle against Darkside.",
+leaderboard(title = "Score Attack - Destiny Islands", description = "Get as many points as you can in the Destiny Islands Keyhole.",
     start = IsInLocation("DestinyStorm") && IsTotalScoreJustDisplayed(),
     cancel = !IsInLocation("DestinyStorm"),
     submit = IsTotalScoreJustDisplayed(),
@@ -1492,6 +1505,14 @@ leaderboard(title = "Score Attack - Traverse Town", description = "Get as many p
     start = IsInLocation("TraverseKeyholeTerminus") && IsTotalScoreJustDisplayed(),
     cancel = !IsInLocation("TraverseKeyholeFirst") && !IsInLocation("TraverseKeyholeSecond")
         && !IsInLocation("TraverseKeyholeThird") && !IsInLocation("TraverseKeyholeFall") && !IsInLocation("TraverseKeyholeTerminus"),
+    submit = IsTotalScoreJustDisplayed(),
+    value = dword(bossScorePointer() + 8)
+)
+
+leaderboard(title = "Score Attack - Wonderland", description = "Get as many points as you can in the Wonderland Keyhole.",
+    start = IsInLocation("WonderlandKeyholeTerminus") && IsTotalScoreJustDisplayed(),
+    cancel = !IsInLocation("WonderlandKeyholeFirst") && !IsInLocation("WonderlandKeyholeSecond")
+        && !IsInLocation("WonderlandKeyholeTerminus"),
     submit = IsTotalScoreJustDisplayed(),
     value = dword(bossScorePointer() + 8)
 )
