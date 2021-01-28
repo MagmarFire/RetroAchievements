@@ -468,6 +468,12 @@ achievement(title = "Hidden in Wind", points = 3,
     trigger = WasBitflagSetInGame(neriFreed())
 )
 
+function crestPuzzleSolved() => obit2(0x1b554c)
+achievement(title = "Thinking with Wax", points = 3,
+    description = "Solve the crest puzzle in the second section of the Temple of the Ocean King.",
+    trigger = WasBitflagSetInGame(crestPuzzleSolved())
+)
+
 function phantomHourglassMaxTime() => odword(0x1ba4e8)
 maxTime = 25 * 3600
 achievement(title = "The Sands of Time", points = 10,
