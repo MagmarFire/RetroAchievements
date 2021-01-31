@@ -36,6 +36,7 @@ function WasBitflagSetInGame(bit)
 {
     return once(Delta(bit) != bit && bit == 1)
         && never(isLoadingSaveFile())
+        && IsInGame()
 }
 
 function SecondsToFormat(value)
@@ -130,83 +131,84 @@ function IsPaused() => byte(0x25ff90) == 1
 function currentLocation() => word(0x261640)
 
 locationInfo = {
-    0x2f: { "id": 0x2f, "name": "In Aboda Village", "code": "Aboda", },
-    0x8: { "id": 0x8, "name": "In the Forest Realm", "code": "ForestRealm", },
-    0x29: { "id": 0x29, "name": "In Castle Town", "code": "CastleTown", },
-    0x28: { "id": 0x28, "name": "Inside Hyrule Castle", "code": "Castle", },
-    0x50: { "id": 0x50, "name": "Watching a cutscene…", "code": "Cutscene", },
-    0x18: { "id": 0x18, "name": "In the Tunnel to the Tower", "code": "Tunnel", },
-    0x14: { "id": 0x14, "name": "In the Tower of Spirits lobby", "code": "Tower", },
-    0x17: { "id": 0x17, "name": "Climbing the Spiral Staircase", "code": "Staircase", },
-    0x13: { "id": 0x13, "name": "In the Tower of Spirits", "code": "TowerDungeon", },
-    0x4: { "id": 0x4, "name": "In the Forest Realm", "code": "ForestField2", },
-    0x2a: { "id": 0x2a, "name": "In Whittleton", "code": "Whittleton", },
-    0x38: { "id": 0x38, "name": "In the wilds outside Whittleton", "code": "WhittletonWilds", },
-    0x9: { "id": 0x9, "name": "Stumbling through the Lost Woods", "code": "LostWoods", },
-    0x30: { "id": 0x30, "name": "In the Forest Sanctuary", "code": "ForestSanctuary", },
-    0x19: { "id": 0x19, "name": "In the Forest Temple", "code": "ForestTemple", },
-    0x1e: { "id": 0x1e, "name": "In Stagnox’s lair…", "code": "Stagnox", },
-    0xff00: { "id": 0xff00, "name": "On the title screen…", "code": "Title", },
-    0x0: { "id": 0x0, "name": "Starting the game…", "code": "Boot", },
-    0x3e: { "id": 0x3e, "name": "At Rabbitland Rescue", "code": "Rabbit", },
-    0x5: { "id": 0x5, "name": "In the Snow Realm", "code": "SnowRealm", },
-    0x2b: { "id": 0x2b, "name": "Anouki Village", "code": "Anouki", },
-    0xb: { "id": 0xb, "name": "In the Snow Realm – Tunnel", "code": "SnowTunnel", },
-    0x31: { "id": 0x31, "name": "In the Snow Sanctuary", "code": "SnowSanctuary", },
-    0x35: { "id": 0x35, "name": "At Wellspring Station", "code": "Wellspring", },
-    0x45: { "id": 0x45, "name": "On the side of the tracks…", "code": "Tracks", },
-    0x1a: { "id": 0x1a, "name": "In the Snow Temple", "code": "SnowTemple", },
-    0x1f: { "id": 0x1f, "name": "In Fraaz’s lair…", "code": "Fraaz", },
-    0x37: { "id": 0x37, "name": "At the Trading Post", "code": "Trading", },
-    0x36: { "id": 0x36, "name": "At the Bridge Worker’s Home", "code": "BridgeWorker", },
-    0x6: { "id": 0x6, "name": "In the Ocean Realm", "code": "Ocean", },
-    0x2c: { "id": 0x2c, "name": "In Papuchia Village", "code": "Papuchia", },
-    0x32: { "id": 0x32, "name": "In the Ocean Sanctuary", "code": "OceanSanctuary", },
-    0x43: { "id": 0x43, "name": "Fending off intruders in the Spirit Train!", "code": "Train", },
-    0xa: { "id": 0xa, "name": "Underwater (Ocean Realm)", "code": "UnderOcean", },
-    0x1b: { "id": 0x1b, "name": "In the Ocean Temple", "code": "OceanTemple", },
-    0x20: { "id": 0x20, "name": "In Phytops’s lair…", "code": "Phytops", },
-    0x46: { "id": 0x46, "name": "Competing in Take ‘Em All On!", "code": "Gauntlet1", },
-    0x4b: { "id": 0x4b, "name": "Fighting Stagnox in Take ‘Em All On!", "code": "GauntletStagnox", },
-    0x48: { "id": 0x48, "name": "Competing in Take ‘Em All On!", "code": "Gauntlet2", },
-    0x7: { "id": 0x7, "name": "In the Fire Realm", "code": "FireRealm", },
-    0x3c: { "id": 0x3c, "name": "At the Goron Target Range", "code": "TargetRange", },
-    0x2e: { "id": 0x2e, "name": "In Goron Village", "code": "Goron", },
-    0x2d: { "id": 0x2d, "name": "Walking the path to the Altar of the Mountain Goddess", "code": "AltarPath", },
-    0x33: { "id": 0x33, "name": "In the Fire Sanctuary", "code": "FireSanctuary", },
-    0x3f: { "id": 0x3f, "name": "At Snowdrift or Slippery Station", "code": "Snowdrift", },
-    0x1c: { "id": 0x1c, "name": "In the Fire Temple", "code": "FireTemple", },
-    0x21: { "id": 0x21, "name": "In Cragma’s lair…", "code": "Cragma", },
-    0x23: { "id": 0x23, "name": "In Byrne’s lair…", "code": "Byrne", },
-    0x15: { "id": 0x15, "name": "At the top of the Tower of Spirits", "code": "TowerTop", },
-    0x16: { "id": 0x16, "name": "At the top of the Tower of Spirits", "code": "TowerTop2", },
-    0x44: { "id": 0x44, "name": "Aboard the Spirit Train", "code": "Train2", },
-    0xe: { "id": 0xe, "name": "Competing at the Goron Target Range", "code": "TargetRangeGame", },
-    0x40: { "id": 0x40, "name": "At Disorientation Station", "code": "Disorientation", },
-    0x3a: { "id": 0x3a, "name": "At the Pirate Hideout", "code": "Pirate", },
-    0x3b: { "id": 0x3b, "name": "Inside the Pirate Hideout", "code": "PirateMinigame", },
-    0x34: { "id": 0x34, "name": "In the Sand Sanctuary", "code": "SandSanctuary", },
-    0xc: { "id": 0xc, "name": "In the Ocean Realm – Tunnel", "code": "OceanTunnel", },
-    0x1d: { "id": 0x1d, "name": "In the Sand Temple", "code": "SandTemple", },
-    0x22: { "id": 0x22, "name": "In Skeldritch’s lair…", "code": "Skeldritch", },
-    0x41: { "id": 0x41, "name": "At the Ends of the Earth Station", "code": "Ends", },
-    0xd: { "id": 0xd, "name": "In the Fire Realm – Tunnel", "code": "FireTunnel", },
-    0x3d: { "id": 0x3d, "name": "At Dark Ore Mine", "code": "DarkOre", },
-    0x39: { "id": 0x39, "name": "At Lost at Sea Station or in the wilds outside Papuchia Village", "code": "LostAtSea", },
-    0x4c: { "id": 0x4c, "name": "Fighting Fraaz in Take ‘Em All On!", "code": "GauntletFraaz", },
-    0x4d: { "id": 0x4d, "name": "Fighting Phytops in Take ‘Em All On!", "code": "GauntletPhytops", },
-    0x47: { "id": 0x47, "name": "Competing in Take ‘Em All On!", "code": "Gauntlet3", },
-    0x4a: { "id": 0x4a, "name": "Competing in Take ‘Em All On!", "code": "Gauntlet4", },
-    0x49: { "id": 0x49, "name": "Competing in Take ‘Em All On!", "code": "Gauntlet5", },
-    0x4e: { "id": 0x4e, "name": "Fighting Cragma in Take ‘Em All On!", "code": "GauntletCragma", },
-    0x4f: { "id": 0x4f, "name": "Fighting Skeldritch in Take ‘Em All On!", "code": "GauntletSkeldritch", },
-    0xf: { "id": 0xf, "name": "In the Dark Realm", "code": "DarkRealm", },
-    0x10: { "id": 0x10, "name": "Confronting the Demon Train", "code": "DarkRealm2", },
-    0x11: { "id": 0x11, "name": "Confronting the Demon Train", "code": "DarkRealm3", },
-    0x24: { "id": 0x24, "name": "Confronting Malladus", "code": "DarkRealm4", },
-    0x25: { "id": 0x25, "name": "Confronting Malladus", "code": "Malladus", },
-    0x26: { "id": 0x26, "name": "Playing a duet with Zelda", "code": "Duet", },
-    0x27: { "id": 0x27, "name": "Confronting Malladus once and for all", "code": "Malladus2", },
+0x2f: { "id": 0x2f, "name": "In Aboda Village", "code": "Aboda", },
+0x8: { "id": 0x8, "name": "In the Forest Realm", "code": "ForestRealm", },
+0x29: { "id": 0x29, "name": "In Castle Town", "code": "CastleTown", },
+0x28: { "id": 0x28, "name": "Inside Hyrule Castle", "code": "Castle", },
+0x50: { "id": 0x50, "name": "Watching a cutscene…", "code": "Cutscene", },
+0x18: { "id": 0x18, "name": "In the Tunnel to the Tower", "code": "Tunnel", },
+0x14: { "id": 0x14, "name": "In the Tower of Spirits lobby", "code": "Tower", },
+0x17: { "id": 0x17, "name": "Climbing the Spiral Staircase", "code": "Staircase", },
+0x13: { "id": 0x13, "name": "In the Tower of Spirits", "code": "TowerDungeon", },
+0x4: { "id": 0x4, "name": "In the Forest Realm", "code": "ForestField2", },
+0x2a: { "id": 0x2a, "name": "In Whittleton", "code": "Whittleton", },
+0x38: { "id": 0x38, "name": "In the wilds outside Whittleton", "code": "WhittletonWilds", },
+0x9: { "id": 0x9, "name": "Stumbling through the Lost Woods", "code": "LostWoods", },
+0x30: { "id": 0x30, "name": "In the Forest Sanctuary", "code": "ForestSanctuary", },
+0x19: { "id": 0x19, "name": "In the Forest Temple", "code": "ForestTemple", },
+0x1e: { "id": 0x1e, "name": "In Stagnox’s lair…", "code": "Stagnox", },
+0xff00: { "id": 0xff00, "name": "On the title screen…", "code": "Title", },
+0x0: { "id": 0x0, "name": "Starting the game…", "code": "Boot", },
+0x3e: { "id": 0x3e, "name": "At Rabbitland Rescue", "code": "Rabbit", },
+0x5: { "id": 0x5, "name": "In the Snow Realm", "code": "SnowRealm", },
+0x2b: { "id": 0x2b, "name": "Anouki Village", "code": "Anouki", },
+0xb: { "id": 0xb, "name": "In the Snow Realm – Tunnel", "code": "SnowTunnel", },
+0x31: { "id": 0x31, "name": "In the Snow Sanctuary", "code": "SnowSanctuary", },
+0x35: { "id": 0x35, "name": "At Wellspring Station", "code": "Wellspring", },
+0x45: { "id": 0x45, "name": "On the side of the tracks…", "code": "Tracks", },
+0x1a: { "id": 0x1a, "name": "In the Snow Temple", "code": "SnowTemple", },
+0x1f: { "id": 0x1f, "name": "In Fraaz’s lair…", "code": "Fraaz", },
+0x37: { "id": 0x37, "name": "At the Trading Post", "code": "Trading", },
+0x36: { "id": 0x36, "name": "At the Bridge Worker’s Home", "code": "BridgeWorker", },
+0x6: { "id": 0x6, "name": "In the Ocean Realm", "code": "Ocean", },
+0x2c: { "id": 0x2c, "name": "In Papuchia Village", "code": "Papuchia", },
+0x32: { "id": 0x32, "name": "In the Ocean Sanctuary", "code": "OceanSanctuary", },
+0x43: { "id": 0x43, "name": "Fending off intruders in the Spirit Train!", "code": "Train", },
+0xa: { "id": 0xa, "name": "Underwater (Ocean Realm)", "code": "UnderOcean", },
+0x1b: { "id": 0x1b, "name": "In the Ocean Temple", "code": "OceanTemple", },
+0x20: { "id": 0x20, "name": "In Phytops’s lair…", "code": "Phytops", },
+0x46: { "id": 0x46, "name": "Competing in Take ‘Em All On!", "code": "Gauntlet1", },
+0x4b: { "id": 0x4b, "name": "Fighting Stagnox in Take ‘Em All On!", "code": "GauntletStagnox", },
+0x48: { "id": 0x48, "name": "Competing in Take ‘Em All On!", "code": "Gauntlet2", },
+0x7: { "id": 0x7, "name": "In the Fire Realm", "code": "FireRealm", },
+0x3c: { "id": 0x3c, "name": "At the Goron Target Range", "code": "TargetRange", },
+0x2e: { "id": 0x2e, "name": "In Goron Village", "code": "Goron", },
+0x2d: { "id": 0x2d, "name": "Walking the path to the Altar of the Mountain Goddess", "code": "AltarPath", },
+0x33: { "id": 0x33, "name": "In the Fire Sanctuary", "code": "FireSanctuary", },
+0x3f: { "id": 0x3f, "name": "At Snowdrift or Slippery Station", "code": "Snowdrift", },
+0x1c: { "id": 0x1c, "name": "In the Fire Temple", "code": "FireTemple", },
+0x21: { "id": 0x21, "name": "In Cragma’s lair…", "code": "Cragma", },
+0x23: { "id": 0x23, "name": "In Byrne’s lair…", "code": "Byrne", },
+0x15: { "id": 0x15, "name": "At the top of the Tower of Spirits", "code": "TowerTop", },
+0x16: { "id": 0x16, "name": "At the top of the Tower of Spirits", "code": "TowerTop2", },
+0x44: { "id": 0x44, "name": "Aboard the Spirit Train", "code": "Train2", },
+0xe: { "id": 0xe, "name": "Competing at the Goron Target Range", "code": "TargetRangeGame", },
+0x40: { "id": 0x40, "name": "At Disorientation Station", "code": "Disorientation", },
+0x3a: { "id": 0x3a, "name": "At the Pirate Hideout", "code": "Pirate", },
+0x3b: { "id": 0x3b, "name": "Inside the Pirate Hideout", "code": "PirateMinigame", },
+0x34: { "id": 0x34, "name": "In the Sand Sanctuary", "code": "SandSanctuary", },
+0xc: { "id": 0xc, "name": "In the Ocean Realm – Tunnel", "code": "OceanTunnel", },
+0x1d: { "id": 0x1d, "name": "In the Sand Temple", "code": "SandTemple", },
+0x22: { "id": 0x22, "name": "In Skeldritch’s lair…", "code": "Skeldritch", },
+0x41: { "id": 0x41, "name": "At the Ends of the Earth Station", "code": "Ends", },
+0xd: { "id": 0xd, "name": "In the Fire Realm – Tunnel", "code": "FireTunnel", },
+0x3d: { "id": 0x3d, "name": "At Dark Ore Mine", "code": "DarkOre", },
+0x39: { "id": 0x39, "name": "At Lost at Sea Station or in the wilds outside Papuchia Village", "code": "LostAtSea", },
+0x4c: { "id": 0x4c, "name": "Fighting Fraaz in Take ‘Em All On!", "code": "GauntletFraaz", },
+0x4d: { "id": 0x4d, "name": "Fighting Phytops in Take ‘Em All On!", "code": "GauntletPhytops", },
+0x47: { "id": 0x47, "name": "Competing in Take ‘Em All On!", "code": "Gauntlet3", },
+0x4a: { "id": 0x4a, "name": "Competing in Take ‘Em All On!", "code": "Gauntlet4", },
+0x49: { "id": 0x49, "name": "Competing in Take ‘Em All On!", "code": "Gauntlet5", },
+0x4e: { "id": 0x4e, "name": "Fighting Cragma in Take ‘Em All On!", "code": "GauntletCragma", },
+0x4f: { "id": 0x4f, "name": "Fighting Skeldritch in Take ‘Em All On!", "code": "GauntletSkeldritch", },
+0xf: { "id": 0xf, "name": "In the Dark Realm", "code": "DarkRealm", },
+0x10: { "id": 0x10, "name": "Confronting the Demon Train", "code": "DarkRealm2", },
+0x11: { "id": 0x11, "name": "Confronting the Demon Train", "code": "DarkRealm3", },
+0x24: { "id": 0x24, "name": "Confronting Malladus", "code": "DarkRealm4", },
+0x25: { "id": 0x25, "name": "Confronting Malladus", "code": "Malladus", },
+0x26: { "id": 0x26, "name": "Playing a duet with Zelda", "code": "Duet", },
+0x27: { "id": 0x27, "name": "Confronting Malladus once and for all", "code": "Malladus2", },
+0xfc03: { "id": 0xfc03, "name": "In Battle Mode", "code": "Battle", },
 }
 
 function GetLocationByCode(code)
@@ -254,7 +256,8 @@ function IsInGame()
 {
     boot = GetLocationByCode("Boot")
     title = GetLocationByCode("Title")
-    return currentLocation() != boot["id"] && currentLocation() != title["id"]
+    battle = GetLocationByCode("Battle")
+    return currentLocation() != boot["id"] && currentLocation() != title["id"] && currentLocation() != battle["id"]
 }
 
 // $261654: Current location (US) (changes when level is done loading)
@@ -536,7 +539,7 @@ achievement(title = "The Tunnel at the End of the Light",
 // "Up-and-Coming Musician"
 achievement(title = "Up-and-Coming Musician",
     description = "Learn a song on the Spirit Flute.", points = 1,
-    trigger = never(IsInLocationWithCode("Title"))
+    trigger = never(!IsInGame())
         && (WasBitflagSetInGame(learnedSongOfAwakening())
         || WasBitflagSetInGame(learnedSongOfHealing())
         || WasBitflagSetInGame(learnedSongOfBirds())
@@ -673,21 +676,21 @@ function PageNumberIsStamped(pageNo)
 }
 
 stampAchievements = [
-    { "name": "The Beginning of a Pastime", "points": 1, "description": "Collect your first stamp.", "threshold": 1 },
-    { "name": "A Sheet Filled", "points": 3, "description": "Collect five stamps.", "threshold": 5 },
-    { "name": "Stamp Hobbyist", "points": 5, "description": "Collect ten stamps.", "threshold": 10 },
-    { "name": "First-Class Collector", "points": 10, "description": "Collect fifteen stamps.", "threshold": 15 },
-    { "name": "Philately Phanatic", "points": 25, "description": "Collect all twenty stamps.", "threshold": 20 }
+    { "name": "The Beginning of a Pastime", "points": 1, "description": "Collect your first stamp.", "threshold": 1, "id": 110368, "badge": "120397" },
+    { "name": "A Sheet Filled", "points": 3, "description": "Collect five stamps.", "threshold": 5, "id": 110369, "badge": "120398" },
+    { "name": "Stamp Hobbyist", "points": 5, "description": "Collect ten stamps.", "threshold": 10, "id": 110370, "badge": "120399" },
+    { "name": "First-Class Collector", "points": 10, "description": "Collect fifteen stamps.", "threshold": 15, "id": 110371, "badge": "120400" },
+    { "name": "Philately Phanatic", "points": 25, "description": "Collect all twenty stamps.", "threshold": 20, "id": 110372, "badge": "120401" }
 ]
 
 for info in stampAchievements
 {
-    stampMade = always_false()
+    stampMade = []
     resetalt = always_false()
     
     for i in range(1, 20)
     {
-        stampMade = stampMade || once(stampPageByNumber(i) != 0xff)
+        array_push(stampMade, once(stampPageByNumber(i) != 0xff))
         
         // We want to reset the hit counts each time a stamp is made so that the player
         // doesn't simply stamp each page in the book until each achievement is obtained.
@@ -702,9 +705,9 @@ for info in stampAchievements
     // following a reset.
     unlessStampStatesAreIdle = unless(repeated(2, always_true()))
     
-    achievement(title = info["name"], description = info["description"], points = info["points"],
+    achievement(title = info["name"], description = info["description"], points = info["points"], id = info["id"], badge = info["badge"],
         trigger = IsInGame()
-            && repeated(info["threshold"], stampMade) && unlessStampStatesAreIdle
+            && tally(info["threshold"], stampMade) && unlessStampStatesAreIdle
             && resetalt
     )
 }
@@ -964,11 +967,10 @@ achievement(title = "Guide My Hand",
         && (
             // We're putting the checkpoint target in an alt to make sure the pauses
             // in the core group don't also pause the hit target from being reached.
-            once(
-                Delta(currentLocation()) == oceanTemple["id"] && IsInLocationWithCode("Phytops")
-                || Delta(currentLocation()) == gauntlet3["id"] && IsInLocationWithCode("GauntletPhytops")
-                || Delta(currentLocation()) == gauntletFraaz["id"] && IsInLocationWithCode("GauntletPhytops")
-            )
+            
+            once(Delta(currentLocation()) == oceanTemple["id"] && IsInLocationWithCode("Phytops"))
+            || once(Delta(currentLocation()) == gauntlet3["id"] && IsInLocationWithCode("GauntletPhytops"))
+            || once(Delta(currentLocation()) == gauntletFraaz["id"] && IsInLocationWithCode("GauntletPhytops"))
             
             || never(!IsInLocationWithCode("Phytops")) && unless(IsInLocationWithCode("GauntletPhytops")) && always_false()
             || never(!IsInLocationWithCode("GauntletPhytops")) && unless(IsInLocationWithCode("Phytops")) && always_false()
@@ -1261,7 +1263,7 @@ GenerateSaveProtectedAchievementFromBits({
 // "Heartthrob"
 achievement(title = "Heartthrob", points = 10,
     description = "Collect all thirteen Heart Containers.",
-    trigger = Delta(maxHP()) == 0x3c && maxHP() == 0x40
+    trigger = Delta(maxHP()) == 0x3c && maxHP() == 0x40 && IsInGame()
 )
 
 // "Where We're Going, We Don't Need Tracks"
@@ -1299,7 +1301,7 @@ function quiverUpgradesObtained() => byte(0x264910)
 function bombUpgradesObtained() => byte(0x264911)
 achievement(title = "Armed to the Teeth", points = 5,
     description = "Acquire all bow and bomb upgrades.",
-    trigger = never(isLoadingSaveFile()) && quiverUpgradesObtained() == 2 && bombUpgradesObtained() == 2
+    trigger = never(isLoadingSaveFile()) && IsInGame() && quiverUpgradesObtained() == 2 && bombUpgradesObtained() == 2
          && (Delta(bombUpgradesObtained()) == 1 || Delta(quiverUpgradesObtained()) == 1)
 )
 
