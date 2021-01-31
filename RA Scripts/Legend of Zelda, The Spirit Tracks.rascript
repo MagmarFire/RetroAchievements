@@ -446,14 +446,14 @@ function squiddyInstances() => byte(0x2d35f1)
 //       "bit": the number of the bit that must be set
 function GenerateSaveProtectedAchievementFromBits(cheevo, bits)
 {
-    bitSet = always_false()
+    bitSet = []
     resetalt = always_false()
     description = cheevo["description"]
 
     for addr in bits
     {
         relevantBit = bit(addr["bit"], addr["addr"])
-        bitSet = bitSet || once(relevantBit == 1)
+        array_push(bitSet, once(relevantBit == 1))
     
         // We want to reset the hit counts each time a bit is set in order
         // to refresh the hitcount state that represents each individual bit.
@@ -465,9 +465,9 @@ function GenerateSaveProtectedAchievementFromBits(cheevo, bits)
     // as a save protection measure. A two-frame target is used for the same reason as the above, as well.
     unlessBitStatesAreIdle = unless(repeated(2, always_true()))
 
-    achievement(title = cheevo["name"], description = description, points = cheevo["points"],
+    achievement(title = cheevo["name"], description = description, points = cheevo["points"], id = cheevo["id"], badge = cheevo["badge"],
         trigger = IsInGame()
-            && measured(repeated(cheevo["threshold"], bitSet)) && unlessBitStatesAreIdle
+            && measured(tally(cheevo["threshold"], bitSet)) && unlessBitStatesAreIdle
             && resetalt
     ) 
 }
@@ -538,7 +538,7 @@ achievement(title = "The Tunnel at the End of the Light",
 
 // "Up-and-Coming Musician"
 achievement(title = "Up-and-Coming Musician",
-    description = "Learn a song on the Spirit Flute.", points = 1,
+    description = "Learn a song on the Spirit Flute.", points = 1, id = 110296, badge = "120390",
     trigger = never(!IsInGame())
         && (WasBitflagSetInGame(learnedSongOfAwakening())
         || WasBitflagSetInGame(learnedSongOfHealing())
@@ -658,7 +658,7 @@ for i in range(0, 4) // 0-4 maps to each Spirit Flute song.
 }
 
 achievement(title = "Syrinx Sage",
-    description = "Learn all five songs on the Spirit Flute.", points = 5,
+    description = "Learn all five songs on the Spirit Flute.", points = 5, id = 110297, badge = "120391",
     trigger = songTrigger
 )
 
@@ -738,16 +738,16 @@ function RabbitRescueState(index)
 }
 
 sheerTotalRabbitAchievements = [
-    { "name": "Rookie Rabbit Rescuer", "points": 1, "description": "Rescue a rabbit for the first time.", "threshold": 1 },
-    { "name": "Trainee Rabbit Rescuer", "points": 3, "description": "", "threshold": 5 },
-    { "name": "Regular Rabbit Rescuer", "points": 5, "description": "", "threshold": 10 },
-    { "name": "Veteran Rabbit Rescuer", "points": 10, "description": "", "threshold": 25 },
-    { "name": "Legendary Rabbit Rescuer", "points": 25, "description": "Rescue all 50 rabbits.", "threshold": 50 }
+    { "name": "Rookie Rabbit Rescuer", "points": 1, "description": "Rescue a rabbit for the first time.", "threshold": 1, "id": 110373, "badge": "120403" },
+    { "name": "Trainee Rabbit Rescuer", "points": 3, "description": "", "threshold": 5, "id": 110374, "badge": "120404" },
+    { "name": "Regular Rabbit Rescuer", "points": 5, "description": "", "threshold": 10, "id": 110375, "badge": "120405" },
+    { "name": "Veteran Rabbit Rescuer", "points": 10, "description": "", "threshold": 25, "id": 110376, "badge": "120402" },
+    { "name": "Legendary Rabbit Rescuer", "points": 25, "description": "Rescue all 50 rabbits.", "threshold": 50, "id": 110377, "badge": "120406" }
 ]
 
 for info in sheerTotalRabbitAchievements
 {
-    rabbitRescued = always_false()
+    rabbitRescued = []
     description = info["description"]
     resetalt = always_false()
     
@@ -758,7 +758,7 @@ for info in sheerTotalRabbitAchievements
     
     for i in range(0, 49)
     {
-        rabbitRescued = rabbitRescued || once(RabbitRescueState(i) == 1)
+        array_push(rabbitRescued, once(RabbitRescueState(i) == 1))
         
         // Like the above, we want to reset the hit counts each time a rabbit is rescued
         // to refresh the hitcount state that represents each individual rabbit being rescued.
@@ -770,9 +770,9 @@ for info in sheerTotalRabbitAchievements
     // as a save protection measure. A two-frame target is used for the same reason as the above, as well.
     unlessRabbitStatesAreIdle = unless(repeated(2, always_true()))
     
-    achievement(title = info["name"], description = description, points = info["points"],
+    achievement(title = info["name"], description = description, points = info["points"], id = info["id"], badge = info["badge"],
         trigger = IsInGame()
-            && measured(repeated(info["threshold"], rabbitRescued)) && unlessRabbitStatesAreIdle
+            && measured(tally(info["threshold"], rabbitRescued)) && unlessRabbitStatesAreIdle
             && resetalt
     )
 }
@@ -787,11 +787,11 @@ rabbitTypes = [
 ]
 
 rabbitTypeAchievements = [
-    { "name": "Forest Cuniculture", "description": "Rescue all ten grass rabbits.", "type": "Forest" },
-    { "name": "Snow Cuniculture", "description": "Rescue all ten snow rabbits.", "type": "Snow" },
-    { "name": "Ocean Cuniculture", "description": "Rescue all ten ocean rabbits.", "type": "Ocean" },
-    { "name": "Fire Cuniculture", "description": "Rescue all ten mountain rabbits.", "type": "Mountain" },
-    { "name": "Sand Cuniculture", "description": "Rescue all ten desert rabbits.", "type": "Sand" }
+    { "name": "Forest Cuniculture", "description": "Rescue all ten grass rabbits.", "type": "Forest", "id": 110378, "badge": "120409" },
+    { "name": "Snow Cuniculture", "description": "Rescue all ten snow rabbits.", "type": "Snow", "id": 110379, "badge": "120410" },
+    { "name": "Ocean Cuniculture", "description": "Rescue all ten ocean rabbits.", "type": "Ocean", "id": 110380, "badge": "120411" },
+    { "name": "Fire Cuniculture", "description": "Rescue all ten mountain rabbits.", "type": "Mountain", "id": 110381, "badge": "120412" },
+    { "name": "Sand Cuniculture", "description": "Rescue all ten desert rabbits.", "type": "Sand", "id": 110382, "badge": "120413" }
 ]
 
 function GetRabbitTypeIdByType(typeName)
@@ -815,12 +815,12 @@ function RabbitRescueStateByType(index, type)
 
 for cheevo in rabbitTypeAchievements
 {
-    rabbitRescued = always_false()
+    rabbitRescued = []
     resetalt = always_false()
     
     for i in range(0, 9)
     {
-        rabbitRescued = rabbitRescued || once(RabbitRescueStateByType(i, cheevo["type"]) == 1)
+        array_push(rabbitRescued, once(RabbitRescueStateByType(i, cheevo["type"]) == 1))
         
         // Like the above, we want to reset the hit counts each time a rabbit is rescued
         // to refresh the hitcount state that represents each individual rabbit being rescued.
@@ -832,9 +832,9 @@ for cheevo in rabbitTypeAchievements
     // as a save protection measure. A two-frame target is used for the same reason as the above, as well.
     unlessRabbitStatesAreIdle = unless(repeated(2, always_true()))
     
-    achievement(title = cheevo["name"], description = cheevo["description"], points = 10,
+    achievement(title = cheevo["name"], description = cheevo["description"], points = 10, id = cheevo["id"], badge = cheevo["badge"],
         trigger = IsInGame()
-            && measured(repeated(10, rabbitRescued)) && unlessRabbitStatesAreIdle
+            && measured(tally(10, rabbitRescued)) && unlessRabbitStatesAreIdle
             && resetalt
     )
 }
@@ -900,31 +900,31 @@ leaderboard(title = "Training with the Royal Guard",
 )
 
 // "The Price of Loyalty"
-achievement(title = "The Price of Loyalty",
+achievement(title = "The Price of Loyalty", id = 110389, badge = "120419",
     description = "Get your Beedle Club Card in the mail.", points = 1,
     trigger = WasBitflagSetInGame(clubCardObtained()) && IsInGame()
 )
 
 // "Buy Nine, Get One Free"
-achievement(title = "Buy Nine, Get One Free",
+achievement(title = "Buy Nine, Get One Free", id = 110398, badge = "120429",
     description = "Get your Silver Card in the mail.", points = 3,
     trigger = WasBitflagSetInGame(silverCardObtained()) && IsInGame()
 )
 
 // "Persistent Patron"
-achievement(title = "Persistent Patron",
+achievement(title = "Persistent Patron", id = 110399, badge = "120430",
     description = "Get your Gold Card in the mail.", points = 5,
     trigger = WasBitflagSetInGame(goldCardObtained()) && IsInGame()
 )
 
 // "Top Investor"
-achievement(title = "Top Investor",
+achievement(title = "Top Investor", id = 110400, badge = "120431",
     description = "Get your Platinum Card in the mail.", points = 10,
     trigger = WasBitflagSetInGame(platinumCardObtained()) && IsInGame()
 )
 
 // "Chairman of the Board"
-achievement(title = "Chairman of the Board",
+achievement(title = "Chairman of the Board", id = 110401, badge = "120432",
     description = "Get your Diamond Card in the mail.", points = 25,
     trigger = WasBitflagSetInGame(diamondCardObtained()) && IsInGame()
 )
@@ -959,7 +959,7 @@ function PhytopsIsNotFighting() => phytopsState() == 0x0 || phytopsState() == 0x
 function PhytopsIsDying() => phytopsState() == 0xe
 
 achievement(title = "Guide My Hand",
-    description = "Defeat Phytops within " + SecondsToFormat(timeLimit) + ".", points = 5,
+    description = "Defeat Phytops within " + SecondsToFormat(timeLimit) + ".", points = 5, id = 110391, badge = "120421",
     trigger = PhytopsIsDying()
         && never(repeated(frameLimit, frameIncremented())) && unless(IsPaused())
         && unless(PhytopsIsNotFighting()) && unless(IsTransitioningInBlack())
@@ -1033,9 +1033,10 @@ forceGemAddresses = [
 ]
 
 forceGemAchievements = [
-    { "name": "Help Wanted", "description": "Collect 5 Force Gems.", "threshold": 5, "points": 3 },
-    { "name": "The Gift of Charity", "description": "Collect 10 Force Gems.", "threshold": 10, "points": 10 },
-    { "name": "Premier Engineer", "description": "Collect all Force Gems and completely restore the Spirit Tracks.", "threshold": 21, "points": 25 }
+    { "name": "Help Wanted", "description": "Collect 5 Force Gems.", "threshold": 5, "points": 3, "id": 110395, "badge": "120426" },
+    { "name": "The Gift of Charity", "description": "Collect 10 Force Gems.", "threshold": 10, "points": 10, "id": 110396, "badge": "120427" },
+    { "name": "Premier Engineer", "description": "Collect all Force Gems and completely restore the Spirit Tracks.", "threshold": 21, "points": 25, "id": 110397,
+        "badge": "120428" }
 ]
 
 for cheevo in forceGemAchievements
@@ -1119,7 +1120,7 @@ for i in range(0, totalTreasureTypes - 1)
 // following a reset.
 unlessTreasureStatesAreIdle = unless(repeated(2, always_true()))
 
-achievement(title = "Treasure Hunter", description = "Obtain one of every type of treasure.", points = 5,
+achievement(title = "Treasure Hunter", description = "Obtain one of every type of treasure.", points = 5, id = 110402, badge = "120433",
     trigger = IsInGame()
         && allTreasureRegistered && unlessTreasureStatesAreIdle
         && resetalt
@@ -1140,7 +1141,7 @@ achievement(title = "Plus Shipping and Handling [m]", points = 5,
 )
 
 // "Kiss and Cry"
-achievement(title = "Kiss and Cry", points = 10,
+achievement(title = "Kiss and Cry", points = 10, id = 110405, badge = "120436",
     description = "Complete the Champion Course at Slippery Station and take the treasure.",
     trigger = IsInGame() && WasBitflagSetInGame(openedChampionChest())
 )
@@ -1257,11 +1258,13 @@ GenerateSaveProtectedAchievementFromBits({
     "name": "Crabshell Cracker",
     "description": "Defeat all three Rocktites.",
     "points": 5,
-    "threshold": 3
+    "threshold": 3,
+    "id": 110414,
+    "badge": "120473"
 }, rocktiteAddresses)
 
 // "Heartthrob"
-achievement(title = "Heartthrob", points = 10,
+achievement(title = "Heartthrob", points = 10, id = 110441, badge = "120541",
     description = "Collect all thirteen Heart Containers.",
     trigger = Delta(maxHP()) == 0x3c && maxHP() == 0x40 && IsInGame()
 )
@@ -1282,7 +1285,9 @@ GenerateSaveProtectedAchievementFromBits({
     "name": "Where We're Going, We Don't Need Tracks",
     "description": "Activate all Spacetime Gates.",
     "points": 5,
-    "threshold": 8
+    "threshold": 8,
+    "id": 110442,
+    "badge": "120542"
 }, gateAddresses)
 
 // "The Art of War"
@@ -1290,7 +1295,9 @@ GenerateSaveProtectedAchievementFromBits({
     "name": "The Art of War",
     "description": "Obtain both Swordsman's Scrolls.",
     "points": 10,
-    "threshold": 2
+    "threshold": 2,
+    "id": 110443,
+    "badge": "120543"
 }, [
     { "addr": 0x264902, "bit": 4 },
     { "addr": 0x264902, "bit": 5 }
@@ -1299,7 +1306,7 @@ GenerateSaveProtectedAchievementFromBits({
 // "Armed to the Teeth"
 function quiverUpgradesObtained() => byte(0x264910)
 function bombUpgradesObtained() => byte(0x264911)
-achievement(title = "Armed to the Teeth", points = 5,
+achievement(title = "Armed to the Teeth", points = 5, id = 110445, badge = "120545",
     description = "Acquire all bow and bomb upgrades.",
     trigger = never(isLoadingSaveFile()) && IsInGame() && quiverUpgradesObtained() == 2 && bombUpgradesObtained() == 2
          && (Delta(bombUpgradesObtained()) == 1 || Delta(quiverUpgradesObtained()) == 1)
@@ -1323,7 +1330,9 @@ GenerateSaveProtectedAchievementFromBits({
     "name": "Engineering in Style",
     "description": "Acquire any of the gold train parts.",
     "points": 5,
-    "threshold": 1
+    "threshold": 1,
+    "id": 110448,
+    "badge": "120549"
 }, [
     { "addr": 0x26498b, "bit": 4 },
     { "addr": 0x26498b, "bit": 5 },
