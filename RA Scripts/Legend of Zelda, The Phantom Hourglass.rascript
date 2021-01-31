@@ -243,6 +243,9 @@ function bombchuUpgradesObtained() => obyte(0x1BA594)
 // $1BA604: Bit 0: Oshus's Sword (collection)
 function hasOshusSword() => obyte(0x1BA604)
 
+// $1ba682: Arrows remaining
+function arrowsRemaining() => obyte(0x1ba682)
+
 // $1BA678: Bit 0: Oshus's Sword
 // $1CB08E: Current Health (Not Static)
 // $2173DC: Current Dialog
@@ -271,6 +274,10 @@ locations = {
 0x0: { "id": 0x0, "name": "Somewhere on the Great Sea…", "code": "Sea", },
 0x1d: { "id": 0x1d, "name": "In the Temple of Wind", "code": "TempleOfWind", },
 0x2a: { "id": 0x2a, "name": "In Cyclok’s lair…", "code": "Cyclok", },
+0x3: { "id": 0x3, "name": "Salvaging in the Great Sea", "code": "Salvage", },
+0x1e: { "id": 0x1e, "name": "In the Temple of Courage", "code": "TempleOfCourage", },
+0x2c: { "id": 0x2c, "name": "In Crayk’s lair…", "code": "Crayk", },
+0x4: { "id": 0x4, "name": "Below deck on Linebeck’s ship", "code": "BelowDeck", },
 }
 
 // RICH PRESENCE
@@ -425,13 +432,13 @@ achievement(title = "Tempus Fugit", points = 3,
     trigger = WasBitflagSetInGame(phantomHourglass())
 )
 
-function eddoCannon() => byte(0x1ba53f)
+function eddoCannon() => obyte(0x1ba53f)
 achievement(title = "Open Fire!", points = 3,
     description = "Buy Eddo's cannon.",
     trigger = WasValueSetInGame(eddoCannon(), 0xff, 0x1)
 )
 
-function shovel() => bit3(0x1ba604)
+function shovel() => obit3(0x1ba604)
 achievement(title = "Dig to the Center of the Earth!", points = 3,
     description = "Obtain the shovel.",
     trigger = WasBitflagSetInGame(shovel())
@@ -440,7 +447,7 @@ achievement(title = "Dig to the Center of the Earth!", points = 3,
 // This cheevo will trigger whenever you enter the Isle of Gust from the Great Sea, but without a bitflag to prevent this,
 // we'll have to simply lock it out by other means. Best we can do at this point is to check for the existence of an item.
 // We're adding this cheevo simply due to the existence of a microphone-dependent obstacle (MDO) on the island.
-function bombs() => bit4(0x1ba604)
+function bombs() => obit4(0x1ba604)
 achievement(title = "Where the Wind Blows", points = 1,
     description = "Reach the Isle of Gust for the first time.",
     trigger = WasInLocation("Sea") && IsInLocation("Gust") && bombs() != 1
@@ -472,6 +479,31 @@ function crestPuzzleSolved() => obit2(0x1b554c)
 achievement(title = "Thinking with Wax", points = 3,
     description = "Solve the crest puzzle in the second section of the Temple of the Ocean King.",
     trigger = WasBitflagSetInGame(crestPuzzleSolved())
+)
+
+function salvageArm() => obit4(0x1ba609)
+achievement(title = "And Arm and a Leg", points = 1,
+    description = "Buy the Salvage Arm.",
+    trigger = WasBitflagSetInGame(salvageArm())
+)
+
+function bow() => obit5(0x1ba604)
+achievement(title = "A Bowyer's Pride", points = 3,
+    description = "Obtain the bow.",
+    trigger = WasBitflagSetInGame(bow())
+)
+
+function IsCraykDying() => obyte(0x259f00) == 0x1e
+achievement(title = "Minimalist", points = 10,
+    description = "Defeat Crayk using at most one arrow.",
+    trigger = once(IsInLocation("Crayk") && WasInLocation("TempleOfCourage")) && never(!IsInLocation("Crayk"))
+        && IsCraykDying() && never(repeated(2, arrowsRemaining() < Delta(arrowsRemaining())))
+)
+
+function cielaHalfFreed() => obit5(0x1b5554)
+achievement(title = "Hidden in Oblivion", points = 3,
+    description = "Free the Spirit of Courage.",
+    trigger = WasBitflagSetInGame(cielaHalfFreed())
 )
 
 function phantomHourglassMaxTime() => odword(0x1ba4e8)
