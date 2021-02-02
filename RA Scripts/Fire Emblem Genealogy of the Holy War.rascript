@@ -1256,7 +1256,7 @@ achievement(title = "Siblings' Last Quarrel [m]", points = 10, id = 130715, badg
     trigger = chapter() == 3 && WasBitflagSetInGame(raquesisRetrievedEarthSword())
 )
 
-achievement(title = "Arden's Resolve", points = 3, id = 130730, badge = "143927",
+achievement(title = "Arden's Resolve [m]", points = 3, id = 130730, badge = "143927",
     description = "Have Arden find the stat boost in Chapter 5.",
     trigger = chapter() == 5 && WasBitflagSetInGame(bit2(0x0052c8))
 )
