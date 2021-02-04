@@ -111,7 +111,7 @@ function bossScoreDisplayStatusPointer() => bossScorePointer() + 0x10
 function IsBossRankJustDisplayed() => Delta(byte(bossScoreDisplayStatusPointer())) == 0xa && byte(bossScoreDisplayStatusPointer()) == 0x7
 
 // We have a hit target here because the status value cycles through numbers a couple times.
-function IsTotalScoreJustDisplayed() => Delta(byte(bossScoreDisplayStatusPointer())) == 0xa && byte(bossScoreDisplayStatusPointer()) == 0x7
+function IsTotalScoreJustDisplayed() => once(byte(bossScoreDisplayStatusPointer()) == 1) && Delta(byte(bossScoreDisplayStatusPointer())) == 0xa && byte(bossScoreDisplayStatusPointer()) == 0x7
     && never(!IsBossScorePointerActive())
 
 function BossScoreIsDisplayedAndAtLeast(threshold)
@@ -1216,17 +1216,20 @@ achievement(title = "Saved a Framerule", points = 25,
         && never(hp() <= 0) && JustDefeatedEnemy("Guard Armor") && never(JustFellOrGotCaughtInSidescrollingStages())
 )
 
-fireLungeUsesNegativeOffset = 0x1262
-function fireLungeUsesLeft() => byte(minigameStateHalfPointer() + 0x230000 - fireLungeUsesNegativeOffset)
+minigameMiscPointerAddr = 0x0a04c4
+function minigameMiscHalfPointer() => word(minigameMiscPointerAddr)
 
-thunderRainUsesNegativeOffset = 0x1226
-function thunderRainUsesLeft() => byte(minigameStateHalfPointer() + 0x230000 - thunderRainUsesNegativeOffset)
+fireLungeUsesNegativeOffset = 0x9f6
+function fireLungeUsesLeft() => byte(minigameMiscHalfPointer() + 0x230000 - fireLungeUsesNegativeOffset)
 
-blizzardDartUsesNegativeOffset = 0x11ea
-function blizzardDartUsesLeft() => byte(minigameStateHalfPointer() + 0x230000 - blizzardDartUsesNegativeOffset)
+thunderRainUsesNegativeOffset = 0x9ba
+function thunderRainUsesLeft() => byte(minigameMiscHalfPointer() + 0x230000 - thunderRainUsesNegativeOffset)
 
-windSpinUsesNegativeOffset = 0x11ae
-function windSpinDartUsesLeft() => byte(minigameStateHalfPointer() + 0x230000 - windSpinUsesNegativeOffset)
+blizzardDartUsesNegativeOffset = 0x97e
+function blizzardDartUsesLeft() => byte(minigameMiscHalfPointer() + 0x230000 - blizzardDartUsesNegativeOffset)
+
+windSpinUsesNegativeOffset = 0x942
+function windSpinDartUsesLeft() => byte(minigameMiscHalfPointer() + 0x230000 - windSpinUsesNegativeOffset)
 
 function UsedOverlayCommand(addr) => once(Delta(addr) == addr + 1)
 achievement(title = "Dedicated Specialist", points = 5,
@@ -1288,6 +1291,11 @@ achievement(title = "Guilt and Penalty", points = 10,
     trigger = IsAtLeastOnDifficulty("Proud") && level() <= 15 && never(!IsInLocation("WonderlandKeyholeTerminus")) && BossScoreIsDisplayedAndAtLeast(22000)
 )
 
+achievement(title = "Astral Heir", points = 25,
+    description = "Earn a Star rank in the Wonderland Keyhole (Proud Mode or higher; Level 15 or below).",
+    trigger = IsAtLeastOnDifficulty("Proud") && level() <= 15 && never(!IsInLocation("WonderlandKeyholeTerminus")) && BossScoreIsDisplayedAndAtLeast(45000)
+)
+
 function extraCommandSlotsUnlocked() => byte(0x198700)
 achievement(title = "Commander Sora", points = 5,
     description = "Unlock five extra command slots.",
@@ -1302,7 +1310,8 @@ sectorRewards = [
     bit0(0x19832e), bit1(0x19832e), bit2(0x19832e),
     bit0(0x198334), bit1(0x198334), bit2(0x198334), bit3(0x198334), bit4(0x198334),
     bit0(0x198336), bit1(0x198336), bit2(0x198336), bit3(0x198336),
-    bit0(0x198338), bit1(0x198338), bit2(0x198338), bit3(0x198338), bit4(0x198338)
+    bit0(0x198338), bit1(0x198338), bit2(0x198338), bit3(0x198338), bit4(0x198338),
+    bit0(0x198324), bit1(0x198324), bit2(0x198324), bit3(0x198324), bit4(0x198324), bit5(0x198324),
 ]
 
 // Generate conditions for sector rewards from the above addresses.
@@ -1443,6 +1452,33 @@ achievement(title = "Closed Book", description = "Complete the story.", points =
     trigger = WasBitflagSetInGame(closedBook())
 )
 
+quests = [
+    bit7(0x195bd4)
+]
+
+// Generate conditions for quests from the above addresses.
+questConditions = {}
+i = 0
+for addr in quests
+{
+    questConditions[i] = { "countsWhen": (addr == 1), "recalculateWhen": (addr != Delta(addr)) }
+    i = i + 1
+}
+
+GenerateSaveProtectedAchievementFromConditions({
+    "name": "What Am I, a Delivery Boy?",
+    "description": "Complete three quests.",
+    "points": 5,
+    "threshold": 3,
+}, questConditions, always_true())
+
+GenerateSaveProtectedAchievementFromConditions({
+    "name": "A Friend in Need",
+    "description": "Complete seven quests.",
+    "points": 10,
+    "threshold": 7,
+}, questConditions, always_true())
+
 function questBester() => bit4(0x195c7e)
 achievement(title = "Quest Bester", description = "Complete all quests.", points = 25,
     trigger = WasBitflagSetInGame(questBester())
@@ -1487,32 +1523,33 @@ for i in speedrunnerTrophies
     )
 }
 
-leaderboard(title = "Time Attack - Destiny Islnds", description = "Seal the Destiny Islands Keyhole as quickly as you can.",
-    start = IsInLocation("DestinyStorm"),
-    cancel = !IsInLocation("DestinyStorm"),
+leaderboard(title = "Time Attack - Destiny Islands", description = "Seal the Destiny Islands Keyhole as quickly as you can.",
+    start = IsInLocation("DestinyStorm") && !IsInSystemSector(),
+    cancel = !IsInLocation("DestinyStorm") || IsInSystemSector(),
     submit = IsBossRankJustDisplayed(),
     value = bossMilliseconds() / 10
 )
 
 leaderboard(title = "Score Attack - Destiny Islands", description = "Get as many points as you can in the Destiny Islands Keyhole.",
-    start = IsInLocation("DestinyStorm") && IsTotalScoreJustDisplayed(),
-    cancel = !IsInLocation("DestinyStorm"),
+    start = IsInLocation("DestinyStorm") && IsTotalScoreJustDisplayed() && !IsInSystemSector(),
+    cancel = !IsInLocation("DestinyStorm") || IsInSystemSector(),
     submit = IsTotalScoreJustDisplayed(),
     value = dword(bossScorePointer() + 8)
 )
 
 leaderboard(title = "Score Attack - Traverse Town", description = "Get as many points as you can in the Traverse Town Keyhole.",
-    start = IsInLocation("TraverseKeyholeTerminus") && IsTotalScoreJustDisplayed(),
+    start = IsInLocation("TraverseKeyholeTerminus") && IsTotalScoreJustDisplayed() && !IsInSystemSector(),
     cancel = !IsInLocation("TraverseKeyholeFirst") && !IsInLocation("TraverseKeyholeSecond")
-        && !IsInLocation("TraverseKeyholeThird") && !IsInLocation("TraverseKeyholeFall") && !IsInLocation("TraverseKeyholeTerminus"),
+        && !IsInLocation("TraverseKeyholeThird") && !IsInLocation("TraverseKeyholeFall") && !IsInLocation("TraverseKeyholeTerminus")
+        || IsInSystemSector(),
     submit = IsTotalScoreJustDisplayed(),
     value = dword(bossScorePointer() + 8)
 )
 
 leaderboard(title = "Score Attack - Wonderland", description = "Get as many points as you can in the Wonderland Keyhole.",
-    start = IsInLocation("WonderlandKeyholeTerminus") && IsTotalScoreJustDisplayed(),
+    start = IsInLocation("WonderlandKeyholeTerminus") && IsTotalScoreJustDisplayed() && !IsInSystemSector(),
     cancel = !IsInLocation("WonderlandKeyholeFirst") && !IsInLocation("WonderlandKeyholeSecond")
-        && !IsInLocation("WonderlandKeyholeTerminus"),
+        && !IsInLocation("WonderlandKeyholeTerminus") || IsInSystemSector(),
     submit = IsTotalScoreJustDisplayed(),
     value = dword(bossScorePointer() + 8)
 )
