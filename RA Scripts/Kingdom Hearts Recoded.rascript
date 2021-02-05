@@ -4,7 +4,7 @@
 function worldId() => byte(0x19836c)
 function areaId() => byte(0x19836d)
 function IsInSystemSector() => dword(0x19ecf4) != 0x0
-function KeyholeCheckpointPassed() => minigamePopupState() == 0x3//Delta(areaId()) == 0x0
+function KeyholeCheckpointPassed() => minigamePopupState() == 0x3
 
 worlds = {
     0: "Destiny Islands",
@@ -221,10 +221,12 @@ function luck() => word(0x060B5C)
 //           0x3 = "Get Ready!" sliding out
 minigameStatePointerBaseAddr = 0xa04cc
 popupOffset = 0x10c
+minigameActiveOffset = 0xf0
 
 function minigameStatePointer() => tbyte(minigameStatePointerBaseAddr)
 function minigameStateHalfPointer() => word(minigameStatePointerBaseAddr)
 function minigamePopupState() => byte(minigameStatePointer() + popupOffset)
+function IsMinigameActive() => byte(minigameStatePointer() + minigameActiveOffset) == 1
 
 // $060B6E: Level of current Keyblade?
 // $0A04A8: Pointer for the clock gauge
@@ -1212,7 +1214,7 @@ function IsAlwaysInTraverseTownKeyhole() => never(!IsInLocation("TraverseKeyhole
 achievement(title = "Saved a Framerule", points = 25,
     description = "Complete the Traverse Town Keyhole without falling into pits, getting caught behind blox, or dying (Critical Mode; Level 7 or below).",
     trigger = IsAtLeastOnDifficulty("Critical") && level() <= 7 && IsAlwaysInTraverseTownKeyhole()
-        && once(KeyholeCheckpointPassed() && IsInLocation("TraverseKeyholeFirst"))
+        && once(KeyholeCheckpointPassed() && !IsMinigameActive() && IsInLocation("TraverseKeyholeFirst"))
         && never(hp() <= 0) && JustDefeatedEnemy("Guard Armor") && never(JustFellOrGotCaughtInSidescrollingStages())
 )
 
@@ -1235,7 +1237,7 @@ function UsedOverlayCommand(addr) => once(Delta(addr) == addr + 1)
 achievement(title = "Dedicated Specialist", points = 5,
     description = "Complete the Traverse Town Keyhole using at most one type of overlay command.",
     trigger = IsAlwaysInTraverseTownKeyhole() && unless(IsInLocation("TraverseKeyholeFall"))
-        && once(KeyholeCheckpointPassed() && IsInLocation("TraverseKeyholeFirst"))
+        && once(KeyholeCheckpointPassed() && !IsMinigameActive() && IsInLocation("TraverseKeyholeFirst"))
         && JustDefeatedEnemy("Guard Armor")
         && never(tally(2, [ UsedOverlayCommand(fireLungeUsesLeft()), UsedOverlayCommand(thunderRainUsesLeft()), UsedOverlayCommand(blizzardDartUsesLeft()),
             UsedOverlayCommand(windSpinDartUsesLeft()) ]))
