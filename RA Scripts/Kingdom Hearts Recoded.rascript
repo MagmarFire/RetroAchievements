@@ -1304,6 +1304,12 @@ achievement(title = "Commander Sora", points = 5,
     trigger = WasValueSetInGame(extraCommandSlotsUnlocked(), 4, 5) && measured(extraCommandSlotsUnlocked() == 5)
 )
 
+function extraAccessorySlotsUnlocked() => byte(0x198702)
+achievement(title = "Bling, Bling!", points = 5,
+    description = "Unlock three extra accessory slots.",
+    trigger = WasValueSetInGame(extraAccessorySlotsUnlocked(), 2, 3) && measured(extraAccessorySlotsUnlocked() == 3)
+)
+
 sectorRewards = [
     bit0(0x198322), bit1(0x198322), bit2(0x198322), bit3(0x198322), bit4(0x198322),
     bit0(0x198328), bit1(0x198328), bit2(0x198328),
@@ -1314,6 +1320,8 @@ sectorRewards = [
     bit0(0x198336), bit1(0x198336), bit2(0x198336), bit3(0x198336),
     bit0(0x198338), bit1(0x198338), bit2(0x198338), bit3(0x198338), bit4(0x198338),
     bit0(0x198324), bit1(0x198324), bit2(0x198324), bit3(0x198324), bit4(0x198324), bit5(0x198324),
+    bit0(0x198330), bit1(0x198330), bit2(0x198330), bit3(0x198330), bit4(0x198330), bit5(0x198330),
+    bit0(0x19833a), bit1(0x19833a), bit2(0x19833a), bit3(0x19833a), bit4(0x19833a),
 ]
 
 // Generate conditions for sector rewards from the above addresses.
@@ -1455,7 +1463,8 @@ achievement(title = "Closed Book", description = "Complete the story.", points =
 )
 
 quests = [
-    bit7(0x195bd4)
+    bit5(0x195bd4),
+    bit7(0x195bd4),
 ]
 
 // Generate conditions for quests from the above addresses.
