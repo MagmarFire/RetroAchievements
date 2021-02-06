@@ -18,6 +18,7 @@ function obit7(addr) => bit7(addr + GetGlobalOffset())
 
 function obyte(addr) => byte(addr + GetGlobalOffset())
 function oword(addr) => word(addr + GetGlobalOffset())
+function otbyte(addr) => tbyte(addr + GetGlobalOffset())
 function odword(addr) => dword(addr + GetGlobalOffset())
 
 function Delta(addr) => prev(addr)
@@ -278,6 +279,8 @@ locations = {
 0x1e: { "id": 0x1e, "name": "In the Temple of Courage", "code": "TempleOfCourage", },
 0x2c: { "id": 0x2c, "name": "In Crayk’s lair…", "code": "Crayk", },
 0x4: { "id": 0x4, "name": "Below deck on Linebeck’s ship", "code": "BelowDeck", },
+0x29: { "id": 0x29, "name": "On the Ghost Ship", "code": "GhostShip", },
+0x30: { "id": 0x30, "name": "Playing Dead Man’s Volley…", "code": "Cubus", },
 }
 
 // RICH PRESENCE
@@ -494,7 +497,7 @@ achievement(title = "A Bowyer's Pride", points = 3,
 )
 
 function IsCraykDying() => obyte(0x259f00) == 0x1e
-achievement(title = "Minimalist", points = 10,
+achievement(title = "Minimalist [m]", points = 10,
     description = "Defeat Crayk using at most one arrow.",
     trigger = once(IsInLocation("Crayk") && WasInLocation("TempleOfCourage")) && never(!IsInLocation("Crayk"))
         && IsCraykDying() && never(repeated(2, arrowsRemaining() < Delta(arrowsRemaining())))
@@ -504,6 +507,29 @@ function cielaHalfFreed() => obit5(0x1b5554)
 achievement(title = "Hidden in Oblivion", points = 3,
     description = "Free the Spirit of Courage.",
     trigger = WasBitflagSetInGame(cielaHalfFreed())
+)
+
+// 0xff = not swinging sword
+// 0x1 = right-to-left swing
+// 0x2 = left-to-right swing
+// 0x3 = stab
+// 0x4 = targeted attack
+// 0x6 = Spin Attack
+function swordDataPointer() => otbyte(0x1ba600)
+function swordItemAnimationId() => obyte(swordDataPointer() + 0x58)
+function swordStatus() => obyte(swordDataPointer() + 0x64)
+function JustUsedSword() => Delta(swordStatus()) != 0x3 && swordStatus() == 0x3 && swordItemAnimationId() != 0xff
+function ghostKey() => obit5(0x1b5542)
+achievement(title = "Quadruple Break Up [m]", points = 25,
+    description = "Win at Dead Man's Volley and earn the Ghost Key using thirty-six sword swings or fewer.",
+    trigger = once(IsInLocation("Cubus") && WasInLocation("GhostShip")) && never(repeated(36, JustUsedSword()))
+        && never(!IsInLocation("Cubus")) && WasBitflagSetInGame(ghostKey())
+)
+
+function endOfGhostShip() => obit1(0x1b555b)
+achievement(title = "Petraphobia", points = 3,
+    description = "Find Tetra.",
+    trigger = WasBitflagSetInGame(endOfGhostShip())
 )
 
 function phantomHourglassMaxTime() => odword(0x1ba4e8)
