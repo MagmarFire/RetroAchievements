@@ -281,6 +281,7 @@ locations = {
 0x4: { "id": 0x4, "name": "Below deck on Linebeck’s ship", "code": "BelowDeck", },
 0x29: { "id": 0x29, "name": "On the Ghost Ship", "code": "GhostShip", },
 0x30: { "id": 0x30, "name": "Playing Dead Man’s Volley…", "code": "Cubus", },
+0x16: { "id": 0x16, "name": "On Zauz’s Island", "code": "Zauz", },
 }
 
 // RICH PRESENCE
@@ -399,9 +400,10 @@ achievement(title = "Vulturnus", points = 3,
     trigger = WasBitflagSetInGame(obit3(seaChartBaseAddr))
 )
 
+function northeasternSeaChart() => obit4(seaChartBaseAddr)
 achievement(title = "Caecias", points = 3,
     description = "Acquire the Northeastern Sea Chart.",
-    trigger = WasBitflagSetInGame(obit4(seaChartBaseAddr))
+    trigger = WasBitflagSetInGame(northeasternSeaChart())
 )
 
 function astridRescued() => obit5(0x1b5544)
@@ -530,6 +532,13 @@ function endOfGhostShip() => obit1(0x1b555b)
 achievement(title = "Petraphobia", points = 3,
     description = "Find Tetra.",
     trigger = WasBitflagSetInGame(endOfGhostShip())
+)
+
+function grapplingHook() => obit6(0x1ba604)
+function bombchus() => obit7(0x1ba604)
+achievement(title = "Resourcefulness [m]", points = 5,
+    description = "Obtain the Northeastern Sea chart with neither Bombchus nor the Grappling Hook in your possession.",
+    trigger = WasBitflagSetInGame(northeasternSeaChart()) && grapplingHook() == 0 && bombchus() == 0 && never(!IsInLocation("OceanKing"))
 )
 
 function phantomHourglassMaxTime() => odword(0x1ba4e8)
