@@ -282,6 +282,9 @@ locations = {
 0x29: { "id": 0x29, "name": "On the Ghost Ship", "code": "GhostShip", },
 0x30: { "id": 0x30, "name": "Playing Dead Man’s Volley…", "code": "Cubus", },
 0x16: { "id": 0x16, "name": "On Zauz’s Island", "code": "Zauz", },
+0x10: { "id": 0x10, "name": "On Goron Island", "code": "Goron", },
+0x20: { "id": 0x20, "name": "In the Goron Temple", "code": "GoronTemple", },
+0x2e: { "id": 0x2e, "name": "In Dongorongo’s lair…", "code": "Dongorongo", },
 }
 
 // RICH PRESENCE
@@ -520,7 +523,8 @@ achievement(title = "Hidden in Oblivion", points = 3,
 function swordDataPointer() => otbyte(0x1ba600)
 function swordItemAnimationId() => obyte(swordDataPointer() + 0x58)
 function swordStatus() => obyte(swordDataPointer() + 0x64)
-function JustUsedSword() => Delta(swordStatus()) != 0x3 && swordStatus() == 0x3 && swordItemAnimationId() != 0xff
+function IsUsingSword() => swordStatus() == 0x3 && swordItemAnimationId() != 0xff
+function JustUsedSword() => Delta(swordStatus()) != 0x3 && IsUsingSword()
 function ghostKey() => obit5(0x1b5542)
 achievement(title = "Quadruple Break Up [m]", points = 25,
     description = "Win at Dead Man's Volley and earn the Ghost Key using thirty-six sword swings or fewer.",
@@ -536,9 +540,41 @@ achievement(title = "Petraphobia", points = 3,
 
 function grapplingHook() => obit6(0x1ba604)
 function bombchus() => obit7(0x1ba604)
-achievement(title = "Resourcefulness [m]", points = 5,
-    description = "Obtain the Northeastern Sea chart with neither Bombchus nor the Grappling Hook in your possession.",
+achievement(title = "Two in a Row [m]", points = 5,
+    description = "Obtain the Northeastern Sea chart before having obtained both the Bombchu bag and the grappling hook.",
     trigger = WasBitflagSetInGame(northeasternSeaChart()) && grapplingHook() == 0 && bombchus() == 0 && never(!IsInLocation("OceanKing"))
+)
+
+achievement(title = "Pikachu Used Explosion!", points = 3,
+    description = "Obtain the Bombchu bag.",
+    trigger = WasBitflagSetInGame(bombchus())
+)
+
+function characterControlStatus() => obyte(0x1dc2e1)
+function JustSwitchedFromLinkToGongoron() => Delta(characterControlStatus()) == 0 && characterControlStatus() == 1
+function JustSwitchedFromGongoronToLink() => Delta(characterControlStatus()) == 1 && characterControlStatus() == 0
+function dongorongoState() => obyte(0x269e20)
+function DongorongoFirstPhaseComplete() => dongorongoState() == 0x16
+achievement(title = "Seamless Relay [m]", points = 5,
+    description = "Complete Dongorongo's first phase without switching between Link and Gongoron more than eight times.",
+    trigger = once(IsInLocation("Dongorongo") && WasInLocation("GoronTemple")) && never(!IsInLocation("Dongorongo"))
+        && DongorongoFirstPhaseComplete() && never(tally(9, [ repeated(0, JustSwitchedFromLinkToGongoron()), repeated(0, JustSwitchedFromGongoronToLink()) ]))
+)
+
+function DongorongoSecondPhaseBeginning() => dongorongoState() == 0x17
+function DongorongoDying() => dongorongoState() == 0x18
+function dongorongoHP() => obyte(0x269e10)
+achievement(title = "Why Don't Ya Just Shoot Him? [m]", points = 10,
+    description = "Complete Dongorongo's second phase without using your sword on it.",
+    trigger = never(!IsInLocation("Dongorongo")) && once(DongorongoSecondPhaseBeginning()) && DongorongoDying()
+        && never(IsUsingSword()
+        && Delta(dongorongoHP()) < dongorongoHP()) // HP value goes up as it takes damage in its second phase.
+)
+
+function crimsonine() => obit6(0x1b554b)
+achievement(title = "Blood Ore", points = 3,
+    description = "Obtain Crimsonine.",
+    trigger = WasBitflagSetInGame(crimsonine())
 )
 
 function phantomHourglassMaxTime() => odword(0x1ba4e8)
