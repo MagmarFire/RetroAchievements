@@ -45,6 +45,7 @@ areas = {
 29: { "worldId": 0x2, "name": "WonderlandKeyholeTerminus", "display": "Keyhole / Terminus", "areaId": 0xc, },
 30: { "worldId": 0x3, "name": "OlympusOutside", "display": "Outside the Coliseum", "areaId": 0x1d, },
 31: { "worldId": 0x3, "name": "OlympusVestibule", "display": "Vestibule", "areaId": 0x1e, },
+32: { "worldId": 0x3, "name": "OlympusLayer1", "display": "Layer 1", "areaId": 0x1, },
 }
 
 function GetLocationByName(name)
@@ -162,6 +163,18 @@ for world in worlds
 rich_presence_display("Somewhere in the datascape...")
 
 function Delta(addr) => prev(addr)
+
+// Returns a new pointer address at the given half-address with a given negative offset.
+// Intended to standardize usages of negative pointer offsets, since those are not supported with the current tools.
+// ---
+// halfPointer (16-bit): The value of a tbyte pointer, truncated to a 16-bit value.
+// pointerMayBeAtLeast (int): The value that the pointer is expected to not be less than.
+//                            It should generally be the pointer's original value minus its truncated value.
+// negativeOffset (int): The negative offset to apply in order to get the ultimate, desired address.
+function GetAddressWithNegativeOffset(halfPointer, pointerMayBeAtLeast, negativeOffset)
+{
+    return halfPointer + pointerMayBeAtLeast - negativeOffset
+}
 
 // $056130: Steps taken (?) (32-bit)
 
@@ -1222,16 +1235,16 @@ minigameMiscPointerAddr = 0x0a04c4
 function minigameMiscHalfPointer() => word(minigameMiscPointerAddr)
 
 fireLungeUsesNegativeOffset = 0x9f6
-function fireLungeUsesLeft() => byte(minigameMiscHalfPointer() + 0x230000 - fireLungeUsesNegativeOffset)
+function fireLungeUsesLeft() => byte(GetAddressWithNegativeOffset(minigameMiscHalfPointer(), 0x230000, fireLungeUsesNegativeOffset))
 
 thunderRainUsesNegativeOffset = 0x9ba
-function thunderRainUsesLeft() => byte(minigameMiscHalfPointer() + 0x230000 - thunderRainUsesNegativeOffset)
+function thunderRainUsesLeft() => byte(GetAddressWithNegativeOffset(minigameMiscHalfPointer(), 0x230000, thunderRainUsesNegativeOffset))
 
 blizzardDartUsesNegativeOffset = 0x97e
-function blizzardDartUsesLeft() => byte(minigameMiscHalfPointer() + 0x230000 - blizzardDartUsesNegativeOffset)
+function blizzardDartUsesLeft() => byte(GetAddressWithNegativeOffset(minigameMiscHalfPointer(), 0x230000, blizzardDartUsesNegativeOffset))
 
 windSpinUsesNegativeOffset = 0x942
-function windSpinDartUsesLeft() => byte(minigameMiscHalfPointer() + 0x230000 - windSpinUsesNegativeOffset)
+function windSpinDartUsesLeft() => byte(GetAddressWithNegativeOffset(minigameMiscHalfPointer(), 0x230000, windSpinUsesNegativeOffset))
 
 function UsedOverlayCommand(addr) => once(Delta(addr) == addr + 1)
 achievement(title = "Dedicated Specialist", points = 5,
