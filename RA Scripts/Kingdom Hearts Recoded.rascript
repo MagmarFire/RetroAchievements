@@ -46,6 +46,12 @@ areas = {
 30: { "worldId": 0x3, "name": "OlympusOutside", "display": "Outside the Coliseum", "areaId": 0x1d, },
 31: { "worldId": 0x3, "name": "OlympusVestibule", "display": "Vestibule", "areaId": 0x1e, },
 32: { "worldId": 0x3, "name": "OlympusLayer1", "display": "Layer 1", "areaId": 0x1, },
+33: { "worldId": 0x3, "name": "OlympusSave", "display": "Save Room", "areaId": 0x1f, },
+34: { "worldId": 0x3, "name": "OlympusLayer2", "display": "Layer 2", "areaId": 0x2, },
+35: { "worldId": 0x3, "name": "OlympusLayer3", "display": "Layer 3", "areaId": 0x3, },
+36: { "worldId": 0x3, "name": "OlympusLayer4", "display": "Layer 4", "areaId": 0x4, },
+37: { "worldId": 0x3, "name": "OlympusLayer5", "display": "Layer 5", "areaId": 0x5, },
+38: { "worldId": 0x3, "name": "OlympusLayer6", "display": "Layer 6", "areaId": 0x6, },
 }
 
 function GetLocationByName(name)
@@ -1208,6 +1214,12 @@ achievement(title = "Released Candidate", description = "Complete Wonderland.",
     trigger = WasBitflagSetInGame(wonderlandStoryEntry())
 )
 
+function olympusColiseumStoryEntry() => bit1(0x195bda)
+achievement(title = "Escape Sequence", description = "Complete Olympus Coliseum.",
+    points = 3,
+    trigger = WasBitflagSetInGame(olympusColiseumStoryEntry())
+)
+
 function dodgeRollActive() => bit0(0x1986f0)
 achievement(title = "Smooth Operator", description = "Defeat the Darkside without the Dodge Roll ability equipped (Critical Mode; Level 2 or below).",
     points = 5,
@@ -1309,6 +1321,35 @@ achievement(title = "Guilt and Penalty", points = 10,
 achievement(title = "Astral Heir", points = 25,
     description = "Earn a Star rank in the Wonderland Keyhole (Proud Mode or higher; Level 15 or below).",
     trigger = IsAtLeastOnDifficulty("Proud") && level() <= 15 && never(!IsInLocation("WonderlandKeyholeTerminus")) && BossScoreIsDisplayedAndAtLeast(45000)
+)
+
+function turnBasedBattlePtr() => tbyte(0x1a47c4)
+function OlympusColiseumKeyholeCheckpoint() => Delta(turnBasedBattlePtr()) == 0x0 && turnBasedBattlePtr() != 0x0 && IsInWorld("Olympus Coliseum")
+function licenseBaseAddr() => 0x0608e0
+function ConsumedALicense(idAddr)
+{
+    return Delta(byte(idAddr + 4)) > byte(idAddr + 4)
+}
+
+consumedLicense = always_false()
+for i in range(0, 7) // Eight licenses total
+{
+    consumedLicense = consumedLicense || ConsumedALicense(licenseBaseAddr() + i * 12) // License data appears to be twelve bytes in width.
+}
+
+achievement(title = "Lethal Force Authorized", points = 5,
+    description = "Defeat both Cerberus and Hades without using any more than five licenses total between them (Proud Mode or higher; Level 20 or below.).",
+    trigger = IsAtLeastOnDifficulty("Proud") && level() <= 20
+        && once(OlympusColiseumKeyholeCheckpoint())
+        // A pauselock is used to ensure the checkpoint doesn't get re-established if the player uses too many licenses in the Cerberus fight.
+        && unless(repeated(6, consumedLicense && turnBasedBattlePtr() != 0x0))
+        && (never(!IsInLocation("OlympusLayer5")) && always_false() // This is to reset the pauselock while also allowing us to create alts for Hades' defeat.
+            || JustDefeatedEnemy("Hades"))
+)
+
+achievement(title = "There Is No Escape", points = 5,
+    description = "Earn a Star rank in the Olympus Coliseum Keyhole (Critical Mode; Level 20 or below).",
+    trigger = IsAtLeastOnDifficulty("Critical") && level() <= 20 && never(!IsInLocation("OlympusLayer5")) && BossScoreIsDisplayedAndAtLeast(30000)
 )
 
 function extraCommandSlotsUnlocked() => byte(0x198700)
@@ -1574,6 +1615,13 @@ leaderboard(title = "Score Attack - Wonderland", description = "Get as many poin
     start = IsInLocation("WonderlandKeyholeTerminus") && IsTotalScoreJustDisplayed() && !IsInSystemSector(),
     cancel = !IsInLocation("WonderlandKeyholeFirst") && !IsInLocation("WonderlandKeyholeSecond")
         && !IsInLocation("WonderlandKeyholeTerminus") || IsInSystemSector(),
+    submit = IsTotalScoreJustDisplayed(),
+    value = dword(bossScorePointer() + 8)
+)
+
+leaderboard(title = "Score Attack - Olympus Coliseum", description = "Get as many points as you can in the Olympus Coliseum Keyhole.",
+    start = IsInLocation("OlympusLayer5") && IsTotalScoreJustDisplayed() && !IsInSystemSector(),
+    cancel = !IsInLocation("OlympusLayer5") || IsInSystemSector(),
     submit = IsTotalScoreJustDisplayed(),
     value = dword(bossScorePointer() + 8)
 )
