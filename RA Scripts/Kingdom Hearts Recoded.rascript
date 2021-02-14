@@ -52,6 +52,15 @@ areas = {
 36: { "worldId": 0x3, "name": "OlympusLayer4", "display": "Layer 4", "areaId": 0x4, },
 37: { "worldId": 0x3, "name": "OlympusLayer5", "display": "Layer 5", "areaId": 0x5, },
 38: { "worldId": 0x3, "name": "OlympusLayer6", "display": "Layer 6", "areaId": 0x6, },
+39: { "worldId": 0x3, "name": "OlympusLayer7", "display": "Layer 7", "areaId": 0x7, },
+40: { "worldId": 0x3, "name": "OlympusLayer8", "display": "Layer 8", "areaId": 0x8, },
+41: { "worldId": 0x3, "name": "OlympusLayer9", "display": "Layer 9", "areaId": 0x9, },
+42: { "worldId": 0x3, "name": "OlympusLayer10", "display": "Layer 10", "areaId": 0xa, },
+43: { "worldId": 0x3, "name": "OlympusLayer11", "display": "Layer 11", "areaId": 0xb, },
+44: { "worldId": 0x3, "name": "OlympusLayer12", "display": "Layer 12", "areaId": 0xc, },
+45: { "worldId": 0x3, "name": "OlympusLayer13", "display": "Layer 13", "areaId": 0xd, },
+46: { "worldId": 0x3, "name": "OlympusLayer14", "display": "Layer 14", "areaId": 0xe, },
+47: { "worldId": 0x3, "name": "OlympusLayer15", "display": "Layer 15", "areaId": 0x21, },
 }
 
 function GetLocationByName(name)
@@ -1324,17 +1333,34 @@ achievement(title = "Astral Heir", points = 25,
 )
 
 function turnBasedBattlePtr() => tbyte(0x1a47c4)
+function IsInTurnBasedBattle() => turnBasedBattlePtr() != 0x0 && IsInWorld("Olympus Coliseum")
 function OlympusColiseumKeyholeCheckpoint() => Delta(turnBasedBattlePtr()) == 0x0 && turnBasedBattlePtr() != 0x0 && IsInWorld("Olympus Coliseum")
 function licenseBaseAddr() => 0x0608e0
-function ConsumedALicense(idAddr)
+function ConsumedALicenseAtAddr(idAddr)
 {
     return Delta(byte(idAddr + 4)) > byte(idAddr + 4)
 }
 
-consumedLicense = always_false()
-for i in range(0, 7) // Eight licenses total
+function ConsumedALicense()
 {
-    consumedLicense = consumedLicense || ConsumedALicense(licenseBaseAddr() + i * 12) // License data appears to be twelve bytes in width.
+    consumedLicense = always_false()
+    for i in range(0, 7) // Eight licenses total
+    {
+        consumedLicense = consumedLicense || ConsumedALicenseAtAddr(licenseBaseAddr() + i * 12) // License data appears to be twelve bytes in width.
+    }
+    return consumedLicense
+}
+
+function ConsumedALicenseOfType(type)
+{
+    consumedLicense = always_false()
+    for i in range(0, 7) // Eight licenses total
+    {
+        licenseAddr = licenseBaseAddr() + i * 12
+        consumedLicense = consumedLicense || ConsumedALicenseAtAddr(licenseAddr) // License data appears to be twelve bytes in width.
+            && byte(licenseAddr) == type
+    }
+    return consumedLicense
 }
 
 achievement(title = "Lethal Force Authorized", points = 5,
@@ -1342,14 +1368,26 @@ achievement(title = "Lethal Force Authorized", points = 5,
     trigger = IsAtLeastOnDifficulty("Proud") && level() <= 20
         && once(OlympusColiseumKeyholeCheckpoint())
         // A pauselock is used to ensure the checkpoint doesn't get re-established if the player uses too many licenses in the Cerberus fight.
-        && unless(repeated(6, consumedLicense && turnBasedBattlePtr() != 0x0))
+        && unless(repeated(6, ConsumedALicense() && turnBasedBattlePtr() != 0x0))
         && (never(!IsInLocation("OlympusLayer5")) && always_false() // This is to reset the pauselock while also allowing us to create alts for Hades' defeat.
             || JustDefeatedEnemy("Hades"))
 )
 
+// TODO: Like Wonderland above, we're duplicating the OlympusLayer15 check to work around a "Combination of &&s and ||s is too complex" error.
+// This can be simplified after this RATools bug is fixed.
 achievement(title = "There Is No Escape", points = 5,
     description = "Earn a Star rank in the Olympus Coliseum Keyhole (Critical Mode; Level 20 or below).",
-    trigger = IsAtLeastOnDifficulty("Critical") && level() <= 20 && never(!IsInLocation("OlympusLayer5")) && BossScoreIsDisplayedAndAtLeast(30000)
+    trigger = IsAtLeastOnDifficulty("Critical") &&  BossScoreIsDisplayedAndAtLeast(30000)
+        && never(!IsInLocation("OlympusLayer5") && !IsInLocation("OlympusLayer15") && !IsInLocation("OlympusLayer15")
+         && !IsInLocation("OlympusLayer15") && !IsInLocation("OlympusLayer15"))
+         && (level() <= 20 || always_false()) // Trick RATools into generating the correct code by forcing use of OrNext.
+)
+
+achievement(title = "Martial Technique", points = 10,
+    description = "Defeat the Rock Titan using neither Auto-Block-L nor Timing-L licenses (Critical Mode; Level 25 or below).",
+    trigger = IsAtLeastOnDifficulty("Critical") && level() <= 25
+        && once(OlympusColiseumKeyholeCheckpoint()) && never(!IsInTurnBasedBattle())
+        && JustDefeatedEnemy("Rock Titan") && never(ConsumedALicenseOfType(0xd7)) && never(ConsumedALicenseOfType(0xd8))
 )
 
 function extraCommandSlotsUnlocked() => byte(0x198700)
