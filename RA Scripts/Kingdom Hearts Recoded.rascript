@@ -1657,9 +1657,16 @@ leaderboard(title = "Score Attack - Wonderland", description = "Get as many poin
     value = dword(bossScorePointer() + 8)
 )
 
-leaderboard(title = "Score Attack - Olympus Coliseum", description = "Get as many points as you can in the Olympus Coliseum Keyhole.",
+leaderboard(title = "Score Attack - Olympus Coliseum, Layer 5", description = "Get as many points as you can in the Olympus Coliseum Keyhole, up to Layer 5.",
     start = IsInLocation("OlympusLayer5") && IsTotalScoreJustDisplayed() && !IsInSystemSector(),
     cancel = !IsInLocation("OlympusLayer5") || IsInSystemSector(),
+    submit = IsTotalScoreJustDisplayed(),
+    value = dword(bossScorePointer() + 8)
+)
+
+leaderboard(title = "Score Attack - Olympus Coliseum, Layer 15", description = "Get as many points as you can in the Olympus Coliseum Keyhole, up to Layer 15.",
+    start = IsInLocation("OlympusLayer15") && IsTotalScoreJustDisplayed() && !IsInSystemSector(),
+    cancel = !IsInLocation("OlympusLayer15") || IsInSystemSector(),
     submit = IsTotalScoreJustDisplayed(),
     value = dword(bossScorePointer() + 8)
 )
