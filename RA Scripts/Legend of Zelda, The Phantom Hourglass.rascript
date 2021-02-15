@@ -285,6 +285,9 @@ locations = {
 0x10: { "id": 0x10, "name": "On Goron Island", "code": "Goron", },
 0x20: { "id": 0x20, "name": "In the Goron Temple", "code": "GoronTemple", },
 0x2e: { "id": 0x2e, "name": "In Dongorongo’s lair…", "code": "Dongorongo", },
+0xf: { "id": 0xf, "name": "On the Isle of Frost", "code": "Frost", },
+0x1f: { "id": 0x1f, "name": "In the Temple of Ice", "code": "TempleOfIce", },
+0x2d: { "id": 0x2d, "name": "In Gleeok’s lair…", "code": "Gleeok", },
 }
 
 // RICH PRESENCE
@@ -568,13 +571,31 @@ achievement(title = "Why Don't Ya Just Shoot Him? [m]", points = 10,
     description = "Complete Dongorongo's second phase without using your sword on it.",
     trigger = never(!IsInLocation("Dongorongo")) && once(DongorongoSecondPhaseBeginning()) && DongorongoDying()
         && never(IsUsingSword()
-        && Delta(dongorongoHP()) < dongorongoHP()) // HP value goes up as it takes damage in its second phase.
+            && Delta(dongorongoHP()) < dongorongoHP()) // HP value goes up as it takes damage in its second phase.
 )
 
 function crimsonine() => obit6(0x1b554b)
-achievement(title = "Blood Ore", points = 3,
+achievement(title = "Sanguine Ore", points = 3,
     description = "Obtain Crimsonine.",
     trigger = WasBitflagSetInGame(crimsonine())
+)
+
+achievement(title = "The Hooks!", points = 3,
+    description = "Obtain the grappling hook.",
+    trigger = WasBitflagSetInGame(grapplingHook())
+)
+
+function cutsceneAfterGleeok() => obit3(0x1b555b)
+achievement(title = "One Head Is Better than Two [m]", points = 5,
+    description = "Defeat Gleeok and take its Sand of Hours without taking damage.",
+    trigger = once(IsInLocation("Gleeok") && WasInLocation("TempleOfIce")) && Delta(cutsceneAfterGleeok()) == 0 && cutsceneAfterGleeok() == 1
+        && never(!IsInLocation("Gleeok")) && never(hp() < Delta(hp()))
+)
+
+function azurine() => obit5(0x1b554b)
+achievement(title = "Lacrimal Ore", points = 3,
+    description = "Obtain Azurine.",
+    trigger = WasBitflagSetInGame(azurine())
 )
 
 function phantomHourglassMaxTime() => odword(0x1ba4e8)
