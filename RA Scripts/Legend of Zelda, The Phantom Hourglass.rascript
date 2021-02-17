@@ -288,6 +288,13 @@ locations = {
 0xf: { "id": 0xf, "name": "On the Isle of Frost", "code": "Frost", },
 0x1f: { "id": 0x1f, "name": "In the Temple of Ice", "code": "TempleOfIce", },
 0x2d: { "id": 0x2d, "name": "In Gleeok’s lair…", "code": "Gleeok", },
+0x15: { "id": 0x15, "name": "On the Isle of the Dead", "code": "Dead", },
+0x11: { "id": 0x11, "name": "On the Isle of Ruins", "code": "Ruins", },
+0x22: { "id": 0x22, "name": "In Doylan’s Temple", "code": "Doylan", },
+0x24: { "id": 0x24, "name": "In Bremeur’s Temple", "code": "Bremeur", },
+0x12: { "id": 0x12, "name": "On the Isle of Ruins", "code": "Ruins2", },
+0x23: { "id": 0x23, "name": "In Max’s Temple", "code": "Max", },
+0x21: { "id": 0x21, "name": "In Mutoh’s Temple", "code": "Mutoh", },
 }
 
 // RICH PRESENCE
@@ -604,6 +611,50 @@ achievement(title = "The Sands of Time", points = 10,
     description = "Fill the Phantom Hourglass with 25 minutes' worth of Sand of Hours.",
     trigger = Delta(phantomHourglassMaxTime()) < maxTime && measured(phantomHourglassMaxTime() == maxTime) && IsInGame()
 )
+
+treasureMaps = [
+    obit4(0x1ba610),
+    obit2(0x1ba611),
+    obit4(0x1ba612), obit6(0x1ba612),
+    obit4(0x1ba613), obit5(0x1ba613)
+]
+
+treasureMapConditions = {}
+i = 0
+
+for map in treasureMaps
+{
+    treasureMapConditions[i] = { "countsWhen": (map == 1), "recalculateWhen": (Delta(map) != map) }
+    i = i + 1
+}
+
+GenerateSaveProtectedAchievementFromConditions({
+    "name": "Rookie Cartographer",
+    "description": "Collect three treasure maps.",
+    "points": 3,
+    "threshold": 3
+}, treasureMapConditions)
+
+GenerateSaveProtectedAchievementFromConditions({
+    "name": "Regular Cartographer",
+    "description": "Collect seven treasure maps.",
+    "points": 5,
+    "threshold": 7
+}, treasureMapConditions)
+
+GenerateSaveProtectedAchievementFromConditions({
+    "name": "Veteran Cartographer",
+    "description": "Collect fifteen treasure maps.",
+    "points": 10,
+    "threshold": 15
+}, treasureMapConditions)
+
+GenerateSaveProtectedAchievementFromConditions({
+    "name": "Legendary Cartographer",
+    "description": "Collect all thirty-one treasure maps.",
+    "points": 25,
+    "threshold": 31
+}, treasureMapConditions)
 
 // End Sea Chart achievements
 
