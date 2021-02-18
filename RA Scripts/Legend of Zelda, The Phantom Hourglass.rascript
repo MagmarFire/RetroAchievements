@@ -295,6 +295,8 @@ locations = {
 0x12: { "id": 0x12, "name": "On the Isle of Ruins", "code": "Ruins2", },
 0x23: { "id": 0x23, "name": "In Max’s Temple", "code": "Max", },
 0x21: { "id": 0x21, "name": "In Mutoh’s Temple", "code": "Mutoh", },
+0x2f: { "id": 0x2f, "name": "In Eox’s lair…", "code": "Eox", },
+0x1b: { "id": 0x1b, "name": "On Dee Ess Island", "code": "DS", },
 }
 
 // RICH PRESENCE
@@ -605,6 +607,42 @@ achievement(title = "Lacrimal Ore", points = 3,
     trigger = WasBitflagSetInGame(azurine())
 )
 
+function hammer() => obit0(0x1ba605)
+achievement(title = "Stop!", points = 3,
+    description = "Obtain the hammer.",
+    trigger = WasBitflagSetInGame(hammer())
+)
+
+eoxTimeLimit = 150
+function eoxState() => obyte(0x255bdc)
+function IsEoxDying() => eoxState() == 0xd
+function EoxStarted() => once(Delta(eoxState()) == 0 && eoxState() != 0)
+function TimeAdvancedAgainstEox() => repeated(0, EoxStarted() && Delta(systemTimer()) != systemTimer())
+achievement(title = "Hammer Time! [m]", points = 5,
+    description = "Defeat Eox within " + SecondsToFormat(eoxTimeLimit) + ".",
+    trigger = once(IsInLocation("Eox") && WasInLocation("Mutoh")) && never(!IsInLocation("Eox"))
+        && IsEoxDying() && never(repeated(eoxTimeLimit * 60, TimeAdvancedAgainstEox()))
+)
+
+function aquanine() => obit7(0x1b554b)
+achievement(title = "Sudorific Ore", points = 3,
+    description = "Obtain Aquanine.",
+    trigger = WasBitflagSetInGame(aquanine()) 
+)
+
+function salvageArmHealth() => obyte(0x1f56e0) // May be dynamic
+function salvageArmSpeedMode() => obyte(0x1f56ec)
+
+// Starts at rising, normal before going straight to diving, normal.
+function StartedSalvageMinigame() => once(Delta(salvageArmSpeedMode()) == 0x0 && salvageArmSpeedMode() == 0x3)
+achievement(title = "Be the Crane [m]", points = 5,
+    description = "Salvage treasure without damaging the Salvage Arm.",
+    trigger = once(WasInLocation("Sea") && IsInLocation("Salvage"))
+        && IsInLocation("Sea") && WasInLocation("Salvage")
+        && never(StartedSalvageMinigame() && Delta(salvageArmHealth()) > salvageArmHealth())
+        && never(WasInLocation("Sea") && IsInLocation("Sea")) // Reset checkpoints if we're on the Great Sea for too long.
+)
+
 function phantomHourglassMaxTime() => odword(0x1ba4e8)
 maxTime = 25 * 3600
 achievement(title = "The Sands of Time", points = 10,
@@ -658,9 +696,37 @@ GenerateSaveProtectedAchievementFromConditions({
 
 // End Sea Chart achievements
 
+islands = [
+    obyte(0x1b4c64), // Zauz's Island
+    obyte(0x1b4d2c), // Dee Ess Island
+]
+
+islandConditions = {}
+i = 0
+
+for island in islands
+{
+    islandConditions[i] = { "countsWhen": (island == 1), "recalculateWhen": (Delta(island) != island) }
+    i = i + 1
+}
+
+GenerateSaveProtectedAchievementFromConditions({
+    "name": "World Explorer",
+    "description": "Discover all uncharted islands.",
+    "points": 10,
+    "threshold": 6
+}, islandConditions)
+
 leaderboard(title = "Time Attack - Cyclok", description = "Defeat Cyclok as quickly as you can.",
     start = once(IsInLocation("Cyclok") && WasInLocation("TempleOfWind")) && CyclokStarted(),
     cancel = !IsInLocation("Cyclok"),
     submit = IsCyclokDying(),
     value = measured(TimeAdvancedAgainstCyclok())
+)
+
+leaderboard(title = "Time Attack - Eox", description = "Defeat Eox as quickly as you can.",
+    start = once(IsInLocation("Eox") && WasInLocation("Mutoh")) && EoxStarted(),
+    cancel = !IsInLocation("Eox"),
+    submit = IsEoxDying(),
+    value = measured(TimeAdvancedAgainstEox())
 )
