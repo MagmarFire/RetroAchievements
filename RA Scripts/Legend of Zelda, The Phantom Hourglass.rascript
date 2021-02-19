@@ -297,6 +297,7 @@ locations = {
 0x21: { "id": 0x21, "name": "In Mutoh’s Temple", "code": "Mutoh", },
 0x2f: { "id": 0x2f, "name": "In Eox’s lair…", "code": "Eox", },
 0x1b: { "id": 0x1b, "name": "On Dee Ess Island", "code": "DS", },
+0x17: { "id": 0x17, "name": "On Spirit Island", "code": "Spirit", },
 }
 
 // RICH PRESENCE
@@ -643,6 +644,35 @@ achievement(title = "Be the Crane [m]", points = 5,
         && never(WasInLocation("Sea") && IsInLocation("Sea")) // Reset checkpoints if we're on the Great Sea for too long.
 )
 
+goronTimeLimit = 30
+function GoronGameDisplayIsActive() => obyte(0x26123c) == 0x1
+function goronGameState() => odword(0x26124c)
+function goronGameCountdown() => odword(0x261248)
+function goronGameTime() => odword(0x197ba4)
+function goronGameTargetsRemaining() => obyte(0x197bd0)
+achievement(title = "Rollin', Rollin', Rollin'", points = 25,
+    description = "Finish the Goron Game in thirty seconds or less.",
+    trigger = never(!IsInLocation("DS")) && once(goronGameState() != 0xffffffff && goronGameCountdown() == 0x3)
+        && never(Delta(goronGameTargetsRemaining()) == 0 && goronGameTargetsRemaining() == 30)
+        && GoronGameDisplayIsActive() && goronGameTargetsRemaining() == 0
+        && goronGameTime() <= goronTimeLimit * 30 // The time is stored as frames; assumes 30 FPS.
+)
+
+function quiverUpgrades() => obyte(0x1ba590)
+function bombUpgrades() => obyte(0x1ba592)
+function bombchuUpgrades() => obyte(0x1ba594)
+achievement(title = "Armed to the Teeth", points = 10,
+    description = "Get all bomb, Bombchu, and quiver upgrades.",
+    trigger = quiverUpgrades() == 2 && bombUpgrades() == 2 && WasValueSetInGame(bombchuUpgrades(), 1, 2)
+        || quiverUpgrades() == 2 && WasValueSetInGame(bombUpgrades(), 1, 2) && bombchuUpgrades() == 2
+        || WasValueSetInGame(quiverUpgrades(), 1, 2) && bombUpgrades() == 2 && bombchuUpgrades() == 2
+)
+
+achievement(title = "Heartthrob", points = 10,
+    description = "Collect all thirteen Heart Containers.",
+    trigger = WasValueSetInGame(maxHp(), 0x3c, 0x40)
+)
+
 function phantomHourglassMaxTime() => odword(0x1ba4e8)
 maxTime = 25 * 3600
 achievement(title = "The Sands of Time", points = 10,
@@ -651,8 +681,8 @@ achievement(title = "The Sands of Time", points = 10,
 )
 
 treasureMaps = [
-    obit4(0x1ba610),
-    obit2(0x1ba611),
+    obit4(0x1ba610), obit7(0x1ba610),
+    obit2(0x1ba611), obit7(0x1ba611),
     obit4(0x1ba612), obit6(0x1ba612),
     obit4(0x1ba613), obit5(0x1ba613)
 ]
@@ -699,6 +729,7 @@ GenerateSaveProtectedAchievementFromConditions({
 islands = [
     obyte(0x1b4c64), // Zauz's Island
     obyte(0x1b4d2c), // Dee Ess Island
+    obyte(0x1b4bec) // Spirit Island
 ]
 
 islandConditions = {}
@@ -729,4 +760,11 @@ leaderboard(title = "Time Attack - Eox", description = "Defeat Eox as quickly as
     cancel = !IsInLocation("Eox"),
     submit = IsEoxDying(),
     value = measured(TimeAdvancedAgainstEox())
+)
+
+leaderboard(title = "Goron Game", description = "Finish the Goron Game in the fastest time you can.",
+    start = IsInLocation("DS") && goronGameState() != 0xffffffff && goronGameCountdown() == 0x3,
+    cancel = !IsInLocation("DS"),
+    submit = GoronGameDisplayIsActive() && goronGameTargetsRemaining() == 0,
+    value = goronGameTime() * 2
 )
