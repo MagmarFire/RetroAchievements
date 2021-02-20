@@ -303,6 +303,7 @@ locations = {
 0x1a: { "id": 0x1a, "name": "On an uncharted island", "code": "Uncharted", },
 0x14: { "id": 0x14, "name": "On Bannan Island", "code": "Bannan", },
 0x1: { "id": 0x1, "name": "Playing the cannon minigame", "code": "CannonMinigame", },
+0x2: { "id": 0x2, "name": "Fishing somewhere on the Great Sea", "code": "Fish", },
 }
 
 // RICH PRESENCE
@@ -641,12 +642,15 @@ function salvageArmSpeedMode() => obyte(0x1f56ec)
 
 // Starts at rising, normal before going straight to diving, normal.
 function StartedSalvageMinigame() => once(Delta(salvageArmSpeedMode()) == 0x0 && salvageArmSpeedMode() == 0x3)
+function salvageMinigameState() => obyte(0x1f56dc)
+function PrematurelyReturningFromMinigame() => salvageMinigameState() == 0x4
 achievement(title = "Be the Crane [m]", points = 5,
     description = "Salvage treasure without damaging the Salvage Arm.",
     trigger = once(WasInLocation("Sea") && IsInLocation("Salvage"))
         && IsInLocation("Sea") && WasInLocation("Salvage")
         && never(StartedSalvageMinigame() && Delta(salvageArmHealth()) > salvageArmHealth())
         && never(WasInLocation("Sea") && IsInLocation("Sea")) // Reset checkpoints if we're on the Great Sea for too long.
+        && never(PrematurelyReturningFromMinigame())
 )
 
 goronTimeLimit = 30
@@ -661,6 +665,20 @@ achievement(title = "Rollin', Rollin', Rollin'", points = 25,
         && never(Delta(goronGameTargetsRemaining()) == 0 && goronGameTargetsRemaining() == 30)
         && GoronGameDisplayIsActive() && goronGameTargetsRemaining() == 0
         && goronGameTime() <= goronTimeLimit * 30 // The time is stored as frames; assumes 30 FPS.
+)
+
+cannonScoreTarget = 2640
+function CannonGameDisplayIsActive() => obyte(0x233f0c)
+function cannonGameState() => odword(0x233f1c)
+function cannonGameCountdown() => odword(0x233f18)
+function cannonGameScore() => odword(0x11f548)
+function cannonGameDisplaySize() => obyte(0x233f15)
+function CannonGameStarted() => once(cannonGameCountdown() == 0x3 && Delta(cannonGameDisplaySize()) == 0x10)
+achievement(title = "Action Port", points = 10,
+    description = "Get a score of " + cannonScoreTarget + " in the cannon minigame.",
+    trigger = never(!IsInLocation("CannonMinigame")) && CannonGameStarted()
+        && never(cannonGameCountdown() == 0x4)
+        && cannonGameScore() >= cannonScoreTarget
 )
 
 function trainingPointsInCurrentGame() => oword(0x267164)
@@ -739,6 +757,7 @@ GenerateSaveProtectedAchievementFromConditions({
 
 // End Sea Chart achievements
 
+// Begin island achievement
 islands = [
     obyte(0x1b4c64), // Zauz's Island
     obyte(0x1b4d2c), // Dee Ess Island
@@ -762,6 +781,59 @@ GenerateSaveProtectedAchievementFromConditions({
     "threshold": 6
 }, islandConditions)
 
+// End island achievement
+
+// Begin fish achievement
+fishes = [
+    obyte(0x1ba574), // Skippyjacks
+    obyte(0x1ba575), // Toonas
+    obyte(0x1ba576), // Loovars
+    obyte(0x1ba577), // Rusty swordfish
+    obyte(0x1ba578), // Neptoona
+    obyte(0x1ba579) // Stowfish
+]
+
+fishConditions = {}
+i = 0
+
+for fish in fishes
+{
+    fishConditions[i] = { "countsWhen": (fish > 0), "recalculateWhen": (Delta(fish) != fish) }
+    i = i + 1
+}
+
+GenerateSaveProtectedAchievementFromConditions({
+    "name": "Angler of Renown",
+    "description": "Catch all types of fish.",
+    "points": 10,
+    "threshold": 6
+}, fishConditions)
+
+// End fish achievement
+
+// Begin frog achievement
+frogs = [
+    obit1(0x1b5563) // Northwestern 1
+]
+
+frogConditions = {}
+i = 0
+
+for frog in frogs
+{
+    frogConditions[i] = { "countsWhen": (frog == 1), "recalculateWhen": (Delta(frog) != frog) }
+    i = i + 1
+}
+
+GenerateSaveProtectedAchievementFromConditions({
+    "name": "Gale Treader",
+    "description": "Find all six Golden Frogs.",
+    "points": 10,
+    "threshold": 6
+}, frogConditions)
+
+// End fish achievement
+
 leaderboard(title = "Time Attack - Cyclok", description = "Defeat Cyclok as quickly as you can.",
     start = once(IsInLocation("Cyclok") && WasInLocation("TempleOfWind")) && CyclokStarted(),
     cancel = !IsInLocation("Cyclok"),
@@ -781,4 +853,11 @@ leaderboard(title = "Goron Game", description = "Finish the Goron Game in the fa
     cancel = !IsInLocation("DS"),
     submit = GoronGameDisplayIsActive() && goronGameTargetsRemaining() == 0,
     value = goronGameTime() * 2
+)
+
+leaderboard(title = "Cannon Game", description = "Get the highest score you can.",
+    start = IsInLocation("CannonMinigame") && CannonGameStarted(),
+    cancel = !IsInLocation("CannonMinigame"),
+    submit = cannonGameCountdown() == 0x4,
+    value = cannonGameScore()
 )
