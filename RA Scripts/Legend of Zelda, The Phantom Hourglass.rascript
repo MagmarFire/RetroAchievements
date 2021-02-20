@@ -271,7 +271,7 @@ locations = {
 0x28: { "id": 0x28, "name": "In the Bomb Garden", "code": "BombGarden", },
 0xc: { "id": 0xc, "name": "On Molida Island", "code": "Molida", },
 0xe: { "id": 0xe, "name": "On the Isle of Gust", "code": "Gust", },
-0xa: { "id": 0xa, "name": "On the traveler’s ship", "code": "Traveler", },
+0xa: { "id": 0xa, "name": "On a traveler’s ship", "code": "Traveler", },
 0x0: { "id": 0x0, "name": "Somewhere on the Great Sea…", "code": "Sea", },
 0x1d: { "id": 0x1d, "name": "In the Temple of Wind", "code": "TempleOfWind", },
 0x2a: { "id": 0x2a, "name": "In Cyclok’s lair…", "code": "Cyclok", },
@@ -298,6 +298,11 @@ locations = {
 0x2f: { "id": 0x2f, "name": "In Eox’s lair…", "code": "Eox", },
 0x1b: { "id": 0x1b, "name": "On Dee Ess Island", "code": "DS", },
 0x17: { "id": 0x17, "name": "On Spirit Island", "code": "Spirit", },
+0x5: { "id": 0x5, "name": "On the Masked Ship", "code": "Masked", },
+0x7: { "id": 0x7, "name": "On a traveler’s ship", "code": "Traveler2", },
+0x1a: { "id": 0x1a, "name": "On an uncharted island", "code": "Uncharted", },
+0x14: { "id": 0x14, "name": "On Bannan Island", "code": "Bannan", },
+0x1: { "id": 0x1, "name": "Playing the cannon minigame", "code": "CannonMinigame", },
 }
 
 // RICH PRESENCE
@@ -658,6 +663,14 @@ achievement(title = "Rollin', Rollin', Rollin'", points = 25,
         && goronGameTime() <= goronTimeLimit * 30 // The time is stored as frames; assumes 30 FPS.
 )
 
+function trainingPointsInCurrentGame() => oword(0x267164)
+function trainingTimesHitInCurrentGame() => obyte(0x26716a)
+achievement(title = "Second Intention", points = 5,
+    description = "Score a total of 90 hits in a row during training without getting hit yourself.",
+    trigger = never(!IsInLocation("Traveler2")) && never(Delta(trainingTimesHitInCurrentGame()) < trainingTimesHitInCurrentGame())
+        && repeated(90, Delta(trainingPointsInCurrentGame()) < trainingPointsInCurrentGame()) && never(trainingPointsInCurrentGame() == 0)
+)
+
 function quiverUpgrades() => obyte(0x1ba590)
 function bombUpgrades() => obyte(0x1ba592)
 function bombchuUpgrades() => obyte(0x1ba594)
@@ -682,8 +695,8 @@ achievement(title = "The Sands of Time", points = 10,
 
 treasureMaps = [
     obit4(0x1ba610), obit7(0x1ba610),
-    obit2(0x1ba611), obit7(0x1ba611),
-    obit4(0x1ba612), obit6(0x1ba612),
+    obit0(0x1ba611), obit2(0x1ba611), obit5(0x1ba611), obit7(0x1ba611),
+    obit3(0x1ba612), obit4(0x1ba612), obit6(0x1ba612),
     obit4(0x1ba613), obit5(0x1ba613)
 ]
 
@@ -729,7 +742,8 @@ GenerateSaveProtectedAchievementFromConditions({
 islands = [
     obyte(0x1b4c64), // Zauz's Island
     obyte(0x1b4d2c), // Dee Ess Island
-    obyte(0x1b4bec) // Spirit Island
+    obyte(0x1b4bec), // Spirit Island
+    obyte(0x1b4c8c) // Uncharted Island
 ]
 
 islandConditions = {}
