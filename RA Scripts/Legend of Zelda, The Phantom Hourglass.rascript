@@ -689,6 +689,36 @@ achievement(title = "Second Intention", points = 5,
         && repeated(90, Delta(trainingPointsInCurrentGame()) < trainingPointsInCurrentGame()) && never(trainingPointsInCurrentGame() == 0)
 )
 
+achievement(title = "Double Hero", points = 3,
+    description = "Score more than 200 hits during training.",
+    trigger = never(!IsInLocation("Traveler2")) && trainingPointsInCurrentGame() > 200
+        && trainingTimesHitInCurrentGame() < 3
+)
+
+comboTarget = 25
+function shootingRangeCountdownState() => obyte(0x282248)
+function ShootingRangeCountdownStarted() => Delta(shootingRangeCountdownState()) == 0 && shootingRangeCountdownState() == 1
+function shootingRangeScore() => oword(0x28223c)
+function shootingRangeLastScoreIncrease() => oword(0x28223e)
+function ShootingRangeComboContinued() => Delta(shootingRangeScore()) != shootingRangeScore() && shootingRangeLastScoreIncrease() > 0
+function ShootingRangeComboReset() => Delta(shootingRangeLastScoreIncrease()) > 0 && shootingRangeLastScoreIncrease() == 0
+achievement(title = "Sharpshooter", points = 5,
+    description = "Get a combo of " + comboTarget + " or more at the Shooting Range.",
+    trigger = never(!IsInLocation("Molida")) && repeated(comboTarget, ShootingRangeComboContinued())
+        && never(ShootingRangeCountdownStarted()) && never(ShootingRangeComboReset())
+)
+
+scoreTarget = 2000
+function shootingRangeTimeRemaining() => oword(0x282240)
+function ShootingRangeTimeIsUp() => Delta(shootingRangeTimeRemaining()) == 0x1 && shootingRangeTimeRemaining() == 0x0
+function ShootingRangeGameComplete() => obyte(0x282249) == 0x1
+function ShootingRangeCanceled() => Delta(obyte(0x28224a)) == 0x0 && obyte(0x28224a) == 0x1
+achievement(title = "Thorough Exorcism", points = 10,
+    description = "Get a score of " + scoreTarget + " or more at the Shooting Range.",
+    trigger = never(!IsInLocation("Molida"))
+        && shootingRangeScore() >= scoreTarget && ShootingRangeTimeIsUp()
+)
+
 function quiverUpgrades() => obyte(0x1ba590)
 function bombUpgrades() => obyte(0x1ba592)
 function bombchuUpgrades() => obyte(0x1ba594)
@@ -712,10 +742,10 @@ achievement(title = "The Sands of Time", points = 10,
 )
 
 treasureMaps = [
-    obit4(0x1ba610), obit7(0x1ba610),
-    obit0(0x1ba611), obit2(0x1ba611), obit5(0x1ba611), obit7(0x1ba611),
-    obit3(0x1ba612), obit4(0x1ba612), obit6(0x1ba612),
-    obit4(0x1ba613), obit5(0x1ba613)
+    obit1(0x1ba610), obit2(0x1ba610), obit3(0x1ba610), obit4(0x1ba610), obit6(0x1ba610), obit7(0x1ba610),
+    obit0(0x1ba611), obit2(0x1ba611), obit3(0x1ba611), obit4(0x1ba611), obit5(0x1ba611), obit7(0x1ba611),
+    obit0(0x1ba612), obit1(0x1ba612), obit2(0x1ba612), obit3(0x1ba612), obit4(0x1ba612), obit5(0x1ba612), obit6(0x1ba612),
+    obit1(0x1ba613), obit2(0x1ba613), obit4(0x1ba613), obit5(0x1ba613)
 ]
 
 treasureMapConditions = {}
@@ -762,7 +792,8 @@ islands = [
     obyte(0x1b4c64), // Zauz's Island
     obyte(0x1b4d2c), // Dee Ess Island
     obyte(0x1b4bec), // Spirit Island
-    obyte(0x1b4c8c) // Uncharted Island
+    obyte(0x1b4c8c), // Uncharted Island
+    obyte(0x1b4d04), // Harrow Island
 ]
 
 islandConditions = {}
@@ -813,7 +844,11 @@ GenerateSaveProtectedAchievementFromConditions({
 
 // Begin frog achievement
 frogs = [
-    obit1(0x1b5563) // Northwestern 1
+    obit1(0x1b5563), // Northwestern
+    obit7(0x1b5562), // Southwestern 1
+    obit0(0x1b5563), // Southwestern 2
+    obit2(0x1b5563), // Southeastern 1
+    obit3(0x1b5563), // Southeastern 2
 ]
 
 frogConditions = {}
@@ -860,4 +895,11 @@ leaderboard(title = "Cannon Game", description = "Get the highest score you can.
     cancel = !IsInLocation("CannonMinigame"),
     submit = cannonGameCountdown() == 0x4,
     value = cannonGameScore()
+)
+
+leaderboard(title = "Shooting Range", description = "Get the highest score you can.",
+    start = IsInLocation("Molida") && ShootingRangeCountdownStarted(),
+    cancel = !IsInLocation("Molida") || ShootingRangeCanceled(),
+    submit = ShootingRangeGameComplete(),
+    value = shootingRangeScore()
 )
