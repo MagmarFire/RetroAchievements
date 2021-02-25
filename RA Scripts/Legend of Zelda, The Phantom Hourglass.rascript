@@ -770,6 +770,8 @@ maxTime = 25 * 3600
 achievement(title = "The Sands of Time", points = 10,
     description = "Fill the Phantom Hourglass with 25 minutes' worth of Sand of Hours.",
     trigger = Delta(phantomHourglassMaxTime()) < maxTime && measured(phantomHourglassMaxTime() == maxTime) && IsInGame()
+        // There was an unexpected trigger on load once when I loaded into the TotOK. I've since been unable to reproduce it, but I don't want it to trigger for anyone else.
+        && never(IsInLocation("OceanKingLobby"))
 )
 
 treasureMaps = [
@@ -913,6 +915,8 @@ totokBestPossibleTime = 25 * 60
 achievement(title = "Pristine Path", points = 25,
     description = "Complete the Temple of the Ocean King with a best time of 25:00.",
     trigger = DidValueBecomeGreaterThanGivenInGame(totokBestTime(), totokBestPossibleTime - 1) && measured(totokBestTime() == totokBestPossibleTime)
+        // There was an unexpected trigger on load once when I loaded into the TotOK. I've since been unable to reproduce it, but I don't want it to trigger for anyone else.
+        && never(IsInLocation("OceanKingLobby"))
 )
 
 totokTimeLimit = 330
