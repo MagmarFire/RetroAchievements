@@ -311,6 +311,11 @@ locations = {
 0x6: { "id": 0x6, "name": "On the Man of Smiles’ ship", "code": "Smiles", },
 0x19: { "id": 0x19, "name": "On Maze Island", "code": "Maze", },
 0x844: { "id": 0x844, "name": "On the Download Play screen", "code": "Download", },
+0x31: { "id": 0x31, "name": "Waging war against Bellum…", "code": "Bellum", },
+0x37: { "id": 0x37, "name": "Waging war against Bellum on the Great Sea…", "code": "BellumSeaCutscene", },
+0x32: { "id": 0x32, "name": "Waging war against Bellum on the Great Sea…", "code": "BellumSeaBattle", },
+0x33: { "id": 0x33, "name": "Waging war against Bellum once and for all", "code": "BellumFinal", },
+0x36: { "id": 0x36, "name": "Watching the credits", "code": "Credits", },
 }
 
 // RICH PRESENCE
@@ -466,7 +471,7 @@ achievement(title = "Back at Ya!", points = 1,
 
 function IsBlaazDying() => obyte(0x25f050) == 0x16
 achievement(title = "Scorching Earth [m]", points = 5,
-    description = "Defeat Blaaz without recovering any life energy.",
+    description = "Defeat Blaaz without healing.",
     trigger = once(IsInLocation("Blaaz") && WasInLocation("TempleOfFire"))
         && IsBlaazDying() && never(hp() > Delta(hp()))
 )
@@ -760,7 +765,7 @@ achievement(title = "Armed to the Teeth", points = 10,
         || WasValueSetInGame(quiverUpgrades(), 1, 2) && bombUpgrades() == 2 && bombchuUpgrades() == 2
 )
 
-achievement(title = "Heartthrob", points = 10,
+achievement(title = "Heartthrob [m]", points = 10,
     description = "Collect all thirteen Heart Containers.",
     trigger = WasValueSetInGame(maxHp(), 0x3c, 0x40)
 )
@@ -930,6 +935,43 @@ achievement(title = "Eroding Will", points = 25,
     description = "Complete the Temple of the Ocean King from beginning to end within " + SecondsToFormat(totokTimeLimit) + " without replenishing sand.",
     trigger = once(StartedTotokFromFloor1()) && ReachedFinalFloor() && never(IsInLocation("OceanKingLobby")) && never(RegainedSand())
         && TimeSpentInTotok() <= totokTimeLimit * 60
+)
+
+function bellumHp() => oword(0x25ad1c)
+function IsBellumDying() => Delta(bellumHp()) > 0 && bellumHp() == 0
+achievement(title = "Leech Killer [m]", points = 5,
+    description = "Defeat Bellum's first phase without your life energy dipping three hearts below its maximum.",
+    trigger = once(IsInLocation("Bellum") && WasInLocation("OceanKing")) && never(IsInLocation("OceanKing"))
+        && IsBellumDying() && never(hp() <= maxHp() - 12)
+)
+
+function shipHpPointer() => otbyte(0x1ba5d8)
+function shipHp() => obyte(shipHpPointer() + 0x3606a)
+achievement(title = "The Green Baron [m]", points = 10,
+    description = "Defeat Bellum's second phase without your ship being damaged more than six times.",
+    trigger = IsInLocation("BellumFinal") && never(repeated(6, Delta(shipHp()) > shipHp()))
+        && (once(IsInLocation("BellumSeaBattle") && WasInLocation("BellumSeaCutscene"))
+            || once(IsInLocation("BellumSeaBattle") && WasInLocation("Sea")))
+        && never(IsInLocation("Sea")) && never(IsInLocation("BellumSeaCutscene"))
+)
+
+function SpiritAbilityEquipped() => obyte(0x1ba4ec) != 0xff
+function TookAtLeastQuarterHeartDamage() => Delta(hp()) >= hp() + 1
+function TookAtLeastHalfHeartDamage() => Delta(hp()) >= hp() + 2
+function TookAtLeastThreeQuartersHeartDamage() => Delta(hp()) >= hp() + 3
+function TookAtLeastHeartDamage() => Delta(hp()) >= hp() + 4
+achievement(title = "Defender of the Seas", points = 25,
+    description = "Defeat Bellum's final phase while taking less than three hearts of damage and without any spirit abilities equipped.",
+    trigger = never(IsInLocation("BellumSeaBattle")) && never(IsInLocation("Sea")) && never(SpiritAbilityEquipped())
+        && never(tally(12, [ repeated(0, TookAtLeastQuarterHeartDamage()), repeated(0, TookAtLeastHalfHeartDamage()),
+            repeated(0, TookAtLeastThreeQuartersHeartDamage()), repeated(0, TookAtLeastHeartDamage()) ]))
+        && (once(IsInLocation("BellumFinal") && WasInLocation("BellumSeaBattle"))
+            || once(IsInLocation("BellumFinal") && WasInLocation("Sea")))
+)
+
+achievement(title = "The Voyage Continues", points = 25,
+    description = "Save the Realm of the Ocean King from Bellum's influence.",
+    trigger = IsInLocation("Credits") && WasInLocation("BellumFinal")
 )
 
 leaderboard(title = "Time Attack - Cyclok", description = "Defeat Cyclok as quickly as you can.",
