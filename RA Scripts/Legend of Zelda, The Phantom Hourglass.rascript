@@ -955,16 +955,19 @@ achievement(title = "The Green Baron [m]", points = 10,
         && never(IsInLocation("Sea")) && never(IsInLocation("BellumSeaCutscene"))
 )
 
-function SpiritAbilityEquipped() => obyte(0x1ba4ec) != 0xff
+// Ciela's picked automatically at the beginning. However, she gets captured after the first part, so the only possible spirits to equip in this fight are Leaf and Neri.
+function SpiritAbilityEquipped() => obyte(0x1ba4ec) != 0xff && obyte(0x1ba4ec) != 0
 function TookAtLeastQuarterHeartDamage() => Delta(hp()) >= hp() + 1
 function TookAtLeastHalfHeartDamage() => Delta(hp()) >= hp() + 2
 function TookAtLeastThreeQuartersHeartDamage() => Delta(hp()) >= hp() + 3
 function TookAtLeastHeartDamage() => Delta(hp()) >= hp() + 4
+function bellumbeckState() => obyte(0x25a088)
+function BellumbeckIsDying() => bellumbeckState() == 0x17
 achievement(title = "Defender of the Seas", points = 25,
     description = "Defeat Bellum's final phase while taking less than three hearts of damage and without any spirit abilities equipped.",
     trigger = never(IsInLocation("BellumSeaBattle")) && never(IsInLocation("Sea")) && never(SpiritAbilityEquipped())
         && never(tally(12, [ repeated(0, TookAtLeastQuarterHeartDamage()), repeated(0, TookAtLeastHalfHeartDamage()),
-            repeated(0, TookAtLeastThreeQuartersHeartDamage()), repeated(0, TookAtLeastHeartDamage()) ]))
+            repeated(0, TookAtLeastThreeQuartersHeartDamage()), repeated(0, TookAtLeastHeartDamage()) ])) && BellumbeckIsDying()
         && (once(IsInLocation("BellumFinal") && WasInLocation("BellumSeaBattle"))
             || once(IsInLocation("BellumFinal") && WasInLocation("Sea")))
 )
