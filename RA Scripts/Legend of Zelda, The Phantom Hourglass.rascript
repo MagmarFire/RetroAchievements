@@ -60,7 +60,8 @@ function SecondsToFormat(value)
 }
 
 // $19f998: 0x3 = is loading save file(?)
-function IsLoadingSaveFile() => obyte(0x19f998) == 0x3
+// obyte isn't needed here because this value holds regardless of locale.
+function IsLoadingSaveFile() => byte(0x19f998) == 0x3
 
 function IsInGame() => !IsInLocation("File") && !WasInLocation("File")
     && !IsInLocation("WFC") && !IsInLocation("Title")
