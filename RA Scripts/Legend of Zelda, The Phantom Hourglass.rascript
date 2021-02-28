@@ -533,7 +533,7 @@ achievement(title = "Hidden in Wind", points = 3,
 )
 
 function crestPuzzleSolved() => obit2(0x1b554c)
-achievement(title = "Thinking with Wax", points = 3,
+achievement(title = "Mental Reflection", points = 3,
     description = "Solve the crest puzzle in the second section of the Temple of the Ocean King.",
     trigger = WasBitflagSetInGame(crestPuzzleSolved())
 )
@@ -595,7 +595,7 @@ achievement(title = "Two in a Row [m]", points = 5,
     trigger = WasBitflagSetInGame(northeasternSeaChart()) && grapplingHook() == 0 && bombchus() == 0 && never(!IsInLocation("OceanKing"))
 )
 
-achievement(title = "Pikachu Used Explosion!", points = 3,
+achievement(title = "Precision Demolition", points = 3,
     description = "Obtain the Bombchu bag.",
     trigger = WasBitflagSetInGame(bombchus())
 )
@@ -973,8 +973,8 @@ achievement(title = "Defender of the Seas", points = 25,
             || once(IsInLocation("BellumFinal") && WasInLocation("Sea")))
 )
 
-achievement(title = "The Voyage Continues", points = 25,
-    description = "Save the Realm of the Ocean King from Bellum's influence.",
+achievement(title = "A Wish for Freedom", points = 25,
+    description = "Save the World of the Ocean King from Bellum's influence.",
     trigger = IsInLocation("Credits") && WasInLocation("BellumFinal")
 )
 
