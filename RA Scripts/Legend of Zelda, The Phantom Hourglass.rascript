@@ -576,7 +576,7 @@ function swordStatus() => obyte(swordDataPointer() + 0x64)
 function IsUsingSword() => swordStatus() == 0x3 && swordItemAnimationId() != 0xff
 function JustUsedSword() => Delta(swordStatus()) != 0x3 && IsUsingSword()
 function ghostKey() => obit5(0x1b5542)
-achievement(title = "Quadruple Break Up [m]", points = 25,
+achievement(title = "Quadruple Break Up [m]", points = 50, id = 143361, badge = "160107",
     description = "Win at Dead Man's Volley and earn the Ghost Key using thirty-six sword swings or fewer.",
     trigger = once(IsInLocation("Cubus") && WasInLocation("GhostShip")) && never(repeated(36, JustUsedSword()))
         && never(!IsInLocation("Cubus")) && WasBitflagSetInGame(ghostKey())
