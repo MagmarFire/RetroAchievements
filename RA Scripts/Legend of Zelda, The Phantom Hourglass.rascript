@@ -747,12 +747,12 @@ achievement(title = "Sharpshooter", points = 5,
 
 scoreTarget = 2000
 function shootingRangeTimeRemaining() => oword(0x282240)
-function ShootingRangeTimeIsUp() => Delta(shootingRangeTimeRemaining()) == 0x1 && shootingRangeTimeRemaining() == 0x0
-function ShootingRangeGameComplete() => obyte(0x282249) == 0x1
+function ShootingRangeTimeIsUp() => once(Delta(shootingRangeTimeRemaining()) == 0x1 && shootingRangeTimeRemaining() == 0x0)
+function ShootingRangeGameComplete() => Delta(obyte(0x282249)) == 1 && obyte(0x282249) == 0
 function ShootingRangeCanceled() => Delta(obyte(0x28224a)) == 0x0 && obyte(0x28224a) == 0x1
-achievement(title = "Thorough Exorcism", points = 10,
+achievement(title = "Thorough Exorcism", points = 10, id = 143389, badge = "160135",
     description = "Get a score of " + scoreTarget + " or more at the Shooting Range.",
-    trigger = never(!IsInLocation("Molida"))
+    trigger = never(!IsInLocation("Molida")) && never(shootingRangeTimeRemaining() == 70 * 30)
         && shootingRangeScore() >= scoreTarget && ShootingRangeTimeIsUp()
 )
 
@@ -1009,7 +1009,7 @@ leaderboard(title = "Cannon Game", description = "Get the highest score you can.
 leaderboard(title = "Shooting Range", description = "Get the highest score you can.",
     start = IsInLocation("Molida") && ShootingRangeCountdownStarted(),
     cancel = !IsInLocation("Molida") || ShootingRangeCanceled(),
-    submit = ShootingRangeGameComplete(),
+    submit = ShootingRangeGameComplete() && ShootingRangeTimeIsUp(),
     value = shootingRangeScore()
 )
 
