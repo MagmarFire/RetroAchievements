@@ -60,11 +60,12 @@ function SecondsToFormat(value)
 }
 
 // $19f998: 0x3 = is loading save file(?)
-function IsLoadingSaveFile() => obyte(0x19f998) == 0x3
+// obyte isn't needed here because this value holds regardless of locale.
+function IsLoadingSaveFile() => byte(0x19f998) == 0x3
 
 function IsInGame() => !IsInLocation("File") && !WasInLocation("File")
     && !IsInLocation("WFC") && !IsInLocation("Title")
-    && !IsInLocation("Battle")
+    && !IsInLocation("Battle") && !IsInLocation("Download")
 
 // $1b7f9c: File selection menu (16-bit)
 //          0x1 = File selection
@@ -78,6 +79,8 @@ function MayHaveBeenInBootState() => oword(0x1b7f9c) == 0x0
 
 // $1b2e20: Current location (US)
 function currentLocation() => oword(0x1b2e20)
+
+function currentSublocation() => obyte(0x1b2e32)
 
 // This function allows the creation of achievements with built-in save protection that deal with a collection of values being set
 // throughout the game. The schemas for both parameters are as follows:
@@ -271,7 +274,7 @@ locations = {
 0x28: { "id": 0x28, "name": "In the Bomb Garden", "code": "BombGarden", },
 0xc: { "id": 0xc, "name": "On Molida Island", "code": "Molida", },
 0xe: { "id": 0xe, "name": "On the Isle of Gust", "code": "Gust", },
-0xa: { "id": 0xa, "name": "On the traveler’s ship", "code": "Traveler", },
+0xa: { "id": 0xa, "name": "On a traveler’s ship", "code": "Traveler", },
 0x0: { "id": 0x0, "name": "Somewhere on the Great Sea…", "code": "Sea", },
 0x1d: { "id": 0x1d, "name": "In the Temple of Wind", "code": "TempleOfWind", },
 0x2a: { "id": 0x2a, "name": "In Cyclok’s lair…", "code": "Cyclok", },
@@ -282,6 +285,38 @@ locations = {
 0x29: { "id": 0x29, "name": "On the Ghost Ship", "code": "GhostShip", },
 0x30: { "id": 0x30, "name": "Playing Dead Man’s Volley…", "code": "Cubus", },
 0x16: { "id": 0x16, "name": "On Zauz’s Island", "code": "Zauz", },
+0x10: { "id": 0x10, "name": "On Goron Island", "code": "Goron", },
+0x20: { "id": 0x20, "name": "In the Goron Temple", "code": "GoronTemple", },
+0x2e: { "id": 0x2e, "name": "In Dongorongo’s lair…", "code": "Dongorongo", },
+0xf: { "id": 0xf, "name": "On the Isle of Frost", "code": "Frost", },
+0x1f: { "id": 0x1f, "name": "In the Temple of Ice", "code": "TempleOfIce", },
+0x2d: { "id": 0x2d, "name": "In Gleeok’s lair…", "code": "Gleeok", },
+0x15: { "id": 0x15, "name": "On the Isle of the Dead", "code": "Dead", },
+0x11: { "id": 0x11, "name": "On the Isle of Ruins", "code": "Ruins", },
+0x22: { "id": 0x22, "name": "In Doylan’s Temple", "code": "Doylan", },
+0x24: { "id": 0x24, "name": "In Bremeur’s Temple", "code": "Bremeur", },
+0x12: { "id": 0x12, "name": "On the Isle of Ruins", "code": "Ruins2", },
+0x23: { "id": 0x23, "name": "In Max’s Temple", "code": "Max", },
+0x21: { "id": 0x21, "name": "In Mutoh’s Temple", "code": "Mutoh", },
+0x2f: { "id": 0x2f, "name": "In Eox’s lair…", "code": "Eox", },
+0x1b: { "id": 0x1b, "name": "On Dee Ess Island", "code": "DS", },
+0x17: { "id": 0x17, "name": "On Spirit Island", "code": "Spirit", },
+0x5: { "id": 0x5, "name": "On the Masked Ship", "code": "Masked", },
+0x7: { "id": 0x7, "name": "On a traveler’s ship", "code": "Traveler2", },
+0x1a: { "id": 0x1a, "name": "On an uncharted island", "code": "Uncharted", },
+0x14: { "id": 0x14, "name": "On Bannan Island", "code": "Bannan", },
+0x1: { "id": 0x1, "name": "Playing the cannon minigame", "code": "CannonMinigame", },
+0x2: { "id": 0x2, "name": "Fishing somewhere on the Great Sea", "code": "Fish", },
+0x18: { "id": 0x18, "name": "On Harrow Island", "code": "Harrow", },
+0x8: { "id": 0x8, "name": "On the S.S. Wayfarer", "code": "Wayfarer", },
+0x6: { "id": 0x6, "name": "On the Man of Smiles’ ship", "code": "Smiles", },
+0x19: { "id": 0x19, "name": "On Maze Island", "code": "Maze", },
+0x844: { "id": 0x844, "name": "On the Download Play screen", "code": "Download", },
+0x31: { "id": 0x31, "name": "Waging war against Bellum…", "code": "Bellum", },
+0x37: { "id": 0x37, "name": "Waging war against Bellum on the Great Sea…", "code": "BellumSeaCutscene", },
+0x32: { "id": 0x32, "name": "Waging war against Bellum on the Great Sea…", "code": "BellumSeaBattle", },
+0x33: { "id": 0x33, "name": "Waging war against Bellum once and for all", "code": "BellumFinal", },
+0x36: { "id": 0x36, "name": "Watching the credits", "code": "Credits", },
 }
 
 // RICH PRESENCE
@@ -378,6 +413,23 @@ achievement(title = "Omnibenevolence", points = 10,
     trigger = WasValueSetInGame(courageGems(), 19, 20) && measured(courageGems() == 20)
 )
 
+// Spirit upgrades
+
+spiritConditions = {
+    0: { "countsWhen": (bit2(0x1ba607) == 1), "recalculateWhen": (bit2(0x1ba607) != Delta(bit2(0x1ba607))) },
+    1: { "countsWhen": (bit3(0x1ba607) == 1), "recalculateWhen": (bit3(0x1ba607) != Delta(bit3(0x1ba607))) },
+    2: { "countsWhen": (bit4(0x1ba607) == 1), "recalculateWhen": (bit4(0x1ba607) != Delta(bit4(0x1ba607))) },
+}
+
+GenerateSaveProtectedAchievementFromConditions({
+    "name": "The Virtue of Balance",
+    "description": "Upgrade all spirits' abilities to Level 2.",
+    "points": 25,
+    "threshold": 3
+}, spiritConditions)
+
+// End spirit upgrades
+
 // SEA CHART ACHIEVEMENTS
 // $1ba608: Bit 1: Sea Chart - Southwest quadrant
 //          Bit 2: Sea Chart - Northwest quadrant
@@ -386,23 +438,23 @@ achievement(title = "Omnibenevolence", points = 10,
 seaChartBaseAddr = 0x1ba608
 // The title should reflect Seneca's names for the classical compass winds in Latin, to match the Latin origin for Bellum's name.
 achievement(title = "Africus", points = 3,
-    description = "Acquire the Southwestern Sea Chart.",
+    description = "Acquire the Southwestern Sea chart.",
     trigger = WasBitflagSetInGame(obit1(seaChartBaseAddr))
 )
 
 achievement(title = "Corus", points = 3,
-    description = "Acquire the Northwestern Sea Chart.",
+    description = "Acquire the Northwestern Sea chart.",
     trigger = WasBitflagSetInGame(obit2(seaChartBaseAddr))
 )
 
 achievement(title = "Vulturnus", points = 3,
-    description = "Acquire the Southeastern Sea Chart.",
+    description = "Acquire the Southeastern Sea chart.",
     trigger = WasBitflagSetInGame(obit3(seaChartBaseAddr))
 )
 
 function northeasternSeaChart() => obit4(seaChartBaseAddr)
 achievement(title = "Caecias", points = 3,
-    description = "Acquire the Northeastern Sea Chart.",
+    description = "Acquire the Northeastern Sea chart.",
     trigger = WasBitflagSetInGame(northeasternSeaChart())
 )
 
@@ -420,7 +472,7 @@ achievement(title = "Back at Ya!", points = 1,
 
 function IsBlaazDying() => obyte(0x25f050) == 0x16
 achievement(title = "Scorching Earth [m]", points = 5,
-    description = "Defeat Blaaz without recovering any life energy.",
+    description = "Defeat Blaaz without healing.",
     trigger = once(IsInLocation("Blaaz") && WasInLocation("TempleOfFire"))
         && IsBlaazDying() && never(hp() > Delta(hp()))
 )
@@ -481,7 +533,7 @@ achievement(title = "Hidden in Wind", points = 3,
 )
 
 function crestPuzzleSolved() => obit2(0x1b554c)
-achievement(title = "Thinking with Wax", points = 3,
+achievement(title = "Mental Reflection", points = 3,
     description = "Solve the crest puzzle in the second section of the Temple of the Ocean King.",
     trigger = WasBitflagSetInGame(crestPuzzleSolved())
 )
@@ -517,10 +569,12 @@ achievement(title = "Hidden in Oblivion", points = 3,
 // 0x3 = stab
 // 0x4 = targeted attack
 // 0x6 = Spin Attack
+// 0x7 = Great Spin Attack
 function swordDataPointer() => otbyte(0x1ba600)
 function swordItemAnimationId() => obyte(swordDataPointer() + 0x58)
 function swordStatus() => obyte(swordDataPointer() + 0x64)
-function JustUsedSword() => Delta(swordStatus()) != 0x3 && swordStatus() == 0x3 && swordItemAnimationId() != 0xff
+function IsUsingSword() => swordStatus() == 0x3 && swordItemAnimationId() != 0xff
+function JustUsedSword() => Delta(swordStatus()) != 0x3 && IsUsingSword()
 function ghostKey() => obit5(0x1b5542)
 achievement(title = "Quadruple Break Up [m]", points = 25,
     description = "Win at Dead Man's Volley and earn the Ghost Key using thirty-six sword swings or fewer.",
@@ -536,9 +590,185 @@ achievement(title = "Petraphobia", points = 3,
 
 function grapplingHook() => obit6(0x1ba604)
 function bombchus() => obit7(0x1ba604)
-achievement(title = "Resourcefulness [m]", points = 5,
-    description = "Obtain the Northeastern Sea chart with neither Bombchus nor the Grappling Hook in your possession.",
+achievement(title = "Two in a Row [m]", points = 5,
+    description = "Obtain the Northeastern Sea chart before having obtained both the Bombchu bag and the grappling hook.",
     trigger = WasBitflagSetInGame(northeasternSeaChart()) && grapplingHook() == 0 && bombchus() == 0 && never(!IsInLocation("OceanKing"))
+)
+
+achievement(title = "Precision Demolition", points = 3,
+    description = "Obtain the Bombchu bag.",
+    trigger = WasBitflagSetInGame(bombchus())
+)
+
+function characterControlStatus() => obyte(0x1dc2e1)
+function JustSwitchedFromLinkToGongoron() => Delta(characterControlStatus()) == 0 && characterControlStatus() == 1
+function JustSwitchedFromGongoronToLink() => Delta(characterControlStatus()) == 1 && characterControlStatus() == 0
+function dongorongoState() => obyte(0x269e20)
+function DongorongoFirstPhaseComplete() => dongorongoState() == 0x16
+achievement(title = "Seamless Relay [m]", points = 5,
+    description = "Complete Dongorongo's first phase without switching between Link and Gongoron more than eight times.",
+    trigger = once(IsInLocation("Dongorongo") && WasInLocation("GoronTemple")) && never(!IsInLocation("Dongorongo"))
+        && DongorongoFirstPhaseComplete() && never(tally(9, [ repeated(0, JustSwitchedFromLinkToGongoron()), repeated(0, JustSwitchedFromGongoronToLink()) ]))
+)
+
+function DongorongoSecondPhaseBeginning() => dongorongoState() == 0x17
+function DongorongoDying() => dongorongoState() == 0x18
+function dongorongoHP() => obyte(0x269e10)
+achievement(title = "Why Don't Ya Just Shoot Him? [m]", points = 10,
+    description = "Complete Dongorongo's second phase without using your sword on it.",
+    trigger = never(!IsInLocation("Dongorongo")) && once(DongorongoSecondPhaseBeginning()) && DongorongoDying()
+        && never(IsUsingSword()
+            && Delta(dongorongoHP()) < dongorongoHP()) // HP value goes up as it takes damage in its second phase.
+)
+
+function crimsonine() => obit6(0x1b554b)
+achievement(title = "Sanguine Ore", points = 3,
+    description = "Obtain Crimsonine.",
+    trigger = WasBitflagSetInGame(crimsonine())
+)
+
+achievement(title = "The Hooks!", points = 3,
+    description = "Obtain the grappling hook.",
+    trigger = WasBitflagSetInGame(grapplingHook())
+)
+
+function cutsceneAfterGleeok() => obit3(0x1b555b)
+achievement(title = "One Head Is Better than Two [m]", points = 5,
+    description = "Defeat Gleeok and take its Sand of Hours without taking damage.",
+    trigger = once(IsInLocation("Gleeok") && WasInLocation("TempleOfIce")) && Delta(cutsceneAfterGleeok()) == 0 && cutsceneAfterGleeok() == 1
+        && never(!IsInLocation("Gleeok")) && never(hp() < Delta(hp()))
+)
+
+function azurine() => obit5(0x1b554b)
+achievement(title = "Lacrimal Ore", points = 3,
+    description = "Obtain Azurine.",
+    trigger = WasBitflagSetInGame(azurine())
+)
+
+function hammer() => obit0(0x1ba605)
+achievement(title = "Stop!", points = 3,
+    description = "Obtain the hammer.",
+    trigger = WasBitflagSetInGame(hammer())
+)
+
+eoxTimeLimit = 150
+function eoxState() => obyte(0x255bdc)
+function IsEoxDying() => eoxState() == 0xd
+function EoxStarted() => once(Delta(eoxState()) == 0 && eoxState() != 0)
+function TimeAdvancedAgainstEox() => repeated(0, EoxStarted() && Delta(systemTimer()) != systemTimer())
+achievement(title = "Hammer Time! [m]", points = 5,
+    description = "Defeat Eox within " + SecondsToFormat(eoxTimeLimit) + ".",
+    trigger = once(IsInLocation("Eox") && WasInLocation("Mutoh")) && never(!IsInLocation("Eox"))
+        && IsEoxDying() && never(repeated(eoxTimeLimit * 60, TimeAdvancedAgainstEox()))
+)
+
+function aquanine() => obit7(0x1b554b)
+achievement(title = "Sudorific Ore", points = 3,
+    description = "Obtain Aquanine.",
+    trigger = WasBitflagSetInGame(aquanine()) 
+)
+
+function phantomSword() => obit5(0x1ba608)
+achievement(title = "The Phantombuster", points = 3,
+    description = "Forge the Phantom Sword.",
+    trigger = WasBitflagSetInGame(phantomSword())
+)
+
+function salvageArmHealth() => obyte(0x1f56e0) // May be dynamic
+function salvageArmSpeedMode() => obyte(0x1f56ec)
+
+// Starts at rising, normal before going straight to diving, normal.
+function StartedSalvageMinigame() => once(Delta(salvageArmSpeedMode()) == 0x0 && salvageArmSpeedMode() == 0x3)
+function salvageMinigameState() => obyte(0x1f56dc)
+function PrematurelyReturningFromMinigame() => salvageMinigameState() == 0x4
+achievement(title = "Be the Crane [m]", points = 5,
+    description = "Salvage treasure without damaging the Salvage Arm.",
+    trigger = once(WasInLocation("Sea") && IsInLocation("Salvage"))
+        && IsInLocation("Sea") && WasInLocation("Salvage")
+        && never(StartedSalvageMinigame() && Delta(salvageArmHealth()) > salvageArmHealth())
+        && never(WasInLocation("Sea") && IsInLocation("Sea")) // Reset checkpoints if we're on the Great Sea for too long.
+        && never(PrematurelyReturningFromMinigame())
+)
+
+goronTimeLimit = 30
+function GoronGameDisplayIsActive() => obyte(0x26123c) == 0x1
+function goronGameState() => odword(0x26124c)
+function goronGameCountdown() => odword(0x261248)
+function goronGameTime() => odword(0x197ba4)
+function goronGameTargetsRemaining() => obyte(0x197bd0)
+achievement(title = "Rollin', Rollin', Rollin'", points = 25,
+    description = "Finish the Goron Game in thirty seconds or less.",
+    trigger = never(!IsInLocation("DS")) && once(goronGameState() != 0xffffffff && goronGameCountdown() == 0x3)
+        && never(Delta(goronGameTargetsRemaining()) == 0 && goronGameTargetsRemaining() == 30)
+        && GoronGameDisplayIsActive() && goronGameTargetsRemaining() == 0
+        && goronGameTime() <= goronTimeLimit * 30 // The time is stored as frames; assumes 30 FPS.
+)
+
+cannonScoreTarget = 2640
+function CannonGameDisplayIsActive() => obyte(0x233f0c)
+function cannonGameState() => odword(0x233f1c)
+function cannonGameCountdown() => odword(0x233f18)
+function cannonGameScore() => odword(0x11f548)
+function cannonGameDisplaySize() => obyte(0x233f15)
+function CannonGameStarted() => once(cannonGameCountdown() == 0x3 && Delta(cannonGameDisplaySize()) == 0x10)
+achievement(title = "Action Port", points = 10,
+    description = "Get a score of " + cannonScoreTarget + " in the cannon minigame.",
+    trigger = never(!IsInLocation("CannonMinigame")) && CannonGameStarted()
+        && never(cannonGameCountdown() == 0x4)
+        && cannonGameScore() >= cannonScoreTarget
+)
+
+function trainingPointsInCurrentGame() => oword(0x267164)
+function trainingTimesHitInCurrentGame() => obyte(0x26716a)
+achievement(title = "Second Intention", points = 5,
+    description = "Score a total of 90 hits in a row during training without getting hit yourself.",
+    trigger = never(!IsInLocation("Traveler2")) && never(Delta(trainingTimesHitInCurrentGame()) < trainingTimesHitInCurrentGame())
+        && repeated(90, Delta(trainingPointsInCurrentGame()) < trainingPointsInCurrentGame()) && never(trainingPointsInCurrentGame() == 0)
+)
+
+achievement(title = "Double Hero", points = 3,
+    description = "Score more than 200 hits during training.",
+    trigger = never(!IsInLocation("Traveler2")) && trainingPointsInCurrentGame() > 200
+        && trainingTimesHitInCurrentGame() < 3
+)
+
+comboTarget = 25
+function shootingRangeCountdownState() => obyte(0x282248)
+function ShootingRangeCountdownStarted() => Delta(shootingRangeCountdownState()) == 0 && shootingRangeCountdownState() == 1
+function shootingRangeScore() => oword(0x28223c)
+function shootingRangeLastScoreIncrease() => oword(0x28223e)
+function ShootingRangeComboContinued() => Delta(shootingRangeScore()) != shootingRangeScore() && shootingRangeLastScoreIncrease() > 0
+function ShootingRangeComboReset() => Delta(shootingRangeLastScoreIncrease()) > 0 && shootingRangeLastScoreIncrease() == 0
+achievement(title = "Sharpshooter", points = 5,
+    description = "Get a combo of " + comboTarget + " or more at the Shooting Range.",
+    trigger = never(!IsInLocation("Molida")) && repeated(comboTarget, ShootingRangeComboContinued())
+        && never(ShootingRangeCountdownStarted()) && never(ShootingRangeComboReset())
+)
+
+scoreTarget = 2000
+function shootingRangeTimeRemaining() => oword(0x282240)
+function ShootingRangeTimeIsUp() => Delta(shootingRangeTimeRemaining()) == 0x1 && shootingRangeTimeRemaining() == 0x0
+function ShootingRangeGameComplete() => obyte(0x282249) == 0x1
+function ShootingRangeCanceled() => Delta(obyte(0x28224a)) == 0x0 && obyte(0x28224a) == 0x1
+achievement(title = "Thorough Exorcism", points = 10,
+    description = "Get a score of " + scoreTarget + " or more at the Shooting Range.",
+    trigger = never(!IsInLocation("Molida"))
+        && shootingRangeScore() >= scoreTarget && ShootingRangeTimeIsUp()
+)
+
+function quiverUpgrades() => obyte(0x1ba590)
+function bombUpgrades() => obyte(0x1ba592)
+function bombchuUpgrades() => obyte(0x1ba594)
+achievement(title = "Armed to the Teeth", points = 10,
+    description = "Get all bomb, Bombchu, and quiver upgrades.",
+    trigger = quiverUpgrades() == 2 && bombUpgrades() == 2 && WasValueSetInGame(bombchuUpgrades(), 1, 2)
+        || quiverUpgrades() == 2 && WasValueSetInGame(bombUpgrades(), 1, 2) && bombchuUpgrades() == 2
+        || WasValueSetInGame(quiverUpgrades(), 1, 2) && bombUpgrades() == 2 && bombchuUpgrades() == 2
+)
+
+achievement(title = "Heartthrob [m]", points = 10,
+    description = "Collect all thirteen Heart Containers.",
+    trigger = WasValueSetInGame(maxHp(), 0x3c, 0x40)
 )
 
 function phantomHourglassMaxTime() => odword(0x1ba4e8)
@@ -546,13 +776,247 @@ maxTime = 25 * 3600
 achievement(title = "The Sands of Time", points = 10,
     description = "Fill the Phantom Hourglass with 25 minutes' worth of Sand of Hours.",
     trigger = Delta(phantomHourglassMaxTime()) < maxTime && measured(phantomHourglassMaxTime() == maxTime) && IsInGame()
+        // There was an unexpected trigger on load once when I loaded into the TotOK. I've since been unable to reproduce it, but I don't want it to trigger for anyone else.
+        && never(IsInLocation("OceanKingLobby"))
 )
 
+treasureMaps = [
+    obit1(0x1ba610), obit2(0x1ba610), obit3(0x1ba610), obit4(0x1ba610), obit5(0x1ba610), obit6(0x1ba610), obit7(0x1ba610),
+    obit0(0x1ba611), obit1(0x1ba611), obit2(0x1ba611), obit3(0x1ba611), obit4(0x1ba611), obit5(0x1ba611), obit6(0x1ba611), obit7(0x1ba611),
+    obit0(0x1ba612), obit1(0x1ba612), obit2(0x1ba612), obit3(0x1ba612), obit4(0x1ba612), obit5(0x1ba612), obit6(0x1ba612), obit7(0x1ba612),
+    obit0(0x1ba613), obit1(0x1ba613), obit2(0x1ba613), obit3(0x1ba613), obit4(0x1ba613), obit5(0x1ba613), obit6(0x1ba613), obit7(0x1ba613)
+]
+
+treasureMapConditions = {}
+i = 0
+
+for map in treasureMaps
+{
+    treasureMapConditions[i] = { "countsWhen": (map == 1), "recalculateWhen": (Delta(map) != map) }
+    i = i + 1
+}
+
+GenerateSaveProtectedAchievementFromConditions({
+    "name": "Rookie Cartographer",
+    "description": "Collect three treasure maps.",
+    "points": 3,
+    "threshold": 3
+}, treasureMapConditions)
+
+GenerateSaveProtectedAchievementFromConditions({
+    "name": "Regular Cartographer",
+    "description": "Collect seven treasure maps.",
+    "points": 5,
+    "threshold": 7
+}, treasureMapConditions)
+
+GenerateSaveProtectedAchievementFromConditions({
+    "name": "Veteran Cartographer",
+    "description": "Collect fifteen treasure maps.",
+    "points": 10,
+    "threshold": 15
+}, treasureMapConditions)
+
+GenerateSaveProtectedAchievementFromConditions({
+    "name": "Legendary Cartographer",
+    "description": "Collect all thirty-one treasure maps.",
+    "points": 25,
+    "threshold": 31
+}, treasureMapConditions)
+
 // End Sea Chart achievements
+
+// Begin island achievement
+islands = [
+    obyte(0x1b4c64), // Zauz's Island
+    obyte(0x1b4d2c), // Dee Ess Island
+    obyte(0x1b4bec), // Spirit Island
+    obyte(0x1b4c8c), // Uncharted Island
+    obyte(0x1b4d04), // Harrow Island
+    obyte(0x1b4da4) // Maze Island
+]
+
+islandConditions = {}
+i = 0
+
+for island in islands
+{
+    islandConditions[i] = { "countsWhen": (island == 1), "recalculateWhen": (Delta(island) != island) }
+    i = i + 1
+}
+
+GenerateSaveProtectedAchievementFromConditions({
+    "name": "World Explorer",
+    "description": "Discover all uncharted islands.",
+    "points": 10,
+    "threshold": 6
+}, islandConditions)
+
+// End island achievement
+
+// Begin fish achievement
+fishes = [
+    obyte(0x1ba574), // Skippyjacks
+    obyte(0x1ba575), // Toonas
+    obyte(0x1ba576), // Loovars
+    obyte(0x1ba577), // Rusty swordfish
+    obyte(0x1ba578), // Neptoona
+    //obyte(0x1ba579) // Stowfish
+]
+
+fishConditions = {}
+i = 0
+
+for fish in fishes
+{
+    fishConditions[i] = { "countsWhen": (fish > 0), "recalculateWhen": (Delta(fish) != fish) }
+    i = i + 1
+}
+
+GenerateSaveProtectedAchievementFromConditions({
+    "name": "Renowned Angler",
+    "description": "Catch all five major species of fish.",
+    "points": 10,
+    "threshold": 5
+}, fishConditions)
+
+// End fish achievement
+
+// Begin frog achievement
+frogs = [
+    obit1(0x1b5563), // Northwestern
+    obit7(0x1b5562), // Southwestern 1
+    obit0(0x1b5563), // Southwestern 2
+    obit2(0x1b5563), // Southeastern 1
+    obit3(0x1b5563), // Southeastern 2
+    obit4(0x1b5563) // Northeastern
+]
+
+frogConditions = {}
+i = 0
+
+for frog in frogs
+{
+    frogConditions[i] = { "countsWhen": (frog == 1), "recalculateWhen": (Delta(frog) != frog) }
+    i = i + 1
+}
+
+GenerateSaveProtectedAchievementFromConditions({
+    "name": "Gale Treader",
+    "description": "Find all six Golden Frogs.",
+    "points": 10,
+    "threshold": 6
+}, frogConditions)
+
+// End fish achievement
+
+function swordsmanScroll() => obit5(0x1ba609)
+achievement(title = "Ars Bellica", points = 10,
+    description = "Obtain the Swordsman's Scroll.",
+    trigger = WasBitflagSetInGame(swordsmanScroll())
+)
+
+function totokBestTime() => oword(0x1ba354)
+totokBestPossibleTime = 25 * 60
+achievement(title = "Pristine Path", points = 25,
+    description = "Complete the Temple of the Ocean King with a best time of 25:00.",
+    trigger = DidValueBecomeGreaterThanGivenInGame(totokBestTime(), totokBestPossibleTime - 1) && measured(totokBestTime() == totokBestPossibleTime)
+        // There was an unexpected trigger on load once when I loaded into the TotOK. I've since been unable to reproduce it, but I don't want it to trigger for anyone else.
+        && never(IsInLocation("OceanKingLobby"))
+)
+
+totokTimeLimit = 330
+function timeRemainingInHourglass() => odword(0x1e2a08)
+function StartedTotokFromFloor1() => WasInLocation("OceanKingLobby") && IsInLocation("OceanKing") && currentSublocation() == 0
+// We can get away with checking the sublocation here since there's no way for the player to regain sand on the first floor.
+function RegainedSand() => Delta(timeRemainingInHourglass()) < timeRemainingInHourglass() && currentSublocation() > 0
+function ReachedFinalFloor() => Delta(currentSublocation()) == 0x11 && currentSublocation() == 0x12
+function TimeSpentInTotok() => phantomHourglassMaxTime() - timeRemainingInHourglass()
+achievement(title = "Eroding Will", points = 25,
+    description = "Complete the Temple of the Ocean King from beginning to end within " + SecondsToFormat(totokTimeLimit) + " without replenishing sand.",
+    trigger = once(StartedTotokFromFloor1()) && ReachedFinalFloor() && never(IsInLocation("OceanKingLobby")) && never(RegainedSand())
+        && TimeSpentInTotok() <= totokTimeLimit * 60
+)
+
+function bellumHp() => oword(0x25ad1c)
+function IsBellumDying() => Delta(bellumHp()) > 0 && bellumHp() == 0
+achievement(title = "Leech Killer [m]", points = 5,
+    description = "Defeat Bellum's first phase without your life energy dipping three hearts below its maximum.",
+    trigger = once(IsInLocation("Bellum") && WasInLocation("OceanKing")) && never(IsInLocation("OceanKing"))
+        && IsBellumDying() && never(hp() <= maxHp() - 12)
+)
+
+function shipHpPointer() => otbyte(0x1ba5d8)
+function shipHp() => obyte(shipHpPointer() + 0x3606a)
+achievement(title = "The Green Baron [m]", points = 10,
+    description = "Defeat Bellum's second phase without your ship being damaged more than six times.",
+    trigger = IsInLocation("BellumFinal") && never(repeated(6, Delta(shipHp()) > shipHp()))
+        && (once(IsInLocation("BellumSeaBattle") && WasInLocation("BellumSeaCutscene"))
+            || once(IsInLocation("BellumSeaBattle") && WasInLocation("Sea")))
+        && never(IsInLocation("Sea")) && never(IsInLocation("BellumSeaCutscene"))
+)
+
+// Ciela's picked automatically at the beginning. However, she gets captured after the first part, so the only possible spirits to equip in this fight are Leaf and Neri.
+function SpiritAbilityEquipped() => obyte(0x1ba4ec) != 0xff && obyte(0x1ba4ec) != 0
+function TookAtLeastQuarterHeartDamage() => Delta(hp()) >= hp() + 1
+function TookAtLeastHalfHeartDamage() => Delta(hp()) >= hp() + 2
+function TookAtLeastThreeQuartersHeartDamage() => Delta(hp()) >= hp() + 3
+function TookAtLeastHeartDamage() => Delta(hp()) >= hp() + 4
+function bellumbeckState() => obyte(0x25a088)
+function BellumbeckIsDying() => bellumbeckState() == 0x17
+achievement(title = "Defender of the Seas", points = 25,
+    description = "Defeat Bellum's final phase while taking less than three hearts of damage and without any spirit abilities equipped.",
+    trigger = never(IsInLocation("BellumSeaBattle")) && never(IsInLocation("Sea")) && never(SpiritAbilityEquipped())
+        && never(tally(12, [ repeated(0, TookAtLeastQuarterHeartDamage()), repeated(0, TookAtLeastHalfHeartDamage()),
+            repeated(0, TookAtLeastThreeQuartersHeartDamage()), repeated(0, TookAtLeastHeartDamage()) ])) && BellumbeckIsDying()
+        && (once(IsInLocation("BellumFinal") && WasInLocation("BellumSeaBattle"))
+            || once(IsInLocation("BellumFinal") && WasInLocation("Sea")))
+)
+
+achievement(title = "A Wish for Freedom", points = 25,
+    description = "Save the World of the Ocean King from Bellum's influence.",
+    trigger = IsInLocation("Credits") && WasInLocation("BellumFinal")
+)
 
 leaderboard(title = "Time Attack - Cyclok", description = "Defeat Cyclok as quickly as you can.",
     start = once(IsInLocation("Cyclok") && WasInLocation("TempleOfWind")) && CyclokStarted(),
     cancel = !IsInLocation("Cyclok"),
     submit = IsCyclokDying(),
     value = measured(TimeAdvancedAgainstCyclok())
+)
+
+leaderboard(title = "Time Attack - Eox", description = "Defeat Eox as quickly as you can.",
+    start = once(IsInLocation("Eox") && WasInLocation("Mutoh")) && EoxStarted(),
+    cancel = !IsInLocation("Eox"),
+    submit = IsEoxDying(),
+    value = measured(TimeAdvancedAgainstEox())
+)
+
+leaderboard(title = "Goron Game", description = "Finish the Goron Game in the fastest time you can.",
+    start = IsInLocation("DS") && goronGameState() != 0xffffffff && goronGameCountdown() == 0x3,
+    cancel = !IsInLocation("DS"),
+    submit = GoronGameDisplayIsActive() && goronGameTargetsRemaining() == 0,
+    value = goronGameTime() * 2
+)
+
+leaderboard(title = "Cannon Game", description = "Get the highest score you can.",
+    start = IsInLocation("CannonMinigame") && CannonGameStarted(),
+    cancel = !IsInLocation("CannonMinigame"),
+    submit = cannonGameCountdown() == 0x4,
+    value = cannonGameScore()
+)
+
+leaderboard(title = "Shooting Range", description = "Get the highest score you can.",
+    start = IsInLocation("Molida") && ShootingRangeCountdownStarted(),
+    cancel = !IsInLocation("Molida") || ShootingRangeCanceled(),
+    submit = ShootingRangeGameComplete(),
+    value = shootingRangeScore()
+)
+
+leaderboard(title = "Time Trial - Sandless Temple of the Ocean King",
+    description = "Complete the Temple of the Ocean King in the fastest time you can without replenishing sand.",
+    start = StartedTotokFromFloor1() && phantomSword() == 1,
+    cancel = IsInLocation("OceanKingLobby") || RegainedSand(),
+    submit = ReachedFinalFloor(),
+    value = TimeSpentInTotok()
 )
