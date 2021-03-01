@@ -11,6 +11,7 @@ worlds = {
     1: "Traverse Town",
     2: "Wonderland",
     3: "Olympus Coliseum",
+    4: "Agrabah",
 }
 
 areas = {
@@ -61,6 +62,21 @@ areas = {
 45: { "worldId": 0x3, "name": "OlympusLayer13", "display": "Layer 13", "areaId": 0xd, },
 46: { "worldId": 0x3, "name": "OlympusLayer14", "display": "Layer 14", "areaId": 0xe, },
 47: { "worldId": 0x3, "name": "OlympusLayer15", "display": "Layer 15", "areaId": 0x21, },
+48: { "worldId": 0x4, "name": "AgrabahPlaza", "display": "Plaza", "areaId": 0x6, },
+49: { "worldId": 0x4, "name": "AgrabahAlley", "display": "Alley", "areaId": 0x8, },
+50: { "worldId": 0x4, "name": "AgrabahStreet", "display": "Main Street", "areaId": 0x2, },
+51: { "worldId": 0x4, "name": "AgrabahPalace", "display": "Palace Gates", "areaId": 0x3, },
+52: { "worldId": 0x4, "name": "AgrabahPlazaFrozen", "display": "Plaza", "areaId": 0xa, },
+53: { "worldId": 0x4, "name": "AgrabahPalaceFrozen", "display": "Palace Gates", "areaId": 0xc, },
+54: { "worldId": 0x4, "name": "AgrabahStreetFrozen", "display": "Main Street", "areaId": 0xb, },
+55: { "worldId": 0x4, "name": "AgrabahAlleyFrozen", "display": "Alley", "areaId": 0xd, },
+56: { "worldId": 0x4, "name": "AgrabahCaveEntrance", "display": "Cave / Entrance", "areaId": 0x12, },
+57: { "worldId": 0x4, "name": "AgrabahBazaarFrozen", "display": "Bazaar", "areaId": 0xe, },
+58: { "worldId": 0x4, "name": "AgrabahBazaar", "display": "Bazaar", "areaId": 0x9, },
+59: { "worldId": 0x4, "name": "AgrabahCaveEntrance", "display": "Cave / Entrance", "areaId": 0x1, },
+60: { "worldId": 0x4, "name": "AgrabahCaveBeginnings", "display": "Cave / Hall of Beginnings", "areaId": 0x4, },
+61: { "worldId": 0x4, "name": "AgrabahGauntlet", "display": "Cave / Gauntlet", "areaId": 0x5, },
+62: { "worldId": 0x4, "name": "AgrabahGauntletLower", "display": "Cave / Gauntlet", "areaId": 0x11, },
 }
 
 function GetLocationByName(name)
@@ -1390,6 +1406,20 @@ achievement(title = "Martial Technique", points = 10,
         && JustDefeatedEnemy("Rock Titan") && never(ConsumedALicenseOfType(0xd7)) && never(ConsumedALicenseOfType(0xd8))
 )
 
+// Putting this on the cutting room floor for now; their implementation for calculating time is a bit too complex for me to want to write code around for now.
+// Plus, the achievement probably isn't that particularly challenging anyway, since you just get booted back to the entrance of the current room if you run out of time
+// with all of your time put back into the pool.
+if (1 == 0)
+{
+    function agrabahTimeElapsedInRoom() => dword(0x1efc8c)
+    function agrabahTimeLimitInRoom() => dword(0x19ee18)
+    achievement(title = "No Need for an Hourglass", points = 3,
+        description = "Reclaim the magic lamp from Iago before time runs out the first time and without collecting any time prizes.",
+        trigger = once(WasInLocation("AgrabahPlaza") && IsInLocation("AgrabahPlazaFrozen")) && IsInLocation("AgrabahCaveEntrance")
+            && never(agrabahTimeElapsedInRoom() >= agrabahTimeLimitInRoom())
+    ) 
+}
+
 function extraCommandSlotsUnlocked() => byte(0x198700)
 achievement(title = "Commander Sora", points = 5,
     description = "Unlock five extra command slots.",
@@ -1414,6 +1444,8 @@ sectorRewards = [
     bit0(0x198324), bit1(0x198324), bit2(0x198324), bit3(0x198324), bit4(0x198324), bit5(0x198324),
     bit0(0x198330), bit1(0x198330), bit2(0x198330), bit3(0x198330), bit4(0x198330), bit5(0x198330),
     bit0(0x19833a), bit1(0x19833a), bit2(0x19833a), bit3(0x19833a), bit4(0x19833a),
+    bit0(0x19833e), bit1(0x19833e), bit2(0x19833e), bit3(0x19833e), bit4(0x19833e), bit5(0x19833e),
+    bit0(0x198340), bit1(0x198340), bit2(0x198340), bit3(0x198340), bit4(0x198340), bit5(0x198340)
 ]
 
 // Generate conditions for sector rewards from the above addresses.
