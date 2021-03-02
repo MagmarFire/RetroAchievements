@@ -364,6 +364,7 @@ pinkCoralCountAddr = 0x1ba56c
 totalTreasureTypes = 8
 totalConditions = 0
 treasureConditions = {}
+treasureThreshold = 6
 
 for i in range(0, totalTreasureTypes - 1)
 {
@@ -376,9 +377,9 @@ for i in range(0, totalTreasureTypes - 1)
 
 GenerateSaveProtectedAchievementFromConditions({
     "name": "Treasure Hunter",
-    "description": "Obtain one of every type of treasure.",
+    "description": "Obtain six types of treasure.",
     "points": 5,
-    "threshold": totalTreasureTypes
+    "threshold": treasureThreshold
 }, treasureConditions)
 
 // Power, Wisdom, and Courage Gem achievements
