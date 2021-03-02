@@ -943,8 +943,8 @@ achievement(title = "Ars Bellica", points = 10,
 
 function totokBestTime() => oword(0x1ba354)
 totokBestPossibleTime = 25 * 60
-achievement(title = "Pristine Path", points = 25,
-    description = "Complete the Temple of the Ocean King with a best time of 25:00.",
+achievement(title = "Pristine Path", points = 25, id = 143393, badge = "160139",
+    description = "Complete the Temple of the Ocean King with 25:00 remaining in the Phantom Hourglass.",
     trigger = DidValueBecomeGreaterThanGivenInGame(totokBestTime(), totokBestPossibleTime - 1) && measured(totokBestTime() == totokBestPossibleTime)
         // There was an unexpected trigger on load once when I loaded into the TotOK. I've since been unable to reproduce it, but I don't want it to trigger for anyone else.
         && never(IsInLocation("OceanKingLobby"))
