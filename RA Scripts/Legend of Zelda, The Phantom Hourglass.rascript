@@ -607,15 +607,19 @@ achievement(title = "Precision Demolition", points = 3,
     trigger = WasBitflagSetInGame(bombchus())
 )
 
+maxSwitches = 8
 function characterControlStatus() => obyte(0x1dc2e1)
 function JustSwitchedFromLinkToGongoron() => Delta(characterControlStatus()) == 0 && characterControlStatus() == 1
 function JustSwitchedFromGongoronToLink() => Delta(characterControlStatus()) == 1 && characterControlStatus() == 0
 function dongorongoState() => obyte(0x269e20)
 function DongorongoFirstPhaseComplete() => dongorongoState() == 0x16
-achievement(title = "Seamless Relay [m]", points = 5,
+function SwitchedTooManyTimes() => tally(maxSwitches + 1, [ repeated(0, JustSwitchedFromLinkToGongoron()), repeated(0, JustSwitchedFromGongoronToLink()) ])
+achievement(title = "Seamless Relay [m]", points = 5, id = 143365, badge = "160111",
     description = "Complete Dongorongo's first phase without switching between Link and Gongoron more than eight times.",
     trigger = once(IsInLocation("Dongorongo") && WasInLocation("GoronTemple")) && never(!IsInLocation("Dongorongo"))
-        && DongorongoFirstPhaseComplete() && never(tally(9, [ repeated(0, JustSwitchedFromLinkToGongoron()), repeated(0, JustSwitchedFromGongoronToLink()) ]))
+        && DongorongoFirstPhaseComplete() && never(SwitchedTooManyTimes())
+        && (measured(SwitchedTooManyTimes()) // Impossible condition that gives the player an idea of how many switches are left before it resets.
+            || IsInLocation("Dongorongo")) // Technically an "always true" condition. This is to get around RATools' optimizations that get rid of alts.
 )
 
 function DongorongoSecondPhaseBeginning() => dongorongoState() == 0x17
