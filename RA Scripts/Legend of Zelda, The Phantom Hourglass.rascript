@@ -89,6 +89,8 @@ function currentSublocation() => obyte(0x1b2e32)
 //         "description": self-explanatory
 //         "points": self-explanatory
 //         "threshold": how many values in the "addresses" dictionary must be set before this achievement is triggered
+//         "badge": the badge name
+//         "id": the ID of the cheevo on the server
 //
 // conditions: "countsWhen": the condition that must be true in order for it to be counted in the total
 //             "recalculateWhen": the condition that indicates that relevant values in the condition have changed,
@@ -115,7 +117,7 @@ function GenerateSaveProtectedAchievementFromConditions(cheevo, conditions)
         resetAlt = resetAlt || condition["recalculateWhen"]
     }
 
-    achievement(title = cheevo["name"], description = cheevo["description"], points = cheevo["points"],
+    achievement(title = cheevo["name"], description = cheevo["description"], points = cheevo["points"], id = cheevo["id"], badge = cheevo["badge"],
         trigger = never(!IsInGame())
             && never(MayHaveBeenInBootState()) // Prevent save protection from failing in the event of a manual game reset.
             && measured(tally(cheevo["threshold"], totalCounts)) && unless(tally(cheevo["threshold"], loadedCounts))
@@ -379,7 +381,9 @@ GenerateSaveProtectedAchievementFromConditions({
     "name": "Treasure Hunter",
     "description": "Obtain six types of treasure.",
     "points": 5,
-    "threshold": treasureThreshold
+    "threshold": treasureThreshold,
+    "id": 143333,
+    "badge": "160079"
 }, treasureConditions)
 
 // Power, Wisdom, and Courage Gem achievements
@@ -426,7 +430,9 @@ GenerateSaveProtectedAchievementFromConditions({
     "name": "The Virtue of Balance",
     "description": "Upgrade all spirits' abilities to Level 2.",
     "points": 25,
-    "threshold": 3
+    "threshold": 3,
+    "id": 143392,
+    "badge": "160138"
 }, spiritConditions)
 
 // End spirit upgrades
@@ -801,28 +807,36 @@ GenerateSaveProtectedAchievementFromConditions({
     "name": "Rookie Cartographer",
     "description": "Collect three treasure maps.",
     "points": 3,
-    "threshold": 3
+    "threshold": 3,
+    "id": 143371,
+    "badge": "160117"
 }, treasureMapConditions)
 
 GenerateSaveProtectedAchievementFromConditions({
     "name": "Regular Cartographer",
     "description": "Collect seven treasure maps.",
     "points": 5,
-    "threshold": 7
+    "threshold": 7,
+    "id": 143372,
+    "badge": "160118"
 }, treasureMapConditions)
 
 GenerateSaveProtectedAchievementFromConditions({
     "name": "Veteran Cartographer",
     "description": "Collect fifteen treasure maps.",
     "points": 10,
-    "threshold": 15
+    "threshold": 15,
+    "id": 143373,
+    "badge": "160119"
 }, treasureMapConditions)
 
 GenerateSaveProtectedAchievementFromConditions({
     "name": "Legendary Cartographer",
     "description": "Collect all thirty-one treasure maps.",
     "points": 25,
-    "threshold": 31
+    "threshold": 31,
+    "id": 143374,
+    "badge": "160120"
 }, treasureMapConditions)
 
 // End Sea Chart achievements
@@ -850,7 +864,9 @@ GenerateSaveProtectedAchievementFromConditions({
     "name": "World Explorer",
     "description": "Discover all uncharted islands.",
     "points": 10,
-    "threshold": 6
+    "threshold": 6,
+    "id": 143379,
+    "badge": "160125"
 }, islandConditions)
 
 // End island achievement
@@ -878,7 +894,9 @@ GenerateSaveProtectedAchievementFromConditions({
     "name": "Renowned Angler",
     "description": "Catch all five major species of fish.",
     "points": 10,
-    "threshold": 5
+    "threshold": 5,
+    "id": 143385,
+    "badge": "160131"
 }, fishConditions)
 
 // End fish achievement
@@ -906,7 +924,9 @@ GenerateSaveProtectedAchievementFromConditions({
     "name": "Gale Treader",
     "description": "Find all six Golden Frogs.",
     "points": 10,
-    "threshold": 6
+    "threshold": 6,
+    "id": 143386,
+    "badge": "160132"
 }, frogConditions)
 
 // End fish achievement
