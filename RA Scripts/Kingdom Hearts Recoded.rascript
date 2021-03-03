@@ -6,6 +6,12 @@ function areaId() => byte(0x19836d)
 function IsInSystemSector() => dword(0x19ecf4) != 0x0
 function KeyholeCheckpointPassed() => minigamePopupState() == 0x3
 
+function TitleScreenAlmostReady() => titleScreenStatus() == 5
+
+function TitleScreenReady() => titleScreenStatus() == 6
+
+function IsOnTitleScreen() => TitleScreenAlmostReady() || TitleScreenReady()
+
 worlds = {
     0: "Destiny Islands",
     1: "Traverse Town",
@@ -77,6 +83,8 @@ areas = {
 60: { "worldId": 0x4, "name": "AgrabahCaveBeginnings", "display": "Cave / Hall of Beginnings", "areaId": 0x4, },
 61: { "worldId": 0x4, "name": "AgrabahGauntlet", "display": "Cave / Gauntlet", "areaId": 0x5, },
 62: { "worldId": 0x4, "name": "AgrabahGauntletLower", "display": "Cave / Gauntlet", "areaId": 0x11, },
+63: { "worldId": 0x4, "name": "AgrabahLamp", "display": "Cave / Lamp Chamber", "areaId": 0x7, },
+64: { "worldId": 0x4, "name": "AgrabahKeyholeTerminus", "display": "Keyhole / Terminus", "areaId": 0xf, },
 }
 
 function GetLocationByName(name)
@@ -172,6 +180,8 @@ function PlayTimeToFrames()
 
 soa1 = GetLocationByName("SoA1")
 soa2 = GetLocationByName("SoA2")
+rich_presence_conditional_display(IsOnTitleScreen(), "On the title screen")
+
 rich_presence_conditional_display(worldId() == 0 && areaId() == 0x1, soa1["display"] + " | Play Time: {0}",
     rich_presence_value("PlayTime", PlayTimeToFrames(), "FRAMES")
 )
@@ -238,7 +248,7 @@ function playTime() => dword(0x056E9C)
 // $0608D8: Ability set for clock level MAX - 16-bit
 
 // $060B51: < LV PLAYER SORA >
-function level() => byte(0x060B51)
+function Level() => byte(0x060B51) + 1
 
 // $060B52: < HP PLAYER - SORA >
 function hp() => byte(0x060B52)
@@ -1022,12 +1032,6 @@ function IsOnSaveOrLoadMenu() => menuId() == 0x6
 
 function IsOnLoadMenu() => titleScreenStatus() == 8
 
-function TitleScreenAlmostReady() => titleScreenStatus() == 5
-
-function TitleScreenReady() => titleScreenStatus() == 6
-
-function IsOnTitleScreen() => TitleScreenAlmostReady() || TitleScreenReady()
-
 function IsAlwaysInGame() => unless(IsOnSaveOrLoadMenu()) && never(IsOnLoadMenu()) && never(IsOnTitleScreen())
 
 function WasValueSet(mem, oldValue, newValue)
@@ -1248,12 +1252,12 @@ achievement(title = "Escape Sequence", description = "Complete Olympus Coliseum.
 function dodgeRollActive() => bit0(0x1986f0)
 achievement(title = "Smooth Operator", description = "Defeat the Darkside without the Dodge Roll ability equipped (Critical Mode; Level 2 or below).",
     points = 5,
-    trigger = IsAtLeastOnDifficulty("Critical") && dodgeRollActive() == 0 && JustDefeatedEnemy("Darkside") && level() <= 2
+    trigger = IsAtLeastOnDifficulty("Critical") && dodgeRollActive() == 0 && JustDefeatedEnemy("Darkside") && Level() <= 2
 )
 
 achievement(title = "I Am the New God", description = "Earn a Star rank against the Darkside (Proud Mode or higher; Level 5 or below).",
     points = 10,
-    trigger = IsAtLeastOnDifficulty("Proud") && level() <= 5 && never(!IsInLocation("DestinyStorm")) && BossScoreIsDisplayedAndAtLeast(40000)
+    trigger = IsAtLeastOnDifficulty("Proud") && Level() <= 5 && never(!IsInLocation("DestinyStorm")) && BossScoreIsDisplayedAndAtLeast(40000)
 )
 
 soraSidescrollStateOffset = 0x2d32
@@ -1263,7 +1267,7 @@ function IsAlwaysInTraverseTownKeyhole() => never(!IsInLocation("TraverseKeyhole
         && !IsInLocation("TraverseKeyholeThird") && !IsInLocation("TraverseKeyholeFall") && !IsInLocation("TraverseKeyholeTerminus"))
 achievement(title = "Saved a Framerule", points = 25,
     description = "Complete the Traverse Town Keyhole without falling into pits, getting caught behind blox, or dying (Critical Mode; Level 7 or below).",
-    trigger = IsAtLeastOnDifficulty("Critical") && level() <= 7 && IsAlwaysInTraverseTownKeyhole()
+    trigger = IsAtLeastOnDifficulty("Critical") && Level() <= 7 && IsAlwaysInTraverseTownKeyhole()
         && once(KeyholeCheckpointPassed() && !IsMinigameActive() && IsInLocation("TraverseKeyholeFirst"))
         && never(hp() <= 0) && JustDefeatedEnemy("Guard Armor") && never(JustFellOrGotCaughtInSidescrollingStages())
 )
@@ -1295,7 +1299,7 @@ achievement(title = "Dedicated Specialist", points = 5,
 
 achievement(title = "Our Princess of Heart Is in Another World", description = "Earn a Star rank against the Guard Armor (Proud Mode or higher; Level 9 or below).",
     points = 10,
-    trigger = IsAtLeastOnDifficulty("Proud") && level() <= 9 && never(!IsInLocation("TraverseKeyholeTerminus")) && BossScoreIsDisplayedAndAtLeast(30000)
+    trigger = IsAtLeastOnDifficulty("Proud") && Level() <= 9 && never(!IsInLocation("TraverseKeyholeTerminus")) && BossScoreIsDisplayedAndAtLeast(30000)
 )
 
 // The current save protection algorithm won't work here because the bits appear to be loaded after all the other save's data is loaded.
@@ -1340,12 +1344,12 @@ achievement(title = "Avoided the Guillotine", points = 25,
 
 achievement(title = "Guilt and Penalty", points = 10,
     description = "Complete the Wonderland Keyhole with a score of 22000 or more (Proud Mode or higher; Level 15 or below).",
-    trigger = IsAtLeastOnDifficulty("Proud") && level() <= 15 && never(!IsInLocation("WonderlandKeyholeTerminus")) && BossScoreIsDisplayedAndAtLeast(22000)
+    trigger = IsAtLeastOnDifficulty("Proud") && Level() <= 15 && never(!IsInLocation("WonderlandKeyholeTerminus")) && BossScoreIsDisplayedAndAtLeast(22000)
 )
 
 achievement(title = "Astral Heir", points = 25,
     description = "Earn a Star rank in the Wonderland Keyhole (Proud Mode or higher; Level 15 or below).",
-    trigger = IsAtLeastOnDifficulty("Proud") && level() <= 15 && never(!IsInLocation("WonderlandKeyholeTerminus")) && BossScoreIsDisplayedAndAtLeast(45000)
+    trigger = IsAtLeastOnDifficulty("Proud") && Level() <= 15 && never(!IsInLocation("WonderlandKeyholeTerminus")) && BossScoreIsDisplayedAndAtLeast(45000)
 )
 
 function turnBasedBattlePtr() => tbyte(0x1a47c4)
@@ -1381,7 +1385,7 @@ function ConsumedALicenseOfType(type)
 
 achievement(title = "Lethal Force Authorized", points = 5,
     description = "Defeat both Cerberus and Hades without using any more than five licenses total between them (Proud Mode or higher; Level 20 or below.).",
-    trigger = IsAtLeastOnDifficulty("Proud") && level() <= 20
+    trigger = IsAtLeastOnDifficulty("Proud") && Level() <= 20
         && once(OlympusColiseumKeyholeCheckpoint())
         // A pauselock is used to ensure the checkpoint doesn't get re-established if the player uses too many licenses in the Cerberus fight.
         && unless(repeated(6, ConsumedALicense() && turnBasedBattlePtr() != 0x0))
@@ -1396,12 +1400,12 @@ achievement(title = "There Is No Escape", points = 5,
     trigger = IsAtLeastOnDifficulty("Critical") &&  BossScoreIsDisplayedAndAtLeast(30000)
         && never(!IsInLocation("OlympusLayer5") && !IsInLocation("OlympusLayer15") && !IsInLocation("OlympusLayer15")
          && !IsInLocation("OlympusLayer15") && !IsInLocation("OlympusLayer15"))
-         && (level() <= 20 || always_false()) // Trick RATools into generating the correct code by forcing use of OrNext.
+         && (Level() <= 20 || always_false()) // Trick RATools into generating the correct code by forcing use of OrNext.
 )
 
 achievement(title = "Martial Technique", points = 10,
     description = "Defeat the Rock Titan using neither Auto-Block-L nor Timing-L licenses (Critical Mode; Level 25 or below).",
-    trigger = IsAtLeastOnDifficulty("Critical") && level() <= 25
+    trigger = IsAtLeastOnDifficulty("Critical") && Level() <= 25
         && once(OlympusColiseumKeyholeCheckpoint()) && never(!IsInTurnBasedBattle())
         && JustDefeatedEnemy("Rock Titan") && never(ConsumedALicenseOfType(0xd7)) && never(ConsumedALicenseOfType(0xd8))
 )
@@ -1419,6 +1423,25 @@ if (1 == 0)
             && never(agrabahTimeElapsedInRoom() >= agrabahTimeLimitInRoom())
     ) 
 }
+
+achievement(title = "Mano-a-Many", points = 3,
+    description = "Defeat Jafar in the Lamp Chamber without defeating any other enemy (Critical Mode; Level 20 or below).",
+    trigger = never(JustDefeatedEnemy("Blox Bug")) && never(!IsInLocation("AgrabahLamp")) && Level() <= 20 && IsAtLeastOnDifficulty("Critical")
+        && (once(WasInLocation("AgrabahGauntlet") && IsInLocation("AgrabahLamp")) && JustDefeatedEnemy("Jafar") // Initial entry into the room
+            || once(Delta(hp()) == 0 && hp() == maxHP()) && JustDefeatedEnemy("Jafar")) // Cover a game over situation
+)
+
+achievement(title = "Endless Astronomical Abilities", points = 5,
+    description = "Earn a Star rank in the Agrabah Keyhole (Proud Mode or higher; Level 20 or below).",
+    trigger = IsAtLeastOnDifficulty("Proud") &&  BossScoreIsDisplayedAndAtLeast(35000)
+        && never(!IsInLocation("AgrabahKeyholeTerminus")) && Level() <= 20
+)
+
+achievement(title = "Keyblade Beats Rock", points = 10,
+    description = "Defeat Jafar's genie form with 50 max HP or less and without Second Chance active (Critical Mode; Level 20 or below).",
+    trigger = IsAtLeastOnDifficulty("Critical") &&  BossScoreIsDisplayedAndAtLeast(35000)
+        && never(!IsInLocation("AgrabahKeyholeTerminus")) && Level() <= 20
+)
 
 function extraCommandSlotsUnlocked() => byte(0x198700)
 achievement(title = "Commander Sora", points = 5,
@@ -1445,7 +1468,8 @@ sectorRewards = [
     bit0(0x198330), bit1(0x198330), bit2(0x198330), bit3(0x198330), bit4(0x198330), bit5(0x198330),
     bit0(0x19833a), bit1(0x19833a), bit2(0x19833a), bit3(0x19833a), bit4(0x19833a),
     bit0(0x19833e), bit1(0x19833e), bit2(0x19833e), bit3(0x19833e), bit4(0x19833e), bit5(0x19833e),
-    bit0(0x198340), bit1(0x198340), bit2(0x198340), bit3(0x198340), bit4(0x198340), bit5(0x198340)
+    bit0(0x198340), bit1(0x198340), bit2(0x198340), bit3(0x198340), bit4(0x198340), bit5(0x198340),
+    bit0(0x198342), bit1(0x198342), bit2(0x198342), bit3(0x198342), bit4(0x198342), bit5(0x198342),
 ]
 
 // Generate conditions for sector rewards from the above addresses.
@@ -1699,6 +1723,20 @@ leaderboard(title = "Score Attack - Olympus Coliseum, Layer 5", description = "G
 leaderboard(title = "Score Attack - Olympus Coliseum, Layer 15", description = "Get as many points as you can in the Olympus Coliseum Keyhole, up to Layer 15.",
     start = IsInLocation("OlympusLayer15") && IsTotalScoreJustDisplayed() && !IsInSystemSector(),
     cancel = !IsInLocation("OlympusLayer15") || IsInSystemSector(),
+    submit = IsTotalScoreJustDisplayed(),
+    value = dword(bossScorePointer() + 8)
+)
+
+leaderboard(title = "Time Attack - Agrabah", description = "Seal the Agrabah Keyhole as quickly as you can.",
+    start = IsInLocation("AgrabahKeyholeTerminus") && !IsInSystemSector(),
+    cancel = !IsInLocation("AgrabahKeyholeTerminus") || IsInSystemSector(),
+    submit = IsBossRankJustDisplayed(),
+    value = bossMilliseconds() / 10
+)
+
+leaderboard(title = "Score Attack - Agrabah", description = "Get as many points as you can in the Agrabah Keyhole.",
+    start = IsInLocation("AgrabahKeyholeTerminus") && IsTotalScoreJustDisplayed() && !IsInSystemSector(),
+    cancel = !IsInLocation("AgrabahKeyholeTerminus") || IsInSystemSector(),
     submit = IsTotalScoreJustDisplayed(),
     value = dword(bossScorePointer() + 8)
 )
