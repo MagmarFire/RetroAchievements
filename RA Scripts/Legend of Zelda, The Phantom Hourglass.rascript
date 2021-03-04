@@ -546,7 +546,7 @@ achievement(title = "Mental Reflection", points = 3,
 )
 
 function salvageArm() => obit4(0x1ba609)
-achievement(title = "And Arm and a Leg", points = 1,
+achievement(title = "An Arm and a Leg", points = 1, id = 143357, badge = "160103",
     description = "Buy the Salvage Arm.",
     trigger = WasBitflagSetInGame(salvageArm())
 )
