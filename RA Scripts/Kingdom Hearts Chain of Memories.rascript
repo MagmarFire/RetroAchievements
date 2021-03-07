@@ -5,7 +5,46 @@
 // $033190: Otra vida jefe
 // $03A9CC: Riku III
 // $03B14E: Vida Max Sora (Batalla)
-// $03D0B2: Algo???
+// $03D0B2: Title screen index
+//
+//          0x0 = new game
+//          0x1 = load game
+
+function Delta(mem)
+{
+    return prev(mem)
+}
+
+// $03bfc2: Appears to affect what screen the game transitions to in certain situations.
+//
+//          For instance, it changes from 0 to 1 when loading a game, and if it's frozen at 0 when attempting to load a game, you get booted back to the title screen.
+//
+//          Can probably be used for save protection.
+function gameTransitionState() => byte(0x03bfc2)
+
+// $03bc8: Loading animation ID (16-bit)
+//
+//          0x9279 = "Load" header moving left
+//          0x92b9 = top and bottom borders dilating
+//          0x930d = fading out
+//
+//          Can probably be used for save protection.
+function loadAnimationState() => word(0x03bfc8)
+
+function IsLoadingSaveFile()
+{
+    return Delta(gameTransitionState()) == 0 && gameTransitionState() == 1 && loadAnimationState() == 0x9279
+}
+
+function WasValueSet(mem, oldValue, newValue)
+{
+    return Delta(mem) == oldValue && mem == newValue
+}
+
+function WasValueSetInGame(mem, oldValue, newValue)
+{
+    return WasValueSet(mem, oldValue, newValue) && !IsLoadingSaveFile()
+}
 
 // $0421CC: World
 function worldId() => byte(0x0421CC)
