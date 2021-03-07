@@ -24,6 +24,7 @@ function gameTransitionState() => byte(0x03bfc2)
 
 // $03bc8: Loading animation ID (16-bit)
 //
+//          0x9189 = load menu is static
 //          0x9279 = "Load" header moving left
 //          0x92b9 = top and bottom borders dilating
 //          0x930d = fading out
@@ -33,7 +34,7 @@ function loadAnimationState() => word(0x03bfc8)
 
 function IsLoadingSaveFile()
 {
-    return Delta(gameTransitionState()) == 0 && gameTransitionState() == 1 && loadAnimationState() == 0x9279
+    return Delta(gameTransitionState()) == 0 && loadAnimationState() == 0x9189
 }
 
 function WasValueSet(mem, oldValue, newValue)
@@ -44,6 +45,11 @@ function WasValueSet(mem, oldValue, newValue)
 function WasValueSetInGame(mem, oldValue, newValue)
 {
     return WasValueSet(mem, oldValue, newValue) && !IsLoadingSaveFile()
+}
+
+function WasBitflagSetInGame(mem)
+{
+    return WasValueSetInGame(mem, 0, 1)
 }
 
 // $0421CC: World
@@ -139,10 +145,11 @@ FloorLookup = {
     27: "B1",
 }
 
+function shadowJournalEntry() => bit4(0x0422fe)
 achievement(
-    title = "Heartless Hunter", description = "The first of many", points = 1,
+    title = "Heartless Hunter", description = "Defeat your first Heartless in Castle Oblivion.", points = 1,
     id = 15580, badge = "12277", published = "10/16/2014 6:04:37 AM", modified = "11/8/2016 6:46:53 PM",
-    trigger = once(byte(0x03B14E) == 0x50) && byte(0x03B14E) == 0x03 && byte(0x042346) == 0x0A
+    trigger = WasBitflagSetInGame(shadowJournalEntry())
 )
 
 achievement(
