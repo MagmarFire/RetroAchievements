@@ -789,6 +789,19 @@ function IsAtLeastOnDifficulty(value)
 //          0x0136 - Adamant Belt
 //          0x0137 - Liberty Crown
 //          0x0138 - Heat Sink Belt
+
+function accessory1() => word(0x198850)
+function accessory2() => word(0x198852)
+function accessory3() => word(0x198854)
+function accessory4() => word(0x198856)
+function HasAccessoryEquipped(accessoryId)
+{
+    return accessory1() == accessoryId
+        || accessory2() == accessoryId
+        || accessory3() == accessoryId
+        || accessory4() == accessoryId
+}
+
 // $198858: Amount of uses left of the command in slot 1 if it is an item
 // $19885C: Amount of uses left of the command in slot 2 if it is an item
 // $198860: Amount of uses left of the command in slot 3 if it is an item
@@ -1249,6 +1262,12 @@ achievement(title = "Escape Sequence", description = "Complete Olympus Coliseum.
     trigger = WasBitflagSetInGame(olympusColiseumStoryEntry())
 )
 
+function agrabahStoryEntry() => bit0(0x195bda)
+achievement(title = "Key Cracking", description = "Complete Agrabah.",
+    points = 3,
+    trigger = WasBitflagSetInGame(agrabahStoryEntry())
+)
+
 function dodgeRollActive() => bit0(0x1986f0)
 achievement(title = "Smooth Operator", description = "Defeat the Darkside without the Dodge Roll ability equipped (Critical Mode; Level 2 or below).",
     points = 5,
@@ -1437,10 +1456,12 @@ achievement(title = "Endless Astronomical Abilities", points = 5,
         && never(!IsInLocation("AgrabahKeyholeTerminus")) && Level() <= 20
 )
 
-achievement(title = "Keyblade Beats Rock", points = 10,
+eternityCharmId = 0x12d
+achievement(title = "Keyblade Beats Rock", points = 25,
     description = "Defeat Jafar's genie form with 50 max HP or less and without Second Chance active (Critical Mode; Level 20 or below).",
-    trigger = IsAtLeastOnDifficulty("Critical") &&  BossScoreIsDisplayedAndAtLeast(35000)
-        && never(!IsInLocation("AgrabahKeyholeTerminus")) && Level() <= 20
+    trigger = IsAtLeastOnDifficulty("Critical") && JustDefeatedEnemy("Jafar (Genie)")
+        && never(!IsInLocation("AgrabahKeyholeTerminus")) && Level() <= 20 && maxHP() <= 50
+        && !HasAccessoryEquipped(eternityCharmId)
 )
 
 function extraCommandSlotsUnlocked() => byte(0x198700)
