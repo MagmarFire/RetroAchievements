@@ -97,6 +97,8 @@ areas = {
 73: { "worldId": 0x5, "name": "HollowBastionCrest", "display": "Great Crest", "areaId": 0xa, },
 74: { "worldId": 0x5, "name": "HollowBastionTower", "display": "High Tower", "areaId": 0xb, },
 75: { "worldId": 0x5, "name": "HollowBastionGrandHall", "display": "Grand Hall(?)", "areaId": 0xd, },
+76: { "worldId": 0x5, "name": "HollowBastionKeyholeEntrance", "display": "Somewhere in the datascape…", "areaId": 0x0, },
+77: { "worldId": 0x5, "name": "HollowBastionKeyholeChapel", "display": "Keyhole / Chapel", "areaId": 0xc, },
 }
 
 function GetLocationByName(name)
@@ -1278,6 +1280,48 @@ function agrabahStoryEntry() => bit0(0x195bda)
 achievement(title = "Key Cracking", description = "Complete Agrabah.",
     points = 3,
     trigger = WasBitflagSetInGame(agrabahStoryEntry())
+)
+
+function dialoguePtr() => tbyte(0x0c9f38)
+function currentCharInDialoguePtr() => tbyte(dialoguePtr())
+function currentChar() => word(currentCharInDialoguePtr())
+
+function CharToInt(char)
+{
+    // Not including every ASCII character because this function is probably only being used once, and only the following characters are used.
+    chars = {
+        ".": 0x2e,
+        "W": 0x57,
+        "a": 0x61,
+        "h": 0x68,
+        "j": 0x6a,
+        "s": 0x73,
+        "t": 0x74,
+        "u": 0x75,
+    }
+    
+    return chars[char]
+}
+
+function TextIsDisplayed(charArray)
+{
+    trigger = always_true()
+    
+    for char in charArray
+    {
+        trigger = trigger && once(currentChar() == CharToInt(char))
+    }
+    
+    return once(trigger)
+}
+
+function hollowBastionPt1StoryEntry() => bit7(0x195bd9)
+achievement(title = "My Friends Are My Power, I Guess", description = "Reclaim your Keyblade.",
+    points = 1,
+    trigger = never((dialoguePtr() == 0 || currentCharInDialoguePtr() == 0) && IsInLocation("HollowBastionGrandHall"))
+        && hollowBastionPt1StoryEntry() == 0 // We neither need nor want players to earn this achievement on subsequent visits to this world.
+        && (TextIsDisplayed(["W", "h", "a", "t", ".", ".", ".", "j", "u", "s", "t", ".", ".", "."]) // If specific dialogue is encountered, sans skipping.
+        || WasInLocation("HollowBastionGrandHall") && IsInLocation("HollowBastionKeyholeEntrance")) // Failsafe condition; merely check to see if you're entering the Keyhole.
 )
 
 function dodgeRollActive() => bit0(0x1986f0)
