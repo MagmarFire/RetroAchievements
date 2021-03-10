@@ -18,6 +18,7 @@ worlds = {
     2: "Wonderland",
     3: "Olympus Coliseum",
     4: "Agrabah",
+    5: "Hollow Bastion"
 }
 
 areas = {
@@ -85,6 +86,10 @@ areas = {
 62: { "worldId": 0x4, "name": "AgrabahGauntletLower", "display": "Cave / Gauntlet", "areaId": 0x11, },
 63: { "worldId": 0x4, "name": "AgrabahLamp", "display": "Cave / Lamp Chamber", "areaId": 0x7, },
 64: { "worldId": 0x4, "name": "AgrabahKeyholeTerminus", "display": "Keyhole / Terminus", "areaId": 0xf, },
+65: { "worldId": 0x5, "name": "HollowBastionGates", "display": "Castle Gates", "areaId": 0x2, },
+66: { "worldId": 0x5, "name": "HollowBastionWaterway", "display": "Waterway", "areaId": 0x3, },
+67: { "worldId": 0x5, "name": "HollowBastionEntranceLower", "display": "Entrance Hall (Lower Level)", "areaId": 0x4, },
+68: { "worldId": 0x5, "name": "HollowBastionLibrary1", "display": "Library 1", "areaId": 0x6, },
 }
 
 function GetLocationByName(name)
@@ -1601,10 +1606,12 @@ GenerateSaveProtectedAchievementFromConditions({
     "threshold": (length(enemies) / 2)
 }, enemiesConditions, always_true())
 
-function justiceForAll() => bit2(0x195c7f)
-achievement(title = "Justice for All", description = "Defeat all enemy types.", points = 25,
-    trigger = WasBitflagSetInGame(justiceForAll())
-)
+GenerateSaveProtectedAchievementFromConditions({
+    "name": "Justice for All",
+    "description": "Defeat all enemy types.",
+    "points": 25,
+    "threshold": length(enemies),
+}, enemiesConditions, always_true())
 
 function weaponWizard() => bit1(0x195c7f)
 achievement(title = "Weapon Wizard", description = "Completely power up every type of Keyblade.", points = 25,
