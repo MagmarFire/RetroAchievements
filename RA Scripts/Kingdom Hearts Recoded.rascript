@@ -90,6 +90,13 @@ areas = {
 66: { "worldId": 0x5, "name": "HollowBastionWaterway", "display": "Waterway", "areaId": 0x3, },
 67: { "worldId": 0x5, "name": "HollowBastionEntranceLower", "display": "Entrance Hall (Lower Level)", "areaId": 0x4, },
 68: { "worldId": 0x5, "name": "HollowBastionLibrary1", "display": "Library 1", "areaId": 0x6, },
+69: { "worldId": 0x5, "name": "HollowBastionLibrary3", "display": "Library 3", "areaId": 0x8, },
+70: { "worldId": 0x5, "name": "HollowBastionLibrary4", "display": "Library 4", "areaId": 0x9, },
+71: { "worldId": 0x5, "name": "HollowBastionLibrary2", "display": "Library 2", "areaId": 0x7, },
+72: { "worldId": 0x5, "name": "HollowBastionEntranceUpper", "display": "Entrance Hall (Upper Level)", "areaId": 0x5, },
+73: { "worldId": 0x5, "name": "HollowBastionCrest", "display": "Great Crest", "areaId": 0xa, },
+74: { "worldId": 0x5, "name": "HollowBastionTower", "display": "High Tower", "areaId": 0xb, },
+75: { "worldId": 0x5, "name": "HollowBastionGrandHall", "display": "Grand Hall(?)", "areaId": 0xd, },
 }
 
 function GetLocationByName(name)
@@ -1496,6 +1503,7 @@ sectorRewards = [
     bit0(0x19833e), bit1(0x19833e), bit2(0x19833e), bit3(0x19833e), bit4(0x19833e), bit5(0x19833e),
     bit0(0x198340), bit1(0x198340), bit2(0x198340), bit3(0x198340), bit4(0x198340), bit5(0x198340),
     bit0(0x198342), bit1(0x198342), bit2(0x198342), bit3(0x198342), bit4(0x198342), bit5(0x198342),
+    bit0(0x198348), bit1(0x198348), bit2(0x198348), bit3(0x198348), bit4(0x198348), bit5(0x198348), bit6(0x198348)
 ]
 
 // Generate conditions for sector rewards from the above addresses.
