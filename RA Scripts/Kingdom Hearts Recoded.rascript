@@ -219,6 +219,9 @@ rich_presence_display("Somewhere in the datascape...")
 
 function Delta(addr) => prev(addr)
 
+function IsPointer(addr) => byte(addr + 3) == 0x2
+function WasPointer(addr) => prior(byte(addr + 3)) == 0x2
+
 // Returns a new pointer address at the given half-address with a given negative offset.
 // Intended to standardize usages of negative pointer offsets, since those are not supported with the current tools.
 // ---
@@ -1051,15 +1054,20 @@ function status() => word(0x056f50)
 // 0x12 = Tutorials
 function menuId() => word(0x0bea84)
 
-function IsFileLoaded() => status() != 0x0 && status() != 0x3 && !IsOnSaveOrLoadMenu()
+function saveLoadPtrAddr() => 0x0c5e00
+function saveLoadPtr() => tbyte(saveLoadPtrAddr())
+function loadState() => byte(saveLoadPtr() + 4)
+function LoadScreenIsTransitioningToLoadedSaveFile() => loadState() == 0x9
+function OldSaveLoadState() => byte(prior(saveLoadPtr()) + 4)
 
-function IsLoadingSaveFile() => prior(titleScreenStatus()) == 0x8 && titleScreenStatus() == 0
+function IsLoadingSaveFile() => !IsPointer(saveLoadPtrAddr()) && WasPointer(saveLoadPtrAddr()) && Delta(OldSaveLoadState()) == 0x9 && OldSaveLoadState() != 0x9
 
 function IsOnSaveOrLoadMenu() => menuId() == 0x6
 
 function IsOnLoadMenu() => titleScreenStatus() == 8
 
 function IsAlwaysInGame() => unless(IsOnSaveOrLoadMenu()) && never(IsOnLoadMenu()) && never(IsOnTitleScreen())
+    && unless(!IsPointer(saveLoadPtrAddr()) && WasPointer(saveLoadPtrAddr()) && Delta(OldSaveLoadState()) == 0x9)
 
 function WasValueSet(mem, oldValue, newValue)
 {
@@ -1104,7 +1112,7 @@ function GenerateSaveProtectedAchievementFromConditions(cheevo, conditions, only
     {
         condition = conditions[i]
         
-        // This is the score when the game is loaded. If he loaded score is greater than or equal to the threshold--that is,
+        // This is the score when the game is loaded. If the loaded score is greater than or equal to the threshold--that is,
         // if the save file would satisfy enough conditions to trigger the achievement on load--this should trigger a
         // permanant pauselock to serve as save protection.
         array_push(loadedCounts, once(condition["countsWhen"] && IsLoadingSaveFile()))
