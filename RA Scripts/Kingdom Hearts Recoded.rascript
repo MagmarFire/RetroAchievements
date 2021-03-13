@@ -1057,9 +1057,9 @@ function menuId() => word(0x0bea84)
 function saveLoadPtrAddr() => 0x0c5e00
 function saveLoadPtr() => tbyte(saveLoadPtrAddr())
 function loadState() => byte(saveLoadPtr() + 4)
-function LoadScreenIsTransitioningToLoadedSaveFile() => loadState() == 0x9
 function OldSaveLoadState() => byte(prior(saveLoadPtr()) + 4)
 
+// 0x9 means that it's transitioning to a loaded save file; it's what we're using to determine when a pauselock can activate.
 function IsLoadingSaveFile() => !IsPointer(saveLoadPtrAddr()) && WasPointer(saveLoadPtrAddr()) && OldSaveLoadState() == 0x9
 
 function IsOnSaveOrLoadMenu() => menuId() == 0x6
