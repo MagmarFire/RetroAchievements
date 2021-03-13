@@ -183,7 +183,7 @@ function BossScoreIsDisplayedAndAtLeast(threshold)
 // 5 = Title Screen almost ready
 // 6 = Title Screen ready
 // 8 = Load Menu
-function titleScreenStatus() => byte(0x19c494)
+function titleScreenStatus() => dword(0x19c494)
 
 function sessionPlayTime() => dword(0x056e9c)
 function savedPlayTime() => dword(0x198360)
@@ -1060,7 +1060,7 @@ function loadState() => byte(saveLoadPtr() + 4)
 function LoadScreenIsTransitioningToLoadedSaveFile() => loadState() == 0x9
 function OldSaveLoadState() => byte(prior(saveLoadPtr()) + 4)
 
-function IsLoadingSaveFile() => !IsPointer(saveLoadPtrAddr()) && WasPointer(saveLoadPtrAddr()) && Delta(OldSaveLoadState()) == 0x9 && OldSaveLoadState() != 0x9
+function IsLoadingSaveFile() => !IsPointer(saveLoadPtrAddr()) && WasPointer(saveLoadPtrAddr()) && OldSaveLoadState() == 0x9
 
 function IsOnSaveOrLoadMenu() => menuId() == 0x6
 
