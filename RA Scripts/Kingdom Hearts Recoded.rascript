@@ -1172,7 +1172,6 @@ enemies = {
 37: { "name": "Angel Star", "bits": { 0: { "addr": 0x00195BB5, "bit": 3 }, 1: { "addr": 0x00195BB5, "bit": 4 }, 2: { "addr": 0x00195BB5, "bit": 5 }, 3: { "addr": 0x00195BB5, "bit": 6 }, 4: { "addr": 0x00195BB5, "bit": 7 }, 5: { "addr": 0x00195BB6, "bit": 0 }, 6: { "addr": 0x00195BB6, "bit": 1 }, 7: { "addr": 0x00195BB6, "bit": 2 }, 8: { "addr": 0x00195BB6, "bit": 3 }, 9: { "addr": 0x00195BB6, "bit": 4 }, 10: { "addr": 0x00195BB6, "bit": 5 }, 11: { "addr": 0x00195BB6, "bit": 6 }, 12: { "addr": 0x00195BB6, "bit": 7 }, 13: { "addr": 0x00195BB7, "bit": 0 }, 14: { "addr": 0x00195BB7, "bit": 1 }, 15: { "addr": 0x00195BB7, "bit": 2 }, 16: { "addr": 0x00195BB7, "bit": 3 }, }, },
 38: { "name": "Gold Tricholoma", "bits": { 0: { "addr": 0x00195BBF, "bit": 0 }, 1: { "addr": 0x00195BBF, "bit": 1 }, 2: { "addr": 0x00195BBF, "bit": 2 }, 3: { "addr": 0x00195BBF, "bit": 3 }, 4: { "addr": 0x00195BBF, "bit": 4 }, 5: { "addr": 0x00195BBF, "bit": 5 }, 6: { "addr": 0x00195BBF, "bit": 6 }, 7: { "addr": 0x00195BBF, "bit": 7 }, 8: { "addr": 0x00195BB8, "bit": 0 }, 9: { "addr": 0x00195BB8, "bit": 1 }, 10: { "addr": 0x00195BB8, "bit": 2 }, 11: { "addr": 0x00195BB8, "bit": 3 }, 12: { "addr": 0x00195BB8, "bit": 4 }, 13: { "addr": 0x00195BB8, "bit": 5 }, 14: { "addr": 0x00195BB8, "bit": 6 }, 15: { "addr": 0x00195BB8, "bit": 7 }, 16: { "addr": 0x00195BB9, "bit": 0 }, }, },
 39: { "name": "Eliminator", "bits": { 0: { "addr": 0x00195BB9, "bit": 1 }, 1: { "addr": 0x00195BB9, "bit": 2 }, 2: { "addr": 0x00195BB9, "bit": 3 }, 3: { "addr": 0x00195BB9, "bit": 4 }, 4: { "addr": 0x00195BB9, "bit": 5 }, 5: { "addr": 0x00195BB9, "bit": 6 }, 6: { "addr": 0x00195BB9, "bit": 7 }, 7: { "addr": 0x00195BBA, "bit": 0 }, 8: { "addr": 0x00195BBA, "bit": 1 }, 9: { "addr": 0x00195BBA, "bit": 2 }, 10: { "addr": 0x00195BBA, "bit": 3 }, 11: { "addr": 0x00195BBA, "bit": 4 }, 12: { "addr": 0x00195BBA, "bit": 5 }, 13: { "addr": 0x00195BBA, "bit": 6 }, 14: { "addr": 0x00195BBA, "bit": 7 }, 15: { "addr": 0x00195BBB, "bit": 0 }, 16: { "addr": 0x00195BBB, "bit": 1 }, }, },
-
 }
 
 function GetEnemyByName(name)
@@ -1254,6 +1253,216 @@ GenerateSaveProtectedAchievementFromConditions({
     "threshold": 2,
 }, enemiesConditions, always_true())
 
+// ============================== COMMANDS ============================== //
+commands = {
+0xFF: { "id": 0xFF, "name": "N/A", },
+0x00: { "id": 0x00, "name": "Quick Blitz", },
+0x01: { "id": 0x01, "name": "Sliding Dash", },
+0x02: { "id": 0x02, "name": "Round Blitz", },
+0x03: { "id": 0x03, "name": "Strike Raid", },
+0x04: { "id": 0x04, "name": "Rising Strike", },
+0x05: { "id": 0x05, "name": "Sliding Rush", },
+0x06: { "id": 0x06, "name": "Aerial Sweep", },
+0x07: { "id": 0x07, "name": "Air Sweep", },
+0x08: { "id": 0x08, "name": "Aerial Slam", },
+0x09: { "id": 0x09, "name": "Land Crash", },
+0x0a: { "id": 0x0a, "name": "Fire Edge", },
+0x0b: { "id": 0x0b, "name": "Blizzard Edge", },
+0x0c: { "id": 0x0c, "name": "Thunder Edge", },
+0x0d: { "id": 0x0d, "name": "Aero Edge", },
+0x0e: { "id": 0x0e, "name": "Heat Dash", },
+0x0f: { "id": 0x0f, "name": "Ice Dash", },
+0x10: { "id": 0x10, "name": "Spark Dash", },
+0x11: { "id": 0x11, "name": "Wind Dash", },
+0x12: { "id": 0x12, "name": "Fire Blast", },
+0x13: { "id": 0x13, "name": "Blizzard Blast", },
+0x14: { "id": 0x14, "name": "Thunder Blast", },
+0x15: { "id": 0x15, "name": "Aero Blast", },
+0x16: { "id": 0x16, "name": "Fire Raid", },
+0x17: { "id": 0x17, "name": "Blizzard Raid", },
+0x18: { "id": 0x18, "name": "Thunder Raid", },
+0x19: { "id": 0x19, "name": "Aero Raid", },
+0x1a: { "id": 0x1a, "name": "Fire Buster", },
+0x1b: { "id": 0x1b, "name": "Blizzard Buster", },
+0x1c: { "id": 0x1c, "name": "Thunder Buster", },
+0x1d: { "id": 0x1d, "name": "Aero Buster", },
+0x1e: { "id": 0x1e, "name": "Heat Sweep", },
+0x1f: { "id": 0x1f, "name": "Ice Sweep", },
+0x20: { "id": 0x20, "name": "Spark Sweep", },
+0x21: { "id": 0x21, "name": "Wind Sweep", },
+0x22: { "id": 0x22, "name": "Heat Storm", },
+0x23: { "id": 0x23, "name": "Ice Storm", },
+0x24: { "id": 0x24, "name": "Spark Storm", },
+0x25: { "id": 0x25, "name": "Wind Storm", },
+0x26: { "id": 0x26, "name": "Fire Slam", },
+0x27: { "id": 0x27, "name": "Blizzard Slam", },
+0x28: { "id": 0x28, "name": "Thunder Slam", },
+0x29: { "id": 0x29, "name": "Aero Slam", },
+0x2a: { "id": 0x2a, "name": "Heat Dive", },
+0x2b: { "id": 0x2b, "name": "Ice Dive", },
+0x2c: { "id": 0x2c, "name": "Spark Dive", },
+0x2d: { "id": 0x2d, "name": "Wind Dive", },
+0x2e: { "id": 0x2e, "name": "Stun Impact", },
+0x2f: { "id": 0x2f, "name": "Muscle Strike", },
+0x30: { "id": 0x30, "name": "Chain Rave", },
+0x31: { "id": 0x31, "name": "Rising Rush", },
+0x32: { "id": 0x32, "name": "Zantetsuken", },
+0x33: { "id": 0x33, "name": "Eruption", },
+0x34: { "id": 0x34, "name": "Gravity Drop", },
+0x35: { "id": 0x35, "name": "Shock Fall", },
+0x36: { "id": 0x36, "name": "Judgment Triad", },
+0x37: { "id": 0x37, "name": "Fire", },
+0x38: { "id": 0x38, "name": "Fira", },
+0x39: { "id": 0x39, "name": "Firaga", },
+0x3a: { "id": 0x3a, "name": "Blizzard", },
+0x3b: { "id": 0x3b, "name": "Blizzara", },
+0x3c: { "id": 0x3c, "name": "Blizzaga", },
+0x3d: { "id": 0x3d, "name": "Thunder", },
+0x3e: { "id": 0x3e, "name": "Thundara", },
+0x3f: { "id": 0x3f, "name": "Thundaga", },
+0x40: { "id": 0x40, "name": "Aero", },
+0x41: { "id": 0x41, "name": "Aerora", },
+0x42: { "id": 0x42, "name": "Aeroga", },
+0x43: { "id": 0x43, "name": "Magnet", },
+0x44: { "id": 0x44, "name": "Magnera", },
+0x45: { "id": 0x45, "name": "Magnega", },
+0x46: { "id": 0x46, "name": "Cure", },
+0x47: { "id": 0x47, "name": "Cura", },
+0x48: { "id": 0x48, "name": "Curaga", },
+0x49: { "id": 0x49, "name": "Slow", },
+0x4a: { "id": 0x4a, "name": "Stop", },
+0x4b: { "id": 0x4b, "name": "Confuse", },
+0x4c: { "id": 0x4c, "name": "Firaga Burst", },
+0x4d: { "id": 0x4d, "name": "Triple Firaga", },
+0x4e: { "id": 0x4e, "name": "Triple Burst", },
+0x4f: { "id": 0x4f, "name": "Blizzaga Pursuit", },
+0x50: { "id": 0x50, "name": "Triple Blizzaga", },
+0x51: { "id": 0x51, "name": "Triple Pursuit", },
+0x52: { "id": 0x52, "name": "Thunder Tracer", },
+0x53: { "id": 0x53, "name": "Pulse Tracer", },
+0x54: { "id": 0x54, "name": "Tornado Tracer", },
+0x55: { "id": 0x55, "name": "Wind Tracer", },
+0x56: { "id": 0x56, "name": "Magnet Grab", },
+0x57: { "id": 0x57, "name": "Esuna", },
+0x58: { "id": 0x58, "name": "Flame Fall", },
+0x59: { "id": 0x59, "name": "Icicle Mine", },
+0x5a: { "id": 0x5a, "name": "Exo Spark", },
+0x5b: { "id": 0x5b, "name": "Cyclone", },
+0x5c: { "id": 0x5c, "name": "Quake", },
+}
+
+conversionCombinations = {
+0: { "targetId": 0x46, "command1Id": 0x02, "command2Id": 0x49, },
+1: { "targetId": 0x47, "command1Id": 0x17, "command2Id": 0x46, },
+2: { "targetId": 0x47, "command1Id": 0x44, "command2Id": 0x46, },
+3: { "targetId": 0x47, "command1Id": 0x49, "command2Id": 0x46, },
+4: { "targetId": 0x47, "command1Id": 0x4a, "command2Id": 0x46, },
+5: { "targetId": 0x48, "command1Id": 0x2a, "command2Id": 0x47, },
+6: { "targetId": 0x48, "command1Id": 0x4b, "command2Id": 0x47, },
+7: { "targetId": 0x48, "command1Id": 0x57, "command2Id": 0x47, },
+}
+
+function GetConversionCombosByTargetId(targetId)
+{
+    combos = []
+    
+    for i in conversionCombinations
+    {
+        combo = conversionCombinations[i]
+        if (combo["targetId"] == targetId)
+        {
+            array_push(combos, combo)
+        }
+    }
+    
+    return combos
+}
+
+function GetCommandByName(commandName)
+{
+    for id in commands
+    {
+        command = commands[id]
+        if (command["name"] == commandName)
+        {
+            return command
+        }
+    }
+}
+
+// Returns the ID of the command in a given subslot. A subslot is one of the two slots in a command group.
+// Group 1 has subslots 0 and 1, Group 2 has subslots 2 and 3, and so on.
+function commandBaseAddr() => 0x05ffc8
+function installedInventoryBaseAddr() => 0x19881c
+function GetCommandIdBySubslotId(subslotId)
+{
+    return byte(commandBaseAddr() + subslotId * 12 + 11)
+}
+
+// Normally, this holds indices to the command that's installed, but if it's an item, an ID is used.
+// As such, this function is primarily used to see if a player has a particular item command installed.
+function GetInstalledItemIdByCommandGroupId(groupId)
+{
+    return byte(installedInventoryBaseAddr() + groupId * 4)
+}
+
+function IsCommandInstalledInSubslot(subslotId)
+{
+    return bit1(commandBaseAddr() + subslotId * 12) == 1
+}
+
+function HasCommandEquipped(commandName)
+{
+    rawCommandInstalled = always_false()
+    commandConversionInstalled = always_false()
+    namedCommand = GetCommandByName(commandName)
+    
+    for i in range(0, 7) // One loop per command group
+    {
+        slotAId = GetCommandIdBySubslotId(i * 2)
+        slotAInstalled = IsCommandInstalledInSubslot(i * 2)
+        slotBId = GetCommandIdBySubslotId(i * 2 + 1)
+        slotBInstalled = IsCommandInstalledInSubslot(i * 2 + 1)
+        
+        // We only care about Subslot A, as that is what determines what the final command is if it's not a command conversion.
+        namedCommandIsInstalledInThisGroup = slotAInstalled && slotAId == namedCommand["id"]
+        namedCommandIsInstalledInThisGroupViaConversion
+            = SubslotCombinationResultsInGivenCommandConversion(slotAId, slotAInstalled, slotBId, slotBInstalled, namedCommand)
+        rawCommandInstalled = rawCommandInstalled || namedCommandIsInstalledInThisGroup
+        commandConversionInstalled = commandConversionInstalled || namedCommandIsInstalledInThisGroupViaConversion
+    }
+    
+    return rawCommandInstalled || commandConversionInstalled
+}
+
+function SubslotCombinationResultsInGivenCommandConversion(slotAId, slotAInstalled, slotBId, slotBInstalled, command)
+{
+    combos = GetConversionCombosByTargetId(command["id"])
+    trigger = always_false()
+    
+    for combo in combos
+    {
+        trigger = trigger || slotAId == combo["command1Id"] && slotBId == combo["command2Id"] && slotAInstalled && slotBInstalled
+        trigger = trigger || slotAId == combo["command2Id"] && slotBId == combo["command1Id"] && slotAInstalled && slotBInstalled
+    }
+    
+    return trigger
+}
+
+function NumberOfHealingItemCommandsEquipped()
+{
+    conditions = []
+    for i in range(0, 7) // One loop per command group
+    {
+        itemId = GetInstalledItemIdByCommandGroupId(i)
+        array_push(conditions, (itemId == 0x80 || itemId == 0x81 || itemId == 0x85 || itemId == 0x86))
+    }
+    
+    return conditions
+}
+
+// ============================== /COMMANDS ============================== //
+
 function mapTutorial() => bit6(0x195c85)
 achievement(title = "The Arguments You Have Presented Seem Believable", description = "Receive your first instructions from King Mickey on the Destiny Islands.",
     points = 1,
@@ -1328,8 +1537,10 @@ achievement(title = "My Friends Are My Power, I Guess", description = "Reclaim y
     points = 1,
     trigger = never((dialoguePtr() == 0 || currentCharInDialoguePtr() == 0) && IsInLocation("HollowBastionGrandHall"))
         && hollowBastionPt1StoryEntry() == 0 // We neither need nor want players to earn this achievement on subsequent visits to this world.
-        && (TextIsDisplayed(["W", "h", "a", "t", ".", ".", ".", "j", "u", "s", "t", ".", ".", "."]) // If specific dialogue is encountered, sans skipping.
-        || WasInLocation("HollowBastionGrandHall") && IsInLocation("HollowBastionKeyholeEntrance")) // Failsafe condition; merely check to see if you're entering the Keyhole.
+        && (once(IsInLocation("HollowBastionGrandHall") && TextIsDisplayed(["W", "h", "a", "t", ".", ".", ".", "j", "u", "s", "t", ".", ".", "."])) // If specific dialogue is encountered, sans skipping.
+            // Failsafe condition; merely check to see if you're entering the Keyhole.
+            || WasInLocation("HollowBastionGrandHall") && IsInLocation("HollowBastionKeyholeEntrance"))
+            
 )
 
 function dodgeRollActive() => bit0(0x1986f0)
@@ -1526,6 +1737,13 @@ achievement(title = "Keyblade Beats Rock", points = 25,
     trigger = IsAtLeastOnDifficulty("Critical") && JustDefeatedEnemy("Jafar (Genie)")
         && never(!IsInLocation("AgrabahKeyholeTerminus")) && Level() <= 20 && maxHP() <= 50
         && !HasAccessoryEquipped(eternityCharmId)
+)
+
+achievement(title = "Waste Not, Want Not", points = 10,
+    description = "Defeat Data-Riku equipping only a single HP-restoring item command as your primary source of healing (Critical Mode; Level 22 or below).",
+    trigger = Level() <= 22 && IsAtLeastOnDifficulty("Critical") && JustDefeatedEnemy("Data-Riku")
+        && never(HasCommandEquipped("Cure")) && never(HasCommandEquipped("Cura")) && never(HasCommandEquipped("Curaga")) && never(HasCommandEquipped("Esuna"))
+        && never(tally(2, NumberOfHealingItemCommandsEquipped()))
 )
 
 function extraCommandSlotsUnlocked() => byte(0x198700)
