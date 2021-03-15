@@ -18,7 +18,8 @@ worlds = {
     2: "Wonderland",
     3: "Olympus Coliseum",
     4: "Agrabah",
-    5: "Hollow Bastion"
+    5: "Hollow Bastion",
+    6: "Hollow Bastion"
 }
 
 areas = {
@@ -99,6 +100,7 @@ areas = {
 75: { "worldId": 0x5, "name": "HollowBastionGrandHall", "display": "Grand Hall(?)", "areaId": 0xd, },
 76: { "worldId": 0x5, "name": "HollowBastionKeyholeEntrance", "display": "Somewhere in the datascape…", "areaId": 0x0, },
 77: { "worldId": 0x5, "name": "HollowBastionKeyholeChapel", "display": "Keyhole / Chapel", "areaId": 0xc, },
+78: { "worldId": 0x6, "name": "HollowBastionIIInsideRiku", "display": "Inside Riku’s Data", "areaId": 0x8, },
 }
 
 function GetLocationByName(name)
@@ -1455,7 +1457,7 @@ function NumberOfHealingItemCommandsEquipped()
     for i in range(0, 7) // One loop per command group
     {
         itemId = GetInstalledItemIdByCommandGroupId(i)
-        array_push(conditions, (itemId == 0x80 || itemId == 0x81 || itemId == 0x85 || itemId == 0x86))
+        array_push(conditions, once(itemId == 0x80 || itemId == 0x81 || itemId == 0x85 || itemId == 0x86))
     }
     
     return conditions
@@ -1541,6 +1543,12 @@ achievement(title = "My Friends Are My Power, I Guess", description = "Reclaim y
             // Failsafe condition; merely check to see if you're entering the Keyhole.
             || WasInLocation("HollowBastionGrandHall") && IsInLocation("HollowBastionKeyholeEntrance"))
             
+)
+
+function hollowBastionStoryEntry() => bit7(0x195bd9)
+achievement(title = "Endless QA", description = "Complete Hollow Bastion.",
+    points = 3,
+    trigger = WasBitflagSetInGame(hollowBastionStoryEntry())
 )
 
 function dodgeRollActive() => bit0(0x1986f0)
@@ -1739,11 +1747,26 @@ achievement(title = "Keyblade Beats Rock", points = 25,
         && !HasAccessoryEquipped(eternityCharmId)
 )
 
+achievement(title = "Sour Stomach", points = 10,
+    description = "Defeat Pete without the Dodge Roll ability active (Critical Mode; Level 22 or below).",
+    trigger = dodgeRollActive() == 0 && IsAtLeastOnDifficulty("Critical") && Level() <= 22 && JustDefeatedEnemy("Pete")
+)
+
 achievement(title = "Waste Not, Want Not", points = 10,
     description = "Defeat Data-Riku equipping only a single HP-restoring item command as your primary source of healing (Critical Mode; Level 22 or below).",
     trigger = Level() <= 22 && IsAtLeastOnDifficulty("Critical") && JustDefeatedEnemy("Data-Riku")
         && never(HasCommandEquipped("Cure")) && never(HasCommandEquipped("Cura")) && never(HasCommandEquipped("Curaga")) && never(HasCommandEquipped("Esuna"))
         && never(tally(2, NumberOfHealingItemCommandsEquipped()))
+)
+
+achievement(title = "Speed Deletion", points = 10,
+    description = "Complete the Hollow Bastion Keyhole with a score of 23000 or more (Proud Mode or higher; Level 22 or below).",
+    trigger = IsAtLeastOnDifficulty("Proud") && Level() <= 22 && never(!IsInLocation("HollowBastionKeyholeChapel")) && BossScoreIsDisplayedAndAtLeast(23000)
+)
+
+achievement(title = "Speed Shredding", points = 25,
+    description = "Earn a Star rank in the Hollow Bastion Keyhole (Proud Mode or higher; Level 22 or below).",
+    trigger = IsAtLeastOnDifficulty("Proud") && Level() <= 22 && never(!IsInLocation("HollowBastionKeyholeChapel")) && BossScoreIsDisplayedAndAtLeast(40000)
 )
 
 function extraCommandSlotsUnlocked() => byte(0x198700)
@@ -1756,6 +1779,12 @@ function extraAccessorySlotsUnlocked() => byte(0x198702)
 achievement(title = "Bling, Bling!", points = 5,
     description = "Unlock three extra accessory slots.",
     trigger = WasValueSetInGame(extraAccessorySlotsUnlocked(), 2, 3) && measured(extraAccessorySlotsUnlocked() == 3)
+)
+
+function sectorPoints() => dword(0x3de2ac)
+achievement(title = "High-Stakes Gambler", points = 10,
+    description = "Earn a total of 50,000 Sector Points or more from a single wager in a system sector.",
+    trigger = IsInSystemSector() && sectorPoints() - Delta(sectorPoints()) >= 50000
 )
 
 sectorRewards = [
@@ -2043,6 +2072,20 @@ leaderboard(title = "Time Attack - Agrabah", description = "Seal the Agrabah Key
 leaderboard(title = "Score Attack - Agrabah", description = "Get as many points as you can in the Agrabah Keyhole.",
     start = IsInLocation("AgrabahKeyholeTerminus") && IsTotalScoreJustDisplayed() && !IsInSystemSector(),
     cancel = !IsInLocation("AgrabahKeyholeTerminus") || IsInSystemSector(),
+    submit = IsTotalScoreJustDisplayed(),
+    value = dword(bossScorePointer() + 8)
+)
+
+leaderboard(title = "Time Attack - Hollow Bastion", description = "Seal the Hollow Bastion Keyhole as quickly as you can.",
+    start = IsInLocation("HollowBastionKeyholeChapel") && !IsInSystemSector(),
+    cancel = !IsInLocation("HollowBastionKeyholeChapel") || IsInSystemSector(),
+    submit = IsBossRankJustDisplayed(),
+    value = bossMilliseconds() / 10
+)
+
+leaderboard(title = "Score Attack - Hollow Bastion", description = "Get as many points as you can in the Hollow Bastion Keyhole.",
+    start = IsInLocation("HollowBastionKeyholeChapel") && IsTotalScoreJustDisplayed() && !IsInSystemSector(),
+    cancel = !IsInLocation("HollowBastionKeyholeChapel") || IsInSystemSector(),
     submit = IsTotalScoreJustDisplayed(),
     value = dword(bossScorePointer() + 8)
 )
