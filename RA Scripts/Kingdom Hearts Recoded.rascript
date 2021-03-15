@@ -1782,9 +1782,14 @@ achievement(title = "Bling, Bling!", points = 5,
 )
 
 function sectorPoints() => dword(0x3de2ac)
-achievement(title = "High-Stakes Gambler", points = 10,
+achievement(title = "Banco", points = 10,
     description = "Earn a total of 50,000 Sector Points or more from a single wager in a system sector.",
     trigger = IsInSystemSector() && sectorPoints() - Delta(sectorPoints()) >= 50000
+)
+
+achievement(title = "High-Stakes Gambler", points = 25,
+    description = "Earn a total of 100,000 Sector Points or more from a single wager in a system sector.",
+    trigger = IsInSystemSector() && sectorPoints() - Delta(sectorPoints()) >= 100000
 )
 
 sectorRewards = [
