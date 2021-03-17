@@ -145,6 +145,30 @@ FloorLookup = {
     27: "B1",
 }
 
+// 0x03c000: Bit 4: D-pad Right
+//           Bit 5: D-pad Left
+//           Bit 6: D-pad Up
+//           Bit 7: D-pad Down
+function inputFlags() => high4(0x03c000)
+
+function DpadIsPressed() => inputFlags() > 0
+
+// 0x0423e4: Appears to be a pointer to battle data. Null when not in battle. (32-bit)
+//
+//           +0x80fc for the player's reload counter (16-bit). = the number on the reload card - 1
+//           and becomes 0xffff when a reload happens. After that, increases by 1 for each reload until it reaches a max of 2.
+//
+//           +0x80fe for the enemy's reload counter (16-bit)
+//
+//           +0x8f0c for enemy HP(?)
+function battlePointer() => tbyte(0x0423e4)
+
+function enemyHp() => word(battlePointer() + 0x8f0c)
+
+function BattleStartedCheckpoint() => once(Delta(battlePointer()) == 0x0 && battlePointer() != 0x0)
+
+function EnemyWasJustDefeated() => once(Delta(enemyHp()) > 0 && enemyHp() == 0)
+
 function shadowJournalEntry() => bit4(0x0422fe)
 achievement(
     title = "Heartless Hunter", description = "Defeat your first Heartless in Castle Oblivion.", points = 1,
@@ -160,10 +184,14 @@ achievement(
 )
 
 achievement(
-    title = "Hotter Than Fire!!", description = "Defeat Axel in 2nd Floor", points = 10,
+    title = "The Flurry of Dancing Flames", description = "Defeat Axel on the first floor.", points = 3,
     id = 15583, badge = "15002", published = "10/16/2014 6:07:43 AM", modified = "7/7/2020 2:12:51 AM",
-    trigger = worldId() == 0x00 && battlefieldId() == 0x0C && once(bit0(0x042325) == 0x0) && bit0(0x042325) == 0x1 && 
-              byte(0x042346) == 0x0A
+    trigger = never(worldId() != 0x00) && never(battlefieldId() != 0x0C) && BattleStartedCheckpoint() && EnemyWasJustDefeated()
+)
+
+achievement(title = "Heat-Resistant Glue [m]", description = "Defeat Axel on the first floor without using the D-pad.", points = 5,
+    trigger = never(worldId() != 0x00) && never(battlefieldId() != 0x0C) && BattleStartedCheckpoint()
+        && EnemyWasJustDefeated() && never(DpadIsPressed())
 )
 
 achievement(
