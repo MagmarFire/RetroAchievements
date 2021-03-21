@@ -55,6 +55,8 @@ function WasBitflagSetInGame(mem)
 // $0421CC: World
 function worldId() => byte(0x0421CC)
 
+function roomId() => byte(0x044b86)
+
 LocationLookup = {
     0: "Castle Oblivion",
     1: "Agrabah",
@@ -70,6 +72,17 @@ LocationLookup = {
     11: "Twilight Town",
     12: "Castle Oblivion",
     13: "100-Acre Wood",
+}
+
+function IsInWorld(name)
+{
+    for i in LocationLookup
+    {
+        if (LocationLookup[i] == name)
+        {
+            return worldId() == i
+        }
+    }
 }
 
 // $0421CD: Battlefield ID (EU)
@@ -739,18 +752,52 @@ function GetCardsByProperty(property, propertyValue)
     return ret
 }
 
+function GetCardRangeParameters(cardList)
+{
+    parameters = {
+        "minIdMostSigNib": 0,
+        "minIdLeastSigByte": 0,
+        "maxIdMostSigNib": 0,
+        "maxIdLeastSigByte": 0
+    }
+    
+    if (length(cardList) > 0)
+    {
+        parameters["minIdMostSigNib"] = cardList[0]["idMostSigNib"]
+        parameters["minIdLeastSigByte"] = cardList[0]["idLeastSigByte"]
+    }
+    
+    for card in cardList
+    {
+        mostSigNib = card["idMostSigNib"]
+        leastSigByte = card["idLeastSigByte"]
+        if (mostSigNib > parameters["maxIdMostSigNib"])
+        {
+            parameters["maxIdMostSigNib"] = mostSigNib
+            parameters["maxIdLeastSigNib"] = 0
+        }
+        
+        if (leastSigByte > parameters["maxIdLeastSigByte"])
+        {
+            parameters["maxIdLeastSigByte"] = leastSigByte
+        }
+    }
+    
+    return parameters
+}
+
 function AnyCardsAreEquippedInDeck(cardList, deckAddr)
 {
     anyCardsAreEquipped = always_false()
     for i in range(0, 98)
     {
         currentDeckIndexAddr = deckAddr + i * 2
+        slotAddr = inventoryBaseAddr() + word(currentDeckIndexAddr)
+        parameters = GetCardRangeParameters(cardList)
         
-        for j in cardList
-        {
-            slotAddr = inventoryBaseAddr() + word(currentDeckIndexAddr)
-            anyCardsAreEquipped = anyCardsAreEquipped || low4(slotAddr + 1) == j["idMostSigNib"] && byte(slotAddr) == j["idLeastSigByte"]
-        }
+        anyCardsAreEquipped = anyCardsAreEquipped
+            || low4(slotAddr + 1) >= parameters["minIdMostSigNib"] && byte(slotAddr) >= parameters["minIdLeastSigByte"]
+            && low4(slotAddr + 1) <= parameters["maxIdMostSigNib"] && byte(slotAddr) <= parameters["maxIdLeastSigByte"]
     }
     
     return anyCardsAreEquipped
@@ -774,6 +821,10 @@ function battlePointer() => tbyte(0x0423e4)
 
 function enemyHp() => word(battlePointer() + 0x8f0c)
 
+function playerHp() => word(battlePointer() + 0x9b6c)
+
+function bossState() => byte(battlePointer() + 0x8ec0)
+
 function BattleStartedCheckpoint() => once(Delta(battlePointer()) == 0x0 && battlePointer() != 0x0)
 
 function EnemyWasJustDefeated() => once(Delta(enemyHp()) > 0 && enemyHp() == 0)
@@ -783,6 +834,17 @@ achievement(
     title = "Heartless Hunter", description = "Defeat your first Heartless in Castle Oblivion.", points = 1,
     id = 15580, badge = "12277", published = "10/16/2014 6:04:37 AM", modified = "11/8/2016 6:46:53 PM",
     trigger = WasBitflagSetInGame(shadowJournalEntry())
+)
+
+function guardArmorCardObtained() => bit3(0x04230c)
+function UsedGimmickCard() => Delta(bossState()) != 0xa && bossState() == 0xa
+achievement(
+    title = "No Scheming Allowed [m]", points = 5,
+    description = "Defeat the Guard Armor in Sora's story without using any Gimmick Cards.",
+    trigger = once(BattleStartedCheckpoint() && IsInWorld("Traverse Town") && enemyHp() == 0xc8) // Battle checkpoint
+        && enemyHp() == 0 // Win condition
+        && never(UsedGimmickCard()) // Loss condition
+        && never(playerHp() == 0) // Only for insurance and defensive programming.
 )
 
 achievement(
