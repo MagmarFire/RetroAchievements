@@ -1309,11 +1309,11 @@ achievement(
               bit5(0x042325) == 0x1 && byte(0x042346) == 0x0A
 )
 
+function gravityCardEntry() => bit4(0x042305)
 achievement(
-    title = "Always Down", description = "Obtain the 'Gravity' Card", points = 3,
+    title = "Always Down", description = "Obtain a Gravity card for the first time.", points = 3,
     id = 15646, badge = "15205", published = "10/16/2014 6:22:35 AM", modified = "10/16/2014 6:24:21 AM",
-    trigger = worldId() == 0x01 && battlefieldId() == 0x03 && once(bit4(0x042305) == 0x0) && bit4(0x042305) == 0x1 && 
-              bit4(0x042325) == 0x1 && byte(0x042346) == 0x0A
+    trigger = WasBitflagSetInGame(gravityCardEntry())
 )
 
 achievement(
