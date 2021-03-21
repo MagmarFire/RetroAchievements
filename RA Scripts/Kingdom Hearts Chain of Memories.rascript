@@ -52,13 +52,12 @@ function WasBitflagSetInGame(mem)
     return WasValueSetInGame(mem, 0, 1)
 }
 
-// $0421CC: World
 function worldId() => byte(0x0421CC)
 
 function roomId() => byte(0x044b86)
 
 LocationLookup = {
-    0: "Castle Oblivion",
+    0: "Castle Oblivion, Hall",
     1: "Agrabah",
     2: "Atlantica",
     3: "Olympus Coliseum",
@@ -81,6 +80,17 @@ function IsInWorld(name)
         if (LocationLookup[i] == name)
         {
             return worldId() == i
+        }
+    }
+}
+
+function WasInWorld(name)
+{
+    for i in LocationLookup
+    {
+        if (LocationLookup[i] == name)
+        {
+            return Delta(worldId()) == i
         }
     }
 }
@@ -847,11 +857,11 @@ achievement(
         && never(playerHp() == 0) // Only for insurance and defensive programming.
 )
 
+function fireCardEntry() => bit0(0x042305)
 achievement(
-    title = "The Adventure Begins", description = "Beat the Boss in Traverse Town", points = 10,
+    title = "Memory of Worlds Lost", description = "Complete Traverse Town in Sora's story.", points = 5,
     id = 15582, badge = "14839", published = "10/16/2014 6:06:16 AM", modified = "7/7/2020 2:12:27 AM",
-    trigger = once(bit3(0x04232C) == 0x0) && bit3(0x04232C) == 0x1 && worldId() == 0x0A && battlefieldId() == 0x0B && 
-              byte(0x042346) == 0x0A
+    trigger = roomId() == 0x7 && WasInWorld("Traverse Town") && IsInWorld("Castle Oblivion, Hall") && fireCardEntry() == 0
 )
 
 achievement(
