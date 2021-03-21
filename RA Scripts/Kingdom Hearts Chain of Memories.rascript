@@ -1191,11 +1191,11 @@ achievement(
               bit4(0x042324) == 0x1 && byte(0x042346) == 0x0A
 )
 
+function slidingDash() => bit0(0x0422cc)
 achievement(
-    title = "This is Only the First", description = "Learn the 'Sliding Dash' Ability", points = 1,
+    title = "The First of Many", description = "Learn the Sliding Dash sleight.", points = 1,
     id = 15613, badge = "15212", published = "10/16/2014 6:15:51 AM", modified = "7/7/2020 2:24:02 AM",
-    trigger = once(bit0(0x0422CC) == 0x0) && bit0(0x0422CC) == 0x1 && bit0(0x0422DC) == 0x1 && byte(0x042346) == 0x0A && 
-              worldId() == 0x0A && battlefieldId() == 0x0B
+    trigger = WasBitflagSetInGame(slidingDash())
 )
 
 achievement(
