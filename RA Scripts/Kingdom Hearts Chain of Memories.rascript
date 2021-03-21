@@ -1289,13 +1289,6 @@ achievement(
 )
 
 achievement(
-    title = "Magic Refill", description = "Obtain the 'Ether' Card", points = 3,
-    id = 15643, badge = "14875", published = "10/16/2014 6:22:07 AM", modified = "10/16/2014 6:24:14 AM",
-    trigger = worldId() == 0x01 && battlefieldId() == 0x03 && once(bit1(0x042307) == 0x0) && bit1(0x042307) == 0x1 && 
-              bit1(0x042327) == 0x1 && byte(0x042346) == 0x0A
-)
-
-achievement(
     title = "Megalixir", description = "Obtain the 'Megalixir' Card", points = 3,
     id = 15647, badge = "15019", published = "10/16/2014 6:22:45 AM", modified = "11/8/2016 6:44:41 PM",
     trigger = worldId() == 0x09 && battlefieldId() == 0x09 && once(bit4(0x042307) == 0x0) && bit4(0x042307) == 0x1 && 
