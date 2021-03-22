@@ -829,9 +829,15 @@ achievement(title = "test", description = "test", points = 0,
 //           +0x8f0c for enemy HP(?)
 function battlePointer() => tbyte(0x0423e4)
 
+// One of three pointers that appear to influence battles in some way, like HP and the like
+// It's misleading to call it a battle pointer, though, as it does not consistently nullify when in the field. (32-bit)
+//
+// +0x7e8c to get the player's current (dynamic) HP when in battle (16-bit)
+function miscPointer() => tbyte(0x03ca28)
+
 function enemyHp() => word(battlePointer() + 0x8f0c)
 
-function playerHp() => word(battlePointer() + 0x9b6c)
+function playerHp() => word(miscPointer() + 0x7e8c)
 
 function bossState() => byte(battlePointer() + 0x8ec0)
 
