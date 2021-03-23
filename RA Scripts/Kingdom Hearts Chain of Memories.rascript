@@ -835,11 +835,19 @@ function battlePointer() => tbyte(0x0423e4)
 // +0x7e8c to get the player's current (dynamic) HP when in battle (16-bit)
 function miscPointer() => tbyte(0x03ca28)
 
-function enemyHp() => word(battlePointer() + 0x8f0c)
+// One of two pointers that appear related to boss information (32-bit)
+//
+// +0x7f28 for boss state (8-bit)
+// +0x7f74 for boss HP (16-bit)
+function bossPointer() => tbyte(0x034988)
+
+function enemyHp() => word(bossPointer() + 0x7f74)
 
 function playerHp() => word(miscPointer() + 0x7e8c)
 
-function bossState() => byte(battlePointer() + 0x8ec0)
+function bossState() => byte(bossPointer() + 0x7f28)
+
+function IsInBattle() => battlePointer() != 0
 
 function BattleStartedCheckpoint() => once(Delta(battlePointer()) == 0x0 && battlePointer() != 0x0)
 
@@ -860,7 +868,7 @@ achievement(
     trigger = once(BattleStartedCheckpoint() && IsInWorld("Traverse Town") && enemyHp() == 0xc8) // Battle checkpoint
         && enemyHp() == 0 // Win condition
         && never(UsedGimmickCard()) // Loss condition
-        && never(playerHp() == 0) // Only for insurance and defensive programming.
+        && never(!IsInBattle())
 )
 
 function fireCardEntry() => bit0(0x042305)
@@ -873,12 +881,13 @@ achievement(
 achievement(
     title = "The Flurry of Dancing Flames", description = "Defeat Axel on the first floor.", points = 3,
     id = 15583, badge = "15002", published = "10/16/2014 6:07:43 AM", modified = "7/7/2020 2:12:51 AM",
-    trigger = never(worldId() != 0x00) && never(battlefieldId() != 0x0C) && BattleStartedCheckpoint() && EnemyWasJustDefeated()
+    trigger = never(!IsInWorld("Castle Oblivion, Hall")) && never(battlefieldId() != 0x0C) && BattleStartedCheckpoint() && EnemyWasJustDefeated()
+        && never(!IsInBattle())
 )
 
 achievement(title = "Heat-Resistant Glue [m]", description = "Defeat Axel on the first floor without using the D-pad.", points = 5,
     trigger = never(worldId() != 0x00) && never(battlefieldId() != 0x0C) && BattleStartedCheckpoint()
-        && EnemyWasJustDefeated() && never(DpadIsPressed())
+        && EnemyWasJustDefeated() && never(DpadIsPressed()) && never(!IsInBattle())
 )
 
 achievement(
