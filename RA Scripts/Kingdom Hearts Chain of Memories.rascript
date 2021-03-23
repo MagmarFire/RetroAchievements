@@ -126,18 +126,11 @@ function level() => byte(0x0422C8)
 // $042305: ()(Aero)(Paro)(Grave)()(Truen)()(Fueg)
 // $042306: (Ultrap)()(Mushu)()()()(Bamb)()
 // $042307: ()()()(Omniel)(Elixi)(OmniE)(Eter)(OnmiP)
-// $04230C: (????rsu)(Jaf)(Prest)(Hades)(Armad)()()()
 // $04230D: (Vexe)(Axel)(Larx.)(Lad.Osc)(Drag)(Garf)()(Og.Boo)
 // $04230E: ()()()()()()()(Marx)
 // $042312: ()(Nai.Sol)()()()()()()()
 // $042313: ()()()()()()(Anse)(Lexa)
 // $042334: Moogle Points (16-bit)
-// $0424CC: Baraja 1
-//          Total Naipes
-// $0425AC: Baraja 2
-//          Total Naipes
-// $042692: 9c y 06
-// $042FCB: Llave Prist????na
 
 FloorLookup = {
     0: "1F",
@@ -900,11 +893,11 @@ achievement(title = "Delicate Springs [m]", description = "Defeat Jafar in Sora'
         && EnemyWasJustDefeated() && never(!IsInBattle()) && never(repeated(jumpLimit + 1, Delta(bIsPressed()) != bIsPressed() && bIsPressed() == 1))
 )
 
+function agrabahStoryEntry() => bit7(0x0422f4)
 achievement(
-    title = "A Whole New World", description = "Beat the Boss in Agrabah", points = 10,
+    title = "Memory of Treasure", description = "Complete Agrabah in Sora's story.", points = 5,
     id = 15584, badge = "14870", published = "10/16/2014 6:07:55 AM", modified = "7/7/2020 2:12:56 AM",
-    trigger = worldId() == 0x01 && battlefieldId() == 0x03 && once(bit6(0x04230C) == 0x0) && bit6(0x04230C) == 0x1 && 
-              bit6(0x04232C) == 0x1 && byte(0x042346) == 0x0A
+    trigger = WasBitflagSetInGame(agrabahStoryEntry())
 )
 
 achievement(
@@ -1097,11 +1090,11 @@ achievement(
                (once(maxCp() == 0x0753) && maxCp() == 0x076C))
 )
 
+function keyToRewardsEntry() => bit2(0x042311)
 achievement(
-    title = "Room of Rewards", description = "Special Treasure", points = 5,
+    title = "Room of Rewards", description = "Obtain a Key to Rewards for the first time.", points = 5,
     id = 15610, badge = "15008", published = "10/16/2014 6:14:53 AM", modified = "7/7/2020 2:18:19 AM",
-    trigger = once(byte(0x042FCB) == 0x00) && byte(0x042FCB) == 0x01 && word(0x042FCA) == 0x0100 && 
-              byte(0x042346) == 0x0A
+    trigger = WasBitflagSetInGame(keyToRewardsEntry())
 )
 
 achievement(
