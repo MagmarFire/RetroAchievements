@@ -4,7 +4,6 @@
 // $005B30: Load Menu
 // $033190: Otra vida jefe
 // $03A9CC: Riku III
-// $03B14E: Vida Max Sora (Batalla)
 // $03D0B2: Title screen index
 //
 //          0x0 = new game
@@ -168,13 +167,17 @@ FloorLookup = {
     27: "B1",
 }
 
-// 0x03c000: Bit 4: D-pad Right
+// 0x03c000: Bit 0: A button
+//           Bit 1: B button
+//           Bit 4: D-pad Right
 //           Bit 5: D-pad Left
 //           Bit 6: D-pad Up
 //           Bit 7: D-pad Down
-function inputFlags() => high4(0x03c000)
+function inputFlagsAddr() => 0x03c000
+function dpadFlags() => high4(inputFlagsAddr())
+function bIsPressed() => bit1(inputFlagsAddr())
 
-function DpadIsPressed() => inputFlags() > 0
+function DpadIsPressed() => dpadFlags() > 0
 
 function deck1BaseAddr() => 0x0423f0
 function inventoryBaseAddr() => 0x042690
@@ -832,8 +835,9 @@ function battlePointer() => tbyte(0x0423e4)
 // One of three pointers that appear to influence battles in some way, like HP and the like
 // It's misleading to call it a battle pointer, though, as it does not consistently nullify when in the field. (32-bit)
 //
+// +0x7e6c to get the player's vertical acceleration when in battle (32-bit)
 // +0x7e8c to get the player's current (dynamic) HP when in battle (16-bit)
-function miscPointer() => tbyte(0x03ca28)
+function playerBattlePointer() => tbyte(0x03ca28)
 
 // One of two pointers that appear related to boss information (32-bit)
 //
@@ -843,7 +847,7 @@ function bossPointer() => tbyte(0x034988)
 
 function enemyHp() => word(bossPointer() + 0x7f74)
 
-function playerHp() => word(miscPointer() + 0x7e8c)
+function playerHp() => word(playerBattlePointer() + 0x7e8c)
 
 function bossState() => byte(bossPointer() + 0x7f28)
 
@@ -851,7 +855,7 @@ function IsInBattle() => battlePointer() != 0
 
 function BattleStartedCheckpoint() => once(Delta(battlePointer()) == 0x0 && battlePointer() != 0x0)
 
-function EnemyWasJustDefeated() => once(Delta(enemyHp()) > 0 && enemyHp() == 0)
+function EnemyWasJustDefeated() => Delta(enemyHp()) > 0 && enemyHp() == 0
 
 function shadowJournalEntry() => bit4(0x0422fe)
 achievement(
@@ -861,13 +865,13 @@ achievement(
 )
 
 function guardArmorCardObtained() => bit3(0x04230c)
-function UsedGimmickCard() => Delta(bossState()) != 0xa && bossState() == 0xa
+function UsedGimmickCardWhileFightingGuardArmor() => Delta(bossState()) != 0xa && bossState() == 0xa
 achievement(
     title = "No Scheming Allowed [m]", points = 5,
     description = "Defeat the Guard Armor in Sora's story without using any Gimmick Cards.",
     trigger = once(BattleStartedCheckpoint() && IsInWorld("Traverse Town") && enemyHp() == 0xc8) // Battle checkpoint
         && enemyHp() == 0 // Win condition
-        && never(UsedGimmickCard()) // Loss condition
+        && never(UsedGimmickCardWhileFightingGuardArmor()) // Loss condition
         && never(!IsInBattle())
 )
 
@@ -886,8 +890,14 @@ achievement(
 )
 
 achievement(title = "Heat-Resistant Glue [m]", description = "Defeat Axel on the first floor without using the D-pad.", points = 5,
-    trigger = never(worldId() != 0x00) && never(battlefieldId() != 0x0C) && BattleStartedCheckpoint()
+    trigger = never(!IsInWorld("Castle Oblivion, Hall")) && never(battlefieldId() != 0x0C) && BattleStartedCheckpoint()
         && EnemyWasJustDefeated() && never(DpadIsPressed()) && never(!IsInBattle())
+)
+
+jumpLimit = 45
+achievement(title = "Delicate Springs [m]", description = "Defeat Jafar in Sora's story without pressing B more than " + jumpLimit + " times.", points = 10,
+    trigger = once(roomId() == 0x1 && IsInWorld("Agrabah") && BattleStartedCheckpoint() && enemyHp() == 0x224)
+        && EnemyWasJustDefeated() && never(!IsInBattle()) && never(repeated(jumpLimit + 1, Delta(bIsPressed()) != bIsPressed() && bIsPressed() == 1))
 )
 
 achievement(
