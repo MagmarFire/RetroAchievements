@@ -1216,11 +1216,11 @@ achievement(
     trigger = WasBitflagSetInGame(slidingDash())
 )
 
+function blazingDonaldUnlocked() => bit3(0x0422d7)
 achievement(
-    title = "Blazing Donald", description = "Learn the 'Blazing Donald' Ability", points = 1,
+    title = "Blazing Donald", description = "Learn the Blazing Donald sleight.", points = 1,
     id = 15614, badge = "14868", published = "10/16/2014 6:16:30 AM", modified = "7/7/2020 2:24:09 AM",
-    trigger = worldId() == 0x01 && battlefieldId() == 0x03 && once(bit3(0x0422D7) == 0x0) && bit3(0x0422D7) == 0x1 && 
-              bit3(0x0422E7) == 0x1 && byte(0x042346) == 0x0A
+    trigger = WasBitflagSetInGame(blazingDonaldUnlocked())
 )
 
 achievement(
