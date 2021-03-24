@@ -811,6 +811,12 @@ function AnyCardsAreEquippedInDeck(cardList, deckAddr)
 
 function currentDeck() => byte(0x03cacc)
 
+function deck1TotalCards() => byte(0x0424cc)
+
+function deck2TotalCards() => byte(0x0425ac)
+
+function deck3TotalCards() => byte(0x04268c)
+
 achievement(title = "test", description = "test", points = 0,
     trigger = AnyCardsAreEquippedInDeck([], deck1BaseAddr()) && currentDeck() == 0
 )
@@ -901,10 +907,20 @@ achievement(
 )
 
 achievement(
-    title = "This is Halloween", description = "Beat the Boss in Halloween Town", points = 10,
+    title = "Card Disadvantage [m]", points = 10,
+    description = "Defeat Oogie Boogie in Sora's story with a deck of only nine cards or less.",
+    trigger = once(roomId() == 0x6 && IsInWorld("Halloween Town") && BattleStartedCheckpoint() && enemyHp() == 0x255)
+        && EnemyWasJustDefeated() && never(!IsInBattle())
+        && (currentDeck() == 0 && deck1TotalCards() <= 9
+            || currentDeck() == 1 && deck2TotalCards() <= 9
+            || currentDeck() == 2 && deck3TotalCards() <= 9)
+)
+
+function halloweenTownEntry() => bit0(0x0422f5)
+achievement(
+    title = "Memory of Memory", description = "Complete Halloween Town in Sora's story.", points = 5,
     id = 15585, badge = "14878", published = "10/16/2014 6:08:08 AM", modified = "7/7/2020 2:13:00 AM",
-    trigger = worldId() == 0x06 && battlefieldId() == 0x07 && once(bit0(0x04230D) == 0x0) && bit0(0x04230D) == 0x1 && 
-              bit0(0x04232D) == 0x1 && byte(0x042346) == 0x0A
+    trigger = WasBitflagSetInGame(halloweenTownEntry())
 )
 
 achievement(
@@ -1300,11 +1316,11 @@ achievement(
               word(0x0422C8) == 0x0032
 )
 
+function gravityRaid() => bit2(0x0422cf)
 achievement(
-    title = "Gravity Raid", description = "Learn the 'Gravity Raid' Ability", points = 3,
+    title = "Gravity Raid", description = "Learn the Gravity Raid sleight.", points = 3,
     id = 15633, badge = "14876", published = "10/16/2014 6:21:08 AM", modified = "10/16/2014 6:23:50 AM",
-    trigger = worldId() == 0x06 && battlefieldId() == 0x07 && once(bit2(0x0422CF) == 0x0) && bit2(0x0422CF) == 0x1 && 
-              bit2(0x0422DF) == 0x1 && byte(0x042346) == 0x0A
+    trigger = WasBitflagSetInGame(gravityRaid())
 )
 
 achievement(
