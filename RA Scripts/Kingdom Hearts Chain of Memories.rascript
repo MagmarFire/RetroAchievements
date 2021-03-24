@@ -1137,10 +1137,11 @@ achievement(
               bit5(0x042324) == 0x1 && byte(0x042346) == 0x0A
 )
 
+function pumpkinheadEntry() => bit2(0x042303)
 achievement(
-    title = "Pumpkinhead", description = "Obtain the Pumpkinhead Keyblade Card", points = 5,
+    title = "Pumpkinhead", description = "Obtain a Pumpkinhead card for the first time.", points = 5,
     id = 15631, badge = "14874", published = "10/16/2014 6:19:59 AM", modified = "7/7/2020 2:23:04 AM",
-    trigger = once(bit2(0x042303) == 0x0) && bit2(0x042303) == 0x1 && bit2(0x042323) == 0x1 && byte(0x042346) == 0x0A
+    trigger = WasBitflagSetInGame(pumpkinheadEntry())
 )
 
 achievement(
