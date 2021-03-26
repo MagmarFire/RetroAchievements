@@ -1078,21 +1078,6 @@ achievement(
 )
 
 achievement(
-    title = "Moguri ", description = "Have 5,000 Moguri points", points = 5,
-    id = 15606, badge = "14847", published = "10/16/2014 6:14:16 AM", modified = "11/8/2016 6:45:42 PM",
-    trigger = word(0x042334) >= 0x1388 && word(0x042334) <= 0x1400 && byte(0x042346) == 0x0A
-)
-
-achievement(
-    title = "A Different Strategy", description = "Put 99 Card in any Deck", points = 1,
-    id = 15607, badge = "14851", published = "10/16/2014 6:14:23 AM", modified = "7/7/2020 2:17:55 AM",
-    trigger = byte(0x042346) == 0x0A &&
-              ((byte(0x0425AC) == 0x63) ||
-               (byte(0x04268C) == 0x63) ||
-               (byte(0x0424CC) == 0x63))
-)
-
-achievement(
     title = "Cura+", description = "Reach 290 HP points", points = 5,
     id = 15608, badge = "14880", published = "10/16/2014 6:14:34 AM", modified = "7/7/2020 2:18:10 AM",
     trigger = once(maxHp() == 0x0113) && maxHp() == 0x0122 && byte(0x042346) == 0x0A
@@ -1121,36 +1106,39 @@ achievement(
               bit0(0x042311) == 0x1 && bit1(0x042311) == 0x1 && bit2(0x042311) == 0x1
 )
 
+function lionheart() => bit0(0x042304)
 achievement(
-    title = "Lionheart", description = "Obtain the Lionhearth Keyblade Card", points = 5,
+    title = "Lionheart", description = "Obtain a Lionheart card for the first time.", points = 5,
     id = 15581, badge = "14873", published = "10/16/2014 6:05:29 AM", modified = "7/7/2020 2:22:26 AM",
-    trigger = worldId() == 0x0A && battlefieldId() == 0x0B && once(bit0(0x042304) == 0x0) && bit0(0x042304) == 0x1 && 
-              bit0(0x042324) == 0x1 && byte(0x042346) == 0x0A
+    trigger = WasBitflagSetInGame(lionheart())
 )
 
+function threeWishes() => bit0(0x042303)
 achievement(
-    title = "Three Wishes", description = "Obtain the Three Wishes Keyblade Card", points = 5,
+    title = "Three Wishes", description = "Obtain a Three Wishes card for the first time.", points = 5,
     id = 15627, badge = "14872", published = "10/16/2014 6:18:57 AM", modified = "7/7/2020 2:22:32 AM",
-    trigger = bit0(0x042323) == 0x1 && once(bit0(0x042303) == 0x0) && bit0(0x042303) == 0x1 && byte(0x042346) == 0x0A
+    trigger = WasBitflagSetInGame(threeWishes())
 )
 
+function oneWingedAngel() => bit7(0x042304)
 achievement(
-    title = "One-Winged Angel", description = "Obtain the One-Winged Angel Keyblade Card", points = 5,
+    title = "One-Winged Angel", description = "Obtain a One-Winged Angel card for the first time.", points = 5,
     id = 15628, badge = "15189", published = "10/16/2014 6:19:09 AM", modified = "7/7/2020 2:22:37 AM",
-    trigger = once(bit7(0x042304) == 0x0) && bit7(0x042304) == 0x1 && bit7(0x042324) == 0x1 && byte(0x042346) == 0x0A
+    trigger = WasBitflagSetInGame(oneWingedAngel())
 )
 
+function diamondDust() => bit6(0x042304)
 achievement(
-    title = "Diamond Dust", description = "Obtain the Diamond Dust Keyblade Card", points = 5,
+    title = "Diamond Dust", description = "Obtain a Diamond Dust card for the first time.", points = 5,
     id = 15629, badge = "15187", published = "10/16/2014 6:19:25 AM", modified = "7/7/2020 2:22:57 AM",
-    trigger = once(bit6(0x042304) == 0x0) && bit6(0x042304) == 0x1 && bit6(0x042324) == 0x1 && byte(0x042346) == 0x0A
+    trigger = WasBitflagSetInGame(diamondDust())
 )
 
+function ultimaWeapon() => bit5(0x042304)
 achievement(
-    title = "Ultima Weapon", description = "Obtain the Ultima Weapon Keyblade Card", points = 5,
+    title = "Ultima Weapon", description = "Obtain an Ultima Weapon card for the first time.", points = 5,
     id = 15630, badge = "15184", published = "10/16/2014 6:19:36 AM", modified = "9/29/2019 12:07:01 PM",
-    trigger = worldId() == 0x0C && battlefieldId() == 0x0C && once(bit5(0x042304) == 0x0) && bit5(0x042304) == 0x1 && 
-              bit5(0x042324) == 0x1 && byte(0x042346) == 0x0A
+    trigger = WasBitflagSetInGame(ultimaWeapon())
 )
 
 function pumpkinheadEntry() => bit2(0x042303)
@@ -1160,70 +1148,74 @@ achievement(
     trigger = WasBitflagSetInGame(pumpkinheadEntry())
 )
 
+function wishingStar() => bit4(0x042303)
 achievement(
-    title = "Wishing Star", description = "Obtain the Wishing Star Keyblade Card", points = 5,
+    title = "Wishing Star", description = "Obtain a Wishing Star card for the first time.", points = 5,
     id = 15632, badge = "14879", published = "10/16/2014 6:20:07 AM", modified = "7/7/2020 2:23:09 AM",
-    trigger = once(bit4(0x042303) == 0x0) && bit4(0x042303) == 0x1 && bit4(0x042323) == 0x1 && byte(0x042346) == 0x0A
+    trigger = WasBitflagSetInGame(wishingStar())
 )
 
+function olympia() => bit7(0x042303)
 achievement(
-    title = "Olympia", description = "Obtain the Olympia Keyblade Card", points = 5,
+    title = "Olympia", description = "Obtain an Olympia card for the first time.", points = 5,
     id = 15634, badge = "14908", published = "10/16/2014 6:21:13 AM", modified = "7/7/2020 2:23:14 AM",
-    trigger = once(bit7(0x042303) == 0x0) && bit7(0x042303) == 0x1 && bit7(0x042323) == 0x1 && byte(0x042346) == 0x0A
+    trigger = WasBitflagSetInGame(olympia())
 )
 
+function metalChocobo() => bit6(0x042303)
 achievement(
-    title = "Metal Chocobo", description = "Obtain the Metal Chocobo Keyblade Card", points = 5,
+    title = "Metal Chocobo", description = "Obtain a Metal Chocobo card for the first time.", points = 5,
     id = 15635, badge = "14910", published = "10/16/2014 6:21:20 AM", modified = "7/7/2020 2:23:19 AM",
-    trigger = once(bit6(0x042303) == 0x0) && bit6(0x042303) == 0x1 && bit6(0x042323) == 0x1 && byte(0x042346) == 0x0A
+    trigger = WasBitflagSetInGame(metalChocobo())
 )
 
+function spellbinder() => bit5(0x042303)
 achievement(
-    title = "Spellbinder", description = "Obtain the Spellbinder Keyblade Card", points = 5,
+    title = "Spellbinder", description = "Obtain a Spellbinder card for the first time.", points = 5,
     id = 15636, badge = "14930", published = "10/16/2014 6:21:25 AM", modified = "7/7/2020 2:23:25 AM",
-    trigger = once(bit5(0x042303) == 0x0) && bit5(0x042303) == 0x1 && bit5(0x042323) == 0x1 && worldId() == 0x0D && 
-              battlefieldId() == 0x0C && byte(0x042346) == 0x0A
+    trigger = WasBitflagSetInGame(spellbinder())
 )
 
+function divineRose() => bit2(0x042304)
 achievement(
-    title = "Divine Rose", description = "Obtain the Divine Rose Keyblade Card", points = 5,
+    title = "Divine Rose", description = "Obtain a Divine Rose card for the first time.", points = 5,
     id = 15637, badge = "15006", published = "10/16/2014 6:21:29 AM", modified = "7/7/2020 2:23:29 AM",
-    trigger = worldId() == 0x08 && battlefieldId() == 0x0A && once(bit2(0x042304) == 0x0) && bit2(0x042304) == 0x1 && 
-              bit2(0x042324) == 0x1 && byte(0x042346) == 0x0A
+    trigger = WasBitflagSetInGame(divineRose())
 )
 
+function crabclaw() => bit1(0x042303)
 achievement(
-    title = "Crabclaw", description = "Obtain the Crabclaw Keyblade Card", points = 5,
+    title = "Crabclaw", description = "Obtain a Crabclaw card for the first time.", points = 5,
     id = 15638, badge = "14933", published = "10/16/2014 6:21:34 AM", modified = "7/7/2020 2:23:35 AM",
-    trigger = worldId() == 0x02 && battlefieldId() == 0x04 && once(bit1(0x042303) == 0x0) && bit1(0x042303) == 0x1 && 
-              bit1(0x042323) == 0x1 && byte(0x042346) == 0x0A
+    trigger = WasBitflagSetInGame(crabclaw())
 )
 
+function fairyHarp() => bit3(0x042303)
 achievement(
-    title = "Fairy Harp", description = "Obtain the Fairy Harp Keyblade Card", points = 5,
+    title = "Fairy Harp", description = "Obtain a Fairy Harp card for the first time.", points = 5,
     id = 15639, badge = "15012", published = "10/16/2014 6:21:39 AM", modified = "7/7/2020 2:23:40 AM",
-    trigger = worldId() == 0x07 && battlefieldId() == 0x08 && once(bit3(0x042303) == 0x0) && bit3(0x042303) == 0x1 && 
-              bit3(0x042323) == 0x1 && byte(0x042346) == 0x0A
+    trigger = WasBitflagSetInGame(fairyHarp())
 )
 
+function oathkeeper() => bit3(0x042304)
 achievement(
-    title = "Oathkeeper", description = "Obtain the Oathkeeper Keyblade Card", points = 5,
+    title = "Oathkeeper", description = "Obtain an Oathkeeper card for the first time.", points = 5,
     id = 15640, badge = "15021", published = "10/16/2014 6:21:43 AM", modified = "7/7/2020 2:23:47 AM",
-    trigger = worldId() == 0x09 && battlefieldId() == 0x09 && once(bit3(0x042304) == 0x0) && bit3(0x042304) == 0x1 && 
-              bit3(0x042324) == 0x1 && byte(0x042346) == 0x0A
+    trigger = WasBitflagSetInGame(oathkeeper())
 )
 
+function ladyLuck() => bit1(0x042304)
 achievement(
-    title = "Lady Luck", description = "Obtain the Lady Luck Keyblade Card", points = 5,
+    title = "Lady Luck", description = "Obtain a Lady Luck card for the first time.", points = 5,
     id = 15641, badge = "14914", published = "10/16/2014 6:21:50 AM", modified = "7/7/2020 2:23:51 AM",
-    trigger = once(bit1(0x042304) == 0x0) && bit1(0x042304) == 0x1 && bit1(0x042324) == 0x1 && byte(0x042346) == 0x0A
+    trigger = WasBitflagSetInGame(ladyLuck())
 )
 
+function oblivion() => bit4(0x042304)
 achievement(
-    title = "Oblivion", description = "Obtain the Oblivion Keyblade Card", points = 5,
+    title = "Oblivion", description = "Obtain an Oblivion card for the first time.", points = 5,
     id = 15642, badge = "15024", published = "10/16/2014 6:21:56 AM", modified = "7/7/2020 2:23:56 AM",
-    trigger = worldId() == 0x00 && battlefieldId() == 0x0C && once(bit4(0x042304) == 0x0) && bit4(0x042304) == 0x1 && 
-              bit4(0x042324) == 0x1 && byte(0x042346) == 0x0A
+    trigger = WasBitflagSetInGame(oblivion())
 )
 
 function slidingDash() => bit0(0x0422cc)
@@ -1240,80 +1232,74 @@ achievement(
     trigger = WasBitflagSetInGame(blazingDonaldUnlocked())
 )
 
+function stopRaid() => bit3(0x0422cf)
 achievement(
-    title = "Stop Raid Sleight", description = "Learn the 'Stop Raid' Ability", points = 3,
+    title = "Stop Raid", description = "Learn the Stop Raid sleight.", points = 3,
     id = 15615, badge = "14915", published = "10/16/2014 6:16:43 AM", modified = "10/16/2014 6:23:10 AM",
-    trigger = once(bit3(0x0422CF) == 0x0) && bit3(0x0422CF) == 0x1 && bit3(0x0422DF) == 0x1 && byte(0x042346) == 0x0A
+    trigger = WasBitflagSetInGame(stopRaid())
 )
 
+function quake() => bit6(0x0422d4)
 achievement(
-    title = "Quake Sleight", description = "Learn the 'Quake' Ability", points = 3,
+    title = "Quake", description = "Learn the Quake sleight.", points = 3,
     id = 15616, badge = "15003", published = "10/16/2014 6:17:15 AM", modified = "10/16/2014 6:23:13 AM",
-    trigger = once(bit6(0x0422D4) == 0x0) && bit6(0x0422D4) == 0x1 && bit6(0x0422E4) == 0x1 && worldId() == 0x02 && 
-              battlefieldId() == 0x04 && byte(0x042346) == 0x0A
+    trigger = WasBitflagSetInGame(quake())
 )
 
+function thunderRaid() => bit1(0x0422cf)
 achievement(
-    title = "Thunder Raid Sleight", description = "Learn the 'Thunder Raid' Ability", points = 3,
+    title = "Thunder Raid", description = "Learn the Thunder Raid sleight.", points = 3,
     id = 15617, badge = "15009", published = "10/16/2014 6:17:24 AM", modified = "10/16/2014 6:23:15 AM",
-    trigger = once(bit1(0x0422CF) == 0x0) && bit1(0x0422CF) == 0x1 && bit1(0x0422DF) == 0x1 && worldId() == 0x07 && 
-              battlefieldId() == 0x08 && byte(0x042346) == 0x0A
+    trigger = WasBitflagSetInGame(thunderRaid())
 )
 
+function warp() => bit0(0x0422D5)
 achievement(
-    title = "Warp Sleight", description = "Learn the 'Warp' Ability", points = 3,
+    title = "Warp", description = "Learn the Warp sleight.", points = 3,
     id = 15618, badge = "15016", published = "10/16/2014 6:17:31 AM", modified = "10/16/2014 6:23:17 AM",
-    trigger = once(bit0(0x0422D5) == 0x0) && bit0(0x0422D5) == 0x1 && bit0(0x0422E5) == 0x1 && worldId() == 0x0B && 
-              battlefieldId() == 0x0D && byte(0x042346) == 0x0A
+    trigger = WasBitflagSetInGame(warp())
 )
 
+function firagaBreak() => bit0(0x0422d4)
 achievement(
-    title = "Firaga Break", description = "Learn the 'Firaga Break' Ability", points = 3,
+    title = "Firaga Break", description = "Learn the Firaga Break sleight.", points = 3,
     id = 15620, badge = "15221", published = "10/16/2014 6:17:58 AM", modified = "10/16/2014 6:23:21 AM",
-    trigger = once(bit0(0x0422D4) == 0x0) && bit0(0x0422D4) == 0x1 && bit0(0x0422E4) == 0x1 && byte(0x042346) == 0x0A && 
-              worldId() == 0x0B && battlefieldId() == 0x0D
+    trigger = WasBitflagSetInGame(firagaBreak())
 )
 
+function fireBreak() => bit7(0x0422ce)
 achievement(
-    title = "Burner", description = "Learn the 'Fire Raid' Ability", points = 3,
+    title = "Burner", description = "Learn the Fire Raid sleight.", points = 3,
     id = 15621, badge = "15218", published = "10/16/2014 6:18:02 AM", modified = "10/16/2014 6:23:24 AM",
-    trigger = once(bit7(0x0422CE) == 0x0) && bit7(0x0422CE) == 0x1 && bit7(0x0422DE) == 0x1 && byte(0x042346) == 0x0A && 
-              worldId() == 0x05 && battlefieldId() == 0x05
+    trigger = WasBitflagSetInGame(fireBreak())
 )
 
+function crossSlashPlus() => bit1(0x0422d7)
 achievement(
-    title = "Cross-Whip", description = "Learn the 'Cross-Slash [plus]' Ability", points = 3,
+    title = "Cross-Whip", description = "Learn the Cross-Slash+ sleight.", points = 3,
     id = 15622, badge = "15213", published = "10/16/2014 6:18:08 AM", modified = "8/14/2018 12:38:08 PM",
-    trigger = once(bit1(0x0422D7) == 0x0) && bit1(0x0422D7) == 0x1 && bit1(0x0422E7) == 0x1 && byte(0x042346) == 0x0A && 
-              worldId() == 0x08 && battlefieldId() == 0x0A
+    trigger = WasBitflagSetInGame(crossSlashPlus())
 )
 
+function judgment() => bit4(0x0422cf)
 achievement(
-    title = "Divine Justice", description = "Learn the 'Judgment' Ability", points = 3,
+    title = "Divine Justice", description = "Learn the Judgment sleight.", points = 3,
     id = 15623, badge = "15210", published = "10/16/2014 6:18:13 AM", modified = "10/16/2014 6:23:28 AM",
-    trigger = once(bit4(0x0422CF) == 0x0) && bit4(0x0422CF) == 0x1 && bit4(0x0422DF) == 0x1 && byte(0x042346) == 0x0A && 
-              worldId() == 0x09 && battlefieldId() == 0x09
+    trigger = WasBitflagSetInGame(judgment())
 )
 
+function blizzardRaid() => bit0(0x0422cf)
 achievement(
-    title = "Blizzard Raid ", description = "Learn the 'Blizzard Raid' Ability", points = 3,
+    title = "Blizzard Raid ", description = "Learn the Blizzard Raid sleight.", points = 3,
     id = 15624, badge = "15209", published = "10/16/2014 6:18:20 AM", modified = "10/16/2014 6:23:31 AM",
-    trigger = once(bit0(0x0422CF) == 0x0) && bit0(0x0422CF) == 0x1 && bit0(0x0422DF) == 0x1 && byte(0x042346) == 0x0A && 
-              worldId() == 0x03 && battlefieldId() == 0x06
+    trigger = WasBitflagSetInGame(blizzardRaid())
 )
 
+function homingBlizzara() => bit2(0x0422d4)
 achievement(
-    title = "Homing Blizzara", description = "Learn the 'Homing Blizzara'' Ability", points = 3,
+    title = "Homing Blizzara", description = "Learn the Homing Blizzara sleight.", points = 3,
     id = 15625, badge = "15207", published = "10/16/2014 6:18:24 AM", modified = "10/16/2014 6:23:33 AM",
-    trigger = once(bit2(0x0422D4) == 0x0) && bit2(0x0422D4) == 0x1 && bit2(0x0422E4) == 0x1 && byte(0x042346) == 0x0A && 
-              worldId() == 0x02 && battlefieldId() == 0x04
-)
-
-achievement(
-    title = "More Than the Half", description = "Reach Level 50 (Reb)", points = 10,
-    id = 15626, badge = "15193", published = "10/16/2014 6:18:37 AM", modified = "7/7/2020 2:24:33 AM",
-    trigger = byte(0x042346) == 0x08 && once(level() == 0x31) && level() == 0x32 && 
-              word(0x0422C8) == 0x0032
+    trigger = WasBitflagSetInGame(homingBlizzara())
 )
 
 function gravityRaid() => bit2(0x0422cf)
@@ -1323,18 +1309,18 @@ achievement(
     trigger = WasBitflagSetInGame(gravityRaid())
 )
 
+function megalixir() => bit4(0x042307)
 achievement(
-    title = "Megalixir", description = "Obtain the 'Megalixir' Card", points = 3,
+    title = "Megalixir", description = "Obtain a Megalixir card for the first time.", points = 3,
     id = 15647, badge = "15019", published = "10/16/2014 6:22:45 AM", modified = "11/8/2016 6:44:41 PM",
-    trigger = worldId() == 0x09 && battlefieldId() == 0x09 && once(bit4(0x042307) == 0x0) && bit4(0x042307) == 0x1 && 
-              bit4(0x042327) == 0x1 && byte(0x042346) == 0x0A
+    trigger = WasBitflagSetInGame(megalixir())
 )
 
+function stop() => bit5(0x042305)
 achievement(
-    title = "Time Stop", description = "Obtain the 'Stop' Card", points = 3,
+    title = "Time Stop", description = "Obtain a Stop card for the first time.", points = 3,
     id = 15645, badge = "15204", published = "10/16/2014 6:22:27 AM", modified = "10/16/2014 6:24:18 AM",
-    trigger = worldId() == 0x04 && battlefieldId() == 0x01 && once(bit5(0x042305) == 0x0) && bit5(0x042305) == 0x1 && 
-              bit5(0x042325) == 0x1 && byte(0x042346) == 0x0A
+    trigger = WasBitflagSetInGame(stop())
 )
 
 function gravityCardEntry() => bit4(0x042305)
@@ -1344,11 +1330,11 @@ achievement(
     trigger = WasBitflagSetInGame(gravityCardEntry())
 )
 
+function mushu() => bit4(0x042306)
 achievement(
-    title = "Mushu", description = "Get the 'Mushu' Card", points = 3,
+    title = "Mushu", description = "Get a Mushu card for the first time.", points = 3,
     id = 15644, badge = "15010", published = "10/16/2014 6:22:17 AM", modified = "10/16/2014 6:24:16 AM",
-    trigger = once(bit4(0x042306) == 0x0) && bit4(0x042306) == 0x1 && bit4(0x042326) == 0x1 && worldId() == 0x08 && 
-              battlefieldId() == 0x0A && byte(0x042346) == 0x0A
+    trigger = WasBitflagSetInGame(mushu())
 )
 
 achievement(
