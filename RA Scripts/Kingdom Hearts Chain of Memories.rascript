@@ -45,7 +45,7 @@ function loadAnimationState() => word(0x03bfc8)
 
 function IsLoadingSaveFile()
 {
-    return Delta(gameTransitionState()) == 0 && loadAnimationState() == 0x9189
+    return Delta(gameTransitionState()) == 0 && (loadAnimationState() == 0x9189 || loadAnimationState() == 0x9279)
 }
 
 function WasValueSet(mem, oldValue, newValue)
