@@ -14,6 +14,18 @@ function Delta(mem)
     return prev(mem)
 }
 
+function SecondsToFormat(value)
+{
+    leadingZero = ""
+    if (value % 60 < 10)
+    {
+        leadingZero = "0"
+    }
+    return value / 60 + ":" + leadingZero + value % 60
+}
+
+function SecondsToFrames(seconds) => seconds * 60
+
 // $03bfc2: Appears to affect what screen the game transitions to in certain situations.
 //
 //          For instance, it changes from 0 to 1 when loading a game, and if it's frozen at 0 when attempting to load a game, you get booted back to the title screen.
@@ -54,6 +66,10 @@ function WasBitflagSetInGame(mem)
 function worldId() => byte(0x0421CC)
 
 function roomId() => byte(0x044b86)
+
+function systemTimer() => dword(0x006c68)
+
+function FrameHasAdvanced() => Delta(systemTimer()) != systemTimer()
 
 LocationLookup = {
     0: "Castle Oblivion, Hall",
@@ -100,6 +116,8 @@ function battlefieldId() => byte(0x0421CD)
 // $0421CE: Floor (EU)
 function floor() => byte(0x0421CE)
 
+function IsOnFloor(floor) => floor == floor() + 1
+
 // $0422B8: Max HP (16-bit)
 function maxHp() => word(0x0422B8)
 
@@ -113,23 +131,6 @@ function attackPoints() => byte(0x0422BE)
 // $0422C8: Level
 function level() => byte(0x0422C8)
 
-// $0422CC: ()()()()()()()(Resbal????n)
-// $0422CF: ()()()(Jus.Div)(Par????l)(Ag.Neg)(Torm)(Vent)
-// $0422D4: (Min.Vort)(Sism)()()()(Tem.L????c)()(Gr.Erup)
-// $0422D5: ()()()(Sincr)(Confu)()(Planta)(Exil)
-// $0422D6: ()()()()(Eden)()()()
-// $0422D7: ()()()()(D. Hume)()(La.Cruz)()
-// $0422F7: ()()()()()()()(Dumbo)
-// $042303: (Heroi.)(Me.Choc)(Exami)(Est.Fug)
-//          (Ha.Ha)(Cal.Mac)(Joy.Mar)(T.Deseos)
-// $042304: (Fulgor)(Polvo)(Ulti)(Rec.Lej)()(D.Ros)(Ult.Re)(Lionh)
-// $042305: ()(Aero)(Paro)(Grave)()(Truen)()(Fueg)
-// $042306: (Ultrap)()(Mushu)()()()(Bamb)()
-// $042307: ()()()(Omniel)(Elixi)(OmniE)(Eter)(OnmiP)
-// $04230D: (Vexe)(Axel)(Larx.)(Lad.Osc)(Drag)(Garf)()(Og.Boo)
-// $04230E: ()()()()()()()(Marx)
-// $042312: ()(Nai.Sol)()()()()()()()
-// $042313: ()()()()()()(Anse)(Lexa)
 // $042334: Moogle Points (16-bit)
 
 FloorLookup = {
@@ -821,6 +822,18 @@ achievement(title = "test", description = "test", points = 0,
     trigger = AnyCardsAreEquippedInDeck([], deck1BaseAddr()) && currentDeck() == 0
 )
 
+function BossHPValueCheckpointIsSet(bossHp, bossHpMap, worldName)
+{
+    trigger = always_false()
+    for floor in bossHpMap
+    {
+        hpValue = bossHpMap[floor]
+        trigger = trigger || once(roomId() == 0x4 && IsInWorld(worldName) && BattleStartedCheckpoint() && IsOnFloor(floor) && bossHp == hpValue)
+    }
+    
+    return trigger
+}
+
 // 0x0423e4: Appears to be a pointer to battle data. Null when not in battle. (32-bit)
 //
 //           +0x80fc for the player's reload counter (16-bit). = the number on the reload card - 1
@@ -854,7 +867,9 @@ function IsInBattle() => battlePointer() != 0
 
 function BattleStartedCheckpoint() => once(Delta(battlePointer()) == 0x0 && battlePointer() != 0x0)
 
-function EnemyWasJustDefeated() => Delta(enemyHp()) > 0 && enemyHp() == 0
+function EnemyWasJustDefeated() => EnemyWithSpecificAddressWasJustDefeated(enemyHp())
+
+function EnemyWithSpecificAddressWasJustDefeated(enemyHp) => Delta(enemyHp) > 0 && enemyHp == 0
 
 function shadowJournalEntry() => bit4(0x0422fe)
 achievement(
@@ -923,11 +938,22 @@ achievement(
     trigger = WasBitflagSetInGame(halloweenTownEntry())
 )
 
-achievement(
-    title = "Parasite Cage", description = "Beat Parasite Cage in Monstro", points = 10,
-    id = 15586, badge = "14881", published = "10/16/2014 6:08:26 AM", modified = "7/7/2020 2:13:04 AM",
-    trigger = worldId() == 0x05 && battlefieldId() == 0x05 && once(bit1(0x04230D) == 0x0) && bit1(0x04230D) == 0x1 && 
-              bit1(0x04232D) == 0x1 && byte(0x042346) == 0x0A
+timeLimit = 180
+function parasiteCageHp() => word(0x039060)
+parasiteCageHpMap = {
+    2: 0x25b,
+    3: 0x291,
+    4: 0x2c7,
+    5: 0x2fc,
+    6: 0x332
+}
+
+achievement(title = "Rapid Digestion [m]", description = "Defeat the Parasite Cage in Sora's story within " + SecondsToFormat(timeLimit) + ".",
+    points = 5,
+    trigger = BossHPValueCheckpointIsSet(parasiteCageHp(), parasiteCageHpMap, "Monstro")
+        && never(repeated(SecondsToFrames(timeLimit), IsInBattle() && FrameHasAdvanced()))
+        && EnemyWithSpecificAddressWasJustDefeated(parasiteCageHp())
+        && never(!IsInBattle())
 )
 
 achievement(
@@ -1491,6 +1517,14 @@ achievement(
     id = 41891, badge = "43185", published = "11/8/2016 6:47:41 PM", modified = "11/8/2016 6:47:41 PM",
     trigger = worldId() == 0x00 && battlefieldId() == 0x0C && once(bit0(0x04230E) == 0x0) && bit0(0x04230E) == 0x1 && 
               bit6(0x04232E) == 0x1 && bit6(0x04230D) == 0x1 && byte(0x042346) == 0x0A
+)
+
+leaderboard(title = "Time Attack - Parasite Cage (Sora's Story)",
+    description = "Defeat the Parasite Cage in Sora's story as quickly as you can.",
+    start = BossHPValueCheckpointIsSet(parasiteCageHp(), parasiteCageHpMap, "Monstro") && never(!IsInBattle()),
+    cancel = !IsInBattle(),
+    submit = EnemyWithSpecificAddressWasJustDefeated(parasiteCageHp()),
+    value = measured(FrameHasAdvanced())
 )
 
 rich_presence_display("Level {0} in {1} ({2})",
