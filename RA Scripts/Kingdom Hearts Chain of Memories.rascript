@@ -908,9 +908,17 @@ achievement(title = "Heat-Resistant Glue [m]", description = "Defeat Axel on the
         && EnemyWasJustDefeated() && never(DpadIsPressed()) && never(!IsInBattle())
 )
 
+jafarHpMap = {
+    2: 0x224,
+    3: 0x255,
+    4: 0x286,
+    5: 0x2b7,
+    6: 0x2e8
+}
+
 jumpLimit = 45
 achievement(title = "Delicate Springs [m]", description = "Defeat Jafar in Sora's story without pressing B more than " + jumpLimit + " times.", points = 10,
-    trigger = once(roomId() == 0x1 && IsInWorld("Agrabah") && BattleStartedCheckpoint() && enemyHp() == 0x224)
+    trigger = BossHPValueCheckpointIsSet(enemyHp(), jafarHpMap, "Agrabah", 0x1)
         && EnemyWasJustDefeated() && never(!IsInBattle()) && never(repeated(jumpLimit + 1, Delta(bIsPressed()) != bIsPressed() && bIsPressed() == 1))
 )
 
