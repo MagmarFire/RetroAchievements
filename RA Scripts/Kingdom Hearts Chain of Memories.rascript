@@ -822,13 +822,13 @@ achievement(title = "test", description = "test", points = 0,
     trigger = AnyCardsAreEquippedInDeck([], deck1BaseAddr()) && currentDeck() == 0
 )
 
-function BossHPValueCheckpointIsSet(bossHp, bossHpMap, worldName)
+function BossHPValueCheckpointIsSet(bossHp, bossHpMap, worldName, roomId)
 {
     trigger = always_false()
     for floor in bossHpMap
     {
         hpValue = bossHpMap[floor]
-        trigger = trigger || once(roomId() == 0x4 && IsInWorld(worldName) && BattleStartedCheckpoint() && IsOnFloor(floor) && bossHp == hpValue)
+        trigger = trigger || once(roomId() == roomId && IsInWorld(worldName) && BattleStartedCheckpoint() && IsOnFloor(floor) && bossHp == hpValue)
     }
     
     return trigger
@@ -921,10 +921,18 @@ achievement(
     trigger = WasBitflagSetInGame(agrabahStoryEntry())
 )
 
+oogieBoogieHpMap = {
+    2: 0x224,
+    3: 0x255,
+    4: 0x286,
+    5: 0x2b7,
+    6: 0x2e8
+}
+
 achievement(
     title = "Card Disadvantage [m]", points = 10,
     description = "Defeat Oogie Boogie in Sora's story with a deck of only nine cards or less.",
-    trigger = once(roomId() == 0x6 && IsInWorld("Halloween Town") && BattleStartedCheckpoint() && enemyHp() == 0x255)
+    trigger = BossHPValueCheckpointIsSet(enemyHp(), oogieBoogieHpMap, "Halloween Town", 0x6)
         && EnemyWasJustDefeated() && never(!IsInBattle())
         && (currentDeck() == 0 && deck1TotalCards() <= 9
             || currentDeck() == 1 && deck2TotalCards() <= 9
@@ -950,17 +958,17 @@ parasiteCageHpMap = {
 
 achievement(title = "Rapid Digestion [m]", description = "Defeat the Parasite Cage in Sora's story within " + SecondsToFormat(timeLimit) + ".",
     points = 5,
-    trigger = BossHPValueCheckpointIsSet(parasiteCageHp(), parasiteCageHpMap, "Monstro")
+    trigger = BossHPValueCheckpointIsSet(parasiteCageHp(), parasiteCageHpMap, "Monstro", 0x4)
         && never(repeated(SecondsToFrames(timeLimit), IsInBattle() && FrameHasAdvanced()))
         && EnemyWithSpecificAddressWasJustDefeated(parasiteCageHp())
         && never(!IsInBattle())
 )
 
+function monstroEntry() => bit1(0x0422f5)
 achievement(
-    title = "Infinite Heartless", description = "Escape from Monstro", points = 10,
+    title = "Memory of a Wish", description = "Complete Monstro in Sora's story.", points = 5,
     id = 15587, badge = "14883", published = "10/16/2014 6:08:32 AM", modified = "7/7/2020 2:13:09 AM",
-    trigger = worldId() == 0x05 && battlefieldId() == 0x05 && once(bit0(0x0422F7) == 0x0) && bit0(0x0422F7) == 0x1 && 
-              bit0(0x042317) == 0x1 && byte(0x042346) == 0x0A
+    trigger = WasBitflagSetInGame(monstroEntry())
 )
 
 achievement(
@@ -1521,7 +1529,7 @@ achievement(
 
 leaderboard(title = "Time Attack - Parasite Cage (Sora's Story)",
     description = "Defeat the Parasite Cage in Sora's story as quickly as you can.",
-    start = BossHPValueCheckpointIsSet(parasiteCageHp(), parasiteCageHpMap, "Monstro") && never(!IsInBattle()),
+    start = BossHPValueCheckpointIsSet(parasiteCageHp(), parasiteCageHpMap, "Monstro", 0x4) && never(!IsInBattle()),
     cancel = !IsInBattle(),
     submit = EnemyWithSpecificAddressWasJustDefeated(parasiteCageHp()),
     value = measured(FrameHasAdvanced())
