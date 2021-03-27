@@ -1951,18 +1951,23 @@ achievement(title = "Closed Book", description = "Complete the story.", points =
     trigger = WasBitflagSetInGame(closedBook())
 )
 
-quests = [
-    bit5(0x195bd4),
-    bit7(0x195bd4),
-]
+characterQuestData = {
+    "Selphie": { "bit0": bit7(0x195bd4), "bit1": bit0(0x195bd5) },
+    "Cid": { "bit0": bit5(0x195bd4), "bit1": bit6(0x195bd4) }
+}
 
 // Generate conditions for quests from the above addresses.
 questConditions = {}
 i = 0
-for addr in quests
+for name in characterQuestData
 {
-    questConditions[i] = { "countsWhen": (addr == 1), "recalculateWhen": (addr != Delta(addr)) }
-    i = i + 1
+    character = characterQuestData[name]
+    bit0 = character["bit0"]
+    bit1 = character["bit1"]
+    questConditions[i] = { "countsWhen": (bit0 == 1), "recalculateWhen": (bit0 != Delta(bit0)) }
+    questConditions[i + 1] = { "countsWhen": (bit1 == 1), "recalculateWhen": (bit1 != Delta(bit1)) }
+    questConditions[i + 2] = { "countsWhen": (bit1 == 1), "recalculateWhen": (bit1 != Delta(bit1)) }
+    i = i + 3
 }
 
 GenerateSaveProtectedAchievementFromConditions({
@@ -2095,3 +2100,4 @@ leaderboard(title = "Score Attack - Hollow Bastion", description = "Get as many 
     submit = IsTotalScoreJustDisplayed(),
     value = dword(bossScorePointer() + 8)
 )
+
