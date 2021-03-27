@@ -1750,13 +1750,14 @@ achievement(title = "Keyblade Beats Rock", points = 25,
 achievement(title = "Sour Stomach", points = 10,
     description = "Defeat Pete without the Dodge Roll ability active (Critical Mode; Level 22 or below).",
     trigger = dodgeRollActive() == 0 && IsAtLeastOnDifficulty("Critical") && Level() <= 22 && JustDefeatedEnemy("Pete")
+        && never(!IsInLocation("HollowBastionKeyholeChapel"))
 )
 
 achievement(title = "Waste Not, Want Not", points = 10,
     description = "Defeat Data-Riku equipping only a single HP-restoring item command as your primary source of healing (Critical Mode; Level 22 or below).",
     trigger = Level() <= 22 && IsAtLeastOnDifficulty("Critical") && JustDefeatedEnemy("Data-Riku")
         && never(HasCommandEquipped("Cure")) && never(HasCommandEquipped("Cura")) && never(HasCommandEquipped("Curaga")) && never(HasCommandEquipped("Esuna"))
-        && never(tally(2, NumberOfHealingItemCommandsEquipped()))
+        && never(tally(2, NumberOfHealingItemCommandsEquipped())) && never(!IsInLocation("HollowBastionKeyholeChapel"))
 )
 
 achievement(title = "Speed Deletion", points = 10,
