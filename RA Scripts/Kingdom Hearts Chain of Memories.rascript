@@ -71,6 +71,8 @@ function systemTimer() => dword(0x006c68)
 
 function FrameHasAdvanced() => Delta(systemTimer()) != systemTimer()
 
+function IsPaused() => byte(0x03be70) == 1
+
 LocationLookup = {
     0: "Castle Oblivion, Hall",
     1: "Agrabah",
@@ -969,7 +971,7 @@ achievement(title = "Rapid Digestion [m]", description = "Defeat the Parasite Ca
     trigger = BossHPValueCheckpointIsSet(parasiteCageHp(), parasiteCageHpMap, "Monstro", 0x4)
         && never(repeated(SecondsToFrames(timeLimit), IsInBattle() && FrameHasAdvanced()))
         && EnemyWithSpecificAddressWasJustDefeated(parasiteCageHp())
-        && never(!IsInBattle())
+        && never(!IsInBattle()) && unless(IsPaused())
 )
 
 function monstroEntry() => bit1(0x0422f5)
@@ -1540,7 +1542,7 @@ leaderboard(title = "Time Attack - Parasite Cage (Sora's Story)",
     start = BossHPValueCheckpointIsSet(parasiteCageHp(), parasiteCageHpMap, "Monstro", 0x4) && never(!IsInBattle()),
     cancel = !IsInBattle(),
     submit = EnemyWithSpecificAddressWasJustDefeated(parasiteCageHp()),
-    value = measured(FrameHasAdvanced())
+    value = measured(FrameHasAdvanced() && !IsPaused())
 )
 
 rich_presence_display("Level {0} in {1} ({2})",
