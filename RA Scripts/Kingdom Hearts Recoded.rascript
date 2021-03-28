@@ -101,6 +101,7 @@ areas = {
 76: { "worldId": 0x5, "name": "HollowBastionKeyholeEntrance", "display": "Somewhere in the datascape…", "areaId": 0x0, },
 77: { "worldId": 0x5, "name": "HollowBastionKeyholeChapel", "display": "Keyhole / Chapel", "areaId": 0xc, },
 78: { "worldId": 0x6, "name": "HollowBastionIIInsideRiku", "display": "Inside Riku’s Data", "areaId": 0x8, },
+79: { "worldId": 0x4, "name": "AgrabahCaveGauntletLower2", "display": "Cave / Gauntlet", "areaId": 0x10, },
 }
 
 function GetLocationByName(name)
@@ -1810,7 +1811,9 @@ sectorRewards = [
     bit0(0x19833e), bit1(0x19833e), bit2(0x19833e), bit3(0x19833e), bit4(0x19833e), bit5(0x19833e),
     bit0(0x198340), bit1(0x198340), bit2(0x198340), bit3(0x198340), bit4(0x198340), bit5(0x198340),
     bit0(0x198342), bit1(0x198342), bit2(0x198342), bit3(0x198342), bit4(0x198342), bit5(0x198342),
-    bit0(0x198348), bit1(0x198348), bit2(0x198348), bit3(0x198348), bit4(0x198348), bit5(0x198348), bit6(0x198348)
+    bit0(0x198348), bit1(0x198348), bit2(0x198348), bit3(0x198348), bit4(0x198348), bit5(0x198348), bit6(0x198348),
+    bit0(0x19833c), bit1(0x19833c), bit2(0x19833c), bit3(0x19833c), bit4(0x19833c),
+    bit0(0x198344), bit1(0x198344), bit2(0x198344), bit3(0x198344), bit4(0x198344),
 ]
 
 // Generate conditions for sector rewards from the above addresses.
@@ -1955,7 +1958,9 @@ achievement(title = "Closed Book", description = "Complete the story.", points =
 
 characterQuestData = {
     "Selphie": { "bit0": bit7(0x195bd4), "bit1": bit0(0x195bd5) },
-    "Cid": { "bit0": bit5(0x195bd4), "bit1": bit6(0x195bd4) }
+    "Cid": { "bit0": bit5(0x195bd4), "bit1": bit6(0x195bd4) },
+    "Aladdin": { "bit0": bit7(0x195bdb), "bit1": bit0(0x195bd4) },
+    "Alice": { "bit0": bit3(0x195bd4), "bit1": bit4(0x195bd4) }
 }
 
 // Generate conditions for quests from the above addresses.
