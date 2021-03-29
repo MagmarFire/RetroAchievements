@@ -3,7 +3,9 @@
 
 function worldId() => byte(0x19836c)
 function areaId() => byte(0x19836d)
-function IsInSystemSector() => dword(0x19ecf4) != 0x0
+
+systemSectorAddr = 0x19ecf4
+function IsInSystemSector() => dword(systemSectorAddr) != 0x0 && byte(systemSectorAddr + 3) == 0x2
 function KeyholeCheckpointPassed() => minigamePopupState() == 0x3
 
 function TitleScreenAlmostReady() => titleScreenStatus() == 5
@@ -102,6 +104,11 @@ areas = {
 77: { "worldId": 0x5, "name": "HollowBastionKeyholeChapel", "display": "Keyhole / Chapel", "areaId": 0xc, },
 78: { "worldId": 0x6, "name": "HollowBastionIIInsideRiku", "display": "Inside Riku’s Data", "areaId": 0x8, },
 79: { "worldId": 0x4, "name": "AgrabahCaveGauntletLower2", "display": "Cave / Gauntlet", "areaId": 0x10, },
+80: { "worldId": 0x6, "name": "HollowBastionDestinyIslands", "display": "Destiny Islands", "areaId": 0x9, },
+81: { "worldId": 0x6, "name": "HollowBastionFirstDistrict", "display": "First District", "areaId": 0xa, },
+82: { "worldId": 0x6, "name": "HollowBastionSecondDistrict", "display": "Second District", "areaId": 0xb, },
+83: { "worldId": 0x6, "name": "HollowBastionClearing", "display": "Clearing", "areaId": 0x4, },
+84: { "worldId": 0x6, "name": "HollowBastionLotusForest", "display": "Lotus Forest", "areaId": 0x5, },
 }
 
 function GetLocationByName(name)
@@ -1790,9 +1797,9 @@ achievement(title = "Banco", points = 10,
         && sectorPoints() > Delta(sectorPoints()) // Ensure integer underflow doesn't happen.
 )
 
-achievement(title = "High-Stakes Gambler", points = 25,
-    description = "Earn a total of 100,000 Sector Points or more from a single wager in a system sector.",
-    trigger = IsInSystemSector() && sectorPoints() - Delta(sectorPoints()) >= 100000
+achievement(title = "High-Stakes Gambler", points = 50,
+    description = "Earn a total of 150,000 Sector Points or more from a single wager in a system sector.",
+    trigger = IsInSystemSector() && sectorPoints() - Delta(sectorPoints()) >= 150000
         && sectorPoints() > Delta(sectorPoints()) // Ensure integer underflow doesn't happen.
 )
 
@@ -1960,7 +1967,8 @@ characterQuestData = {
     "Selphie": { "bit0": bit7(0x195bd4), "bit1": bit0(0x195bd5) },
     "Cid": { "bit0": bit5(0x195bd4), "bit1": bit6(0x195bd4) },
     "Aladdin": { "bit0": bit7(0x195bdb), "bit1": bit0(0x195bd4) },
-    "Alice": { "bit0": bit3(0x195bd4), "bit1": bit4(0x195bd4) }
+    "Alice": { "bit0": bit3(0x195bd4), "bit1": bit4(0x195bd4) },
+    "Phil": { "bit0": bit1(0x195bd4), "bit1": bit2(0x195bd4) }
 }
 
 // Generate conditions for quests from the above addresses.
@@ -1991,10 +1999,12 @@ GenerateSaveProtectedAchievementFromConditions({
     "threshold": 7,
 }, questConditions, always_true())
 
-function questBester() => bit4(0x195c7e)
-achievement(title = "Quest Bester", description = "Complete all quests.", points = 25,
-    trigger = WasBitflagSetInGame(questBester())
-)
+GenerateSaveProtectedAchievementFromConditions({
+    "name": "Quest Bester",
+    "description": "Complete all quests.",
+    "points": 25,
+    "threshold": (length(characterQuestData) * 3),
+}, questConditions, always_true())
 
 function proudAchievement() => bit3(0x195c7e)
 achievement(title = "Proud Achievement", description = "Replay and complete every world on Proud Mode.", points = 10,
