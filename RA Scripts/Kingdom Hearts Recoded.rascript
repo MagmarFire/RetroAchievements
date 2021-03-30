@@ -109,6 +109,10 @@ areas = {
 82: { "worldId": 0x6, "name": "HollowBastionSecondDistrict", "display": "Second District", "areaId": 0xb, },
 83: { "worldId": 0x6, "name": "HollowBastionClearing", "display": "Clearing", "areaId": 0x4, },
 84: { "worldId": 0x6, "name": "HollowBastionLotusForest", "display": "Lotus Forest", "areaId": 0x5, },
+85: { "worldId": 0x6, "name": "HollowBastionCaveBeginnings", "display": "Cave / Hall of Beginnings", "areaId": 0x7, },
+86: { "worldId": 0x6, "name": "HollowBastionCaveEntrance", "display": "Cave / Entrance", "areaId": 0x6, },
+87: { "worldId": 0x6, "name": "HollowBastionChapelRiku", "display": "Chapel", "areaId": 0x3, },
+88: { "worldId": 0x6, "name": "HollowBastionEscapeRiku", "display": "Inside Riku’s Data", "areaId": 0xc, },
 }
 
 function GetLocationByName(name)
@@ -1421,6 +1425,16 @@ function IsCommandInstalledInSubslot(subslotId)
     return bit1(commandBaseAddr() + subslotId * 12) == 1
 }
 
+function HasAnyCommandsEquipped()
+{
+    commandInstalled = always_false()
+    for i in range(0, 7) // One loop per command group
+    {
+        commandInstalled = commandInstalled || IsCommandInstalledInSubslot(2 * i)
+    }
+    return commandInstalled
+}
+
 function HasCommandEquipped(commandName)
 {
     rawCommandInstalled = always_false()
@@ -1762,7 +1776,7 @@ achievement(title = "Sour Stomach", points = 10,
 )
 
 achievement(title = "Waste Not, Want Not", points = 10,
-    description = "Defeat Data-Riku equipping only a single HP-restoring item command as your primary source of healing (Critical Mode; Level 22 or below).",
+    description = "Defeat Data-Riku in Hollow Bastion equipping only a single HP-restoring item command as your primary source of healing (Critical Mode; Level 22 or below).",
     trigger = Level() <= 22 && IsAtLeastOnDifficulty("Critical") && JustDefeatedEnemy("Data-Riku")
         && never(HasCommandEquipped("Cure")) && never(HasCommandEquipped("Cura")) && never(HasCommandEquipped("Curaga")) && never(HasCommandEquipped("Esuna"))
         && never(tally(2, NumberOfHealingItemCommandsEquipped())) && never(!IsInLocation("HollowBastionKeyholeChapel"))
@@ -1776,6 +1790,12 @@ achievement(title = "Speed Deletion", points = 10,
 achievement(title = "Speed Shredding", points = 25,
     description = "Earn a Star rank in the Hollow Bastion Keyhole (Proud Mode or higher; Level 22 or below).",
     trigger = IsAtLeastOnDifficulty("Proud") && Level() <= 22 && never(!IsInLocation("HollowBastionKeyholeChapel")) && BossScoreIsDisplayedAndAtLeast(40000)
+)
+
+achievement(title = "Graceful Degradation", points = 10,
+    description = "Defeat the Data-Riku inside Riku's data without equipping any commands (Critical Mode; Level 25 or below).",
+    trigger = Level() <= 25 && IsAtLeastOnDifficulty("Critical") && JustDefeatedEnemy("Data-Riku")
+        && never(HasAnyCommandsEquipped()) && never(!IsInLocation("HollowBastionChapelRiku"))
 )
 
 function extraCommandSlotsUnlocked() => byte(0x198700)
@@ -1821,6 +1841,8 @@ sectorRewards = [
     bit0(0x198348), bit1(0x198348), bit2(0x198348), bit3(0x198348), bit4(0x198348), bit5(0x198348), bit6(0x198348),
     bit0(0x19833c), bit1(0x19833c), bit2(0x19833c), bit3(0x19833c), bit4(0x19833c),
     bit0(0x198344), bit1(0x198344), bit2(0x198344), bit3(0x198344), bit4(0x198344),
+    bit0(0x198350), bit1(0x198350), bit2(0x198350), bit3(0x198350), bit4(0x198350), bit5(0x198350),
+    bit0(0x198352), bit1(0x198352), bit2(0x198352), bit3(0x198352), bit4(0x198352), bit5(0x198352),
 ]
 
 // Generate conditions for sector rewards from the above addresses.
@@ -2117,4 +2139,3 @@ leaderboard(title = "Score Attack - Hollow Bastion", description = "Get as many 
     submit = IsTotalScoreJustDisplayed(),
     value = dword(bossScorePointer() + 8)
 )
-
