@@ -113,6 +113,7 @@ areas = {
 86: { "worldId": 0x6, "name": "HollowBastionCaveEntrance", "display": "Cave / Entrance", "areaId": 0x6, },
 87: { "worldId": 0x6, "name": "HollowBastionChapelRiku", "display": "Chapel", "areaId": 0x3, },
 88: { "worldId": 0x6, "name": "HollowBastionEscapeRiku", "display": "Inside Riku’s Data", "areaId": 0xc, },
+89: { "worldId": 0x6, "name": "HollowBastionDragon", "display": "Chapel (Dragon’s Lair)", "areaId": 0x2, },
 }
 
 function GetLocationByName(name)
@@ -1755,18 +1756,18 @@ achievement(title = "Mano-a-Many", points = 3,
             || once(Delta(hp()) == 0 && hp() == maxHP()) && JustDefeatedEnemy("Jafar")) // Cover a game over situation
 )
 
-achievement(title = "Endless Astronomical Abilities", points = 5,
-    description = "Earn a Star rank in the Agrabah Keyhole (Proud Mode or higher; Level 20 or below).",
-    trigger = IsAtLeastOnDifficulty("Proud") &&  BossScoreIsDisplayedAndAtLeast(35000)
-        && never(!IsInLocation("AgrabahKeyholeTerminus")) && Level() <= 20
-)
-
 eternityCharmId = 0x12d
 achievement(title = "Keyblade Beats Rock", points = 25,
     description = "Defeat Jafar's genie form with 50 max HP or less and without Second Chance active (Critical Mode; Level 20 or below).",
     trigger = IsAtLeastOnDifficulty("Critical") && JustDefeatedEnemy("Jafar (Genie)")
         && never(!IsInLocation("AgrabahKeyholeTerminus")) && Level() <= 20 && maxHP() <= 50
         && !HasAccessoryEquipped(eternityCharmId)
+)
+
+achievement(title = "Exceptional Astronomical Abilities", points = 5,
+    description = "Earn a Star rank in the Agrabah Keyhole (Proud Mode or higher; Level 20 or below).",
+    trigger = IsAtLeastOnDifficulty("Proud") &&  BossScoreIsDisplayedAndAtLeast(35000)
+        && never(!IsInLocation("AgrabahKeyholeTerminus")) && Level() <= 20
 )
 
 achievement(title = "Sour Stomach", points = 10,
@@ -1796,6 +1797,31 @@ achievement(title = "Graceful Degradation", points = 10,
     description = "Defeat the Data-Riku inside Riku's data without equipping any commands (Critical Mode; Level 25 or below).",
     trigger = Level() <= 25 && IsAtLeastOnDifficulty("Critical") && JustDefeatedEnemy("Data-Riku")
         && never(HasAnyCommandsEquipped()) && never(!IsInLocation("HollowBastionChapelRiku"))
+)
+
+function HighJumpEquipped() => bit4(0x1986f0) == 1
+function AirSlideEquipped() => bit7(0x1986f0) == 1 || bit0(0x1986f2) == 1 || bit1(0x1986f2) == 1
+function GlideEquipped() => bit7(0x1986f2) == 1
+achievement(title = "Resistance Training", points = 5,
+    description = "Reach the Dragon's Lair with either High Jump, Air Slide, Glide, or none of the above equipped.",
+    trigger = IsInLocation("HollowBastionDragon") && WasInLocation("HollowBastionEscapeRiku") && never(!IsInLocation("HollowBastionDragon")) &&
+        never(tally(2, [ once(HighJumpEquipped()), once(AirSlideEquipped()), once(GlideEquipped()) ]))
+)
+
+achievement(title = "Grounded Mortal", points = 10,
+    description = "Defeat Dragon Maleficent without High Jump, Air Slide, or Glide equipped (Critical Mode; Level 27 or below).",
+    trigger = IsInLocation("HollowBastionDragon") && JustDefeatedEnemy("Dragon") && Level() <= 27 && IsAtLeastOnDifficulty("Critical")
+        && never(HighJumpEquipped() || AirSlideEquipped() || GlideEquipped())
+)
+
+achievement(title = "Flame Damping", points = 5,
+    description = "Get a score of 27000 or more during the escape from inside Riku's data (Proud Mode or higher; Level 27 or below).",
+    trigger = IsAtLeastOnDifficulty("Proud") && Level() <= 27 && never(!IsInLocation("HollowBastionDragon")) && BossScoreIsDisplayedAndAtLeast(27000)
+)
+
+achievement(title = "Draconic Rage", points = 10,
+    description = "Earn a Star rank escaping from inside Riku's data (Proud Mode or higher; Level 27 or below).",
+    trigger = IsAtLeastOnDifficulty("Proud") && Level() <= 27 && never(!IsInLocation("HollowBastionDragon")) && BossScoreIsDisplayedAndAtLeast(50000)
 )
 
 function extraCommandSlotsUnlocked() => byte(0x198700)
@@ -2136,6 +2162,20 @@ leaderboard(title = "Time Attack - Hollow Bastion", description = "Seal the Holl
 leaderboard(title = "Score Attack - Hollow Bastion", description = "Get as many points as you can in the Hollow Bastion Keyhole.",
     start = IsInLocation("HollowBastionKeyholeChapel") && IsTotalScoreJustDisplayed() && !IsInSystemSector(),
     cancel = !IsInLocation("HollowBastionKeyholeChapel") || IsInSystemSector(),
+    submit = IsTotalScoreJustDisplayed(),
+    value = dword(bossScorePointer() + 8)
+)
+
+leaderboard(title = "Time Attack - Hollow Bastion II", description = "Escape from inside Riku's data as quickly as you can.",
+    start = IsInLocation("HollowBastionDragon") && !IsInSystemSector(),
+    cancel = !IsInLocation("HollowBastionDragon") || IsInSystemSector(),
+    submit = IsBossRankJustDisplayed(),
+    value = bossMilliseconds() / 10
+)
+
+leaderboard(title = "Score Attack - Hollow Bastion II", description = "Get as many points as you can escaping from inside Riku's data.",
+    start = IsInLocation("HollowBastionDragon") && IsTotalScoreJustDisplayed() && !IsInSystemSector(),
+    cancel = !IsInLocation("HollowBastionDragon") || IsInSystemSector(),
     submit = IsTotalScoreJustDisplayed(),
     value = dword(bossScorePointer() + 8)
 )
