@@ -21,7 +21,8 @@ worlds = {
     3: "Olympus Coliseum",
     4: "Agrabah",
     5: "Hollow Bastion",
-    6: "Hollow Bastion"
+    6: "Hollow Bastion",
+    7: "Castle Oblivion"
 }
 
 areas = {
@@ -114,6 +115,11 @@ areas = {
 87: { "worldId": 0x6, "name": "HollowBastionChapelRiku", "display": "Chapel", "areaId": 0x3, },
 88: { "worldId": 0x6, "name": "HollowBastionEscapeRiku", "display": "Inside Riku’s Data", "areaId": 0xc, },
 89: { "worldId": 0x6, "name": "HollowBastionDragon", "display": "Chapel (Dragon’s Lair)", "areaId": 0x2, },
+90: { "worldId": 0x6, "name": "HollowBastionGrandHall2", "display": "Grand Hall", "areaId": 0xe, },
+91: { "worldId": 0x6, "name": "HollowBastionDataTunnel", "display": "Data Tunnel", "areaId": 0xd, },
+92: { "worldId": 0x6, "name": "HollowBastionCentralCorruption", "display": "Central Corruption", "areaId": 0x1, },
+93: { "worldId": 0x7, "name": "CastleOblivionHall", "display": "Entrance Hall", "areaId": 0x7, },
+
 }
 
 function GetLocationByName(name)
@@ -1513,7 +1519,7 @@ achievement(title = "Released Candidate", description = "Complete Wonderland.",
 )
 
 function olympusColiseumStoryEntry() => bit1(0x195bda)
-achievement(title = "Escape Sequence", description = "Complete Olympus Coliseum.",
+achievement(title = "Race Condition", description = "Complete Olympus Coliseum.",
     points = 3,
     trigger = WasBitflagSetInGame(olympusColiseumStoryEntry())
 )
@@ -1569,9 +1575,15 @@ achievement(title = "My Friends Are My Power, I Guess", description = "Reclaim y
 )
 
 function hollowBastionStoryEntry() => bit7(0x195bd9)
-achievement(title = "Endless QA", description = "Complete Hollow Bastion.",
+achievement(title = "Endless QA", description = "Complete Hollow Bastion, Part I.",
     points = 3,
     trigger = WasBitflagSetInGame(hollowBastionStoryEntry())
+)
+
+function hollowBastionIIStoryEntry() => bit6(0x195bd9)
+achievement(title = "Escape Sequence", description = "Complete Hollow Bastion, Part II.",
+    points = 3,
+    trigger = WasBitflagSetInGame(hollowBastionIIStoryEntry())
 )
 
 function dodgeRollActive() => bit0(0x1986f0)
@@ -1815,8 +1827,8 @@ achievement(title = "Grounded Mortal", points = 10,
 )
 
 achievement(title = "Flame Damping", points = 5,
-    description = "Get a score of 27000 or more during the escape from inside Riku's data (Proud Mode or higher; Level 27 or below).",
-    trigger = IsAtLeastOnDifficulty("Proud") && Level() <= 27 && never(!IsInLocation("HollowBastionDragon")) && BossScoreIsDisplayedAndAtLeast(27000)
+    description = "Get a score of 32000 or more during the escape from inside Riku's data (Proud Mode or higher; Level 27 or below).",
+    trigger = IsAtLeastOnDifficulty("Proud") && Level() <= 27 && never(!IsInLocation("HollowBastionDragon")) && BossScoreIsDisplayedAndAtLeast(32000)
 )
 
 achievement(title = "Draconic Rage", points = 10,
