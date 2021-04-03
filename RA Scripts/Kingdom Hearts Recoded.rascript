@@ -653,11 +653,13 @@ function IsMinigameActive() => byte(minigameStatePointer() + minigameActiveOffse
 //          - !3 and 4 = fast
 function difficulty() => bit0(0x1986fa) + bit1(0x1986fa) + bit1(0x1986fa) // Can't multiply by 2 because reasons.
 
+function IsOnBeginnerMode() => difficulty() == 0x0
+
 function IsAtLeastOnDifficulty(value)
 {
     if (value == "Beginner")
     {
-        return difficulty() == 0x0
+        return IsOnBeginnerMode()
     }
     else if (value == "Standard")
     {
@@ -1057,6 +1059,8 @@ function bossMilliseconds() => dword(0x1efc88)
 // 0xf = in the field
 function status() => word(0x056f50)
 
+function IsInMenu() => status() == 0xc || status() == 0x0
+
 // Menu ID (?) (16-bit)
 // 
 // 0xffff = transitioning/not in menu
@@ -1276,100 +1280,100 @@ GenerateSaveProtectedAchievementFromConditions({
 
 // ============================== COMMANDS ============================== //
 commands = {
-0xFF: { "id": 0xFF, "name": "N/A", },
-0x00: { "id": 0x00, "name": "Quick Blitz", },
-0x01: { "id": 0x01, "name": "Sliding Dash", },
-0x02: { "id": 0x02, "name": "Round Blitz", },
-0x03: { "id": 0x03, "name": "Strike Raid", },
-0x04: { "id": 0x04, "name": "Rising Strike", },
-0x05: { "id": 0x05, "name": "Sliding Rush", },
-0x06: { "id": 0x06, "name": "Aerial Sweep", },
-0x07: { "id": 0x07, "name": "Air Sweep", },
-0x08: { "id": 0x08, "name": "Aerial Slam", },
-0x09: { "id": 0x09, "name": "Land Crash", },
-0x0a: { "id": 0x0a, "name": "Fire Edge", },
-0x0b: { "id": 0x0b, "name": "Blizzard Edge", },
-0x0c: { "id": 0x0c, "name": "Thunder Edge", },
-0x0d: { "id": 0x0d, "name": "Aero Edge", },
-0x0e: { "id": 0x0e, "name": "Heat Dash", },
-0x0f: { "id": 0x0f, "name": "Ice Dash", },
-0x10: { "id": 0x10, "name": "Spark Dash", },
-0x11: { "id": 0x11, "name": "Wind Dash", },
-0x12: { "id": 0x12, "name": "Fire Blast", },
-0x13: { "id": 0x13, "name": "Blizzard Blast", },
-0x14: { "id": 0x14, "name": "Thunder Blast", },
-0x15: { "id": 0x15, "name": "Aero Blast", },
-0x16: { "id": 0x16, "name": "Fire Raid", },
-0x17: { "id": 0x17, "name": "Blizzard Raid", },
-0x18: { "id": 0x18, "name": "Thunder Raid", },
-0x19: { "id": 0x19, "name": "Aero Raid", },
-0x1a: { "id": 0x1a, "name": "Fire Buster", },
-0x1b: { "id": 0x1b, "name": "Blizzard Buster", },
-0x1c: { "id": 0x1c, "name": "Thunder Buster", },
-0x1d: { "id": 0x1d, "name": "Aero Buster", },
-0x1e: { "id": 0x1e, "name": "Heat Sweep", },
-0x1f: { "id": 0x1f, "name": "Ice Sweep", },
-0x20: { "id": 0x20, "name": "Spark Sweep", },
-0x21: { "id": 0x21, "name": "Wind Sweep", },
-0x22: { "id": 0x22, "name": "Heat Storm", },
-0x23: { "id": 0x23, "name": "Ice Storm", },
-0x24: { "id": 0x24, "name": "Spark Storm", },
-0x25: { "id": 0x25, "name": "Wind Storm", },
-0x26: { "id": 0x26, "name": "Fire Slam", },
-0x27: { "id": 0x27, "name": "Blizzard Slam", },
-0x28: { "id": 0x28, "name": "Thunder Slam", },
-0x29: { "id": 0x29, "name": "Aero Slam", },
-0x2a: { "id": 0x2a, "name": "Heat Dive", },
-0x2b: { "id": 0x2b, "name": "Ice Dive", },
-0x2c: { "id": 0x2c, "name": "Spark Dive", },
-0x2d: { "id": 0x2d, "name": "Wind Dive", },
-0x2e: { "id": 0x2e, "name": "Stun Impact", },
-0x2f: { "id": 0x2f, "name": "Muscle Strike", },
-0x30: { "id": 0x30, "name": "Chain Rave", },
-0x31: { "id": 0x31, "name": "Rising Rush", },
-0x32: { "id": 0x32, "name": "Zantetsuken", },
-0x33: { "id": 0x33, "name": "Eruption", },
-0x34: { "id": 0x34, "name": "Gravity Drop", },
-0x35: { "id": 0x35, "name": "Shock Fall", },
-0x36: { "id": 0x36, "name": "Judgment Triad", },
-0x37: { "id": 0x37, "name": "Fire", },
-0x38: { "id": 0x38, "name": "Fira", },
-0x39: { "id": 0x39, "name": "Firaga", },
-0x3a: { "id": 0x3a, "name": "Blizzard", },
-0x3b: { "id": 0x3b, "name": "Blizzara", },
-0x3c: { "id": 0x3c, "name": "Blizzaga", },
-0x3d: { "id": 0x3d, "name": "Thunder", },
-0x3e: { "id": 0x3e, "name": "Thundara", },
-0x3f: { "id": 0x3f, "name": "Thundaga", },
-0x40: { "id": 0x40, "name": "Aero", },
-0x41: { "id": 0x41, "name": "Aerora", },
-0x42: { "id": 0x42, "name": "Aeroga", },
-0x43: { "id": 0x43, "name": "Magnet", },
-0x44: { "id": 0x44, "name": "Magnera", },
-0x45: { "id": 0x45, "name": "Magnega", },
-0x46: { "id": 0x46, "name": "Cure", },
-0x47: { "id": 0x47, "name": "Cura", },
-0x48: { "id": 0x48, "name": "Curaga", },
-0x49: { "id": 0x49, "name": "Slow", },
-0x4a: { "id": 0x4a, "name": "Stop", },
-0x4b: { "id": 0x4b, "name": "Confuse", },
-0x4c: { "id": 0x4c, "name": "Firaga Burst", },
-0x4d: { "id": 0x4d, "name": "Triple Firaga", },
-0x4e: { "id": 0x4e, "name": "Triple Burst", },
-0x4f: { "id": 0x4f, "name": "Blizzaga Pursuit", },
-0x50: { "id": 0x50, "name": "Triple Blizzaga", },
-0x51: { "id": 0x51, "name": "Triple Pursuit", },
-0x52: { "id": 0x52, "name": "Thunder Tracer", },
-0x53: { "id": 0x53, "name": "Pulse Tracer", },
-0x54: { "id": 0x54, "name": "Tornado Tracer", },
-0x55: { "id": 0x55, "name": "Wind Tracer", },
-0x56: { "id": 0x56, "name": "Magnet Grab", },
-0x57: { "id": 0x57, "name": "Esuna", },
-0x58: { "id": 0x58, "name": "Flame Fall", },
-0x59: { "id": 0x59, "name": "Icicle Mine", },
-0x5a: { "id": 0x5a, "name": "Exo Spark", },
-0x5b: { "id": 0x5b, "name": "Cyclone", },
-0x5c: { "id": 0x5c, "name": "Quake", },
+0xFF: { "id": 0xFF, "name": "N/A", "category": "N/A" },
+0x00: { "id": 0x00, "name": "Quick Blitz", "category": "Melee" },
+0x01: { "id": 0x01, "name": "Sliding Dash", "category": "Melee" },
+0x02: { "id": 0x02, "name": "Round Blitz", "category": "Melee" },
+0x03: { "id": 0x03, "name": "Strike Raid", "category": "Ranged" },
+0x04: { "id": 0x04, "name": "Rising Strike", "category": "Melee" },
+0x05: { "id": 0x05, "name": "Sliding Rush", "category": "Melee" },
+0x06: { "id": 0x06, "name": "Aerial Sweep", "category": "Melee" },
+0x07: { "id": 0x07, "name": "Air Sweep", "category": "Melee" },
+0x08: { "id": 0x08, "name": "Aerial Slam", "category": "Melee" },
+0x09: { "id": 0x09, "name": "Land Crash", "category": "Melee" },
+0x0a: { "id": 0x0a, "name": "Fire Edge", "category": "Melee" },
+0x0b: { "id": 0x0b, "name": "Blizzard Edge", "category": "Melee" },
+0x0c: { "id": 0x0c, "name": "Thunder Edge", "category": "Melee" },
+0x0d: { "id": 0x0d, "name": "Aero Edge", "category": "Melee" },
+0x0e: { "id": 0x0e, "name": "Heat Dash", "category": "Melee" },
+0x0f: { "id": 0x0f, "name": "Ice Dash", "category": "Melee" },
+0x10: { "id": 0x10, "name": "Spark Dash", "category": "Melee" },
+0x11: { "id": 0x11, "name": "Wind Dash", "category": "Melee" },
+0x12: { "id": 0x12, "name": "Fire Blast", "category": "Melee" },
+0x13: { "id": 0x13, "name": "Blizzard Blast", "category": "Melee" },
+0x14: { "id": 0x14, "name": "Thunder Blast", "category": "Melee" },
+0x15: { "id": 0x15, "name": "Aero Blast", "category": "Melee" },
+0x16: { "id": 0x16, "name": "Fire Raid", "category": "Ranged" },
+0x17: { "id": 0x17, "name": "Blizzard Raid", "category": "Ranged" },
+0x18: { "id": 0x18, "name": "Thunder Raid", "category": "Ranged" },
+0x19: { "id": 0x19, "name": "Aero Raid", "category": "Ranged" },
+0x1a: { "id": 0x1a, "name": "Fire Buster", "category": "Melee" },
+0x1b: { "id": 0x1b, "name": "Blizzard Buster", "category": "Melee" },
+0x1c: { "id": 0x1c, "name": "Thunder Buster", "category": "Melee" },
+0x1d: { "id": 0x1d, "name": "Aero Buster", "category": "Melee" },
+0x1e: { "id": 0x1e, "name": "Heat Sweep", "category": "Melee" },
+0x1f: { "id": 0x1f, "name": "Ice Sweep", "category": "Melee" },
+0x20: { "id": 0x20, "name": "Spark Sweep", "category": "Melee" },
+0x21: { "id": 0x21, "name": "Wind Sweep", "category": "Melee" },
+0x22: { "id": 0x22, "name": "Heat Storm", "category": "Melee" },
+0x23: { "id": 0x23, "name": "Ice Storm", "category": "Melee" },
+0x24: { "id": 0x24, "name": "Spark Storm", "category": "Melee" },
+0x25: { "id": 0x25, "name": "Wind Storm", "category": "Melee" },
+0x26: { "id": 0x26, "name": "Fire Slam", "category": "Melee" },
+0x27: { "id": 0x27, "name": "Blizzard Slam", "category": "Melee" },
+0x28: { "id": 0x28, "name": "Thunder Slam", "category": "Melee" },
+0x29: { "id": 0x29, "name": "Aero Slam", "category": "Melee" },
+0x2a: { "id": 0x2a, "name": "Heat Dive", "category": "Melee" },
+0x2b: { "id": 0x2b, "name": "Ice Dive", "category": "Melee" },
+0x2c: { "id": 0x2c, "name": "Spark Dive", "category": "Melee" },
+0x2d: { "id": 0x2d, "name": "Wind Dive", "category": "Melee" },
+0x2e: { "id": 0x2e, "name": "Stun Impact", "category": "Melee" },
+0x2f: { "id": 0x2f, "name": "Muscle Strike", "category": "Melee" },
+0x30: { "id": 0x30, "name": "Chain Rave", "category": "Melee" },
+0x31: { "id": 0x31, "name": "Rising Rush", "category": "Melee" },
+0x32: { "id": 0x32, "name": "Zantetsuken", "category": "Melee" },
+0x33: { "id": 0x33, "name": "Eruption", "category": "Melee" },
+0x34: { "id": 0x34, "name": "Gravity Drop", "category": "Melee" },
+0x35: { "id": 0x35, "name": "Shock Fall", "category": "Melee" },
+0x36: { "id": 0x36, "name": "Judgment Triad", "category": "Ranged" },
+0x37: { "id": 0x37, "name": "Fire", "category": "Ranged" },
+0x38: { "id": 0x38, "name": "Fira", "category": "Ranged" },
+0x39: { "id": 0x39, "name": "Firaga", "category": "Ranged" },
+0x3a: { "id": 0x3a, "name": "Blizzard", "category": "Ranged" },
+0x3b: { "id": 0x3b, "name": "Blizzara", "category": "Ranged" },
+0x3c: { "id": 0x3c, "name": "Blizzaga", "category": "Ranged" },
+0x3d: { "id": 0x3d, "name": "Thunder", "category": "Ranged" },
+0x3e: { "id": 0x3e, "name": "Thundara", "category": "Ranged" },
+0x3f: { "id": 0x3f, "name": "Thundaga", "category": "Ranged" },
+0x40: { "id": 0x40, "name": "Aero", "category": "Ranged" },
+0x41: { "id": 0x41, "name": "Aerora", "category": "Ranged" },
+0x42: { "id": 0x42, "name": "Aeroga", "category": "Ranged" },
+0x43: { "id": 0x43, "name": "Magnet", "category": "Ranged" },
+0x44: { "id": 0x44, "name": "Magnera", "category": "Ranged" },
+0x45: { "id": 0x45, "name": "Magnega", "category": "Ranged" },
+0x46: { "id": 0x46, "name": "Cure", "category": "Curative" },
+0x47: { "id": 0x47, "name": "Cura", "category": "Curative" },
+0x48: { "id": 0x48, "name": "Curaga", "category": "Curative" },
+0x49: { "id": 0x49, "name": "Slow", "category": "Ranged" },
+0x4a: { "id": 0x4a, "name": "Stop", "category": "Ranged" },
+0x4b: { "id": 0x4b, "name": "Confuse", "category": "Ranged" },
+0x4c: { "id": 0x4c, "name": "Firaga Burst", "category": "Ranged" },
+0x4d: { "id": 0x4d, "name": "Triple Firaga", "category": "Ranged" },
+0x4e: { "id": 0x4e, "name": "Triple Burst", "category": "Ranged" },
+0x4f: { "id": 0x4f, "name": "Blizzaga Pursuit", "category": "Ranged" },
+0x50: { "id": 0x50, "name": "Triple Blizzaga", "category": "Ranged" },
+0x51: { "id": 0x51, "name": "Triple Pursuit", "category": "Ranged" },
+0x52: { "id": 0x52, "name": "Thunder Tracer", "category": "Ranged" },
+0x53: { "id": 0x53, "name": "Pulse Tracer", "category": "Ranged" },
+0x54: { "id": 0x54, "name": "Tornado Tracer", "category": "Ranged" },
+0x55: { "id": 0x55, "name": "Wind Tracer", "category": "Ranged" },
+0x56: { "id": 0x56, "name": "Magnet Grab", "category": "Ranged" },
+0x57: { "id": 0x57, "name": "Esuna", "category": "Curative" },
+0x58: { "id": 0x58, "name": "Flame Fall", "category": "Ranged" },
+0x59: { "id": 0x59, "name": "Icicle Mine", "category": "Ranged" },
+0x5a: { "id": 0x5a, "name": "Exo Spark", "category": "Ranged" },
+0x5b: { "id": 0x5b, "name": "Cyclone", "category": "Ranged" },
+0x5c: { "id": 0x5c, "name": "Quake", "category": "Ranged" },
 }
 
 conversionCombinations = {
@@ -1381,6 +1385,133 @@ conversionCombinations = {
 5: { "targetId": 0x48, "command1Id": 0x2a, "command2Id": 0x47, },
 6: { "targetId": 0x48, "command1Id": 0x4b, "command2Id": 0x47, },
 7: { "targetId": 0x48, "command1Id": 0x57, "command2Id": 0x47, },
+8: { "targetId": 0x16, "command1Id": 0x03, "command2Id": 0x01, },
+9: { "targetId": 0x16, "command1Id": 0x04, "command2Id": 0x19, },
+10: { "targetId": 0x16, "command1Id": 0x08, "command2Id": 0x0e, },
+11: { "targetId": 0x16, "command1Id": 0x37, "command2Id": 0x03, },
+12: { "targetId": 0x16, "command1Id": 0x38, "command2Id": 0x03, },
+13: { "targetId": 0x17, "command1Id": 0x03, "command2Id": 0x01, },
+14: { "targetId": 0x17, "command1Id": 0x04, "command2Id": 0x16, },
+15: { "targetId": 0x17, "command1Id": 0x08, "command2Id": 0x0f, },
+16: { "targetId": 0x17, "command1Id": 0x3a, "command2Id": 0x03, },
+17: { "targetId": 0x17, "command1Id": 0x3b, "command2Id": 0x03, },
+18: { "targetId": 0x18, "command1Id": 0x03, "command2Id": 0x02, },
+19: { "targetId": 0x18, "command1Id": 0x04, "command2Id": 0x17, },
+20: { "targetId": 0x18, "command1Id": 0x08, "command2Id": 0x10, },
+21: { "targetId": 0x18, "command1Id": 0x3d, "command2Id": 0x03, },
+22: { "targetId": 0x18, "command1Id": 0x3e, "command2Id": 0x03, },
+23: { "targetId": 0x19, "command1Id": 0x09, "command2Id": 0x09, },
+24: { "targetId": 0x19, "command1Id": 0x08, "command2Id": 0x11, },
+25: { "targetId": 0x19, "command1Id": 0x11, "command2Id": 0x18, },
+26: { "targetId": 0x19, "command1Id": 0x40, "command2Id": 0x03, },
+27: { "targetId": 0x19, "command1Id": 0x41, "command2Id": 0x03, },
+28: { "targetId": 0x36, "command1Id": 0x2f, "command2Id": 0x55, },
+29: { "targetId": 0x38, "command1Id": 0x0a, "command2Id": 0x02, },
+30: { "targetId": 0x38, "command1Id": 0x37, "command2Id": 0x0a, },
+31: { "targetId": 0x38, "command1Id": 0x37, "command2Id": 0x46, },
+32: { "targetId": 0x38, "command1Id": 0x37, "command2Id": 0x49, },
+33: { "targetId": 0x38, "command1Id": 0x46, "command2Id": 0x0a, },
+34: { "targetId": 0x38, "command1Id": 0x49, "command2Id": 0x0a, },
+35: { "targetId": 0x38, "command1Id": 0x4a, "command2Id": 0x0a, },
+36: { "targetId": 0x39, "command1Id": 0x12, "command2Id": 0x16, },
+37: { "targetId": 0x39, "command1Id": 0x38, "command2Id": 0x22, },
+38: { "targetId": 0x39, "command1Id": 0x4b, "command2Id": 0x22, },
+39: { "targetId": 0x39, "command1Id": 0x57, "command2Id": 0x22, },
+40: { "targetId": 0x3b, "command1Id": 0x0f, "command2Id": 0x00, },
+41: { "targetId": 0x3b, "command1Id": 0x3a, "command2Id": 0x0b, },
+42: { "targetId": 0x3b, "command1Id": 0x3a, "command2Id": 0x37, },
+43: { "targetId": 0x3b, "command1Id": 0x3a, "command2Id": 0x3d, },
+44: { "targetId": 0x3b, "command1Id": 0x3a, "command2Id": 0x46, },
+45: { "targetId": 0x3b, "command1Id": 0x3a, "command2Id": 0x49, },
+46: { "targetId": 0x3b, "command1Id": 0x46, "command2Id": 0x0b, },
+47: { "targetId": 0x3b, "command1Id": 0x49, "command2Id": 0x0b, },
+48: { "targetId": 0x3b, "command1Id": 0x4a, "command2Id": 0x0b, },
+49: { "targetId": 0x3c, "command1Id": 0x0f, "command2Id": 0x14, },
+50: { "targetId": 0x3c, "command1Id": 0x1d, "command2Id": 0x23, },
+51: { "targetId": 0x3c, "command1Id": 0x2b, "command2Id": 0x3b, },
+52: { "targetId": 0x3c, "command1Id": 0x4b, "command2Id": 0x23, },
+53: { "targetId": 0x3c, "command1Id": 0x57, "command2Id": 0x23, },
+54: { "targetId": 0x3e, "command1Id": 0x0c, "command2Id": 0x37, },
+55: { "targetId": 0x3e, "command1Id": 0x10, "command2Id": 0x02, },
+56: { "targetId": 0x3e, "command1Id": 0x3d, "command2Id": 0x0c, },
+57: { "targetId": 0x3e, "command1Id": 0x3d, "command2Id": 0x37, },
+58: { "targetId": 0x3e, "command1Id": 0x3d, "command2Id": 0x46, },
+59: { "targetId": 0x3e, "command1Id": 0x3d, "command2Id": 0x49, },
+60: { "targetId": 0x3e, "command1Id": 0x46, "command2Id": 0x0c, },
+61: { "targetId": 0x3e, "command1Id": 0x49, "command2Id": 0x0c, },
+62: { "targetId": 0x3e, "command1Id": 0x4a, "command2Id": 0x0c, },
+63: { "targetId": 0x3f, "command1Id": 0x0c, "command2Id": 0x19, },
+64: { "targetId": 0x3f, "command1Id": 0x0c, "command2Id": 0x21, },
+65: { "targetId": 0x3f, "command1Id": 0x3e, "command2Id": 0x24, },
+66: { "targetId": 0x3f, "command1Id": 0x4b, "command2Id": 0x24, },
+67: { "targetId": 0x3f, "command1Id": 0x57, "command2Id": 0x24, },
+68: { "targetId": 0x41, "command1Id": 0x40, "command2Id": 0x0d, },
+69: { "targetId": 0x41, "command1Id": 0x46, "command2Id": 0x0d, },
+70: { "targetId": 0x41, "command1Id": 0x49, "command2Id": 0x0d, },
+71: { "targetId": 0x41, "command1Id": 0x4a, "command2Id": 0x0d, },
+72: { "targetId": 0x42, "command1Id": 0x21, "command2Id": 0x46, },
+73: { "targetId": 0x42, "command1Id": 0x21, "command2Id": 0x49, },
+74: { "targetId": 0x42, "command1Id": 0x41, "command2Id": 0x25, },
+75: { "targetId": 0x42, "command1Id": 0x4b, "command2Id": 0x25, },
+76: { "targetId": 0x42, "command1Id": 0x57, "command2Id": 0x25, },
+77: { "targetId": 0x44, "command1Id": 0x27, "command2Id": 0x43, },
+78: { "targetId": 0x44, "command1Id": 0x46, "command2Id": 0x43, },
+79: { "targetId": 0x44, "command1Id": 0x49, "command2Id": 0x43, },
+80: { "targetId": 0x44, "command1Id": 0x4a, "command2Id": 0x43, },
+81: { "targetId": 0x45, "command1Id": 0x48, "command2Id": 0x44, },
+82: { "targetId": 0x45, "command1Id": 0x4b, "command2Id": 0x44, },
+83: { "targetId": 0x45, "command1Id": 0x57, "command2Id": 0x44, },
+84: { "targetId": 0x49, "command1Id": 0x01, "command2Id": 0x46, },
+85: { "targetId": 0x49, "command1Id": 0x04, "command2Id": 0x46, },
+86: { "targetId": 0x4c, "command1Id": 0x2e, "command2Id": 0x31, },
+87: { "targetId": 0x4c, "command1Id": 0x38, "command2Id": 0x4e, },
+88: { "targetId": 0x4c, "command1Id": 0x39, "command2Id": 0x26, },
+89: { "targetId": 0x4c, "command1Id": 0x39, "command2Id": 0x4e, },
+90: { "targetId": 0x4d, "command1Id": 0x2a, "command2Id": 0x39, },
+91: { "targetId": 0x4d, "command1Id": 0x2f, "command2Id": 0x31, },
+92: { "targetId": 0x4d, "command1Id": 0x39, "command2Id": 0x4c, },
+93: { "targetId": 0x4d, "command1Id": 0x4e, "command2Id": 0x39, },
+94: { "targetId": 0x4e, "command1Id": 0x30, "command2Id": 0x31, },
+95: { "targetId": 0x4e, "command1Id": 0x38, "command2Id": 0x16, },
+96: { "targetId": 0x4e, "command1Id": 0x38, "command2Id": 0x4d, },
+97: { "targetId": 0x4e, "command1Id": 0x39, "command2Id": 0x4d, },
+98: { "targetId": 0x4f, "command1Id": 0x17, "command2Id": 0x3c, },
+99: { "targetId": 0x4f, "command1Id": 0x2f, "command2Id": 0x2e, },
+100: { "targetId": 0x4f, "command1Id": 0x3c, "command2Id": 0x50, },
+101: { "targetId": 0x4f, "command1Id": 0x51, "command2Id": 0x3c, },
+102: { "targetId": 0x50, "command1Id": 0x30, "command2Id": 0x2e, },
+103: { "targetId": 0x50, "command1Id": 0x3c, "command2Id": 0x51, },
+104: { "targetId": 0x50, "command1Id": 0x53, "command2Id": 0x3c, },
+105: { "targetId": 0x50, "command1Id": 0x54, "command2Id": 0x3c, },
+106: { "targetId": 0x51, "command1Id": 0x30, "command2Id": 0x2f, },
+107: { "targetId": 0x51, "command1Id": 0x3b, "command2Id": 0x2f, },
+108: { "targetId": 0x51, "command1Id": 0x3c, "command2Id": 0x30, },
+109: { "targetId": 0x51, "command1Id": 0x4f, "command2Id": 0x50, },
+110: { "targetId": 0x52, "command1Id": 0x3e, "command2Id": 0x53, },
+111: { "targetId": 0x52, "command1Id": 0x3f, "command2Id": 0x14, },
+112: { "targetId": 0x52, "command1Id": 0x3f, "command2Id": 0x39, },
+113: { "targetId": 0x52, "command1Id": 0x3f, "command2Id": 0x53, },
+114: { "targetId": 0x53, "command1Id": 0x20, "command2Id": 0x3f, },
+115: { "targetId": 0x53, "command1Id": 0x3e, "command2Id": 0x3f, },
+116: { "targetId": 0x53, "command1Id": 0x3f, "command2Id": 0x42, },
+117: { "targetId": 0x53, "command1Id": 0x3f, "command2Id": 0x52, },
+118: { "targetId": 0x54, "command1Id": 0x39, "command2Id": 0x48, },
+119: { "targetId": 0x54, "command1Id": 0x41, "command2Id": 0x11, },
+120: { "targetId": 0x54, "command1Id": 0x41, "command2Id": 0x55, },
+121: { "targetId": 0x54, "command1Id": 0x42, "command2Id": 0x55, },
+122: { "targetId": 0x54, "command1Id": 0x45, "command2Id": 0x39, },
+123: { "targetId": 0x55, "command1Id": 0x42, "command2Id": 0x39, },
+124: { "targetId": 0x55, "command1Id": 0x54, "command2Id": 0x42, },
+125: { "targetId": 0x55, "command1Id": 0x57, "command2Id": 0x42, },
+126: { "targetId": 0x56, "command1Id": 0x44, "command2Id": 0x45, },
+127: { "targetId": 0x56, "command1Id": 0x45, "command2Id": 0x3c, },
+128: { "targetId": 0x56, "command1Id": 0x4a, "command2Id": 0x45, },
+129: { "targetId": 0x56, "command1Id": 0x55, "command2Id": 0x45, },
+130: { "targetId": 0x58, "command1Id": 0x4f, "command2Id": 0x3f, },
+131: { "targetId": 0x59, "command1Id": 0x4f, "command2Id": 0x56, },
+132: { "targetId": 0x5a, "command1Id": 0x50, "command2Id": 0x3f, },
+133: { "targetId": 0x5b, "command1Id": 0x55, "command2Id": 0x53, },
+134: { "targetId": 0x5c, "command1Id": 0x32, "command2Id": 0x5b, },
 }
 
 function GetConversionCombosByTargetId(targetId)
@@ -1401,14 +1532,33 @@ function GetConversionCombosByTargetId(targetId)
 
 function GetCommandByName(commandName)
 {
+    return GetCommandByProperty("name", commandName)
+}
+
+function GetCommandByProperty(propertyName, propertyValue)
+{
     for id in commands
     {
         command = commands[id]
-        if (command["name"] == commandName)
+        if (command[propertyName] == propertyValue)
         {
             return command
         }
     }
+}
+
+function GetCommandsByProperty(propertyName, propertyValue)
+{
+    retCommands = []
+    for id in commands
+    {
+        command = commands[id]
+        if (command[propertyName] == propertyValue)
+        {
+            array_push(retCommands, command)
+        }
+    }
+    return retCommands
 }
 
 // Returns the ID of the command in a given subslot. A subslot is one of the two slots in a command group.
@@ -1464,6 +1614,17 @@ function HasCommandEquipped(commandName)
     }
     
     return rawCommandInstalled || commandConversionInstalled
+}
+
+function HasAnyGivenCommandsEquipped(namedCommands)
+{
+    trigger = always_false()
+    for command in namedCommands
+    {
+        trigger = trigger || HasCommandEquipped(command["name"])
+    }
+    
+    return trigger
 }
 
 function SubslotCombinationResultsInGivenCommandConversion(slotAId, slotAInstalled, slotBId, slotBInstalled, command)
@@ -1788,10 +1949,11 @@ achievement(title = "Sour Stomach", points = 10,
         && never(!IsInLocation("HollowBastionKeyholeChapel"))
 )
 
+curativeCommands = GetCommandsByProperty("category", "Curative")
 achievement(title = "Waste Not, Want Not", points = 10,
     description = "Defeat Data-Riku in Hollow Bastion equipping only a single HP-restoring item command as your primary source of healing (Critical Mode; Level 22 or below).",
     trigger = Level() <= 22 && IsAtLeastOnDifficulty("Critical") && JustDefeatedEnemy("Data-Riku")
-        && never(HasCommandEquipped("Cure")) && never(HasCommandEquipped("Cura")) && never(HasCommandEquipped("Curaga")) && never(HasCommandEquipped("Esuna"))
+        && never(HasAnyGivenCommandsEquipped(curativeCommands))
         && never(tally(2, NumberOfHealingItemCommandsEquipped())) && never(!IsInLocation("HollowBastionKeyholeChapel"))
 )
 
@@ -1834,6 +1996,22 @@ achievement(title = "Flame Damping", points = 5,
 achievement(title = "Draconic Rage", points = 10,
     description = "Earn a Star rank escaping from inside Riku's data (Proud Mode or higher; Level 27 or below).",
     trigger = IsAtLeastOnDifficulty("Proud") && Level() <= 27 && never(!IsInLocation("HollowBastionDragon")) && BossScoreIsDisplayedAndAtLeast(50000)
+)
+
+achievement(title = "Underclocking", points = 10,
+    description = "Defeat Sora's Heartless (Darkside form) at Level 1 on Standard Mode or higher.",
+    trigger = IsAtLeastOnDifficulty("Standard") && Level() <= 1 && never(!IsInLocation("HollowBastionCentralCorruption"))
+        && once(IsInLocation("HollowBastionCentralCorruption") && WasInLocation("HollowBastionDataTunnel")) // Battle checkpoint
+        && JustDefeatedEnemy("Sora’s Heartless")
+        && (always_false()
+            || never(Level() > 1) && never(IsOnBeginnerMode()) && unless(IsInMenu()))
+)
+
+rangedCommands = GetCommandsByProperty("category", "N/A") // Change "N/A" to "Ranged" to reproduce the crash.
+achievement(title = "Dark Embrace", points = 10,
+    description = "Defeat Sora's Heartless (human form) without any ranged commands equipped (Critical Mode; Level 30 or below).",
+    trigger = IsAtLeastOnDifficulty("Critical") && Level() <= 30 && never(!IsInLocation("HollowBastionCentralCorruption"))
+        && never(HasAnyGivenCommandsEquipped(rangedCommands))
 )
 
 function extraCommandSlotsUnlocked() => byte(0x198700)
@@ -2191,3 +2369,4 @@ leaderboard(title = "Score Attack - Hollow Bastion II", description = "Get as ma
     submit = IsTotalScoreJustDisplayed(),
     value = dword(bossScorePointer() + 8)
 )
+
