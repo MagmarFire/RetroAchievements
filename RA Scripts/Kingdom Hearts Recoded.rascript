@@ -1278,6 +1278,60 @@ GenerateSaveProtectedAchievementFromConditions({
     "threshold": 2,
 }, enemiesConditions, always_true())
 
+function GenerateClustersFromList(data)
+{
+    clusters = []
+    currentElement = 0
+    currentCluster = []
+    for i in data
+    {
+        if (i == currentElement + 1 || currentElement == 0)
+        {
+            currentElement = i
+            array_push(currentCluster, currentElement)
+        }
+        else
+        {
+            array_push(clusters, currentCluster)
+            currentElement = i
+            currentRange = [ currentElement ]
+        }
+    }
+    
+    // Get the range we were just working on if it has elements.
+    if (length(currentCluster) > 0)
+    {
+        array_push(clusters, currentCluster)
+    }
+    
+    return clusters
+}
+
+function ConvertClustersToRanges(clusters)
+{
+    ranges = []
+    
+    for cluster in clusters
+    {
+        min = cluster[0]
+        max = cluster[length(cluster) - 1]
+        array_push(ranges, { "min": min, "max": max })
+    }
+    
+    return ranges
+}
+
+testData = [ 1, 2, 3, 4, 6, 7, 8, 10, 12, 15, 16, 17]
+clusters = GenerateClustersFromList(testData) // [ [ 1, 2, 3, 4], [ 6, 7, 8 ], [10], [12], [15, 16, 17] ]
+ranges = ConvertClustersToRanges(clusters) // [ { "min": 1, "max": 4}, { "min": 6, "max": 8 }, { "min": 10, "max": 10 } ... ]
+
+for range in ranges
+{
+    achievement(title = "min " + range["min"], description = "max " + range["max"], points = 0,
+        trigger = always_false()
+    )
+}
+
 // ============================== COMMANDS ============================== //
 commands = {
 0xFF: { "id": 0xFF, "name": "N/A", "category": "N/A" },
