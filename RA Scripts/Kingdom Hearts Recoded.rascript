@@ -119,6 +119,8 @@ areas = {
 91: { "worldId": 0x6, "name": "HollowBastionDataTunnel", "display": "Data Tunnel", "areaId": 0xd, },
 92: { "worldId": 0x6, "name": "HollowBastionCentralCorruption", "display": "Central Corruption", "areaId": 0x1, },
 93: { "worldId": 0x7, "name": "CastleOblivionHall", "display": "Entrance Hall", "areaId": 0x7, },
+94: { "worldId": 0x7, "name": "CastleOblivionSomewhere", "display": "Somewhere in the datascape…", "areaId": 0x1, },
+95: { "worldId": 0x7, "name": "CastleOblivionSomewhere2", "display": "Somewhere in the datascape…", "areaId": 0xa, },
 
 }
 
@@ -188,6 +190,10 @@ function IsBossRankJustDisplayed() => Delta(byte(bossScoreDisplayStatusPointer()
 // We have a hit target here because the status value cycles through numbers a couple times.
 function IsTotalScoreJustDisplayed() => once(byte(bossScoreDisplayStatusPointer()) == 1) && Delta(byte(bossScoreDisplayStatusPointer())) == 0xa && byte(bossScoreDisplayStatusPointer()) == 0x7
     && never(!IsBossScorePointerActive())
+    
+function IsTotalScoreJustDisplayedForAchievement() => once(byte(bossScoreDisplayStatusPointer()) == 1) && Delta(byte(bossScoreDisplayStatusPointer())) == 0xa
+    && byte(bossScoreDisplayStatusPointer()) == 0x7
+    && IsBossScorePointerActive()
 
 function BossScoreIsDisplayedAndAtLeast(threshold)
 {
@@ -1280,100 +1286,100 @@ GenerateSaveProtectedAchievementFromConditions({
 
 // ============================== COMMANDS ============================== //
 commands = {
-0xFF: { "id": 0xFF, "name": "N/A", "category": "N/A" },
-0x00: { "id": 0x00, "name": "Quick Blitz", "category": "Melee" },
-0x01: { "id": 0x01, "name": "Sliding Dash", "category": "Melee" },
-0x02: { "id": 0x02, "name": "Round Blitz", "category": "Melee" },
-0x03: { "id": 0x03, "name": "Strike Raid", "category": "Ranged" },
-0x04: { "id": 0x04, "name": "Rising Strike", "category": "Melee" },
-0x05: { "id": 0x05, "name": "Sliding Rush", "category": "Melee" },
-0x06: { "id": 0x06, "name": "Aerial Sweep", "category": "Melee" },
-0x07: { "id": 0x07, "name": "Air Sweep", "category": "Melee" },
-0x08: { "id": 0x08, "name": "Aerial Slam", "category": "Melee" },
-0x09: { "id": 0x09, "name": "Land Crash", "category": "Melee" },
-0x0a: { "id": 0x0a, "name": "Fire Edge", "category": "Melee" },
-0x0b: { "id": 0x0b, "name": "Blizzard Edge", "category": "Melee" },
-0x0c: { "id": 0x0c, "name": "Thunder Edge", "category": "Melee" },
-0x0d: { "id": 0x0d, "name": "Aero Edge", "category": "Melee" },
-0x0e: { "id": 0x0e, "name": "Heat Dash", "category": "Melee" },
-0x0f: { "id": 0x0f, "name": "Ice Dash", "category": "Melee" },
-0x10: { "id": 0x10, "name": "Spark Dash", "category": "Melee" },
-0x11: { "id": 0x11, "name": "Wind Dash", "category": "Melee" },
-0x12: { "id": 0x12, "name": "Fire Blast", "category": "Melee" },
-0x13: { "id": 0x13, "name": "Blizzard Blast", "category": "Melee" },
-0x14: { "id": 0x14, "name": "Thunder Blast", "category": "Melee" },
-0x15: { "id": 0x15, "name": "Aero Blast", "category": "Melee" },
-0x16: { "id": 0x16, "name": "Fire Raid", "category": "Ranged" },
-0x17: { "id": 0x17, "name": "Blizzard Raid", "category": "Ranged" },
-0x18: { "id": 0x18, "name": "Thunder Raid", "category": "Ranged" },
-0x19: { "id": 0x19, "name": "Aero Raid", "category": "Ranged" },
-0x1a: { "id": 0x1a, "name": "Fire Buster", "category": "Melee" },
-0x1b: { "id": 0x1b, "name": "Blizzard Buster", "category": "Melee" },
-0x1c: { "id": 0x1c, "name": "Thunder Buster", "category": "Melee" },
-0x1d: { "id": 0x1d, "name": "Aero Buster", "category": "Melee" },
-0x1e: { "id": 0x1e, "name": "Heat Sweep", "category": "Melee" },
-0x1f: { "id": 0x1f, "name": "Ice Sweep", "category": "Melee" },
-0x20: { "id": 0x20, "name": "Spark Sweep", "category": "Melee" },
-0x21: { "id": 0x21, "name": "Wind Sweep", "category": "Melee" },
-0x22: { "id": 0x22, "name": "Heat Storm", "category": "Melee" },
-0x23: { "id": 0x23, "name": "Ice Storm", "category": "Melee" },
-0x24: { "id": 0x24, "name": "Spark Storm", "category": "Melee" },
-0x25: { "id": 0x25, "name": "Wind Storm", "category": "Melee" },
-0x26: { "id": 0x26, "name": "Fire Slam", "category": "Melee" },
-0x27: { "id": 0x27, "name": "Blizzard Slam", "category": "Melee" },
-0x28: { "id": 0x28, "name": "Thunder Slam", "category": "Melee" },
-0x29: { "id": 0x29, "name": "Aero Slam", "category": "Melee" },
-0x2a: { "id": 0x2a, "name": "Heat Dive", "category": "Melee" },
-0x2b: { "id": 0x2b, "name": "Ice Dive", "category": "Melee" },
-0x2c: { "id": 0x2c, "name": "Spark Dive", "category": "Melee" },
-0x2d: { "id": 0x2d, "name": "Wind Dive", "category": "Melee" },
-0x2e: { "id": 0x2e, "name": "Stun Impact", "category": "Melee" },
-0x2f: { "id": 0x2f, "name": "Muscle Strike", "category": "Melee" },
-0x30: { "id": 0x30, "name": "Chain Rave", "category": "Melee" },
-0x31: { "id": 0x31, "name": "Rising Rush", "category": "Melee" },
-0x32: { "id": 0x32, "name": "Zantetsuken", "category": "Melee" },
-0x33: { "id": 0x33, "name": "Eruption", "category": "Melee" },
-0x34: { "id": 0x34, "name": "Gravity Drop", "category": "Melee" },
-0x35: { "id": 0x35, "name": "Shock Fall", "category": "Melee" },
-0x36: { "id": 0x36, "name": "Judgment Triad", "category": "Ranged" },
-0x37: { "id": 0x37, "name": "Fire", "category": "Ranged" },
-0x38: { "id": 0x38, "name": "Fira", "category": "Ranged" },
-0x39: { "id": 0x39, "name": "Firaga", "category": "Ranged" },
-0x3a: { "id": 0x3a, "name": "Blizzard", "category": "Ranged" },
-0x3b: { "id": 0x3b, "name": "Blizzara", "category": "Ranged" },
-0x3c: { "id": 0x3c, "name": "Blizzaga", "category": "Ranged" },
-0x3d: { "id": 0x3d, "name": "Thunder", "category": "Ranged" },
-0x3e: { "id": 0x3e, "name": "Thundara", "category": "Ranged" },
-0x3f: { "id": 0x3f, "name": "Thundaga", "category": "Ranged" },
-0x40: { "id": 0x40, "name": "Aero", "category": "Ranged" },
-0x41: { "id": 0x41, "name": "Aerora", "category": "Ranged" },
-0x42: { "id": 0x42, "name": "Aeroga", "category": "Ranged" },
-0x43: { "id": 0x43, "name": "Magnet", "category": "Ranged" },
-0x44: { "id": 0x44, "name": "Magnera", "category": "Ranged" },
-0x45: { "id": 0x45, "name": "Magnega", "category": "Ranged" },
-0x46: { "id": 0x46, "name": "Cure", "category": "Curative" },
-0x47: { "id": 0x47, "name": "Cura", "category": "Curative" },
-0x48: { "id": 0x48, "name": "Curaga", "category": "Curative" },
-0x49: { "id": 0x49, "name": "Slow", "category": "Ranged" },
-0x4a: { "id": 0x4a, "name": "Stop", "category": "Ranged" },
-0x4b: { "id": 0x4b, "name": "Confuse", "category": "Ranged" },
-0x4c: { "id": 0x4c, "name": "Firaga Burst", "category": "Ranged" },
-0x4d: { "id": 0x4d, "name": "Triple Firaga", "category": "Ranged" },
-0x4e: { "id": 0x4e, "name": "Triple Burst", "category": "Ranged" },
-0x4f: { "id": 0x4f, "name": "Blizzaga Pursuit", "category": "Ranged" },
-0x50: { "id": 0x50, "name": "Triple Blizzaga", "category": "Ranged" },
-0x51: { "id": 0x51, "name": "Triple Pursuit", "category": "Ranged" },
-0x52: { "id": 0x52, "name": "Thunder Tracer", "category": "Ranged" },
-0x53: { "id": 0x53, "name": "Pulse Tracer", "category": "Ranged" },
-0x54: { "id": 0x54, "name": "Tornado Tracer", "category": "Ranged" },
-0x55: { "id": 0x55, "name": "Wind Tracer", "category": "Ranged" },
-0x56: { "id": 0x56, "name": "Magnet Grab", "category": "Ranged" },
-0x57: { "id": 0x57, "name": "Esuna", "category": "Curative" },
-0x58: { "id": 0x58, "name": "Flame Fall", "category": "Ranged" },
-0x59: { "id": 0x59, "name": "Icicle Mine", "category": "Ranged" },
-0x5a: { "id": 0x5a, "name": "Exo Spark", "category": "Ranged" },
-0x5b: { "id": 0x5b, "name": "Cyclone", "category": "Ranged" },
-0x5c: { "id": 0x5c, "name": "Quake", "category": "Ranged" },
+0xFF: { "id": 0xFF, "name": "N/A", "category": "N/A", "isBasic": 1 },
+0x00: { "id": 0x00, "name": "Quick Blitz", "category": "Melee", "isBasic": 1 },
+0x01: { "id": 0x01, "name": "Sliding Dash", "category": "Melee", "isBasic": 1 },
+0x02: { "id": 0x02, "name": "Round Blitz", "category": "Melee", "isBasic": 1 },
+0x03: { "id": 0x03, "name": "Strike Raid", "category": "Ranged", "isBasic": 1 },
+0x04: { "id": 0x04, "name": "Rising Strike", "category": "Melee", "isBasic": 0 },
+0x05: { "id": 0x05, "name": "Sliding Rush", "category": "Melee", "isBasic": 1 },
+0x06: { "id": 0x06, "name": "Aerial Sweep", "category": "Melee", "isBasic": 0 },
+0x07: { "id": 0x07, "name": "Air Sweep", "category": "Melee", "isBasic": 1 },
+0x08: { "id": 0x08, "name": "Aerial Slam", "category": "Melee", "isBasic": 1 },
+0x09: { "id": 0x09, "name": "Land Crash", "category": "Melee", "isBasic": 1 },
+0x0a: { "id": 0x0a, "name": "Fire Edge", "category": "Melee", "isBasic": 0 },
+0x0b: { "id": 0x0b, "name": "Blizzard Edge", "category": "Melee", "isBasic": 0 },
+0x0c: { "id": 0x0c, "name": "Thunder Edge", "category": "Melee", "isBasic": 0 },
+0x0d: { "id": 0x0d, "name": "Aero Edge", "category": "Melee", "isBasic": 0 },
+0x0e: { "id": 0x0e, "name": "Heat Dash", "category": "Melee", "isBasic": 0 },
+0x0f: { "id": 0x0f, "name": "Ice Dash", "category": "Melee", "isBasic": 0 },
+0x10: { "id": 0x10, "name": "Spark Dash", "category": "Melee", "isBasic": 0 },
+0x11: { "id": 0x11, "name": "Wind Dash", "category": "Melee", "isBasic": 0 },
+0x12: { "id": 0x12, "name": "Fire Blast", "category": "Melee", "isBasic": 0 },
+0x13: { "id": 0x13, "name": "Blizzard Blast", "category": "Melee", "isBasic": 0 },
+0x14: { "id": 0x14, "name": "Thunder Blast", "category": "Melee", "isBasic": 0 },
+0x15: { "id": 0x15, "name": "Aero Blast", "category": "Melee", "isBasic": 0 },
+0x16: { "id": 0x16, "name": "Fire Raid", "category": "Ranged", "isBasic": 0 },
+0x17: { "id": 0x17, "name": "Blizzard Raid", "category": "Ranged", "isBasic": 0 },
+0x18: { "id": 0x18, "name": "Thunder Raid", "category": "Ranged", "isBasic": 0 },
+0x19: { "id": 0x19, "name": "Aero Raid", "category": "Ranged", "isBasic": 0 },
+0x1a: { "id": 0x1a, "name": "Fire Buster", "category": "Melee", "isBasic": 0 },
+0x1b: { "id": 0x1b, "name": "Blizzard Buster", "category": "Melee", "isBasic": 0 },
+0x1c: { "id": 0x1c, "name": "Thunder Buster", "category": "Melee", "isBasic": 0 },
+0x1d: { "id": 0x1d, "name": "Aero Buster", "category": "Melee", "isBasic": 0 },
+0x1e: { "id": 0x1e, "name": "Heat Sweep", "category": "Melee", "isBasic": 0 },
+0x1f: { "id": 0x1f, "name": "Ice Sweep", "category": "Melee", "isBasic": 0 },
+0x20: { "id": 0x20, "name": "Spark Sweep", "category": "Melee", "isBasic": 0 },
+0x21: { "id": 0x21, "name": "Wind Sweep", "category": "Melee", "isBasic": 0 },
+0x22: { "id": 0x22, "name": "Heat Storm", "category": "Melee", "isBasic": 0 },
+0x23: { "id": 0x23, "name": "Ice Storm", "category": "Melee", "isBasic": 0 },
+0x24: { "id": 0x24, "name": "Spark Storm", "category": "Melee", "isBasic": 0 },
+0x25: { "id": 0x25, "name": "Wind Storm", "category": "Melee", "isBasic": 0 },
+0x26: { "id": 0x26, "name": "Fire Slam", "category": "Melee", "isBasic": 0 },
+0x27: { "id": 0x27, "name": "Blizzard Slam", "category": "Melee", "isBasic": 0 },
+0x28: { "id": 0x28, "name": "Thunder Slam", "category": "Melee", "isBasic": 0 },
+0x29: { "id": 0x29, "name": "Aero Slam", "category": "Melee", "isBasic": 0 },
+0x2a: { "id": 0x2a, "name": "Heat Dive", "category": "Melee", "isBasic": 0 },
+0x2b: { "id": 0x2b, "name": "Ice Dive", "category": "Melee", "isBasic": 0 },
+0x2c: { "id": 0x2c, "name": "Spark Dive", "category": "Melee", "isBasic": 0 },
+0x2d: { "id": 0x2d, "name": "Wind Dive", "category": "Melee", "isBasic": 0 },
+0x2e: { "id": 0x2e, "name": "Stun Impact", "category": "Melee", "isBasic": 0 },
+0x2f: { "id": 0x2f, "name": "Muscle Strike", "category": "Melee", "isBasic": 0 },
+0x30: { "id": 0x30, "name": "Chain Rave", "category": "Melee", "isBasic": 0 },
+0x31: { "id": 0x31, "name": "Rising Rush", "category": "Melee", "isBasic": 0 },
+0x32: { "id": 0x32, "name": "Zantetsuken", "category": "Melee", "isBasic": 0 },
+0x33: { "id": 0x33, "name": "Eruption", "category": "Melee", "isBasic": 0 },
+0x34: { "id": 0x34, "name": "Gravity Drop", "category": "Melee", "isBasic": 0 },
+0x35: { "id": 0x35, "name": "Shock Fall", "category": "Melee", "isBasic": 0 },
+0x36: { "id": 0x36, "name": "Judgment Triad", "category": "Ranged", "isBasic": 0 },
+0x37: { "id": 0x37, "name": "Fire", "category": "Ranged", "isBasic": 1 },
+0x38: { "id": 0x38, "name": "Fira", "category": "Ranged", "isBasic": 0 },
+0x39: { "id": 0x39, "name": "Firaga", "category": "Ranged", "isBasic": 0 },
+0x3a: { "id": 0x3a, "name": "Blizzard", "category": "Ranged", "isBasic": 1 },
+0x3b: { "id": 0x3b, "name": "Blizzara", "category": "Ranged", "isBasic": 0 },
+0x3c: { "id": 0x3c, "name": "Blizzaga", "category": "Ranged", "isBasic": 0 },
+0x3d: { "id": 0x3d, "name": "Thunder", "category": "Ranged", "isBasic": 1 },
+0x3e: { "id": 0x3e, "name": "Thundara", "category": "Ranged", "isBasic": 0 },
+0x3f: { "id": 0x3f, "name": "Thundaga", "category": "Ranged", "isBasic": 0 },
+0x40: { "id": 0x40, "name": "Aero", "category": "Ranged", "isBasic": 1 },
+0x41: { "id": 0x41, "name": "Aerora", "category": "Ranged", "isBasic": 0 },
+0x42: { "id": 0x42, "name": "Aeroga", "category": "Ranged", "isBasic": 0 },
+0x43: { "id": 0x43, "name": "Magnet", "category": "Ranged", "isBasic": 1 },
+0x44: { "id": 0x44, "name": "Magnera", "category": "Ranged", "isBasic": 0 },
+0x45: { "id": 0x45, "name": "Magnega", "category": "Ranged", "isBasic": 0 },
+0x46: { "id": 0x46, "name": "Cure", "category": "Curative", "isBasic": 1 },
+0x47: { "id": 0x47, "name": "Cura", "category": "Curative", "isBasic": 0 },
+0x48: { "id": 0x48, "name": "Curaga", "category": "Curative", "isBasic": 0 },
+0x49: { "id": 0x49, "name": "Slow", "category": "Ranged", "isBasic": 1 },
+0x4a: { "id": 0x4a, "name": "Stop", "category": "Ranged", "isBasic": 1 },
+0x4b: { "id": 0x4b, "name": "Confuse", "category": "Ranged", "isBasic": 1 },
+0x4c: { "id": 0x4c, "name": "Firaga Burst", "category": "Ranged", "isBasic": 0 },
+0x4d: { "id": 0x4d, "name": "Triple Firaga", "category": "Ranged", "isBasic": 0 },
+0x4e: { "id": 0x4e, "name": "Triple Burst", "category": "Ranged", "isBasic": 0 },
+0x4f: { "id": 0x4f, "name": "Blizzaga Pursuit", "category": "Ranged", "isBasic": 0 },
+0x50: { "id": 0x50, "name": "Triple Blizzaga", "category": "Ranged", "isBasic": 0 },
+0x51: { "id": 0x51, "name": "Triple Pursuit", "category": "Ranged", "isBasic": 0 },
+0x52: { "id": 0x52, "name": "Thunder Tracer", "category": "Ranged", "isBasic": 0 },
+0x53: { "id": 0x53, "name": "Pulse Tracer", "category": "Ranged", "isBasic": 0 },
+0x54: { "id": 0x54, "name": "Tornado Tracer", "category": "Ranged", "isBasic": 0 },
+0x55: { "id": 0x55, "name": "Wind Tracer", "category": "Ranged", "isBasic": 0 },
+0x56: { "id": 0x56, "name": "Magnet Grab", "category": "Ranged", "isBasic": 0 },
+0x57: { "id": 0x57, "name": "Esuna", "category": "Curative", "isBasic": 1 },
+0x58: { "id": 0x58, "name": "Flame Fall", "category": "Ranged", "isBasic": 0 },
+0x59: { "id": 0x59, "name": "Icicle Mine", "category": "Ranged", "isBasic": 0 },
+0x5a: { "id": 0x5a, "name": "Exo Spark", "category": "Ranged", "isBasic": 0 },
+0x5b: { "id": 0x5b, "name": "Cyclone", "category": "Ranged", "isBasic": 0 },
+0x5c: { "id": 0x5c, "name": "Quake", "category": "Ranged", "isBasic": 0 },
 }
 
 conversionCombinations = {
@@ -1549,16 +1555,35 @@ function GetCommandByProperty(propertyName, propertyValue)
 
 function GetCommandsByProperty(propertyName, propertyValue)
 {
-    retCommands = []
+    batches = GetCommandBatchesByProperty(propertyName, propertyValue, 0)
+    return batches[0]
+}
+
+function GetCommandBatchesByProperty(propertyName, propertyValue, batchSize)
+{
+    retCommandBatches = []
+    currentBatch = []
     for id in commands
     {
         command = commands[id]
         if (command[propertyName] == propertyValue)
         {
-            array_push(retCommands, command)
+            array_push(currentBatch, command)
+        }
+        
+        if (length(currentBatch) >= batchSize && batchSize != 0)
+        {
+            array_push(retCommandBatches, currentBatch)
+            currentBatch = []
         }
     }
-    return retCommands
+    
+    if (length(currentBatch) > 0)
+    {
+        array_push(retCommandBatches, currentBatch)
+    }
+    
+    return retCommandBatches
 }
 
 // Returns the ID of the command in a given subslot. A subslot is one of the two slots in a command group.
@@ -1592,6 +1617,15 @@ function HasAnyCommandsEquipped()
     return commandInstalled
 }
 
+function NamedCommandIsInstalledInGivenGroup(namedCommand, groupId)
+{
+    slotAId = GetCommandIdBySubslotId(groupId * 2)
+    slotAInstalled = IsCommandInstalledInSubslot(groupId * 2)
+    
+    // We only care about Subslot A, as that is what determines what the final command is if it's not a command conversion.
+    return slotAInstalled && slotAId == namedCommand["id"]
+}
+
 function HasCommandEquipped(commandName)
 {
     rawCommandInstalled = always_false()
@@ -1606,7 +1640,7 @@ function HasCommandEquipped(commandName)
         slotBInstalled = IsCommandInstalledInSubslot(i * 2 + 1)
         
         // We only care about Subslot A, as that is what determines what the final command is if it's not a command conversion.
-        namedCommandIsInstalledInThisGroup = slotAInstalled && slotAId == namedCommand["id"]
+        namedCommandIsInstalledInThisGroup = NamedCommandIsInstalledInGivenGroup(namedCommand, i)
         namedCommandIsInstalledInThisGroupViaConversion
             = SubslotCombinationResultsInGivenCommandConversion(slotAId, slotAInstalled, slotBId, slotBInstalled, namedCommand)
         rawCommandInstalled = rawCommandInstalled || namedCommandIsInstalledInThisGroup
@@ -1616,12 +1650,39 @@ function HasCommandEquipped(commandName)
     return rawCommandInstalled || commandConversionInstalled
 }
 
+function HasAnyCommandEquippedInAnySubslotB()
+{
+    trigger = always_false()
+    for i in range(0, 7) // One loop per command group
+    {
+        slotBInstalled = IsCommandInstalledInSubslot(i * 2 + 1)
+        
+        trigger = trigger || slotBInstalled
+    }
+    
+    return trigger
+}
+
 function HasAnyGivenCommandsEquipped(namedCommands)
 {
     trigger = always_false()
     for command in namedCommands
     {
         trigger = trigger || HasCommandEquipped(command["name"])
+    }
+    
+    return trigger
+}
+
+function HasGivenRawCommandsEquipped(namedCommands)
+{
+    trigger = always_false()
+    for command in namedCommands
+    {
+        for i in range(0, 7) // One loop per command group
+        {
+            trigger = trigger || NamedCommandIsInstalledInGivenGroup(command, i)
+        }
     }
     
     return trigger
@@ -2007,10 +2068,20 @@ achievement(title = "Underclocking", points = 10,
             || never(Level() > 1) && never(IsOnBeginnerMode()) && unless(IsInMenu()))
 )
 
-achievement(title = "Dark Embrace", points = 10,
-    description = "Defeat Sora's Heartless (human form) using only ranged or curative commands that cannot be created via conversion (Critical Mode; Level 30 or below).",
+rangedCommands = GetCommandsByProperty("category", "Ranged")
+achievement(title = "Dark Embrace", points = 25,
+    description = "Defeat Sora's Heartless without equipping any ranged commands and with only one command per group (Critical Mode; Level 30 or below).",
     trigger = IsAtLeastOnDifficulty("Critical") && Level() <= 30 && never(!IsInLocation("HollowBastionCentralCorruption"))
-        //&& never(HasAnyGivenCommandsEquipped(rangedCommands))
+        && once(WasInLocation("HollowBastionDataTunnel") && IsInLocation("HollowBastionCentralCorruption"))
+        && never(HasAnyCommandEquippedInAnySubslotB()) && never(HasGivenRawCommandsEquipped(rangedCommands)) && unless(IsInMenu())
+        // We can't check to see if we actually defeated Sora's humanoid Heartless because the game counts winning the first phase of that fight
+        // and not the last. Instead, we need to check to see if the player actually completed all the fights--meaning we need to see if the score is displayed.
+        && IsTotalScoreJustDisplayedForAchievement()
+)
+
+achievement(title = "Shallow Copy", points = 25,
+    description = "Defeat Sora's Heartless with a score of 30000 or more (Proud Mode or higher; Level 30 or below).",
+    trigger = IsAtLeastOnDifficulty("Proud") && Level() <= 30 && never(!IsInLocation("HollowBastionCentralCorruption")) && BossScoreIsDisplayedAndAtLeast(30000)
 )
 
 function extraCommandSlotsUnlocked() => byte(0x198700)
@@ -2369,3 +2440,16 @@ leaderboard(title = "Score Attack - Hollow Bastion II", description = "Get as ma
     value = dword(bossScorePointer() + 8)
 )
 
+leaderboard(title = "Time Attack - Hollow Bastion III", description = "Defeat Sora’s Heartless as quickly as you can.",
+    start = IsInLocation("HollowBastionCentralCorruption") && !IsInSystemSector(),
+    cancel = !IsInLocation("HollowBastionCentralCorruption") || IsInSystemSector(),
+    submit = IsBossRankJustDisplayed(),
+    value = bossMilliseconds() / 10
+)
+
+leaderboard(title = "Score Attack - Hollow Bastion III", description = "Get as many points as you can defeating Sora’s Heartless.",
+    start = IsInLocation("HollowBastionCentralCorruption") && IsTotalScoreJustDisplayed() && !IsInSystemSector(),
+    cancel = !IsInLocation("HollowBastionCentralCorruption") || IsInSystemSector(),
+    submit = IsTotalScoreJustDisplayed(),
+    value = dword(bossScorePointer() + 8)
+)
