@@ -761,57 +761,6 @@ function GetCardsByProperty(property, propertyValue)
     return ret
 }
 
-function GetCardRangeParameters(cardList)
-{
-    parameters = {
-        "minIdMostSigNib": 0,
-        "minIdLeastSigByte": 0,
-        "maxIdMostSigNib": 0,
-        "maxIdLeastSigByte": 0
-    }
-    
-    if (length(cardList) > 0)
-    {
-        parameters["minIdMostSigNib"] = cardList[0]["idMostSigNib"]
-        parameters["minIdLeastSigByte"] = cardList[0]["idLeastSigByte"]
-    }
-    
-    for card in cardList
-    {
-        mostSigNib = card["idMostSigNib"]
-        leastSigByte = card["idLeastSigByte"]
-        if (mostSigNib > parameters["maxIdMostSigNib"])
-        {
-            parameters["maxIdMostSigNib"] = mostSigNib
-            parameters["maxIdLeastSigNib"] = 0
-        }
-        
-        if (leastSigByte > parameters["maxIdLeastSigByte"])
-        {
-            parameters["maxIdLeastSigByte"] = leastSigByte
-        }
-    }
-    
-    return parameters
-}
-
-function AnyCardsAreEquippedInDeck(cardList, deckAddr)
-{
-    anyCardsAreEquipped = always_false()
-    for i in range(0, 98)
-    {
-        currentDeckIndexAddr = deckAddr + i * 2
-        slotAddr = inventoryBaseAddr() + word(currentDeckIndexAddr)
-        parameters = GetCardRangeParameters(cardList)
-        
-        anyCardsAreEquipped = anyCardsAreEquipped
-            || low4(slotAddr + 1) >= parameters["minIdMostSigNib"] && byte(slotAddr) >= parameters["minIdLeastSigByte"]
-            && low4(slotAddr + 1) <= parameters["maxIdMostSigNib"] && byte(slotAddr) <= parameters["maxIdLeastSigByte"]
-    }
-    
-    return anyCardsAreEquipped
-}
-
 function currentDeck() => byte(0x03cacc)
 
 function deck1TotalCards() => byte(0x0424cc)
@@ -819,10 +768,6 @@ function deck1TotalCards() => byte(0x0424cc)
 function deck2TotalCards() => byte(0x0425ac)
 
 function deck3TotalCards() => byte(0x04268c)
-
-achievement(title = "test", description = "test", points = 0,
-    trigger = AnyCardsAreEquippedInDeck([], deck1BaseAddr()) && currentDeck() == 0
-)
 
 function BossHPValueCheckpointIsSet(bossHp, bossHpMap, worldName, roomId)
 {
