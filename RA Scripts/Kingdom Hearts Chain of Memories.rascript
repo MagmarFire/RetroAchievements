@@ -805,6 +805,7 @@ function BossHPValueIsExpected(bossHp, bossHpMap, worldName, roomId)
 //           +0x8f0c for enemy HP(?)
 function battlePointer() => tbyte(0x0423e4)
 function numberOfStockedCardsForPlayer() => byte(battlePointer() + 0x80de)
+function enemyReloadCounter() => word(battlePointer() + 0x80fe)
 
 // One of three pointers that appear to influence battles in some way, like HP and the like
 // It's misleading to call it a battle pointer, though, as it does not consistently nullify when in the field. (32-bit)
@@ -963,6 +964,23 @@ achievement(title = "War of Attrition [m]", points = 5,
             // Prevent an A press or stocking of cards to reset the time a player has survived.
             || never(aIsPressed() == 1) && never(Delta(numberOfStockedCardsForPlayer()) != numberOfStockedCardsForPlayer()) && unless(!IsPaused() && EnoughTimeHasAdvancedForWarOfAttrition())
            )
+)
+
+function hadesHp() => word(0x03aaec)
+
+hadesHpMap = {
+    2: 0x1b7,
+    3: 0x1de,
+    4: 0x205,
+    5: 0x22c,
+    6: 0x253
+}
+
+achievement(title = "Burning the Candle at Both Ends [m]", points = 10,
+    description = "Defeat Hades in Sora's story before he has the chance to reload three times via his reload card.",
+    trigger = BossHPValueCheckpointIsSet(hadesHp(), hadesHpMap, "Olympus Coliseum", 0x7)
+        && EnemyWithSpecificAddressWasJustDefeated(hadesHp()) && never(!IsInBattle())
+        && never(repeated(3, enemyReloadCounter() == 0xffff && Delta(enemyReloadCounter()) != 0xffff))
 )
 
 achievement(
