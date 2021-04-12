@@ -171,6 +171,7 @@ FloorLookup = {
 //           Bit 7: D-pad Down
 function inputFlagsAddr() => 0x03c000
 function dpadFlags() => high4(inputFlagsAddr())
+function aIsPressed() => bit0(inputFlagsAddr())
 function bIsPressed() => bit1(inputFlagsAddr())
 
 function DpadIsPressed() => dpadFlags() > 0
@@ -781,6 +782,19 @@ function BossHPValueCheckpointIsSet(bossHp, bossHpMap, worldName, roomId)
     return trigger
 }
 
+// Not to be used for a checkpoint.
+function BossHPValueIsExpected(bossHp, bossHpMap, worldName, roomId)
+{
+    trigger = always_false()
+    for floor in bossHpMap
+    {
+        hpValue = bossHpMap[floor]
+        trigger = trigger || roomId() == roomId && IsInWorld(worldName) && IsOnFloor(floor) && bossHp == hpValue
+    }
+    
+    return trigger
+}
+
 // 0x0423e4: Appears to be a pointer to battle data. Null when not in battle. (32-bit)
 //
 //           +0x80fc for the player's reload counter (16-bit). = the number on the reload card - 1
@@ -790,6 +804,7 @@ function BossHPValueCheckpointIsSet(bossHp, bossHpMap, worldName, roomId)
 //
 //           +0x8f0c for enemy HP(?)
 function battlePointer() => tbyte(0x0423e4)
+function numberOfStockedCardsForPlayer() => byte(battlePointer() + 0x80de)
 
 // One of three pointers that appear to influence battles in some way, like HP and the like
 // It's misleading to call it a battle pointer, though, as it does not consistently nullify when in the field. (32-bit)
@@ -924,6 +939,30 @@ achievement(
     title = "Memory of a Wish", description = "Complete Monstro in Sora's story.", points = 5,
     id = 15587, badge = "14883", published = "10/16/2014 6:08:32 AM", modified = "7/7/2020 2:13:09 AM",
     trigger = WasBitflagSetInGame(monstroEntry())
+)
+
+function cloudHp() => word(0x03abcc)
+function cloudMaxHp() => word(0x03abce)
+cloudHpMap = {
+    2: 0x112,
+    3: 0x12a,
+    4: 0x143,
+    5: 0x15b,
+    6: 0x174
+}
+
+survivalLimit = 120
+function EnoughTimeHasAdvancedForWarOfAttrition() => repeated(SecondsToFrames(survivalLimit), FrameHasAdvanced())
+achievement(title = "War of Attrition [m]", points = 5,
+    description = "Survive for " + SecondsToFormat(survivalLimit) + " against Cloud without pressing A or stocking cards, and then defeat him.",
+    trigger = BossHPValueIsExpected(cloudMaxHp(), cloudHpMap, "Olympus Coliseum", 0x1)
+        && EnemyWithSpecificAddressWasJustDefeated(cloudHp())
+        && EnoughTimeHasAdvancedForWarOfAttrition() && unless(IsPaused())
+        && (
+            never(!IsInBattle()) // Reset the pauselock when not in battle.
+            // Prevent an A press or stocking of cards to reset the time a player has survived.
+            || never(aIsPressed() == 1) && never(Delta(numberOfStockedCardsForPlayer()) != numberOfStockedCardsForPlayer()) && unless(!IsPaused() && EnoughTimeHasAdvancedForWarOfAttrition())
+           )
 )
 
 achievement(
