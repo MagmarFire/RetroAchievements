@@ -983,11 +983,11 @@ achievement(title = "Burning the Candle at Both Ends [m]", points = 10,
         && never(repeated(3, enemyReloadCounter() == 0xffff && Delta(enemyReloadCounter()) != 0xffff))
 )
 
+function olympusColiseumStoryEntry() => bit6(0x0422f4)
 achievement(
-    title = "Junior Hero", description = "Beat the Boss in Olympus Coliseum", points = 10,
+    title = "Memory of Heroism", description = "Complete Olympus Coliseum in Sora's story.", points = 5,
     id = 15588, badge = "14912", published = "10/16/2014 6:09:40 AM", modified = "7/7/2020 2:13:21 AM",
-    trigger = worldId() == 0x03 && battlefieldId() == 0x06 && once(bit4(0x04230C) == 0x0) && bit4(0x04230C) == 0x1 && 
-              bit4(0x04232C) == 0x1 && byte(0x042346) == 0x0A
+    trigger = WasBitflagSetInGame(olympusColiseumStoryEntry())
 )
 
 achievement(
