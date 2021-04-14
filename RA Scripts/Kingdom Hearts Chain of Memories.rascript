@@ -1015,16 +1015,16 @@ achievement(
     trigger = WasBitflagSetInGame(wonderlandStoryEntry())
 )
 
+function larxeneHp() => word(0x03abac)
 achievement(
-    title = "Savage Nymph ", description = "Defeat Larxene in 7th Floor", points = 10,
+    title = "The Savage Nymph", description = "Defeat Larxene on the sixth floor.", points = 3,
     id = 15591, badge = "14925", published = "10/16/2014 6:10:01 AM", modified = "7/7/2020 2:13:41 AM",
-    trigger = worldId() == 0x00 && battlefieldId() == 0x0C && once(bit2(0x042305) == 0x0) && bit2(0x042305) == 0x1 && 
-              bit2(0x042325) == 0x1 && byte(0x042346) == 0x0A
+    trigger = never(!IsInWorld("Castle Oblivion, Hall")) && never(battlefieldId() != 0x0C) && BattleStartedCheckpoint() && IsOnFloor(6)
+        && EnemyWithSpecificAddressWasJustDefeated(larxeneHp()) && once(larxeneHp() == 0x460) && never(!IsInBattle())
 )
 
-function larxeneHp() => word(0x03abac)
 maxStockedCards = 6
-achievement(title = "Senary Hand [m]", points = 10,
+achievement(title = "Senary Hand [m]", points = 5,
     description = "Defeat Larxene on the sixth floor without stocking more than six cards.",
     trigger = never(!IsInWorld("Castle Oblivion, Hall")) && never(battlefieldId() != 0x0C) && BattleStartedCheckpoint() && IsOnFloor(6)
         && EnemyWithSpecificAddressWasJustDefeated(larxeneHp()) && once(larxeneHp() == 0x460)
