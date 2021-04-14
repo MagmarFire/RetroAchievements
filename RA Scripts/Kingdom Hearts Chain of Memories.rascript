@@ -990,6 +990,24 @@ achievement(
     trigger = WasBitflagSetInGame(olympusColiseumStoryEntry())
 )
 
+trickmasterHpMap = {
+    2: 0x224,
+    3: 0x255,
+    4: 0x286,
+    5: 0x2b7,
+    6: 0x2e8
+}
+
+function trickmasterHp() => word(0x03a978)
+
+hitLimit = 3
+achievement(title = "Double Jeopardy [m]", points = 5,
+    description = "Defeat the Trickmaster in Sora's story without getting hit more than twice.",
+    trigger = BossHPValueCheckpointIsSet(trickmasterHp(), trickmasterHpMap, "Wonderland", 0x1)
+        && EnemyWithSpecificAddressWasJustDefeated(trickmasterHp()) && never(!IsInBattle())
+        && never(repeated(hitLimit, Delta(playerHp()) > playerHp()))
+)
+
 achievement(
     title = "Alice in Wonderland", description = "Beat the Boss in Wonderland", points = 10,
     id = 15590, badge = "14924", published = "10/16/2014 6:09:55 AM", modified = "7/7/2020 2:13:36 AM",
