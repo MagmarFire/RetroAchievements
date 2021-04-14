@@ -863,12 +863,12 @@ achievement(
     title = "The Flurry of Dancing Flames", description = "Defeat Axel on the first floor.", points = 3,
     id = 15583, badge = "15002", published = "10/16/2014 6:07:43 AM", modified = "7/7/2020 2:12:51 AM",
     trigger = never(!IsInWorld("Castle Oblivion, Hall")) && never(battlefieldId() != 0x0C) && BattleStartedCheckpoint() && EnemyWasJustDefeated()
-        && never(!IsInBattle())
+        && never(!IsInBattle()) && IsOnFloor(1)
 )
 
 achievement(title = "Heat-Resistant Glue [m]", description = "Defeat Axel on the first floor without using the D-pad.", points = 5,
     trigger = never(!IsInWorld("Castle Oblivion, Hall")) && never(battlefieldId() != 0x0C) && BattleStartedCheckpoint()
-        && EnemyWasJustDefeated() && never(DpadIsPressed()) && never(!IsInBattle())
+        && EnemyWasJustDefeated() && never(DpadIsPressed()) && never(!IsInBattle()) && IsOnFloor(1)
 )
 
 jafarHpMap = {
