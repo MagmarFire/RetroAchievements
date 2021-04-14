@@ -991,13 +991,6 @@ achievement(
 )
 
 achievement(
-    title = "Big Mistake", description = "Against a pack of Card Soldiers", points = 5,
-    id = 15589, badge = "14913", published = "10/16/2014 6:09:46 AM", modified = "7/7/2020 2:13:30 AM",
-    trigger = worldId() == 0x04 && battlefieldId() == 0x01 && once(bit6(0x042312) == 0x0) && bit6(0x042312) == 0x1 && 
-              bit6(0x042332) == 0x1 && byte(0x042346) == 0x0A
-)
-
-achievement(
     title = "Alice in Wonderland", description = "Beat the Boss in Wonderland", points = 10,
     id = 15590, badge = "14924", published = "10/16/2014 6:09:55 AM", modified = "7/7/2020 2:13:36 AM",
     trigger = worldId() == 0x04 && battlefieldId() == 0x01 && once(bit5(0x04230C) == 0x0) && bit5(0x04230C) == 0x1 && 
