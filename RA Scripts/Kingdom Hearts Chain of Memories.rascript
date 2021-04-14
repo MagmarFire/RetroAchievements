@@ -1008,11 +1008,11 @@ achievement(title = "Double Jeopardy [m]", points = 5,
         && never(repeated(hitLimit, Delta(playerHp()) > playerHp()))
 )
 
+function wonderlandStoryEntry() => bit5(0x0422f4)
 achievement(
-    title = "Alice in Wonderland", description = "Beat the Boss in Wonderland", points = 10,
+    title = "Memory of the Rabbit Hole", description = "Complete Wonderland in Sora's story.", points = 5,
     id = 15590, badge = "14924", published = "10/16/2014 6:09:55 AM", modified = "7/7/2020 2:13:36 AM",
-    trigger = worldId() == 0x04 && battlefieldId() == 0x01 && once(bit5(0x04230C) == 0x0) && bit5(0x04230C) == 0x1 && 
-              bit5(0x04232C) == 0x1 && byte(0x042346) == 0x0A
+    trigger = WasBitflagSetInGame(wonderlandStoryEntry())
 )
 
 achievement(
