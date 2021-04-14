@@ -118,7 +118,7 @@ function battlefieldId() => byte(0x0421CD)
 // $0421CE: Floor (EU)
 function floor() => byte(0x0421CE)
 
-function IsOnFloor(floor) => floor == floor() + 1
+function IsOnFloor(floor) => floor() + 1 == floor
 
 // $0422B8: Max HP (16-bit)
 function maxHp() => word(0x0422B8)
@@ -1020,6 +1020,15 @@ achievement(
     id = 15591, badge = "14925", published = "10/16/2014 6:10:01 AM", modified = "7/7/2020 2:13:41 AM",
     trigger = worldId() == 0x00 && battlefieldId() == 0x0C && once(bit2(0x042305) == 0x0) && bit2(0x042305) == 0x1 && 
               bit2(0x042325) == 0x1 && byte(0x042346) == 0x0A
+)
+
+function larxeneHp() => word(0x03abac)
+maxStockedCards = 6
+achievement(title = "Senary Hand [m]", points = 10,
+    description = "Defeat Larxene on the sixth floor without stocking more than six cards.",
+    trigger = never(!IsInWorld("Castle Oblivion, Hall")) && never(battlefieldId() != 0x0C) && BattleStartedCheckpoint() && IsOnFloor(6)
+        && EnemyWithSpecificAddressWasJustDefeated(larxeneHp()) && once(larxeneHp() == 0x460)
+        && never(repeated(maxStockedCards + 1, Delta(numberOfStockedCardsForPlayer()) < numberOfStockedCardsForPlayer())) && never(!IsInBattle())
 )
 
 achievement(
