@@ -87,7 +87,7 @@ LocationLookup = {
     10: "Traverse Town",
     11: "Twilight Town",
     12: "Castle Oblivion",
-    13: "100-Acre Wood",
+    13: "the Hundred Acre Wood",
 }
 
 function IsInWorld(name)
@@ -1029,6 +1029,20 @@ achievement(title = "Senary Hand [m]", points = 5,
     trigger = never(!IsInWorld("Castle Oblivion, Hall")) && never(battlefieldId() != 0x0C) && BattleStartedCheckpoint() && IsOnFloor(6)
         && EnemyWithSpecificAddressWasJustDefeated(larxeneHp()) && once(larxeneHp() == 0x460)
         && never(repeated(maxStockedCards + 1, Delta(numberOfStockedCardsForPlayer()) < numberOfStockedCardsForPlayer())) && never(!IsInBattle())
+)
+
+function bambi() => bit1(0x042306)
+function poohEnergyBars() => byte(0x0449d4)
+achievement(title = "Save the Bees [m]", points = 5,
+    description = "Earn the Bambi card from Pooh without having him restore energy more than once or letting it completely run out.",
+    // Note: The Bambi bitflag is set slightly after the player leaves the world, so simply checking to see if the player is in the Hundred Acre Wood for the trigger
+    // is incompatible with resetting if the player is not in the world. So we'll need to take a different approach here.
+              // Ensure we reset after we leave the world, but only after the Bambi bitflag has a chance to flip.
+    trigger = never(once(WasInWorld("the Hundred Acre Wood")) && repeated(2, !IsInWorld("the Hundred Acre Wood")))
+        && once(!WasInWorld("the Hundred Acre Wood") && IsInWorld("the Hundred Acre Wood")) // Checkpoint when entering the world
+        && WasBitflagSetInGame(bambi()) && never(poohEnergyBars() == 0)
+        // Due to how we're programming this, we need to also make sure that the player is actually in the Hundred Acre Wood before increasing hit targets.
+        && never(repeated(2, IsInWorld("the Hundred Acre Wood") && poohEnergyBars() > Delta(poohEnergyBars())))
 )
 
 achievement(
