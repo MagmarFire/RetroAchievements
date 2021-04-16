@@ -1112,10 +1112,18 @@ GenerateSaveProtectedAchievementFromConditions({
 }, poohGiftConditions, IsInWorld("the Hundred Acre Wood"))
 
 achievement(
-    title = "Searching for Riku", description = "In the Castle Oblivion...", points = 10,
+    title = "Driven to Seek", description = "Defeat Riku on the seventh floor in Sora's story.", points = 3,
     id = 15594, badge = "14932", published = "10/16/2014 6:11:05 AM", modified = "7/7/2020 2:13:55 AM",
-    trigger = never(worldId() != 0x00) && battlefieldId() == 0x0C && once(bit6(0x042305) == 0x0) && 
-              bit6(0x042305) == 0x1 && bit6(0x042325) == 0x1 && byte(0x042346) == 0x0A
+    trigger = never(!IsInWorld("Castle Oblivion, Hall")) && never(battlefieldId() != 0x0C) && BattleStartedCheckpoint() && IsOnFloor(7)
+        && EnemyWithSpecificAddressWasJustDefeated(riku7thHp()) && once(riku7thHp() == 0x460)
+)
+
+function riku7thHp() => word(0x03a9cc)
+achievement(title = "Dark Leech [m]", points = 5,
+    description = "Defeat Riku on the seventh floor in Sora's story without healing.",
+    trigger = never(!IsInWorld("Castle Oblivion, Hall")) && never(battlefieldId() != 0x0C) && BattleStartedCheckpoint() && IsOnFloor(7)
+        && EnemyWithSpecificAddressWasJustDefeated(riku7thHp()) && once(riku7thHp() == 0x460)
+        && never(playerHp() > Delta(playerHp()))
 )
 
 achievement(
