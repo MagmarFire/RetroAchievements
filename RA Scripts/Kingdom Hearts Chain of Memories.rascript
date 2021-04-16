@@ -26,6 +26,53 @@ function SecondsToFormat(value)
 
 function SecondsToFrames(seconds) => seconds * 60
 
+// This function allows the creation of achievements with built-in save protection that deal with a collection of values being set
+// throughout the game. The schemas for both parameters are as follows:
+//
+// cheevo: "name": title
+//         "description": self-explanatory
+//         "points": self-explanatory
+//         "threshold": how many values in the "addresses" dictionary must be set before this achievement is triggered
+//
+// conditions: "countsWhen": the condition that must be true in order for it to be counted in the total
+//             "recalculateWhen": the condition that indicates that relevant values in the condition have changed,
+//                                and so everything must be recalculated
+//
+// onlyAvailableWhen: A condition that must be true in all conditions for the achievement to trigger.
+function GenerateSaveProtectedAchievementFromConditions(cheevo, conditions, onlyAvailableWhen)
+{
+    loadedCounts = []
+    totalCounts = []
+    resetAlt = always_false()
+
+    for i in conditions
+    {
+        condition = conditions[i]
+        
+        // This is the score when the game is loaded. If he loaded score is greater than or equal to the threshold--that is,
+        // if the save file would satisfy enough conditions to trigger the achievement on load--this should trigger a
+        // permanant pauselock to serve as save protection.
+        array_push(loadedCounts, once(condition["countsWhen"] && IsLoadingSaveFile()))
+        
+        // We want both loaded and session counts here (that is, we don't care if we're loading a save file when these are tallied).
+        // This way, loading a save doesn't invalidate the achievement outright if a player hasn't actually earned it yet.
+        array_push(totalCounts, once(condition["countsWhen"]))
+        
+        resetAlt = resetAlt || condition["recalculateWhen"]
+    }
+
+    achievement(title = cheevo["name"], description = cheevo["description"], points = cheevo["points"],
+        trigger = !IsLoadingSaveFile() &&
+            measured(tally(cheevo["threshold"], totalCounts), onlyAvailableWhen) && unless(tally(cheevo["threshold"], loadedCounts))
+            && never(resetAlt)
+    )
+}
+
+function GenerateConditionFromBitflag(mem)
+{
+    return { "countsWhen": (mem == 1), "recalculateWhen": (Delta(mem) != mem) }
+}
+
 // $03bfc2: Appears to affect what screen the game transitions to in certain situations.
 //
 //          For instance, it changes from 0 to 1 when loading a game, and if it's frozen at 0 when attempting to load a game, you get booted back to the title screen.
@@ -1045,13 +1092,24 @@ achievement(title = "Save the Bees [m]", points = 5,
         && never(repeated(2, IsInWorld("the Hundred Acre Wood") && poohEnergyBars() > Delta(poohEnergyBars())))
 )
 
-achievement(
-    title = "Friendly Fellows", description = "Get all the upgrades and cards from Pooh friends", points = 10,
-    id = 15592, badge = "14926", published = "10/16/2014 6:10:10 AM", modified = "7/7/2020 2:13:48 AM",
-    trigger = worldId() <= 0x0D && battlefieldId() == 0x0C && bit2(0x0422D5) == 0x1 && bit5(0x042303) == 0x1 && 
-              bit3(0x042307) == 0x1 && bit3(0x0422D6) == 0x1 && bit1(0x0422D5) == 0x1 && bit4(0x0422D5) == 0x1 && bit1(0x042306) == 0x1 && 
-              byte(0x042346) == 0x0A
-)
+poohGiftConditions = {
+    0: GenerateConditionFromBitflag(bit2(0x0422D5)), // Confuse
+    1: GenerateConditionFromBitflag(bit5(0x042303)), // Spellbinder
+    2: GenerateConditionFromBitflag(bit3(0x042307)), // Elixir
+    3: GenerateConditionFromBitflag(bit3(0x0422D6)), // Idyll Romp
+    4: GenerateConditionFromBitflag(bit1(0x0422D5)), // Bind
+    5: GenerateConditionFromBitflag(bit4(0x0422D5)), // Synchro
+    6: GenerateConditionFromBitflag(bit1(0x042306)) // Bambi
+}
+
+GenerateSaveProtectedAchievementFromConditions({
+    "name": "Friendly Fellows",
+    "description": "Acquire all card and sleight rewards from Pooh and his friends.",
+    "points": 10,
+    "id": 15592,
+    "badge": "14926",
+    "threshold": length(poohGiftConditions)
+}, poohGiftConditions, IsInWorld("the Hundred Acre Wood"))
 
 achievement(
     title = "Searching for Riku", description = "In the Castle Oblivion...", points = 10,
