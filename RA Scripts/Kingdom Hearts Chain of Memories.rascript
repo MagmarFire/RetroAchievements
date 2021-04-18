@@ -1091,7 +1091,7 @@ function UsedGimmickCardWhileFightingGuardArmor() => Delta(bossState()) != 0xa &
 achievement(
     title = "No Scheming Allowed [m]", points = 5,
     description = "Defeat the Guard Armor in Sora's story without using any Gimmick Cards.",
-    trigger = once(BattleStartedCheckpoint() && IsInWorld("Traverse Town") && enemyHp() == 0xc8) // Battle checkpoint
+    trigger = trigger_when(once(BattleStartedCheckpoint() && IsInWorld("Traverse Town") && enemyHp() == 0xc8)) // Battle checkpoint
         && enemyHp() == 0 // Win condition
         && never(UsedGimmickCardWhileFightingGuardArmor()) // Loss condition
         && never(!IsInBattle())
@@ -1336,6 +1336,7 @@ GenerateSaveProtectedAchievementFromConditions({
     "threshold": length(poohGiftConditions)
 }, poohGiftConditions, IsInWorld("the Hundred Acre Wood"))
 
+function riku7thHp() => word(0x03a9cc)
 achievement(
     title = "Driven to Seek", description = "Defeat Riku on the seventh floor in Sora's story.", points = 3,
     id = 15594, badge = "14932", published = "10/16/2014 6:11:05 AM", modified = "7/7/2020 2:13:55 AM",
@@ -1343,7 +1344,6 @@ achievement(
         && EnemyWithSpecificAddressWasJustDefeated(riku7thHp()) && once(riku7thHp() == 0x460)
 )
 
-function riku7thHp() => word(0x03a9cc)
 achievement(title = "Dark Leech [m]", points = 5,
     description = "Defeat Riku on the seventh floor in Sora's story without healing.",
     trigger = never(!IsInWorld("Castle Oblivion, Hall")) && never(battlefieldId() != 0x0C) && BattleStartedCheckpoint() && IsOnFloor(7)
@@ -1351,11 +1351,29 @@ achievement(title = "Dark Leech [m]", points = 5,
         && never(playerHp() > Delta(playerHp()))
 )
 
+ursulaHpMap = {
+    7: 0x27a,
+    8: 0x2a1,
+    9: 0x2ca,
+    10: 0x2ef,
+    11: 0x4ac // Why the crap did it jump so high!?
+}
+
+theBendsTimeLimit = 45
+function ursulaHp() => word(0x03add0)
+achievement(title = "The Bends [m]", points = 25,
+    description = "Defeat Ursula in Sora's story while healing at least once every " + theBendsTimeLimit + " seconds.",
+    trigger = BossHPValueCheckpointIsSet(ursulaHp(), ursulaHpMap, "Atlantica", 0xb)
+        && EnemyWithSpecificAddressWasJustDefeated(ursulaHp()) && never(!IsInBattle())
+        && never(repeated(SecondsToFrames(theBendsTimeLimit), FrameHasAdvanced() && never(playerHp() > Delta(playerHp()))))
+        && unless(IsPaused())
+)
+
+function atlanticaStoryEntry() => bit2(0x0422f5)
 achievement(
-    title = "Under the Sea", description = "Beat the Boss in Atlantica", points = 10,
+    title = "Memory of Melodies", description = "Complete Atlantica in Sora's story.", points = 5,
     id = 15595, badge = "15004", published = "10/16/2014 6:11:11 AM", modified = "7/7/2020 2:16:28 AM",
-    trigger = worldId() == 0x02 && battlefieldId() == 0x04 && once(bit7(0x04230C) == 0x0) && bit7(0x04230C) == 0x1 && 
-              bit7(0x04232C) == 0x1 && byte(0x042346) == 0x0A
+    trigger = WasBitflagSetInGame(atlanticaStoryEntry())
 )
 
 achievement(
