@@ -1241,26 +1241,19 @@ if (0 == 1)
     )
 }
 
-function cloudHp() => word(0x03abcc)
+// Saving this concept for a later battle.
+if (0 == 1)
+{
+    itemCards = GetCardsByProperty("type", "Item")
+    magicCards = GetCardsByProperty("type", "Magic")
 
-cloudHpMap = {
-    2: 0x112,//
-    3: 0x12a,//
-    4: 0x143,//
-    5: 0x15b,//
-    6: 0x174//
+    achievement(title = "Nothing but Fisticuffs [m]", points = 5,
+        description = "Defeat Cloud without equipping any item or magic cards (Deck 1 only).",
+        trigger = BossHPValueCheckpointIsSet(cloudHp(), cloudHpMap, "Olympus Coliseum", 0x1) && currentDeck() == 0
+            && EnemyWithSpecificAddressWasJustDefeated(cloudHp())
+            && never(AnyCardsAreEquippedInDeck(MergeArrays(itemCards, magicCards), deck1BaseAddr(), 98, 0)) && currentDeck() == 0
+    )
 }
-
-itemCards = GetCardsByProperty("type", "Item")
-friendCards = GetCardsByProperty("type", "Friend") // Including this to reduce the number of calculated ranges.
-magicCards = GetCardsByProperty("type", "Magic")
-
-achievement(title = "Nothing but Fisticuffs [m]", points = 5,
-    description = "Defeat Cloud without equipping any item or magic cards (Deck 1 only).",
-    trigger = BossHPValueCheckpointIsSet(cloudHp(), cloudHpMap, "Olympus Coliseum", 0x1) && currentDeck() == 0
-        && EnemyWithSpecificAddressWasJustDefeated(cloudHp())
-        && never(AnyCardsAreEquippedInDeck(MergeArrays(itemCards, magicCards), deck1BaseAddr(), 98, 0)) && currentDeck() == 0
-)
 
 function olympusColiseumStoryEntry() => bit6(0x0422f4)
 achievement(
