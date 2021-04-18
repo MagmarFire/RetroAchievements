@@ -869,6 +869,8 @@ function ConvertClustersToRanges(clusters)
         array_push(ranges, { "min": min, "max": max })
     }
     
+    // todo: sort and then merge ranges whose mins are one greater than another's maxes, and vice versa.
+    
     return ranges
 }
 
@@ -961,21 +963,24 @@ function ConvertCardsToListOfIdRanges(cardList)
     return cardIdList
 }
 
-function AnyCardsAreEquippedInDeck(cardList, deckAddr, highestSlotIndex)
+function AnyCardsAreEquippedInDeck(cardList, deckAddr, highestSlotIndex, debug)
 {
     anyCardsAreEquipped = always_false()
     parameters = GetCardRangeParameters(cardList)
     
-    for i in range(0, 0)
+    for i in range(0, highestSlotIndex)
     {
         currentDeckIndexAddr = deckAddr + i * 2
-        slotAddr = inventoryBaseAddr() + word(currentDeckIndexAddr)
+        slotAddr = inventoryBaseAddr() + word(currentDeckIndexAddr) * 2
         
         for parameter in parameters
         {
             anyCardInRangeIsEquippedInThisSlot = always_true()
             
-            Debug((parameter["minIdMostSigNib"] * 256 + parameter["minIdLeastSigByte"]) + ", " + (parameter["maxIdMostSigNib"] * 256 + parameter["maxIdLeastSigByte"]))
+            if (debug != 0)
+            {
+                Debug((parameter["minIdMostSigNib"] * 256 + parameter["minIdLeastSigByte"]) + ", " + (parameter["maxIdMostSigNib"] * 256 + parameter["maxIdLeastSigByte"]))
+            }
             
             mostSigNib = low4(slotAddr + 1)
             leastSigByte = byte(slotAddr)
@@ -1016,7 +1021,7 @@ function BossHPValueCheckpointIsSet(bossHp, bossHpMap, worldName, roomId)
     for floor in bossHpMap
     {
         hpValue = bossHpMap[floor]
-        trigger = trigger || once(roomId() == roomId && IsInWorld(worldName) && BattleStartedCheckpoint() && IsOnFloor(floor) && bossHp == hpValue)
+        trigger = trigger || trigger_when(once(roomId() == roomId && IsInWorld(worldName) && BattleStartedCheckpoint() && IsOnFloor(floor) && bossHp == hpValue))
     }
     
     return trigger
@@ -1254,7 +1259,7 @@ achievement(title = "Nothing but Fisticuffs [m]", points = 5,
     description = "Defeat Cloud without equipping any item or magic cards (Deck 1 only).",
     trigger = BossHPValueCheckpointIsSet(cloudHp(), cloudHpMap, "Olympus Coliseum", 0x1) && currentDeck() == 0
         && EnemyWithSpecificAddressWasJustDefeated(cloudHp())
-        && never(AnyCardsAreEquippedInDeck(MergeArrays(MergeArrays(itemCards, friendCards), magicCards), deck1BaseAddr(), 98)) && currentDeck() == 0
+        && never(AnyCardsAreEquippedInDeck(MergeArrays(itemCards, magicCards), deck1BaseAddr(), 98, 0)) && currentDeck() == 0
 )
 
 function olympusColiseumStoryEntry() => bit6(0x0422f4)
