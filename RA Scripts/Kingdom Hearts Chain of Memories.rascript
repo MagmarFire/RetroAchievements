@@ -1021,7 +1021,7 @@ function BossHPValueCheckpointIsSet(bossHp, bossHpMap, worldName, roomId)
     for floor in bossHpMap
     {
         hpValue = bossHpMap[floor]
-        trigger = trigger || trigger_when(once(roomId() == roomId && IsInWorld(worldName) && BattleStartedCheckpoint() && IsOnFloor(floor) && bossHp == hpValue))
+        trigger = trigger || once(roomId() == roomId && IsInWorld(worldName) && BattleStartedCheckpoint() && IsOnFloor(floor) && bossHp == hpValue)
     }
     
     return trigger
@@ -1077,7 +1077,7 @@ function BattleStartedCheckpoint() => once(Delta(battlePointer()) == 0x0 && batt
 
 function EnemyWasJustDefeated() => EnemyWithSpecificAddressWasJustDefeated(enemyHp())
 
-function EnemyWithSpecificAddressWasJustDefeated(enemyHp) => Delta(enemyHp) > 0 && enemyHp == 0
+function EnemyWithSpecificAddressWasJustDefeated(enemyHp) => trigger_when(Delta(enemyHp) > 0 && enemyHp == 0)
 
 function shadowJournalEntry() => bit4(0x0422fe)
 achievement(
@@ -1377,11 +1377,27 @@ achievement(
     trigger = WasBitflagSetInGame(warpinator())
 )
 
+maleficentHpMap = {
+    7: 0x3b7,
+    8: 0x3f2,
+    9: 0x42c,
+    10: 0x467,
+}
+
+function maleficentHp() => word(0x03add4)
+enemyCards = GetCardsByProperty("type", "Enemy")
+achievement(title = "Good Must Defeat Evil [m]", points = 10,
+    description = "Defeat Maleficent in Sora's story without equipping any enemy cards (Deck 2 only).",
+    trigger = BossHPValueCheckpointIsSet(maleficentHp(), maleficentHpMap, "Hollow Bastion", 0x7)
+        && EnemyWithSpecificAddressWasJustDefeated(maleficentHp()) && never(!IsInBattle())
+        && never(AnyCardsAreEquippedInDeck(enemyCards, deck2BaseAddr(), 98, 0)) && currentDeck() == 1
+)
+
+function hollowBastionStoryEntry() => bit4(0x0422f5)
 achievement(
-    title = "End of the World", description = "Beat the Boss in Hollow Bastion", points = 10,
+    title = "Memory of Darkness", description = "Defeat Maleficent in Sora's story.", points = 5,
     id = 15597, badge = "15011", published = "10/16/2014 6:11:28 AM", modified = "7/7/2020 2:16:37 AM",
-    trigger = worldId() == 0x08 && battlefieldId() == 0x0A && once(bit3(0x04230D) == 0x0) && bit3(0x04230D) == 0x1 && 
-              bit3(0x04232D) == 0x1 && byte(0x042346) == 0x0A
+    trigger = WasBitflagSetInGame(hollowBastionStoryEntry())
 )
 
 achievement(
