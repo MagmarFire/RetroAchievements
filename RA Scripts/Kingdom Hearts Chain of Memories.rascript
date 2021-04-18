@@ -1376,11 +1376,11 @@ achievement(
     trigger = WasBitflagSetInGame(atlanticaStoryEntry())
 )
 
+function warpinator() => bit7(0x0422D4)
 achievement(
-    title = "Finding for Riku", description = "In the Castle Oblivion...", points = 10,
+    title = "Driven to Seize", description = "Defeat Riku on the eighth floor in Sora's story.", points = 3,
     id = 15596, badge = "15005", published = "10/16/2014 6:11:18 AM", modified = "7/7/2020 2:16:42 AM",
-    trigger = never(worldId() != 0x00) && battlefieldId() == 0x0C && once(bit7(0x0422D4) == 0x0) && 
-              bit7(0x0422D4) == 0x1 && bit7(0x0422E4) == 0x1 && byte(0x042346) == 0x0A
+    trigger = WasBitflagSetInGame(warpinator())
 )
 
 achievement(
