@@ -1241,20 +1241,6 @@ if (0 == 1)
     )
 }
 
-// Saving this concept for a later battle.
-if (0 == 1)
-{
-    itemCards = GetCardsByProperty("type", "Item")
-    magicCards = GetCardsByProperty("type", "Magic")
-
-    achievement(title = "Nothing but Fisticuffs [m]", points = 5,
-        description = "Defeat Cloud without equipping any item or magic cards (Deck 1 only).",
-        trigger = BossHPValueCheckpointIsSet(cloudHp(), cloudHpMap, "Olympus Coliseum", 0x1) && currentDeck() == 0
-            && EnemyWithSpecificAddressWasJustDefeated(cloudHp())
-            && never(AnyCardsAreEquippedInDeck(MergeArrays(itemCards, magicCards), deck1BaseAddr(), 98, 0)) && currentDeck() == 0
-    )
-}
-
 function olympusColiseumStoryEntry() => bit6(0x0422f4)
 achievement(
     title = "Memory of Heroism", description = "Complete Olympus Coliseum in Sora's story.", points = 5,
@@ -1336,18 +1322,18 @@ GenerateSaveProtectedAchievementFromConditions({
     "threshold": length(poohGiftConditions)
 }, poohGiftConditions, IsInWorld("the Hundred Acre Wood"))
 
-function riku7thHp() => word(0x03a9cc)
+function rikuHp() => word(0x03a9cc) // I, II, and III
 achievement(
     title = "Driven to Seek", description = "Defeat Riku on the seventh floor in Sora's story.", points = 3,
     id = 15594, badge = "14932", published = "10/16/2014 6:11:05 AM", modified = "7/7/2020 2:13:55 AM",
     trigger = never(!IsInWorld("Castle Oblivion, Hall")) && never(battlefieldId() != 0x0C) && BattleStartedCheckpoint() && IsOnFloor(7)
-        && EnemyWithSpecificAddressWasJustDefeated(riku7thHp()) && once(riku7thHp() == 0x460)
+        && EnemyWithSpecificAddressWasJustDefeated(rikuHp()) && once(rikuHp() == 0x460)
 )
 
 achievement(title = "Dark Leech [m]", points = 5,
     description = "Defeat Riku on the seventh floor in Sora's story without healing.",
     trigger = never(!IsInWorld("Castle Oblivion, Hall")) && never(battlefieldId() != 0x0C) && BattleStartedCheckpoint() && IsOnFloor(7)
-        && EnemyWithSpecificAddressWasJustDefeated(riku7thHp()) && once(riku7thHp() == 0x460)
+        && EnemyWithSpecificAddressWasJustDefeated(rikuHp()) && once(rikuHp() == 0x460)
         && never(playerHp() > Delta(playerHp()))
 )
 
@@ -1374,6 +1360,15 @@ achievement(
     title = "Memory of Melodies", description = "Complete Atlantica in Sora's story.", points = 5,
     id = 15595, badge = "15004", published = "10/16/2014 6:11:11 AM", modified = "7/7/2020 2:16:28 AM",
     trigger = WasBitflagSetInGame(atlanticaStoryEntry())
+)
+
+itemCards = GetCardsByProperty("type", "Item")
+magicCards = GetCardsByProperty("type", "Magic")
+achievement(title = "Nothing but Fisticuffs [m]", points = 10,
+    description = "Defeat Riku on the eighth floor in Sora's story without equipping any item or magic cards (Deck 2 only).",
+    trigger = never(!IsInWorld("Castle Oblivion, Hall")) && never(battlefieldId() != 0x0C) && BattleStartedCheckpoint() && IsOnFloor(8)
+        && EnemyWithSpecificAddressWasJustDefeated(rikuHp()) && once(rikuHp() == 0x460)
+        && never(AnyCardsAreEquippedInDeck(MergeArrays(itemCards, magicCards), deck2BaseAddr(), 0, 0)) && currentDeck() == 1
 )
 
 function warpinator() => bit7(0x0422D4)
