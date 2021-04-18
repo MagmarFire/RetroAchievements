@@ -1077,7 +1077,7 @@ function BattleStartedCheckpoint() => once(Delta(battlePointer()) == 0x0 && batt
 
 function EnemyWasJustDefeated() => EnemyWithSpecificAddressWasJustDefeated(enemyHp())
 
-function EnemyWithSpecificAddressWasJustDefeated(enemyHp) => trigger_when(Delta(enemyHp) > 0 && enemyHp == 0)
+function EnemyWithSpecificAddressWasJustDefeated(enemyHp) => trigger_when(Delta(enemyHp) > 0 && enemyHp == 0) && never(!IsInBattle())
 
 function shadowJournalEntry() => bit4(0x0422fe)
 achievement(
@@ -1091,10 +1091,9 @@ function UsedGimmickCardWhileFightingGuardArmor() => Delta(bossState()) != 0xa &
 achievement(
     title = "No Scheming Allowed [m]", points = 5,
     description = "Defeat the Guard Armor in Sora's story without using any Gimmick Cards.",
-    trigger = trigger_when(once(BattleStartedCheckpoint() && IsInWorld("Traverse Town") && enemyHp() == 0xc8)) // Battle checkpoint
-        && enemyHp() == 0 // Win condition
+    trigger = BossHPValueCheckpointIsSet(enemyHp(), { 1: 0xc8 }, "Traverse Town", 0x8)
+        && EnemyWithSpecificAddressWasJustDefeated(enemyHp())
         && never(UsedGimmickCardWhileFightingGuardArmor()) // Loss condition
-        && never(!IsInBattle())
 )
 
 function fireCardEntry() => bit0(0x042305)
@@ -1389,7 +1388,7 @@ enemyCards = GetCardsByProperty("type", "Enemy")
 achievement(title = "Good Must Defeat Evil [m]", points = 10,
     description = "Defeat Maleficent in Sora's story without equipping any enemy cards (Deck 2 only).",
     trigger = BossHPValueCheckpointIsSet(maleficentHp(), maleficentHpMap, "Hollow Bastion", 0x7)
-        && EnemyWithSpecificAddressWasJustDefeated(maleficentHp()) && never(!IsInBattle())
+        && EnemyWithSpecificAddressWasJustDefeated(maleficentHp())
         && never(AnyCardsAreEquippedInDeck(enemyCards, deck2BaseAddr(), 98, 0)) && currentDeck() == 1
 )
 
