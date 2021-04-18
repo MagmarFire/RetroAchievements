@@ -1077,7 +1077,9 @@ function BattleStartedCheckpoint() => once(Delta(battlePointer()) == 0x0 && batt
 
 function EnemyWasJustDefeated() => EnemyWithSpecificAddressWasJustDefeated(enemyHp())
 
-function EnemyWithSpecificAddressWasJustDefeated(enemyHp) => trigger_when(Delta(enemyHp) > 0 && enemyHp == 0) && never(!IsInBattle())
+function EnemyWithSpecificAddressWasJustDefeated(enemyHp) => trigger_when(EnemyWithSpecificAddressWasJustDefeatedTriggerless(enemyHp)) && never(!IsInBattle())
+
+function EnemyWithSpecificAddressWasJustDefeatedTriggerless(enemyHp) => Delta(enemyHp) > 0 && enemyHp == 0
 
 function shadowJournalEntry() => bit4(0x0422fe)
 achievement(
@@ -1926,7 +1928,7 @@ leaderboard(title = "Time Attack - Parasite Cage (Sora's Story)",
     description = "Defeat the Parasite Cage in Sora's story as quickly as you can.",
     start = BossHPValueCheckpointIsSet(parasiteCageHp(), parasiteCageHpMap, "Monstro", 0x4) && never(!IsInBattle()),
     cancel = !IsInBattle(),
-    submit = EnemyWithSpecificAddressWasJustDefeated(parasiteCageHp()),
+    submit = EnemyWithSpecificAddressWasJustDefeatedTriggerless(parasiteCageHp()),
     value = measured(FrameHasAdvanced() && !IsPaused())
 )
 
