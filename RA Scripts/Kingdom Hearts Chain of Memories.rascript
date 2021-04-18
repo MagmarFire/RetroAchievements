@@ -1367,7 +1367,7 @@ achievement(title = "Nothing but Fisticuffs [m]", points = 10,
     description = "Defeat Riku on the eighth floor in Sora's story without equipping any item or magic cards (Deck 2 only).",
     trigger = never(!IsInWorld("Castle Oblivion, Hall")) && never(battlefieldId() != 0x0C) && BattleStartedCheckpoint() && IsOnFloor(8)
         && EnemyWithSpecificAddressWasJustDefeated(rikuHp()) && once(rikuHp() == 0x460)
-        && never(AnyCardsAreEquippedInDeck(MergeArrays(itemCards, magicCards), deck2BaseAddr(), 0, 0)) && currentDeck() == 1
+        && never(AnyCardsAreEquippedInDeck(MergeArrays(itemCards, magicCards), deck2BaseAddr(), 98, 0)) && currentDeck() == 1
 )
 
 function warpinator() => bit7(0x0422D4)
