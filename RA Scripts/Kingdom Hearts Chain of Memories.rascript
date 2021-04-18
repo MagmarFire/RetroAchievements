@@ -76,7 +76,7 @@ function GenerateSaveProtectedAchievementFromConditions(cheevo, conditions, only
         resetAlt = resetAlt || condition["recalculateWhen"]
     }
 
-    achievement(title = cheevo["name"], description = cheevo["description"], points = cheevo["points"],
+    achievement(title = cheevo["name"], description = cheevo["description"], points = cheevo["points"], id = cheevo["id"], badge = cheevo["badge"],
         trigger = !IsLoadingSaveFile() &&
             measured(tally(cheevo["threshold"], totalCounts), onlyAvailableWhen) && unless(tally(cheevo["threshold"], loadedCounts))
             && never(resetAlt)
@@ -1474,13 +1474,50 @@ achievement(
     trigger = WasBitflagSetInGame(keyToRewardsEntry())
 )
 
-achievement(
-    title = "All the Rooms", description = "Get all the Map Cards (In the Journal)", points = 10,
-    id = 15612, badge = "15228", published = "10/16/2014 6:15:39 AM", modified = "7/7/2020 2:22:16 AM",
-    trigger = byte(0x04230F) == 0xFF && byte(0x042310) == 0xFF && bit1(0x04230E) == 0x1 && bit2(0x04230E) == 0x1 && 
-              bit3(0x04230E) == 0x1 && bit4(0x04230E) == 0x1 && bit5(0x04230E) == 0x1 && bit6(0x04230E) == 0x1 && bit7(0x04230E) == 0x1 && 
-              bit0(0x042311) == 0x1 && bit1(0x042311) == 0x1 && bit2(0x042311) == 0x1
-)
+architectBitflags = [
+    bit0(0x04230F),
+    bit1(0x04230F),
+    bit2(0x04230F),
+    bit3(0x04230F),
+    bit4(0x04230F),
+    bit5(0x04230F),
+    bit6(0x04230F),
+    bit7(0x04230F),
+    bit0(0x042310),
+    bit1(0x042310),
+    bit2(0x042310),
+    bit3(0x042310),
+    bit4(0x042310),
+    bit5(0x042310),
+    bit6(0x042310),
+    bit7(0x042310),
+    bit1(0x04230E),
+    bit2(0x04230E),
+    bit3(0x04230E),
+    bit4(0x04230E),
+    bit5(0x04230E),
+    bit6(0x04230E),
+    bit7(0x04230E),
+    bit0(0x042311),
+    bit1(0x042311),
+    bit2(0x042311),
+]
+
+architectConditions = {}
+
+for i in architectBitflags
+{
+    architectConditions[length(architectConditions)] = GenerateConditionFromBitflag(i)
+}
+
+GenerateSaveProtectedAchievementFromConditions({
+    "name": "Architect",
+    "description": "Complete the Map Cards section of Jiminy's journal.",
+    "points": 10,
+    "id": 15612,
+    "badge": "15228",
+    "threshold": length(architectConditions)
+}, architectConditions, always_true())
 
 function lionheart() => bit0(0x042304)
 achievement(
