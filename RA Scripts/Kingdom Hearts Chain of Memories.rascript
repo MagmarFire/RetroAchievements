@@ -1342,7 +1342,6 @@ ursulaHpMap = {
     8: 0x2a1,
     9: 0x2ca,
     10: 0x2ef,
-    11: 0x4ac // Why the crap did it jump so high!?
 }
 
 theBendsTimeLimit = 45
