@@ -1106,13 +1106,13 @@ achievement(
 achievement(
     title = "The Flurry of Dancing Flames", description = "Defeat Axel on the first floor.", points = 3,
     id = 15583, badge = "15002", published = "10/16/2014 6:07:43 AM", modified = "7/7/2020 2:12:51 AM",
-    trigger = never(!IsInWorld("Castle Oblivion, Hall")) && never(battlefieldId() != 0x0C) && BattleStartedCheckpoint() && EnemyWasJustDefeated()
-        && never(!IsInBattle()) && IsOnFloor(1)
+    trigger = BossHPValueCheckpointIsSet(enemyHp(), { 1: 0x140 }, "Castle Oblivion, Hall", 0x7) && BattleStartedCheckpoint() && EnemyWasJustDefeated()
 )
 
+function IsPausedAgainstAxel() => byte(0x033190) == 1
 achievement(title = "Heat-Resistant Glue [m]", description = "Defeat Axel on the first floor without using the D-pad.", points = 5,
-    trigger = never(!IsInWorld("Castle Oblivion, Hall")) && never(battlefieldId() != 0x0C) && BattleStartedCheckpoint()
-        && EnemyWasJustDefeated() && never(DpadIsPressed()) && never(!IsInBattle()) && IsOnFloor(1)
+    trigger = BossHPValueCheckpointIsSet(enemyHp(), { 1: 0x140 }, "Castle Oblivion, Hall", 0x7) && BattleStartedCheckpoint() && EnemyWasJustDefeated()
+        && never(DpadIsPressed()) && unless(IsPausedAgainstAxel())
 )
 
 jafarHpMap = {
@@ -1124,9 +1124,10 @@ jafarHpMap = {
 }
 
 jumpLimit = 45
+function IsPausedAgainstJafar() => byte(0x034970) == 1
 achievement(title = "Delicate Springs [m]", description = "Defeat Jafar in Sora's story without pressing B more than " + jumpLimit + " times.", points = 10,
-    trigger = BossHPValueCheckpointIsSet(enemyHp(), jafarHpMap, "Agrabah", 0x1)
-        && EnemyWasJustDefeated() && never(!IsInBattle()) && never(repeated(jumpLimit + 1, Delta(bIsPressed()) != bIsPressed() && bIsPressed() == 1))
+    trigger = never(repeated(jumpLimit + 1, !IsPausedAgainstJafar() && Delta(bIsPressed()) != bIsPressed() && bIsPressed() == 1))
+        && BossHPValueCheckpointIsSet(enemyHp(), jafarHpMap, "Agrabah", 0x1) && EnemyWasJustDefeated()
 )
 
 function agrabahStoryEntry() => bit7(0x0422f4)
