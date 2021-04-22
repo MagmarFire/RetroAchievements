@@ -1013,10 +1013,13 @@ function AnyCardsAreEquippedInDeck(cardList, deckAddr, highestSlotIndex, debug)
 function currentDeck() => byte(0x03cacc)
 
 function deck1TotalCards() => byte(0x0424cc)
+function deck1TotalCp() => word(0x0424ca)
 
 function deck2TotalCards() => byte(0x0425ac)
+function deck2TotalCp() => word(0x0425aa)
 
 function deck3TotalCards() => byte(0x04268c)
+function deck3TotalCp() => word(0x04268a)
 
 function BossHPValueCheckpointIsSet(bossHp, bossHpMap, worldName, roomId)
 {
@@ -1089,6 +1092,13 @@ function EnemyWithSpecificAddressWasJustDefeated(enemyHp, useIndicator)
     }
     
     return trigger && never(!IsInBattle())
+}
+
+function CurrentDeckHasACPOfAtMost(cpLimit)
+{
+    return (currentDeck() == 0 && deck1TotalCp() <= cpLimit
+            || currentDeck() == 1 && deck2TotalCp() <= cpLimit
+            || currentDeck() == 2 && deck3TotalCp() <= cpLimit)
 }
 
 function shadowJournalEntry() => bit4(0x0422fe)
@@ -1396,6 +1406,7 @@ maleficentHpMap = {
     10: 0x467,
 }
 
+// todo: Should we have a card limit here?
 function maleficentHp() => word(0x03add4)
 enemyCards = GetCardsByProperty("type", "Enemy")
 achievement(title = "Benevolence vs. Malevolence [m]", points = 10,
@@ -1412,11 +1423,27 @@ achievement(
     trigger = WasBitflagSetInGame(hollowBastionStoryEntry())
 )
 
+hookHpMap = {
+    7: 0x27a,
+    8: 0x2a1,
+    9: 0x2c8,
+    10: 0x2ef,
+}
+
+function hookHp() => word(0x03abac)
+
+achievement(title = "Amputated Hand [m]", points = 25,
+    description = "Defeat Hook in Sora's story using a deck with a CP cost of 350 or less.",
+    trigger = BossHPValueCheckpointIsSet(hookHp(), hookHpMap, "Never Land", 0xe)
+        && EnemyWithSpecificAddressWasJustDefeated(hookHp(), TRUE) && never(!IsInBattle())
+        && CurrentDeckHasACPOfAtMost(350)
+)
+
+function neverLandStoryEntry() => bit3(0x0422f5)
 achievement(
-    title = "Pixie Dust", description = "Beat the Boss in Neverland", points = 10,
+    title = "Memory of Faith", description = "Complete Never Land in Sora's story.", points = 5,
     id = 15598, badge = "15013", published = "10/16/2014 6:11:35 AM", modified = "7/7/2020 2:16:47 AM",
-    trigger = worldId() == 0x07 && battlefieldId() == 0x08 && once(bit2(0x04230D) == 0x0) && bit2(0x04230D) == 0x1 && 
-              bit2(0x04232D) == 0x1 && byte(0x042346) == 0x0A
+    trigger = WasBitflagSetInGame(neverLandStoryEntry())
 )
 
 achievement(
@@ -1938,7 +1965,7 @@ leaderboard(title = "Time Attack - Parasite Cage (Sora's Story)",
     description = "Defeat the Parasite Cage in Sora's story as quickly as you can.",
     start = BossHPValueCheckpointIsSet(parasiteCageHp(), parasiteCageHpMap, "Monstro", 0x4) && never(!IsInBattle()),
     cancel = !IsInBattle(),
-    submit = EnemyWithSpecificAddressWasJustDefeatedTriggerless(parasiteCageHp()),
+    submit = EnemyWithSpecificAddressWasJustDefeated(parasiteCageHp(), FALSE),
     value = measured(FrameHasAdvanced() && !IsPaused())
 )
 
