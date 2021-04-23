@@ -1057,6 +1057,7 @@ function BossHPValueIsExpected(bossHp, bossHpMap, worldName, roomId)
 function battlePointer() => tbyte(0x0423e4)
 function numberOfStockedCardsForPlayer() => byte(battlePointer() + 0x80de)
 function enemyReloadCounter() => word(battlePointer() + 0x80fe)
+function cardValueInPlay() => byte(battlePointer() + 0x80c2)
 
 // One of three pointers that appear to influence battles in some way, like HP and the like
 // It's misleading to call it a battle pointer, though, as it does not consistently nullify when in the field. (32-bit)
@@ -1493,11 +1494,20 @@ achievement(title = "Sturdy Footing [m]", points = 10,
         && trigger_when(!VexenAutoLifeIsActive()) // The cheevo will trigger prematurely if Vexen's HP goes to zero when he has Auto-Life active, so we need to check for it.
 )
 
+function PlayerIsPerformingNormalAttack() => playerBattleState() == 0x10
+achievement(title = "Prestidigitation [m]", points = 25,
+    description = "Defeat Riku on the eleventh floor in Sora's story without using attack cards for anything but sleights, and without equipping magic cards (Deck 2 only).",
+    trigger = never(!IsInWorld("Castle Oblivion, Hall")) && never(battlefieldId() != 0x0C) && BattleStartedCheckpoint() && IsOnFloor(11)
+        && EnemyWithSpecificAddressWasJustDefeated(rikuHp(), TRUE) && once(rikuHp() == 0x460)
+        && never(AnyCardsAreEquippedInDeck(magicCards, deck2BaseAddr(), 98, FALSE)) && currentDeck() == 1
+        && never(PlayerIsPerformingNormalAttack())
+)
+
 achievement(
-    title = "Old Friend", description = "In the Castle Oblivion...", points = 10,
+    title = "Driven to Atone", description = "Defeat Riku on the eleventh floor in Sora's story.", points = 3,
     id = 15619, badge = "15018", published = "10/16/2014 6:17:47 AM", modified = "7/7/2020 2:17:03 AM",
-    trigger = never(worldId() != 0x00) && battlefieldId() == 0x0C && once(bit0(0x042307) == 0x0) && 
-              bit0(0x042307) == 0x1 && bit0(0x042327) == 0x1 && byte(0x042346) == 0x0A
+    trigger = never(!IsInWorld("Castle Oblivion, Hall")) && never(battlefieldId() != 0x0C) && BattleStartedCheckpoint() && IsOnFloor(11)
+        && EnemyWithSpecificAddressWasJustDefeated(rikuHp(), FALSE) && once(rikuHp() == 0x460)
 )
 
 achievement(
