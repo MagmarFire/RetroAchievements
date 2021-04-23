@@ -1075,6 +1075,8 @@ function enemyHp() => word(bossPointer() + 0x7f74)
 
 function playerHp() => word(playerBattlePointer() + 0x7e8c)
 
+function playerBattleState() => word(playerBattlePointer() + 0x7e58)
+
 function bossState() => byte(bossPointer() + 0x7f28)
 
 function IsInBattle() => battlePointer() != 0
@@ -1447,30 +1449,48 @@ achievement(
 )
 
 function vexenHp() => word(0x03ab4c)
-vexenHpMap = {
+vexenIHpMap = {
     10: 0x460
 }
 
 achievement(
     title = "The Chilly Academic", description = "Defeat Vexen on the tenth floor.", points = 3,
     id = 15611, badge = "15015", published = "10/16/2014 6:15:04 AM", modified = "7/7/2020 2:16:53 AM",
-    trigger = BossHPValueCheckpointIsSet(vexenHp(), vexenHpMap, "Castle Oblivion, Hall", 0xf)
+    trigger = BossHPValueCheckpointIsSet(vexenHp(), vexenIHpMap, "Castle Oblivion, Hall", 0xf)
         && EnemyWithSpecificAddressWasJustDefeated(vexenHp(), FALSE) && never(!IsInBattle())
 )
 
 fireCards = GetCardsByProperty("element", "Fire")
 achievement(title = "Broken Furnace [m]", points = 5,
     description = "Defeat Vexen on the tenth floor in Sora's story without equipping any cards that deal fire-based damage (Deck 2 only).",
-    trigger = BossHPValueCheckpointIsSet(vexenHp(), vexenHpMap, "Castle Oblivion, Hall", 0xf)
+    trigger = BossHPValueCheckpointIsSet(vexenHp(), vexenIHpMap, "Castle Oblivion, Hall", 0xf)
         && EnemyWithSpecificAddressWasJustDefeated(vexenHp(), TRUE) && never(!IsInBattle())
         && never(AnyCardsAreEquippedInDeck(fireCards, deck2BaseAddr(), 98, FALSE))
 )
 
+function twilightTownStoryEntry() => bit6(0x0422f5)
+// todo: update revision plan for new title
 achievement(
-    title = "Taste of the Past", description = "Beat the Boss in Twilight Town", points = 10,
+    title = "Memory of Dusk", description = "Complete Twilight Town in Sora's story.", points = 5,
     id = 15599, badge = "15017", published = "10/16/2014 6:11:42 AM", modified = "7/7/2020 2:16:58 AM",
-    trigger = worldId() == 0x0B && battlefieldId() == 0x0D && once(bit7(0x04230D) == 0x0) && bit7(0x04230D) == 0x1 && 
-              bit7(0x04232D) == 0x1 && byte(0x042346) == 0x0A
+    trigger = WasBitflagSetInGame(twilightTownStoryEntry())
+)
+
+vexenIIHpMap = {
+    11: 0x460
+}
+
+function vexenEnemyCardEffect() => dword(0x03bcf4)
+function VexenAutoLifeIsActive() => vexenEnemyCardEffect() == 0x1b
+
+function PlayerSlipped() => Delta(playerBattleState()) != playerBattleState() && playerBattleState() == 0x24
+function PlayerIsFrozen() => Delta(playerBattleState()) != playerBattleState() && playerBattleState() == 0x53
+achievement(title = "Sturdy Footing [m]", points = 10,
+    description = "Defeat Vexen in Twilight Town without slipping on ice or getting frozen more than once.",
+    trigger = BossHPValueCheckpointIsSet(vexenHp(), vexenIIHpMap, "Twilight Town", 0x7)
+        && EnemyWithSpecificAddressWasJustDefeated(vexenHp(), TRUE) && never(!IsInBattle())
+        && never(tally(2, [ PlayerSlipped(), PlayerIsFrozen() ]))
+        && trigger_when(!VexenAutoLifeIsActive()) // The cheevo will trigger prematurely if Vexen's HP goes to zero when he has Auto-Life active, so we need to check for it.
 )
 
 achievement(
