@@ -1056,6 +1056,7 @@ function BossHPValueIsExpected(bossHp, bossHpMap, worldName, roomId)
 //           +0x8f0c for enemy HP(?)
 function battlePointer() => tbyte(0x0423e4)
 function numberOfStockedCardsForPlayer() => byte(battlePointer() + 0x80de)
+function playerReloadCounter() => word(battlePointer() + 0x80fc)
 function enemyReloadCounter() => word(battlePointer() + 0x80fe)
 function cardValueInPlay() => byte(battlePointer() + 0x80c2)
 
@@ -1510,11 +1511,27 @@ achievement(
         && EnemyWithSpecificAddressWasJustDefeated(rikuHp(), FALSE) && once(rikuHp() == 0x460)
 )
 
+darksideHpMap = {
+    12: 0x77a
+}
+
+function darksideHp() => word(0x03ac9c)
+
+attackCards = GetCardsByProperty("type", "Attack")
+
+achievement(title = "Limited Pools [m]", points = 25,
+    description = "Defeat Darkside in Sora's story without equipping any item cards and without manually reloading more than five times (Deck 2 only).",
+    trigger = BossHPValueCheckpointIsSet(darksideHp(), darksideHpMap, "Destiny Islands", 0x6)
+        && EnemyWithSpecificAddressWasJustDefeated(darksideHp(), TRUE) && never(!IsInBattle())
+        && never(AnyCardsAreEquippedInDeck(itemCards, deck2BaseAddr(), 98, FALSE))
+        && never(repeated(6, Delta(playerReloadCounter()) != 0xffff && playerReloadCounter() == 0xffff))
+)
+
+function destinyIslandsStoryEntry() => bit7(0x0422f5)
 achievement(
-    title = "Darkside", description = "Beat the Darkside in Destiny Islands", points = 10,
+    title = "Memory of Paradise", description = "Complete the Destiny Islands in Sora's story.", points = 5,
     id = 15600, badge = "15020", published = "10/16/2014 6:11:58 AM", modified = "7/7/2020 2:17:08 AM",
-    trigger = worldId() == 0x09 && battlefieldId() == 0x09 && once(bit4(0x04230D) == 0x0) && bit4(0x04230D) == 0x1 && 
-              bit4(0x04232D) == 0x1 && byte(0x042346) == 0x0A
+    trigger = WasBitflagSetInGame(destinyIslandsStoryEntry())
 )
 
 achievement(
