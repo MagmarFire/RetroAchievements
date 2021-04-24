@@ -1860,11 +1860,11 @@ achievement(
     trigger = WasBitflagSetInGame(mushu())
 )
 
+function lexaeus() => bit0(0x042313)
 achievement(
-    title = "Lexaeus", description = "Obtain the 'Lexaeus' Card", points = 5,
+    title = "Lexaeus", description = "Obtain the Lexaeus card in Sora's story.", points = 5,
     id = 15650, badge = "15185", published = "10/16/2014 6:26:31 AM", modified = "11/8/2016 5:30:58 PM",
-    trigger = worldId() == 0x0C && battlefieldId() == 0x0C && once(bit0(0x042313) == 0x0) && bit0(0x042313) == 0x1 && 
-              bit0(0x042333) == 0x1 && byte(0x042346) == 0x0A
+    trigger = WasBitflagSetInGame(lexaeus())
 )
 
 achievement(
@@ -1873,11 +1873,11 @@ achievement(
     trigger = once(byte(0x005B30) == 0x20) && byte(0x005B30) == 0x00 && byte(0x03D0B2) == 0x05 && byte(0x042692) == 0x9C
 )
 
+function ansem() => bit1(0x042313)
 achievement(
-    title = "Ansem", description = "Obtain the 'Ansem' Card", points = 5,
+    title = "Ansem", description = "Obtain the Ansem card in Sora's story.", points = 5,
     id = 15649, badge = "15186", published = "10/16/2014 6:26:26 AM", modified = "10/16/2014 6:48:37 AM",
-    trigger = worldId() == 0x0C && battlefieldId() == 0x0C && once(bit1(0x042313) == 0x0) && bit1(0x042313) == 0x1 && 
-              bit1(0x042333) == 0x1 && byte(0x042346) == 0x0A
+    trigger = WasBitflagSetInGame(ansem())
 )
 
 achievement(
