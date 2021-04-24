@@ -2044,5 +2044,5 @@ leaderboard(title = "Time Attack - Parasite Cage (Sora's Story)",
 rich_presence_display("Level {0} in {1} ({2})",
     rich_presence_value("Level", level()),
     rich_presence_lookup("Location", byte(0x0421CC), LocationLookup),
-    rich_presence_lookup("Floor", byte(0x0421CE) + bit7(0x042692) * 16, FloorLookup)
+    rich_presence_lookup("Floor", byte(0x0421CE), FloorLookup)
 )
