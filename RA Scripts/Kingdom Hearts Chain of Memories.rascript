@@ -1098,11 +1098,18 @@ function EnemyWithSpecificAddressWasJustDefeated(enemyHp, useIndicator)
     return trigger && never(!IsInBattle())
 }
 
-function CurrentDeckHasACPOfAtMost(cpLimit)
+function CurrentDeckHasACPCostOfAtMost(cpLimit)
 {
-    return (currentDeck() == 0 && deck1TotalCp() <= cpLimit
-            || currentDeck() == 1 && deck2TotalCp() <= cpLimit
-            || currentDeck() == 2 && deck3TotalCp() <= cpLimit)
+    return currentDeck() == 0 && deck1TotalCp() <= cpLimit
+        || currentDeck() == 1 && deck2TotalCp() <= cpLimit
+        || currentDeck() == 2 && deck3TotalCp() <= cpLimit
+}
+
+function CurrentDeckHasASizeOfAtMost(sizeLimit)
+{
+    return currentDeck() == 0 && deck1TotalCards() <= sizeLimit
+        || currentDeck() == 1 && deck2TotalCards() <= sizeLimit
+        || currentDeck() == 2 && deck3TotalCards() <= sizeLimit
 }
 
 function shadowJournalEntry() => bit4(0x0422fe)
@@ -1176,9 +1183,7 @@ achievement(
     description = "Defeat Oogie Boogie in Sora's story with a deck of only nine cards or less.",
     trigger = BossHPValueCheckpointIsSet(enemyHp(), oogieBoogieHpMap, "Halloween Town", 0x6)
         && EnemyWasJustDefeated() && never(!IsInBattle())
-        && (currentDeck() == 0 && deck1TotalCards() <= 9
-            || currentDeck() == 1 && deck2TotalCards() <= 9
-            || currentDeck() == 2 && deck3TotalCards() <= 9)
+        && CurrentDeckHasASizeOfAtMost(9)
 )
 
 function halloweenTownEntry() => bit0(0x0422f5)
@@ -1440,7 +1445,7 @@ achievement(title = "Amputated Hand [m]", points = 25,
     description = "Defeat Hook in Sora's story using a deck with a CP cost of 350 or less.",
     trigger = BossHPValueCheckpointIsSet(hookHp(), hookHpMap, "Never Land", 0xe)
         && EnemyWithSpecificAddressWasJustDefeated(hookHp(), TRUE) && never(!IsInBattle())
-        && CurrentDeckHasACPOfAtMost(350)
+        && CurrentDeckHasACPCostOfAtMost(350)
 )
 
 function neverLandStoryEntry() => bit3(0x0422f5)
@@ -1558,11 +1563,19 @@ achievement(
         && EnemyWithSpecificAddressWasJustDefeated(rikuHp(), FALSE) && once(rikuHp() == 0x690)
 )
 
+// todo: update revision plan with new title and score
 achievement(
-    title = "Revenge of the Nymph", description = "Floor 12th...", points = 10,
+    title = "Quelled Savagery", description = "Defeat Larxene on the twelfth floor.", points = 3,
     id = 15601, badge = "15025", published = "10/16/2014 6:12:06 AM", modified = "7/7/2020 2:17:19 AM",
-    trigger = worldId() == 0x00 && battlefieldId() == 0x0C && once(bit5(0x04230D) == 0x0) && bit5(0x04230D) == 0x1 && 
-              bit5(0x04232D) == 0x1 && byte(0x042346) == 0x0A
+    trigger = never(!IsInWorld("Castle Oblivion, Hall")) && never(battlefieldId() != 0x0C) && BattleStartedCheckpoint() && IsOnFloor(12)
+        && EnemyWithSpecificAddressWasJustDefeated(larxeneHp(), FALSE) && once(larxeneHp() == 0x690)
+)
+
+achievement(title = "A Weighty Decision [m]", points = 10,
+    description = "Defeat Larxene on the twelfth floor using a deck with a size of at most 20 cards and a CP cost of 450 or less.",
+    trigger = never(!IsInWorld("Castle Oblivion, Hall")) && never(battlefieldId() != 0x0C) && BattleStartedCheckpoint() && IsOnFloor(12)
+        && EnemyWithSpecificAddressWasJustDefeated(larxeneHp(), TRUE) && once(larxeneHp() == 0x690)
+        && CurrentDeckHasACPCostOfAtMost(450) && CurrentDeckHasASizeOfAtMost(20)
 )
 
 achievement(
