@@ -1534,11 +1534,28 @@ achievement(
     trigger = WasBitflagSetInGame(destinyIslandsStoryEntry())
 )
 
+nonKingdomKeyAttackCards = []
+
+for card in attackCards
+{
+    if (card["name"] != "Kingdom Key")
+    {
+        array_push(nonKingdomKeyAttackCards, card)
+    }
+}
+
+achievement(title = "Humble Roots [m]", points = 50,
+    description = "Defeat Riku on the twelfth floor in Sora's story without equipping any attack cards that aren't the Kingdom Key (Deck 2 only).",
+    trigger = never(!IsInWorld("Castle Oblivion, Hall")) && never(battlefieldId() != 0x0C) && BattleStartedCheckpoint() && IsOnFloor(12)
+        && EnemyWithSpecificAddressWasJustDefeated(rikuHp(), TRUE) && once(rikuHp() == 0x690)
+        && never(AnyCardsAreEquippedInDeck(nonKingdomKeyAttackCards, deck2BaseAddr(), 98, FALSE)) && currentDeck() == 1
+)
+
 achievement(
-    title = "Riku, for last time...", description = "In the Castle Oblivion...", points = 10,
+    title = "Driven to Protect", description = "Defeat Riku on the twelfth floor in Sora's story.", points = 3,
     id = 15602, badge = "15022", published = "10/16/2014 6:12:11 AM", modified = "7/7/2020 2:17:13 AM",
-    trigger = never(worldId() != 0x00) && battlefieldId() == 0x0C && once(bit7(0x042312) == 0x0) && 
-              bit7(0x042312) == 0x1 && bit7(0x042332) == 0x1 && byte(0x042346) == 0x0A
+    trigger = never(!IsInWorld("Castle Oblivion, Hall")) && never(battlefieldId() != 0x0C) && BattleStartedCheckpoint() && IsOnFloor(12)
+        && EnemyWithSpecificAddressWasJustDefeated(rikuHp(), FALSE) && once(rikuHp() == 0x690)
 )
 
 achievement(
