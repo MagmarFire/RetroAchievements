@@ -1725,12 +1725,7 @@ achievement(
     trigger = WasBitflagSetInGame(fairyHarp())
 )
 
-function oathkeeper() => bit3(0x042304)
-achievement(
-    title = "Oathkeeper", description = "Obtain an Oathkeeper card for the first time.", points = 5,
-    id = 15640, badge = "15021", published = "10/16/2014 6:21:43 AM", modified = "7/7/2020 2:23:47 AM",
-    trigger = WasBitflagSetInGame(oathkeeper())
-)
+// todo: update revision plan for the revision of "Oathkeeper"
 
 function ladyLuck() => bit1(0x042304)
 achievement(
