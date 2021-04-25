@@ -1112,6 +1112,13 @@ function CurrentDeckHasASizeOfAtMost(sizeLimit)
         || currentDeck() == 2 && deck3TotalCards() <= sizeLimit
 }
 
+function CurrentDeckHasASizeOfAtLeast(sizeLimit)
+{
+    return currentDeck() == 0 && deck1TotalCards() >= sizeLimit
+        || currentDeck() == 1 && deck2TotalCards() >= sizeLimit
+        || currentDeck() == 2 && deck3TotalCards() >= sizeLimit
+}
+
 function shadowJournalEntry() => bit4(0x0422fe)
 achievement(
     title = "Heartless Hunter", description = "Defeat your first Heartless in Castle Oblivion.", points = 1,
@@ -1578,11 +1585,19 @@ achievement(title = "A Weighty Decision [m]", points = 10,
         && CurrentDeckHasACPCostOfAtMost(450) && CurrentDeckHasASizeOfAtMost(20)
 )
 
+function axelHp() => word(0x03ab2c)
 achievement(
-    title = "Extinguish the fire", description = "Floor 13th...", points = 10,
+    title = "Got It Memorized?", description = "Defeat Axel on the thirteenth floor.", points = 3,
     id = 15603, badge = "15026", published = "10/16/2014 6:12:19 AM", modified = "7/7/2020 2:17:25 AM",
-    trigger = worldId() == 0x0C && battlefieldId() == 0x0C && once(bit6(0x04230D) == 0x0) && bit6(0x04230D) == 0x1 && 
-              bit6(0x04232D) == 0x1 && byte(0x042346) == 0x0A
+    trigger = never(!IsInWorld("Castle Oblivion")) && never(battlefieldId() != 0x0C) && BattleStartedCheckpoint() && IsOnFloor(13)
+        && EnemyWithSpecificAddressWasJustDefeated(axelHp(), FALSE) && once(axelHp() == 0x690)
+)
+
+achievement(title = "Portfolio in Hand [m]", points = 10,
+    description = "Defeat Axel on the thirteenth floor using a deck containing at least 50 cards.",
+    trigger = never(!IsInWorld("Castle Oblivion")) && never(battlefieldId() != 0x0C) && BattleStartedCheckpoint() && IsOnFloor(13)
+        && EnemyWithSpecificAddressWasJustDefeated(axelHp(), TRUE) && once(axelHp() == 0x690)
+        && CurrentDeckHasASizeOfAtLeast(50)
 )
 
 achievement(
@@ -1755,7 +1770,7 @@ achievement(
     trigger = WasBitflagSetInGame(fairyHarp())
 )
 
-// todo: update revision plan for the revision of "Oathkeeper"
+// todo: update revision plan for the demotion of "Oathkeeper"
 
 function ladyLuck() => bit1(0x042304)
 achievement(
@@ -1764,12 +1779,7 @@ achievement(
     trigger = WasBitflagSetInGame(ladyLuck())
 )
 
-function oblivion() => bit4(0x042304)
-achievement(
-    title = "Oblivion", description = "Obtain an Oblivion card for the first time.", points = 5,
-    id = 15642, badge = "15024", published = "10/16/2014 6:21:56 AM", modified = "7/7/2020 2:23:56 AM",
-    trigger = WasBitflagSetInGame(oblivion())
-)
+// todo: update revision plan for the demotion of "Oblivion"
 
 function slidingDash() => bit0(0x0422cc)
 achievement(
