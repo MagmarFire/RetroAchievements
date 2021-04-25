@@ -1600,10 +1600,54 @@ achievement(title = "Portfolio in Hand [m]", points = 10,
         && CurrentDeckHasASizeOfAtLeast(50)
 )
 
+function marluxiaHp() => word(0x03a9ac)
+achievement(title = "Critical Duelist [m]", points = 50,
+    description = "Defeat Marluxia's first phase using a deck with a CP cost of 275 or lower.",
+    trigger = never(!IsInWorld("Castle Oblivion, Hall")) && never(battlefieldId() != 0x0C) && BattleStartedCheckpoint() && IsOnFloor(13)
+        && EnemyWithSpecificAddressWasJustDefeated(marluxiaHp(), TRUE) && once(marluxiaHp() == 0x8c0)
+        && CurrentDeckHasACPCostOfAtMost(275)
+)
+
 achievement(
-    title = "Final...", description = "Floor...", points = 25,
+    title = "The Graceful Assassin", description = "Defeat Marluxia's first phase.", points = 5,
     id = 15604, badge = "15027", published = "10/16/2014 6:12:29 AM", modified = "7/7/2020 2:17:38 AM",
-    trigger = worldId() == 0x00 && battlefieldId() == 0x0C && bit0(0x04230E) == 0x1 && byte(0x042346) == 0x0A
+    trigger = never(!IsInWorld("Castle Oblivion, Hall")) && never(battlefieldId() != 0x0C) && BattleStartedCheckpoint() && IsOnFloor(13)
+        && EnemyWithSpecificAddressWasJustDefeated(marluxiaHp(), FALSE) && once(marluxiaHp() == 0x8c0)
+)
+
+marluxiaIIMaxHpValue = 0x8bd
+function marluxiaIIHp() => word(0x039f50)
+function marluxiaIIMaxHp() => word(0x039f52)
+function PlayerIsUsingSummon() => Delta(playerBattleState()) == 0x12 || Delta(playerBattleState()) >= 0x17 && Delta(playerBattleState()) <= 0x1b
+
+// Appears to affect which summon is used during Marluxia II (16-bit)
+//
+// 0x8cc4 = Cloud
+// 0x8cdc = Bambi
+// 0x8cf4 = Tinker Bell
+// 0x8d24 = Simba
+// 0x8d3c = Mushu
+// 0x8d54 = Dumbo
+// 0x8d6c = Genie
+// 0x8d9c = Donald
+// 0x8db4 = Goofy
+function summonLastUsed() => word(0x03b26c)
+function DonaldOrGoofyIsActive() => summonLastUsed() == 0x8d9c || summonLastUsed() == 0x8db4
+    
+achievement(title = "Come Forth, Blue-Eyes White Dragon!", points = 5,
+    description = "Finish off Marluxia's second phase with a summon.",
+    trigger = never(!IsInWorld("Castle Oblivion, Hall")) && never(battlefieldId() != 0x0C) && BattleStartedCheckpoint() && IsOnFloor(13)
+        // We're not using EnemyWithSpecificAddressWasJustDefeated() because the battle pointer is set to NULL as soon as Marluxia's HP goes to zero.
+        // So we need to make sure that it has time to recognize his HP as zero.
+        && trigger_when(Delta(marluxiaIIHp()) > 0 && marluxiaIIHp() == 0)
+        && once(marluxiaIIHp() == marluxiaIIMaxHpValue)
+        && trigger_when(PlayerIsUsingSummon())
+        && trigger_when(!DonaldOrGoofyIsActive())
+        
+        // Different reset conditions, since we can't rely on just the battle pointer.
+        && never(playerHp() == 0)
+        && never(roomId() != 0xfd)
+        && never(!IsInBattle() && Delta(marluxiaIIMaxHp()) == marluxiaIIMaxHpValue && marluxiaIIMaxHp() != marluxiaIIMaxHpValue)
 )
 
 achievement(
