@@ -1601,7 +1601,7 @@ achievement(title = "Portfolio in Hand [m]", points = 10,
 )
 
 function marluxiaHp() => word(0x03a9ac)
-achievement(title = "Critical Duelist [m]", points = 50,
+achievement(title = "Critical Duelist [m]", points = 25,
     description = "Defeat Marluxia's first phase using a deck with a CP cost of 275 or lower.",
     trigger = never(!IsInWorld("Castle Oblivion, Hall")) && never(battlefieldId() != 0x0C) && BattleStartedCheckpoint() && IsOnFloor(13)
         && EnemyWithSpecificAddressWasJustDefeated(marluxiaHp(), TRUE) && once(marluxiaHp() == 0x8c0)
@@ -1650,11 +1650,47 @@ achievement(title = "Come Forth, Blue-Eyes White Dragon!", points = 5,
         && never(!IsInBattle() && Delta(marluxiaIIMaxHp()) == marluxiaIIMaxHpValue && marluxiaIIMaxHp() != marluxiaIIMaxHpValue)
 )
 
+// Credits state (32-bit)
+//
+// <garbage; probably 0x21082108> -> 0x0 = transition to credits
+// 0x0 -> 0x1 = credits start
+// 0x1 -> 0x2 = crawling credits start
+// 0x2 -> 0x3 = title drop at the end of the credits
+// 0x3 -> 0x5 = sleeping pod still
+// 0x5 -> 0x6 = KHII Sora sleeping still
+// 0x6 -> 0x4 = poetic blurb
+// 0x4 -> 0xa = "The End"
+
+function CreateHitTargetedAndNextChain(permutation)
+{
+    trigger = always_true()
+    
+    for condition in permutation
+    {
+        trigger = once(trigger && once(condition))
+    }
+    
+    return trigger
+}
+
+function creditsState() => dword(0x03bbc8)
+function CreditsStarted() => never(creditsState() > 0x10) && CreateHitTargetedAndNextChain([
+    Delta(creditsState()) != 0 && creditsState() == 0,
+    Delta(creditsState()) == 0 && creditsState() == 1
+])
+function marluxiaCardEntry() => bit0(0x04230E)
 achievement(
-    title = "Reach Out To The Truth", description = "True Memories...", points = 5,
+    title = "Memory of Her", description = "Complete Sora's story.", points = 25,
     id = 15605, badge = "15028", published = "10/16/2014 6:12:38 AM", modified = "7/7/2020 2:17:42 AM",
-    trigger = worldId() == 0x00 && battlefieldId() == 0x0C && bit0(0x04230E) == 0x1 && bit6(0x04230D) == 0x1 && 
-              byte(0x033190) == 0x08 && byte(0x033191) == 0x21 && word(0x033190) == 0x2108 && once(byte(0x033190) == 0xFD)
+    trigger = never(!IsInWorld("Castle Oblivion, Hall")) && never(battlefieldId() != 0x0C) && IsOnFloor(13) && marluxiaCardEntry() == 1
+        && CreditsStarted()
+)
+
+achievement(
+    title = "Critical Competitor [m]", description = "Complete Sora's story without upgrading HP.", points = 50,
+    id = 41892, badge = "43183", published = "11/8/2016 6:47:54 PM", modified = "7/7/2020 2:25:02 AM",
+    trigger = never(!IsInWorld("Castle Oblivion, Hall")) && never(battlefieldId() != 0x0C) && IsOnFloor(13) && marluxiaCardEntry() == 1
+        && CreditsStarted() && maxHp() == 0x0050
 )
 
 achievement(
@@ -1962,14 +1998,6 @@ achievement(
     title = "Ansem", description = "Obtain the Ansem card in Sora's story.", points = 5,
     id = 15649, badge = "15186", published = "10/16/2014 6:26:26 AM", modified = "10/16/2014 6:48:37 AM",
     trigger = WasBitflagSetInGame(ansem())
-)
-
-achievement(
-    title = "Critical Competitor", description = "Beat the game with Sora without never upgrade the Vitality bar", points = 50,
-    id = 41892, badge = "43183", published = "11/8/2016 6:47:54 PM", modified = "7/7/2020 2:25:02 AM",
-    trigger = worldId() == 0x00 && battlefieldId() == 0x0C && bit0(0x04230E) == 0x1 && bit6(0x04230D) == 0x1 && 
-              byte(0x033190) == 0x08 && byte(0x033191) == 0x21 && word(0x033190) == 0x2108 && once(byte(0x033190) == 0xFD) && 
-              maxHp() == 0x0050
 )
 
 achievement(
