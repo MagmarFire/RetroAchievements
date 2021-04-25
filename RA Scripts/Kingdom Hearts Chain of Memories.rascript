@@ -1987,12 +1987,6 @@ achievement(
     trigger = WasBitflagSetInGame(lexaeus())
 )
 
-achievement(
-    title = "Reverse Rebirth", description = "Another Story, Same Castle (Reb)", points = 2,
-    id = 15648, badge = "15029", published = "10/16/2014 6:22:53 AM", modified = "11/8/2016 6:44:21 PM",
-    trigger = once(byte(0x005B30) == 0x20) && byte(0x005B30) == 0x00 && byte(0x03D0B2) == 0x05 && byte(0x042692) == 0x9C
-)
-
 function ansem() => bit1(0x042313)
 achievement(
     title = "Ansem", description = "Obtain the Ansem card in Sora's story.", points = 5,
