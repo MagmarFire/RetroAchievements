@@ -1,6 +1,17 @@
 // Kingdom Hearts Re:coded
 // #ID = 14828
 
+function Delta(addr) => prev(addr)
+
+// Game status(?) (Changes depending on game state and appears to have a detrimental effect when frozen)
+//
+// 0x0 = various; also seems to be a value this address flickers to when transitioning between some game states
+// 0x3 = on the Title Screen
+// 0x7 = text cutscene
+// 0xc = Menu
+// 0xf = in the field
+function status() => word(0x056f50)
+
 function worldId() => byte(0x19836c)
 function areaId() => byte(0x19836d)
 
@@ -13,6 +24,16 @@ function TitleScreenAlmostReady() => titleScreenStatus() == 5
 function TitleScreenReady() => titleScreenStatus() == 6
 
 function IsOnTitleScreen() => TitleScreenAlmostReady() || TitleScreenReady()
+
+function SecondsToFormat(value)
+{
+    leadingZero = ""
+    if (value % 60 < 10)
+    {
+        leadingZero = "0"
+    }
+    return value / 60 + ":" + leadingZero + value % 60
+}
 
 worlds = {
     0: "Destiny Islands",
@@ -121,6 +142,14 @@ areas = {
 93: { "worldId": 0x7, "name": "CastleOblivionHall", "display": "Entrance Hall", "areaId": 0x7, },
 94: { "worldId": 0x7, "name": "CastleOblivionSomewhere", "display": "Somewhere in the datascape…", "areaId": 0x1, },
 95: { "worldId": 0x7, "name": "CastleOblivionSomewhere2", "display": "Somewhere in the datascape…", "areaId": 0xa, },
+96: { "worldId": 0x7, "name": "CastleOblivionDestinyIslands", "display": "Destiny Islands", "areaId": 0x9, },
+97: { "worldId": 0x7, "name": "CastleOblivionTraverseTown", "display": "Traverse Town", "areaId": 0x1, },
+98: { "worldId": 0x7, "name": "CastleOblivionWonderland", "display": "Wonderland", "areaId": 0x2, },
+99: { "worldId": 0x7, "name": "CastleOblivionOlympusColiseum", "display": "Olympus Coliseum", "areaId": 0x3, },
+100: { "worldId": 0x7, "name": "CastleOblivionAgrabah", "display": "Agrabah", "areaId": 0x4, },
+101: { "worldId": 0x7, "name": "CastleOblivionHollowBastionObstacleCourse", "display": "Hollow Bastion", "areaId": 0x6, },
+102: { "worldId": 0x7, "name": "CastleOblivionSorrow", "display": "Station of Sorrow", "areaId": 0x8, },
+103: { "worldId": 0x7, "name": "CastleOblivionHollowBastion", "display": "Hollow Bastion", "areaId": 0x5, },
 
 }
 
@@ -200,6 +229,11 @@ function BossScoreIsDisplayedAndAtLeast(threshold)
     return IsBossScorePointerActive() && dword(bossScorePointer() + 8) >= threshold && IsBossRankJustDisplayed()
 }
 
+function BossTimeIsDisplayedAndAtMost(milliseconds)
+{
+    return IsBossScorePointerActive() && bossMilliseconds() <= milliseconds && IsBossRankJustDisplayed()
+}
+
 // Title screen status
 // 
 // 0 = Licensed by Nintendo
@@ -243,8 +277,6 @@ for world in worlds
 }
 
 rich_presence_display("Somewhere in the datascape...")
-
-function Delta(addr) => prev(addr)
 
 function IsPointer(addr) => byte(addr + 3) == 0x2
 function WasPointer(addr) => prior(byte(addr + 3)) == 0x2
@@ -1056,15 +1088,6 @@ function bossMilliseconds() => dword(0x1efc88)
 // $3DE2BC: Displayed amount of enemies defeated on the current system sector floor - 16-bit
 // $3DE2BE: Display cap for the amount of bug baddies defeated on the current system sector floor - 16-bit
 
-// Game status(?) (Changes depending on game state and appears to have a detrimental effect when frozen)
-//
-// 0x0 = various; also seems to be a value this address flickers to when transitioning between some game states
-// 0x3 = on the Title Screen
-// 0x7 = text cutscene
-// 0xc = Menu
-// 0xf = in the field
-function status() => word(0x056f50)
-
 function IsInMenu() => status() == 0xc || status() == 0x0
 
 // Menu ID (?) (16-bit)
@@ -1276,13 +1299,6 @@ for i in enemies
     
     enemiesConditions[i] = { "countsWhen": countsWhen, "recalculateWhen": recalculateWhen }
 }
-
-GenerateSaveProtectedAchievementFromConditions({
-    "name": "Enemies Test",
-    "description": "Defeat two types of enemies.",
-    "points": 0,
-    "threshold": 2,
-}, enemiesConditions, always_true())
 
 // ============================== COMMANDS ============================== //
 commands = {
@@ -2005,7 +2021,7 @@ achievement(title = "Exceptional Astronomical Abilities", points = 5,
 )
 
 achievement(title = "Sour Stomach", points = 10,
-    description = "Defeat Pete without the Dodge Roll ability active (Critical Mode; Level 22 or below).",
+    description = "Defeat Pete in Hollow Bastion without the Dodge Roll ability active (Critical Mode; Level 22 or below).",
     trigger = dodgeRollActive() == 0 && IsAtLeastOnDifficulty("Critical") && Level() <= 22 && JustDefeatedEnemy("Pete")
         && never(!IsInLocation("HollowBastionKeyholeChapel"))
 )
@@ -2082,6 +2098,58 @@ achievement(title = "Dark Embrace", points = 25,
 achievement(title = "Shallow Copy", points = 25,
     description = "Defeat Sora's Heartless with a score of 30000 or more (Proud Mode or higher; Level 30 or below).",
     trigger = IsAtLeastOnDifficulty("Proud") && Level() <= 30 && never(!IsInLocation("HollowBastionCentralCorruption")) && BossScoreIsDisplayedAndAtLeast(30000)
+)
+
+endingCards = [
+    bit1(0x195e59), // W6 Extra Card
+    bit2(0x195e59), // W6 Alternate Card
+    bit3(0x195e59), // W6 Normal Card
+    bit4(0x195e59), // W5 Extra Card
+    bit5(0x195e59), // W5 Alternate Card
+    bit6(0x195e59), // W5 Normal Card
+    bit7(0x195e59), // W4 Extra Card
+    bit0(0x195e5a), // W4 Alternate Card
+    bit1(0x195e5a), // W4 Normal Card
+    bit2(0x195e5a), // W3 Extra Card
+    bit3(0x195e5a), // W3 Alternate Card
+    bit4(0x195e5a), // W3 Normal Card
+    bit5(0x195e5a), // W2 Extra Card
+    bit6(0x195e5a), // W2 Alternate Card
+    bit7(0x195e5a), // W2 Normal Card
+    bit0(0x195e5b), // W1 Extra Card
+    bit1(0x195e5b), // W1 Alternate Card
+    bit2(0x195e5b), // W1 Normal Card
+]
+endingCardConditions = {}
+i = 0
+for addr in endingCards
+{
+    endingCardConditions[i] = { "countsWhen": (addr == 1), "recalculateWhen": (addr != Delta(addr)) }
+    i = i + 1
+}
+
+GenerateSaveProtectedAchievementFromConditions({
+    "name": "Hurt's Last Reward",
+    "description": "Obtain all ending cards in Castle Oblivion.",
+    "points": 5,
+    "threshold": 18
+}, endingCardConditions, always_true())
+
+function accessory1() => word(0x198850)
+function accessory2() => word(0x198852)
+function accessory3() => word(0x198854)
+function accessory4() => word(0x198856)
+
+achievement(title = "Bite the Bullet", points = 10,
+    description = "Defeat the final boss without any accessories equipped (Critical Mode; Level 35 or below).",
+    trigger = IsInLocation("CastleOblivionSorrow") && JustDefeatedEnemy("Data-Roxas") && Level() <= 35 && IsAtLeastOnDifficulty("Critical")
+        && accessory1() == 0xffff && accessory2() == 0xffff && accessory3() == 0xffff && accessory4() == 0xffff
+)
+
+timeLimit = 210
+achievement(title = "Painkiller", points = 5,
+    description = "Defeat the final boss within " + SecondsToFormat(timeLimit) + " (Proud Mode or higher; Level 35 or below).",
+    trigger = IsAtLeastOnDifficulty("Proud") && Level() <= 35 && never(!IsInLocation("CastleOblivionSorrow")) && BossTimeIsDisplayedAndAtMost(timeLimit * 1000)
 )
 
 function extraCommandSlotsUnlocked() => byte(0x198700)
@@ -2210,11 +2278,6 @@ achievement(title = "Icer of Titans", description = "Defeat the Ice Titan.", poi
 function eliminatorsEnd() => bit4(0x195c7f)
 achievement(title = "Eliminator's End", description = "Defeat an Eliminator.", points = 10,
     trigger = WasBitflagSetInGame(eliminatorsEnd())
-)
-
-function twilightTriumph() => bit3(0x195c7f)
-achievement(title = "Twilight Triumph", description = "Defeat Data-Roxas.", points = 5,
-    trigger = WasBitflagSetInGame(twilightTriumph())
 )
 
 // todo: implement more enemy type cheevos
@@ -2452,4 +2515,11 @@ leaderboard(title = "Score Attack - Hollow Bastion III", description = "Get as m
     cancel = !IsInLocation("HollowBastionCentralCorruption") || IsInSystemSector(),
     submit = IsTotalScoreJustDisplayed(),
     value = dword(bossScorePointer() + 8)
+)
+
+leaderboard(title = "Time Attack - Castle Oblivion", description = "Defeat the final boss as quickly as you can.",
+    start = IsInLocation("CastleOblivionSorrow") && !IsInSystemSector(),
+    cancel = !IsInLocation("CastleOblivionSorrow") || IsInSystemSector(),
+    submit = IsBossRankJustDisplayed(),
+    value = bossMilliseconds() / 10
 )
