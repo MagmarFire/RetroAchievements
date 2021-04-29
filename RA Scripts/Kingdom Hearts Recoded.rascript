@@ -23,7 +23,9 @@ function TitleScreenAlmostReady() => titleScreenStatus() == 5
 
 function TitleScreenReady() => titleScreenStatus() == 6
 
-function IsOnTitleScreen() => TitleScreenAlmostReady() || TitleScreenReady()
+function IsWatchingOpeningMovie() => titleScreenStatus() == 0xc
+
+function IsOnTitleScreen() => TitleScreenAlmostReady() || TitleScreenReady() || IsWatchingOpeningMovie()
 
 function SecondsToFormat(value)
 {
