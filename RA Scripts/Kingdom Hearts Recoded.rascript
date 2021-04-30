@@ -2208,7 +2208,7 @@ sectorRewardsConditions = {}
 i = 0
 for addr in sectorRewards
 {
-    sectorRewardsConditions[i] = { "countsWhen": (addr == 1), "recalculateWhen": (addr != Delta(addr)) }
+    sectorRewardsConditions[i] = GenerateConditionFromBitflag(addr)
     i = i + 1
 }
 
@@ -2219,10 +2219,66 @@ GenerateSaveProtectedAchievementFromConditions({
     "threshold": 100, // Not sure how many there are yet, but we may be able to infer it via calculations.
 }, sectorRewardsConditions, always_true())
 
-function rarePrizeRoundup() => bit5(0x195c78)
-achievement(title = "Rare Prize Roundup", description = "Collect all items from every rare prize blox in the game and view the Trophies screen.", points = 10,
-    trigger = WasBitflagSetInGame(rarePrizeRoundup())
-)
+prizeBlox = [
+    bit0(0x195b38), bit1(0x195b38), bit2(0x195b38), bit3(0x195b38), bit4(0x195b38), bit5(0x195b38), bit6(0x195b38), bit7(0x195b38), // Wonderland
+    bit0(0x195b3f), bit1(0x195b3f), bit2(0x195b3f), bit3(0x195b3f), bit4(0x195b3f), bit5(0x195b3f), bit6(0x195b3f), bit7(0x195b3f), 
+    
+    bit3(0x195b39), bit5(0x195b39), bit7(0x195b39), // Traverse Town
+    bit0(0x195b3a), bit1(0x195b3a), bit2(0x195b3a), bit3(0x195b3a), bit4(0x195b3a), bit6(0x195b3a), bit7(0x195b3a),
+    
+    bit5(0x195b3b), bit6(0x195b3b), bit7(0x195b3b), // Destiny Islands
+    
+    bit0(0x195b3d), bit0(0x195b3d), bit0(0x195b3d), bit0(0x195b3d), bit0(0x195b3d), bit0(0x195b3d), bit0(0x195b3d), bit0(0x195b3d), // Olympus Coliseum
+    bit0(0x195b3e), bit0(0x195b3e), bit0(0x195b3e), bit0(0x195b3e), bit0(0x195b3e), bit0(0x195b3e), bit0(0x195b3e), bit0(0x195b3e),
+
+    bit0(0x195b40), bit1(0x195b40), bit2(0x195b40), bit3(0x195b40), bit4(0x195b40), bit5(0x195b40), bit6(0x195b40), bit7(0x195b40), // Hollow Bastion, Part I
+    bit0(0x195b41), bit1(0x195b41), bit2(0x195b41), bit3(0x195b41), bit4(0x195b41), bit5(0x195b41), bit6(0x195b41), bit7(0x195b41),
+    
+    bit0(0x195b42), bit1(0x195b42), bit2(0x195b42), bit3(0x195b42), bit4(0x195b42), bit5(0x195b42), bit6(0x195b42), bit7(0x195b42), // Agrabah
+    bit0(0x195b43), bit1(0x195b43), bit2(0x195b43), bit3(0x195b43), bit4(0x195b43), bit5(0x195b43), bit6(0x195b43), bit7(0x195b43),
+    
+    bit3(0x195b44), bit4(0x195b44), bit6(0x195b44), // Castle Oblivion
+    bit0(0x195b45), bit1(0x195b45), bit2(0x195b45), bit3(0x195b45), bit4(0x195b45), bit5(0x195b45), bit6(0x195b45), bit7(0x195b45),
+    
+    bit0(0x195b46), bit1(0x195b46), bit2(0x195b46), bit3(0x195b46), bit4(0x195b46), bit5(0x195b46), bit6(0x195b46), bit7(0x195b46), // Hollow Bastion, Part II
+    bit0(0x195b47), bit1(0x195b47), bit2(0x195b47), bit3(0x195b47), bit4(0x195b47), bit5(0x195b47), bit6(0x195b47), bit7(0x195b47),
+]
+
+prizeBloxConditions = {}
+i = 0
+for j in prizeBlox
+{
+    prizeBloxConditions[i] = GenerateConditionFromBitflag(j)
+    i = i + 1
+}
+
+GenerateSaveProtectedAchievementFromConditions({
+    "name": "Rare Prize Pickup",
+    "description": "Destroy 15 rare prize blox.",
+    "points": 3,
+    "threshold": 15
+}, prizeBloxConditions, always_true())
+
+GenerateSaveProtectedAchievementFromConditions({
+    "name": "Rare Prize Hold Up",
+    "description": "Destroy 30 rare prize blox.",
+    "points": 5,
+    "threshold": 30
+}, prizeBloxConditions, always_true())
+
+GenerateSaveProtectedAchievementFromConditions({
+    "name": "Rare Prize Tally Up",
+    "description": "Destroy 60 rare prize blox.",
+    "points": 10,
+    "threshold": 60
+}, prizeBloxConditions, always_true())
+
+GenerateSaveProtectedAchievementFromConditions({
+    "name": "Rare Prize Roundup",
+    "description": "Destroy all rare prize blox.",
+    "points": 25,
+    "threshold": 111
+}, prizeBloxConditions, always_true())
 
 function lordOfLoot() => bit4(0x195c78)
 achievement(title = "Lord of Loot", description = "Collect at least 80% of enemy item drops.", points = 10,
@@ -2384,67 +2440,6 @@ GenerateSaveProtectedAchievementFromConditions({
     "points": 25,
     "threshold": (length(characterQuestData) * 3),
 }, questConditions, always_true())
-
-prizeBlox = [
-    bit0(0x195b38), bit1(0x195b38), bit2(0x195b38), bit3(0x195b38), bit4(0x195b38), bit5(0x195b38), bit6(0x195b38), bit7(0x195b38), // Wonderland
-    bit0(0x195b3f), bit1(0x195b3f), bit2(0x195b3f), bit3(0x195b3f), bit4(0x195b3f), bit5(0x195b3f), bit6(0x195b3f), bit7(0x195b3f), 
-    
-    bit3(0x195b39), bit5(0x195b39), bit7(0x195b39), // Traverse Town
-    bit0(0x195b3a), bit1(0x195b3a), bit2(0x195b3a), bit3(0x195b3a), bit4(0x195b3a), bit6(0x195b3a), bit7(0x195b3a),
-    
-    bit5(0x195b3b), bit6(0x195b3b), bit7(0x195b3b), // Destiny Islands
-    
-    bit0(0x195b3d), bit0(0x195b3d), bit0(0x195b3d), bit0(0x195b3d), bit0(0x195b3d), bit0(0x195b3d), bit0(0x195b3d), bit0(0x195b3d), // Olympus Coliseum
-    bit0(0x195b3e), bit0(0x195b3e), bit0(0x195b3e), bit0(0x195b3e), bit0(0x195b3e), bit0(0x195b3e), bit0(0x195b3e), bit0(0x195b3e),
-
-    bit0(0x195b40), bit1(0x195b40), bit2(0x195b40), bit3(0x195b40), bit4(0x195b40), bit5(0x195b40), bit6(0x195b40), bit7(0x195b40), // Hollow Bastion, Part I
-    bit0(0x195b41), bit1(0x195b41), bit2(0x195b41), bit3(0x195b41), bit4(0x195b41), bit5(0x195b41), bit6(0x195b41), bit7(0x195b41),
-    
-    bit0(0x195b42), bit1(0x195b42), bit2(0x195b42), bit3(0x195b42), bit4(0x195b42), bit5(0x195b42), bit6(0x195b42), bit7(0x195b42), // Agrabah
-    bit0(0x195b43), bit1(0x195b43), bit2(0x195b43), bit3(0x195b43), bit4(0x195b43), bit5(0x195b43), bit6(0x195b43), bit7(0x195b43),
-    
-    bit3(0x195b44), bit4(0x195b44), bit6(0x195b44), // Castle Oblivion
-    bit0(0x195b45), bit1(0x195b45), bit2(0x195b45), bit3(0x195b45), bit4(0x195b45), bit5(0x195b45), bit6(0x195b45), bit7(0x195b45),
-    
-    bit0(0x195b46), bit1(0x195b46), bit2(0x195b46), bit3(0x195b46), bit4(0x195b46), bit5(0x195b46), bit6(0x195b46), bit7(0x195b46), // Hollow Bastion, Part II
-    bit0(0x195b47), bit1(0x195b47), bit2(0x195b47), bit3(0x195b47), bit4(0x195b47), bit5(0x195b47), bit6(0x195b47), bit7(0x195b47),
-]
-
-prizeBloxConditions = {}
-i = 0
-for j in prizeBlox
-{
-    prizeBloxConditions[i] = GenerateConditionFromBitflag(j)
-    i = i + 1
-}
-
-GenerateSaveProtectedAchievementFromConditions({
-    "name": "Rookie Blox Breaker",
-    "description": "Destroy 15 rare prize blox.",
-    "points": 3,
-    "threshold": 15
-}, prizeBloxConditions, always_true())
-
-GenerateSaveProtectedAchievementFromConditions({
-    "name": "Regular Blox Breaker",
-    "description": "Destroy 30 rare prize blox.",
-    "points": 5,
-    "threshold": 30
-}, prizeBloxConditions, always_true())
-
-GenerateSaveProtectedAchievementFromConditions({
-    "name": "Veteran Blox Breaker",
-    "description": "Destroy 60 rare prize blox.",
-    "points": 10,
-    "threshold": 60
-}, prizeBloxConditions, always_true())
-
-GenerateSaveProtectedAchievementFromConditions({
-    "name": "Legendary Blox Breaker",
-    "description": "Destroy all rare prize blox.",
-    "points": 25,
-    "threshold": 111
-}, prizeBloxConditions, always_true())
 
 function proudAchievement() => bit3(0x195c7e)
 achievement(title = "Proud Achievement", description = "Replay and complete every world on Proud Mode.", points = 10,
