@@ -1285,11 +1285,8 @@ function DidDefeatEnemy(name)
     return defeated
 }
 
-enemiesConditions = {}
-
-for i in enemies
+function GenerateConditionForEnemy(enemy)
 {
-    enemy = enemies[i]
     countsWhen = always_false()
     recalculateWhen = always_false()
     
@@ -1301,7 +1298,14 @@ for i in enemies
         recalculateWhen = recalculateWhen || Delta(mem) != mem
     }
     
-    enemiesConditions[i] = { "countsWhen": countsWhen, "recalculateWhen": recalculateWhen }
+    return { "countsWhen": countsWhen, "recalculateWhen": recalculateWhen }
+}
+
+enemiesConditions = {}
+
+for i in enemies
+{
+    enemiesConditions[i] = GenerateConditionForEnemy(enemies[i])
 }
 
 // ============================== COMMANDS ============================== //
@@ -2335,12 +2339,13 @@ achievement(title = "Icer of Titans", description = "Defeat the Ice Titan.", poi
     trigger = WasBitflagSetInGame(icerOfTitans())
 )
 
-function eliminatorsEnd() => bit4(0x195c7f)
-achievement(title = "Eliminator's End", description = "Defeat an Eliminator.", points = 10,
-    trigger = WasBitflagSetInGame(eliminatorsEnd())
-)
+GenerateSaveProtectedAchievementFromConditions({
+    "name": "Eliminator's End",
+    "description": "Defeat an Eliminator.",
+    "points": 10,
+    "threshold": 1
+}, { 0: GenerateConditionForEnemy(GetEnemyByName("Eliminator")) }, always_true())
 
-// todo: implement more enemy type cheevos
 GenerateSaveProtectedAchievementFromConditions({
     "name": "Justice for Few",
     "description": "Defeat 10% of all enemy types.",
