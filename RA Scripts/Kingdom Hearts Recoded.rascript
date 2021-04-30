@@ -2331,9 +2331,11 @@ achievement(title = "Command Master", description = "Upgrade every type of attac
     trigger = WasBitflagSetInGame(commandMaster())
 )
 
-function closedBook() => bit5(0x195c7e)
+function creditsState() => dword(0x1acda8)
+function DidCreditsStart() => once(once(once(creditsState() == 0x0) && creditsState() == 0xf0) && creditsState() == 0x1f0)
+	&& never(creditsState() != 0x0 && creditsState() != 0xf0 && creditsState() != 0x1f0)
 achievement(title = "Closed Book", description = "Complete the story.", points = 25,
-    trigger = WasBitflagSetInGame(closedBook())
+    trigger = DidCreditsStart()
 )
 
 characterQuestData = {
