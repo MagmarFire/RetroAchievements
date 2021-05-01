@@ -2203,6 +2203,7 @@ sectorRewards = [
     bit0(0x19833e), bit1(0x19833e), bit2(0x19833e), bit3(0x19833e), bit4(0x19833e), bit5(0x19833e),
     bit0(0x198340), bit1(0x198340), bit2(0x198340), bit3(0x198340), bit4(0x198340), bit5(0x198340),
     bit0(0x198342), bit1(0x198342), bit2(0x198342), bit3(0x198342), bit4(0x198342), bit5(0x198342),
+    bit0(0x198346), bit1(0x198346), bit2(0x198346), bit3(0x198346),
     bit0(0x198348), bit1(0x198348), bit2(0x198348), bit3(0x198348), bit4(0x198348), bit5(0x198348), bit6(0x198348),
     bit0(0x19833c), bit1(0x19833c), bit2(0x19833c), bit3(0x19833c), bit4(0x19833c),
     bit0(0x198344), bit1(0x198344), bit2(0x198344), bit3(0x198344), bit4(0x198344),
@@ -2222,9 +2223,30 @@ for addr in sectorRewards
 
 GenerateSaveProtectedAchievementFromConditions({
     "name": "Rookie Cryptominer",
-    "description": "Redeem 10% of all sector rewards.",
+    "description": "Redeem 10% of all system sector rewards.",
+    "points": 3,
+    "threshold": (length(sectorRewards) / 10),
+}, sectorRewardsConditions, always_true())
+
+GenerateSaveProtectedAchievementFromConditions({
+    "name": "Regular Cryptominer",
+    "description": "Redeem 25% of all system sector rewards.",
     "points": 5,
-    "threshold": 100, // Not sure how many there are yet, but we may be able to infer it via calculations.
+    "threshold": (length(sectorRewards) / 4),
+}, sectorRewardsConditions, always_true())
+
+GenerateSaveProtectedAchievementFromConditions({
+    "name": "Veteran Cryptominer",
+    "description": "Redeem 50% of all system sector rewards.",
+    "points": 10,
+    "threshold": (length(sectorRewards) / 2),
+}, sectorRewardsConditions, always_true())
+
+GenerateSaveProtectedAchievementFromConditions({
+    "name": "Legendary Cryptominer",
+    "description": "Redeem all system sector rewards.",
+    "points": 25,
+    "threshold": length(sectorRewards),
 }, sectorRewardsConditions, always_true())
 
 achievement(title = "Threadripper", points = 25,
@@ -2389,17 +2411,17 @@ achievement(title = "Weapon Wizard", description = "Completely power up every ty
 )
 
 function converterLv100() => bit0(0x195c7f)
-achievement(title = "Converter LV 100", description = "Level up a command to Level 100.", points = 5,
+achievement(title = "Converter LV 100", description = "Level up a command to Level 100, and then view the Trophies menu.", points = 5,
     trigger = WasBitflagSetInGame(converterLv100())
 )
 
 function converterCRLv100() => bit7(0x195c7e)
-achievement(title = "Converter CR LV 100", description = "Level up a command to CR Level 100.", points = 10,
+achievement(title = "Converter CR LV 100", description = "Level up a command to CR Level 100, and then view the Trophies menu.", points = 10,
     trigger = WasBitflagSetInGame(converterCRLv100())
 )
 
 function commandMaster() => bit6(0x195c7e)
-achievement(title = "Command Master", description = "Upgrade every type of attack and magic command to CR.", points = 25,
+achievement(title = "Command Master", description = "Upgrade every type of attack and magic command to CR, and then view the Trophies menu.", points = 50,
     trigger = WasBitflagSetInGame(commandMaster())
 )
 
