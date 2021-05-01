@@ -2185,6 +2185,8 @@ achievement(title = "High-Stakes Gambler", points = 50,
         && sectorPoints() > Delta(sectorPoints()) // Ensure integer underflow doesn't happen.
 )
 
+function ultimaWeapon() => bit0(0x19834a)
+
 sectorRewards = [
     bit0(0x198322), bit1(0x198322), bit2(0x198322), bit3(0x198322), bit4(0x198322),
     bit0(0x198328), bit1(0x198328), bit2(0x198328),
@@ -2196,6 +2198,7 @@ sectorRewards = [
     bit0(0x198338), bit1(0x198338), bit2(0x198338), bit3(0x198338), bit4(0x198338),
     bit0(0x198324), bit1(0x198324), bit2(0x198324), bit3(0x198324), bit4(0x198324), bit5(0x198324),
     bit0(0x198330), bit1(0x198330), bit2(0x198330), bit3(0x198330), bit4(0x198330), bit5(0x198330),
+    bit0(0x198332), bit1(0x198332), bit2(0x198332), bit3(0x198332), bit4(0x198332),
     bit0(0x19833a), bit1(0x19833a), bit2(0x19833a), bit3(0x19833a), bit4(0x19833a),
     bit0(0x19833e), bit1(0x19833e), bit2(0x19833e), bit3(0x19833e), bit4(0x19833e), bit5(0x19833e),
     bit0(0x198340), bit1(0x198340), bit2(0x198340), bit3(0x198340), bit4(0x198340), bit5(0x198340),
@@ -2203,6 +2206,7 @@ sectorRewards = [
     bit0(0x198348), bit1(0x198348), bit2(0x198348), bit3(0x198348), bit4(0x198348), bit5(0x198348), bit6(0x198348),
     bit0(0x19833c), bit1(0x19833c), bit2(0x19833c), bit3(0x19833c), bit4(0x19833c),
     bit0(0x198344), bit1(0x198344), bit2(0x198344), bit3(0x198344), bit4(0x198344),
+    ultimaWeapon(), bit1(0x19834a), bit6(0x19834a),
     bit0(0x198350), bit1(0x198350), bit2(0x198350), bit3(0x198350), bit4(0x198350), bit5(0x198350),
     bit0(0x198352), bit1(0x198352), bit2(0x198352), bit3(0x198352), bit4(0x198352), bit5(0x198352),
 ]
@@ -2222,6 +2226,11 @@ GenerateSaveProtectedAchievementFromConditions({
     "points": 5,
     "threshold": 100, // Not sure how many there are yet, but we may be able to infer it via calculations.
 }, sectorRewardsConditions, always_true())
+
+achievement(title = "Threadripper", points = 25,
+    description = "Obtain Ultima Weapon.",
+    trigger = WasBitflagSetInGame(ultimaWeapon())
+)
 
 prizeBlox = [
     bit0(0x195b38), bit1(0x195b38), bit2(0x195b38), bit3(0x195b38), bit4(0x195b38), bit5(0x195b38), bit6(0x195b38), bit7(0x195b38), // Wonderland
