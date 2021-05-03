@@ -27,9 +27,11 @@ function TitleScreenReady() => titleScreenStatus() == 6
 
 function IsWatchingOpeningMovie() => titleScreenStatus() == 0xc
 
+function IsWatchingMovieInTheatreMenu() => titleScreenStatus() == 0xb
+
 function IsOnTheatreMenu() => titleScreenStatus() == 0xa
 
-function IsOnTitleScreen() => TitleScreenAlmostReady() || TitleScreenReady() || IsWatchingOpeningMovie() || IsOnTheatreMenu()
+function IsOnTitleScreen() => TitleScreenAlmostReady() || TitleScreenReady() || IsWatchingOpeningMovie() || IsOnTheatreMenu() || IsWatchingMovieInTheatreMenu()
 
 function SecondsToFormat(value)
 {
@@ -1142,8 +1144,13 @@ function IsOnSaveOrLoadMenu() => menuId() == 0x6
 
 function IsOnLoadMenu() => titleScreenStatus() == 8
 
-function IsAlwaysInGame() => unless(IsOnSaveOrLoadMenu()) && never(IsOnLoadMenu()) && never(IsOnTitleScreen())
-    && unless(!IsPointer(saveLoadPtrAddr()) && WasPointer(saveLoadPtrAddr()) && Delta(OldSaveLoadState()) == 0x9)
+function IsOrWasInAvatarMenu() => titleScreenStatus() == 9 || WasInAvatarMenu()
+function WasInAvatarMenu() => titleScreenStatus() == 0 && prev(titleScreenStatus()) == 0x9
+
+function IsAlwaysInGame() => unless(IsOnSaveOrLoadMenu()) && never(IsOnLoadMenu()) && never(IsOnTitleScreen())// && never(IsOrWasInAvatarMenu())
+    && unless(!IsPointer(saveLoadPtrAddr()) && WasPointer(saveLoadPtrAddr()) && Delta(OldSaveLoadState()) == 0x9 && WasInAvatarMenu()
+    )
+    //&& unless(!IsPointer(saveLoadPtrAddr()) && WasPointer(saveLoadPtrAddr()) && Delta(OldSaveLoadState()) == 0x9)
 
 function WasValueSet(mem, oldValue, newValue)
 {
