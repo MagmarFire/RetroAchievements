@@ -1144,13 +1144,12 @@ function IsOnSaveOrLoadMenu() => menuId() == 0x6
 
 function IsOnLoadMenu() => titleScreenStatus() == 8
 
-function IsOrWasInAvatarMenu() => titleScreenStatus() == 9 || WasInAvatarMenu()
 function WasInAvatarMenu() => titleScreenStatus() == 0 && prev(titleScreenStatus()) == 0x9
 
-function IsAlwaysInGame() => unless(IsOnSaveOrLoadMenu()) && never(IsOnLoadMenu()) && never(IsOnTitleScreen())// && never(IsOrWasInAvatarMenu())
+function IsAlwaysInGame() => unless(IsOnSaveOrLoadMenu()) && never(IsOnLoadMenu()) && never(IsOnTitleScreen())
+    // HOW THE @#%!$ DOES THIS WORK!?
     && unless(!IsPointer(saveLoadPtrAddr()) && WasPointer(saveLoadPtrAddr()) && Delta(OldSaveLoadState()) == 0x9 && WasInAvatarMenu()
     )
-    //&& unless(!IsPointer(saveLoadPtrAddr()) && WasPointer(saveLoadPtrAddr()) && Delta(OldSaveLoadState()) == 0x9)
 
 function WasValueSet(mem, oldValue, newValue)
 {
