@@ -27,7 +27,9 @@ function TitleScreenReady() => titleScreenStatus() == 6
 
 function IsWatchingOpeningMovie() => titleScreenStatus() == 0xc
 
-function IsOnTitleScreen() => TitleScreenAlmostReady() || TitleScreenReady() || IsWatchingOpeningMovie()
+function IsOnTheatreMenu() => titleScreenStatus() == 0xa
+
+function IsOnTitleScreen() => TitleScreenAlmostReady() || TitleScreenReady() || IsWatchingOpeningMovie() || IsOnTheatreMenu()
 
 function SecondsToFormat(value)
 {
@@ -106,7 +108,7 @@ areas = {
 53: { "worldId": 0x4, "name": "AgrabahPalaceFrozen", "display": "Palace Gates", "areaId": 0xc, },
 54: { "worldId": 0x4, "name": "AgrabahStreetFrozen", "display": "Main Street", "areaId": 0xb, },
 55: { "worldId": 0x4, "name": "AgrabahAlleyFrozen", "display": "Alley", "areaId": 0xd, },
-56: { "worldId": 0x4, "name": "AgrabahCaveEntrance", "display": "Cave / Entrance", "areaId": 0x12, },
+56: { "worldId": 0x4, "name": "AgrabahCaveEntranceNoEntry", "display": "Cave / Entrance", "areaId": 0x12, },
 57: { "worldId": 0x4, "name": "AgrabahBazaarFrozen", "display": "Bazaar", "areaId": 0xe, },
 58: { "worldId": 0x4, "name": "AgrabahBazaar", "display": "Bazaar", "areaId": 0x9, },
 59: { "worldId": 0x4, "name": "AgrabahCaveEntrance", "display": "Cave / Entrance", "areaId": 0x1, },
@@ -125,7 +127,7 @@ areas = {
 72: { "worldId": 0x5, "name": "HollowBastionEntranceUpper", "display": "Entrance Hall (Upper Level)", "areaId": 0x5, },
 73: { "worldId": 0x5, "name": "HollowBastionCrest", "display": "Great Crest", "areaId": 0xa, },
 74: { "worldId": 0x5, "name": "HollowBastionTower", "display": "High Tower", "areaId": 0xb, },
-75: { "worldId": 0x5, "name": "HollowBastionGrandHall", "display": "Grand Hall(?)", "areaId": 0xd, },
+75: { "worldId": 0x5, "name": "HollowBastionGrandHall", "display": "Grand Hall", "areaId": 0xd, },
 76: { "worldId": 0x5, "name": "HollowBastionKeyholeEntrance", "display": "Somewhere in the datascape…", "areaId": 0x0, },
 77: { "worldId": 0x5, "name": "HollowBastionKeyholeChapel", "display": "Keyhole / Chapel", "areaId": 0xc, },
 78: { "worldId": 0x6, "name": "HollowBastionIIInsideRiku", "display": "Inside Riku’s Data", "areaId": 0x8, },
@@ -154,6 +156,22 @@ areas = {
 101: { "worldId": 0x7, "name": "CastleOblivionHollowBastionObstacleCourse", "display": "Hollow Bastion", "areaId": 0x6, },
 102: { "worldId": 0x7, "name": "CastleOblivionSorrow", "display": "Station of Sorrow", "areaId": 0x8, },
 103: { "worldId": 0x7, "name": "CastleOblivionHollowBastion", "display": "Hollow Bastion", "areaId": 0x5, },
+104: { "worldId": 0x3, "name": "OlympusLayer16", "display": "Layer 16", "areaId": 0xf, },
+105: { "worldId": 0x3, "name": "OlympusLayer17", "display": "Layer 17", "areaId": 0x10, },
+106: { "worldId": 0x3, "name": "OlympusLayer18", "display": "Layer 18", "areaId": 0x11, },
+107: { "worldId": 0x3, "name": "OlympusSave2", "display": "Save Room", "areaId": 0x20, },
+108: { "worldId": 0x3, "name": "OlympusLayer19", "display": "Layer 19", "areaId": 0x12, },
+109: { "worldId": 0x3, "name": "OlympusLayer20", "display": "Layer 20", "areaId": 0x13, },
+110: { "worldId": 0x3, "name": "OlympusLayer21", "display": "Layer 21", "areaId": 0x14, },
+111: { "worldId": 0x3, "name": "OlympusLayer22", "display": "Layer 22", "areaId": 0x15, },
+112: { "worldId": 0x3, "name": "OlympusLayer23", "display": "Layer 23", "areaId": 0x16, },
+113: { "worldId": 0x3, "name": "OlympusLayer24", "display": "Layer 24", "areaId": 0x17, },
+114: { "worldId": 0x3, "name": "OlympusLayer25", "display": "Layer 25", "areaId": 0x18, },
+115: { "worldId": 0x3, "name": "OlympusLayer26", "display": "Layer 26", "areaId": 0x19, },
+116: { "worldId": 0x3, "name": "OlympusLayer27", "display": "Layer 27", "areaId": 0x1a, },
+117: { "worldId": 0x3, "name": "OlympusLayer28", "display": "Layer 28", "areaId": 0x1b, },
+118: { "worldId": 0x3, "name": "OlympusLayer29", "display": "Layer 29", "areaId": 0x1c, },
+119: { "worldId": 0x3, "name": "OlympusLayer30", "display": "Layer 30", "areaId": 0x22, },
 
 }
 
@@ -1981,7 +1999,7 @@ achievement(title = "Lethal Force Authorized", points = 5,
 achievement(title = "There Is No Escape", points = 5,
     description = "Earn a Star rank in the Olympus Coliseum Keyhole (Critical Mode; Level 20 or below).",
     trigger = IsAtLeastOnDifficulty("Critical") &&  BossScoreIsDisplayedAndAtLeast(30000)
-        && never(!IsInLocation("OlympusLayer5") && !IsInLocation("OlympusLayer15") && !IsInLocation("OlympusLayer15")
+        && never(!IsInLocation("OlympusLayer5") && !IsInLocation("OlympusLayer15") && !IsInLocation("OlympusLayer30")
          && !IsInLocation("OlympusLayer15") && !IsInLocation("OlympusLayer15"))
          && (Level() <= 20 || always_false()) // Trick RATools into generating the correct code by forcing use of OrNext.
 )
@@ -1991,6 +2009,21 @@ achievement(title = "Martial Technique", points = 10,
     trigger = IsAtLeastOnDifficulty("Critical") && Level() <= 25
         && once(OlympusColiseumKeyholeCheckpoint()) && never(!IsInTurnBasedBattle())
         && JustDefeatedEnemy("Rock Titan") && never(ConsumedALicenseOfType(0xd7)) && never(ConsumedALicenseOfType(0xd8))
+)
+
+achievement(title = "Monster Hunter", points = 5,
+    description = "Defeat the Behemoth without using the Reload-L license (Critical Mode; Level 37 or below)",
+    trigger = IsAtLeastOnDifficulty("Critical") && Level() <= 37
+        && once(OlympusColiseumKeyholeCheckpoint()) && never(!IsInTurnBasedBattle())
+        && JustDefeatedEnemy("Behemoth") && never(ConsumedALicenseOfType(0xd4))
+)
+
+function cloudIsInParty() => bit6(0x19c513)
+achievement(title = "Teamwork? Not Interested", points = 10,
+    description = "Defeat the Ice Titan without Cloud in your party (Critical Mode; Level 40 or below)",
+    trigger = IsAtLeastOnDifficulty("Critical") && Level() <= 40
+        && once(OlympusColiseumKeyholeCheckpoint()) && never(!IsInTurnBasedBattle())
+        && JustDefeatedEnemy("Ice Titan") && cloudIsInParty() == 0
 )
 
 // Putting this on the cutting room floor for now; their implementation for calculating time is a bit too complex for me to want to write code around for now.
@@ -2265,6 +2298,7 @@ prizeBlox = [
     
     bit0(0x195b3d), bit0(0x195b3d), bit0(0x195b3d), bit0(0x195b3d), bit0(0x195b3d), bit0(0x195b3d), bit0(0x195b3d), bit0(0x195b3d), // Olympus Coliseum
     bit0(0x195b3e), bit0(0x195b3e), bit0(0x195b3e), bit0(0x195b3e), bit0(0x195b3e), bit0(0x195b3e), bit0(0x195b3e), bit0(0x195b3e),
+    bit1(0x195b3c), bit2(0x195b3c), bit3(0x195b3c), bit4(0x195b3c), bit5(0x195b3c), bit6(0x195b3c), bit7(0x195b3c),
 
     bit0(0x195b40), bit1(0x195b40), bit2(0x195b40), bit3(0x195b40), bit4(0x195b40), bit5(0x195b40), bit6(0x195b40), bit7(0x195b40), // Hollow Bastion, Part I
     bit0(0x195b41), bit1(0x195b41), bit2(0x195b41), bit3(0x195b41), bit4(0x195b41), bit5(0x195b41), bit6(0x195b41), bit7(0x195b41),
@@ -2308,6 +2342,7 @@ GenerateSaveProtectedAchievementFromConditions({
     "threshold": 60
 }, prizeBloxConditions, always_true())
 
+function rarePrizeRoundup() => bit5(0x195c78)
 GenerateSaveProtectedAchievementFromConditions({
     "name": "Rare Prize Roundup",
     "description": "Destroy all rare prize blox.",
@@ -2316,16 +2351,32 @@ GenerateSaveProtectedAchievementFromConditions({
 }, prizeBloxConditions, always_true())
 
 function lordOfLoot() => bit4(0x195c78)
-achievement(title = "Lord of Loot", description = "Collect at least 80% of enemy item drops.", points = 10,
+achievement(title = "Lord of Loot", description = "Collect at least 80% of enemy item drops, and then view the Trophies menu.", points = 25,
     trigger = WasBitflagSetInGame(lordOfLoot())
 )
 
-// todo: add more sector achievements for completion purposes
+sectorsCompleted = [
+    bit0(0x195bcc), bit1(0x195bcc), bit2(0x195bcc), bit3(0x195bcc), bit4(0x195bcc), bit5(0x195bcc), bit6(0x195bcc), bit7(0x195bcc),
+    bit0(0x195bcd), bit1(0x195bcd), bit2(0x195bcd), bit3(0x195bcd), bit4(0x195bcd), bit5(0x195bcd), bit6(0x195bcd), bit7(0x195bcd),
+    bit0(0x195bd3), bit1(0x195bd3), bit2(0x195bd3), bit3(0x195bd3), bit4(0x195bd3), bit5(0x195bd3), bit6(0x195bd3), bit7(0x195bd3),
+    bit7(0x195bd2)
+]
+sectorsCompletedConditions = {}
+
+i = 0
+for j in sectorsCompleted
+{
+    sectorsCompletedConditions[i] = GenerateConditionFromBitflag(j)
+    i = i + 1
+}
 
 function sectorSweeper() => bit3(0x195c78)
-achievement(title = "Sector Sweeper", description = "Complete all system sectors.", points = 10,
-    trigger = WasBitflagSetInGame(sectorSweeper())
-)
+GenerateSaveProtectedAchievementFromConditions({
+    "name": "Sector Sweeper",
+    "description": "Complete all system sectors.",
+    "points": 10,
+    "threshold": length(sectorsCompleted)
+}, sectorsCompletedConditions, always_true())
 
 function sultanOfSlot() => bit2(0x195c78)
 function chipsInstalled() => byte(0x195c15)
@@ -2345,13 +2396,28 @@ achievement(title = "Sultan of Slot", description = "Install chips in every slot
     trigger = WasValueSetInGame(chipsInstalled(), 199, 200) && measured(chipsInstalled() == 200)
 )
 
+cheatsUsed = [
+    bit0(0x195c16), bit1(0x195c16), bit2(0x195c16), bit3(0x195c16), bit4(0x195c16)
+]
+
+cheatsUsedConditions = {}
+
+for j in cheatsUsed
+{
+    cheatsUsedConditions[i] = GenerateConditionFromBitflag(j)
+    i = i + 1
+}
+
 function cheater() => bit1(0x195c78)
-achievement(title = "Cheater", description = "Use every kind of cheat.", points = 5,
-    trigger = WasBitflagSetInGame(cheater())
-)
+GenerateSaveProtectedAchievementFromConditions({
+    "name": "Cheater",
+    "description": "Use every kind of cheat.",
+    "points": 3,
+    "threshold": length(cheatsUsed)
+}, cheatsUsedConditions, always_true())
 
 function championCollector() => bit0(0x195c78)
-achievement(title = "Champion Collector", description = "Collect 70% of all abilities, chips, cheats, weapons, and items.", points = 10,
+achievement(title = "Champion Collector", description = "Collect 70% of all abilities, chips, cheats, weapons, and items; and then view the Trophies menu.", points = 10,
     trigger = WasBitflagSetInGame(championCollector())
 )
 
@@ -2367,7 +2433,7 @@ achievement(title = "Avatar Sweeper (?)", description = "Complete all 100 floors
 
 function icerOfTitans() => bit5(0x195c7f)
 achievement(title = "Icer of Titans", description = "Defeat the Ice Titan.", points = 10,
-    trigger = WasBitflagSetInGame(icerOfTitans())
+    trigger = once(OlympusColiseumKeyholeCheckpoint()) && never(!IsInTurnBasedBattle()) && JustDefeatedEnemy("Ice Titan")
 )
 
 GenerateSaveProtectedAchievementFromConditions({
@@ -2398,6 +2464,7 @@ GenerateSaveProtectedAchievementFromConditions({
     "threshold": (length(enemies) / 2)
 }, enemiesConditions, always_true())
 
+function justiceForAll() => bit2(0x195c7f)
 GenerateSaveProtectedAchievementFromConditions({
     "name": "Justice for All",
     "description": "Defeat all enemy types.",
@@ -2406,7 +2473,7 @@ GenerateSaveProtectedAchievementFromConditions({
 }, enemiesConditions, always_true())
 
 function weaponWizard() => bit1(0x195c7f)
-achievement(title = "Weapon Wizard", description = "Completely power up every type of Keyblade.", points = 25,
+achievement(title = "Weapon Wizard", description = "Completely upgrade every type of Keyblade, and then view the Trophies menu.", points = 25,
     trigger = WasBitflagSetInGame(weaponWizard())
 )
 
@@ -2430,8 +2497,9 @@ achievement(title = "Command Master", description = "Upgrade every type of attac
 function creditsState() => dword(0x1acda8)
 function DidCreditsStart() => once(once(once(creditsState() == 0x0) && creditsState() == 0xf0) && creditsState() == 0x1f0)
 	&& never(creditsState() != 0x0 && creditsState() != 0xf0 && creditsState() != 0x1f0)
+function closedBook() => bit5(0x195bd9)
 achievement(title = "Closed Book", description = "Complete the story.", points = 25,
-    trigger = DidCreditsStart()
+    trigger = DidCreditsStart() && WasBitflagSetInGame(closedBook())
 )
 
 characterQuestData = {
@@ -2470,6 +2538,7 @@ GenerateSaveProtectedAchievementFromConditions({
     "threshold": 7,
 }, questConditions, always_true())
 
+function questBester() => bit4(0x195c7e)
 GenerateSaveProtectedAchievementFromConditions({
     "name": "Quest Bester",
     "description": "Complete all quests.",
@@ -2477,23 +2546,72 @@ GenerateSaveProtectedAchievementFromConditions({
     "threshold": (length(characterQuestData) * 3),
 }, questConditions, always_true())
 
+worldDifficulties = {
+    "Destiny Islands": { "Proud": bit4(0x195bd9), "Critical": bit4(0x195bd8) },
+    "Traverse Town": { "Proud": bit3(0x195bd9), "Critical": bit3(0x195bd8) },
+    "Wonderland": { "Proud": bit2(0x195bd9), "Critical": bit2(0x195bd8) },
+    "Olympus Coliseum": { "Proud": bit1(0x195bd9), "Critical": bit1(0x195bd8) },
+    "Agrabah": { "Proud": bit0(0x195bd9), "Critical": bit0(0x195bd8) },
+    "Hollow Bastion, Part I": { "Proud": bit7(0x195bd8), "Critical": bit7(0x195bdf) },
+    "Hollow Bastion, Part II": { "Proud": bit6(0x195bd8), "Critical": bit6(0x195bdf) },
+    "Castle Oblivion": { "Proud": bit5(0x195bd8), "Critical": bit5(0x195bdf) }
+}
+
+criticalModeConditions = {}
+proudModeConditions = {}
+
+i = 0
+for j in worldDifficulties
+{
+    world = worldDifficulties[j]
+    criticalModeConditions[i] = GenerateConditionFromBitflag(world["Critical"])
+    proudModeConditions[i] = { "countsWhen": (world["Critical"] == 1 || world["Proud"] == 1),
+        "recalculateWhen": (Delta(world["Critical"]) != world["Critical"] || Delta(world["Proud"]) != world["Proud"]) }
+    i = i + 1
+}
+
+// We're naming this achievement different from the in-game trophy to help clue into the player that this achievement is not intended to trigger under the same conditions as the trophy itself.
+// The "Proud Achievement" trophy will be earned if the player completes all worlds on Critical Mode, but it will *not* be earned if, say,
+// one world is completed on Proud Mode and the rest are completed on Critical Mode.
 function proudAchievement() => bit3(0x195c7e)
-achievement(title = "Proud Achievement", description = "Replay and complete every world on Proud Mode.", points = 10,
-    trigger = WasBitflagSetInGame(proudAchievement())
-)
+GenerateSaveProtectedAchievementFromConditions({
+    "name": "Adventurer's Pride",
+    "description": "Complete every world on Proud Mode or higher.",
+    "points": 10,
+    "threshold": 8
+}, proudModeConditions, always_true())
 
 function criticalAcclaim() => bit2(0x195c7e)
-achievement(title = "Critical Acclaim", description = "Replay and complete every world on Critical Mode.", points = 25,
-    trigger = WasBitflagSetInGame(criticalAcclaim())
-)
+GenerateSaveProtectedAchievementFromConditions({
+    "name": "Critical Acclaim",
+    "description": "Complete every world on Critical Mode.",
+    "points": 25,
+    "threshold": 8
+}, criticalModeConditions, always_true())
+
+worldsCompletedWith1HP = [
+    bit5(0x195bde), bit6(0x195bde), bit7(0x195bde),
+    bit0(0x195bdf), bit1(0x195bdf), bit2(0x195bdf), bit3(0x195bdf), bit4(0x195bdf)
+]
+
+oneHpConditions = {}
+
+for j in worldsCompletedWith1HP
+{
+    oneHpConditions[i] = GenerateConditionFromBitflag(j)
+    i = i + 1
+}
 
 function fatalFlawless() => bit1(0x195c7e)
-achievement(title = "Fatal Flawless", description = "Replay and complete an episode with the HP Cheat set to 0%.", points = 10,
-    trigger = WasBitflagSetInGame(fatalFlawless())
-)
+GenerateSaveProtectedAchievementFromConditions({
+    "name": "Fatal Flawless",
+    "description": "Complete a world with the HP Cheat set to 0%.",
+    "points": 10,
+    "threshold": 1
+}, oneHpConditions, always_true())
 
 function technician() => bit0(0x195c7e)
-achievement(title = "Technician", description = "Replay and complete every world at Level 15 or lower.", points = 10,
+achievement(title = "Technician", description = "Replay and complete every world at Level 15 or lower, and then view the Trophies menu.", points = 10,
     trigger = WasBitflagSetInGame(technician())
 )
 
@@ -2508,13 +2626,41 @@ speedrunnerTrophies = {
     8: { "bit": 0, "timeLimit": 10 },
 }
 
+
+function twilightTriumph() => bit3(0x195c7f)
+function eliminatorsEnd() => bit4(0x195c7f)
+trophies = [
+    championCollector(), cheater(), sultanOfSlot(), sectorSweeper(), lordOfLoot(), rarePrizeRoundup(),
+    technician(), fatalFlawless(), criticalAcclaim(), proudAchievement(), questBester(), closedBook(),
+    commandMaster(), converterCRLv100(), converterLv100(), weaponWizard(), justiceForAll(), twilightTriumph(),
+    eliminatorsEnd(), icerOfTitans(), avatarSweeper(), avatarCollector()
+]
+
 for i in speedrunnerTrophies
 {
     trophy = speedrunnerTrophies[i]
-    achievement(title = "W" + i + " Speed Runner", description = "Finish World " + i + " in " + trophy["timeLimit"] + ":00 or less.", points = 10,
-        trigger = WasBitflagSetInGame(bit(trophy["bit"], 0x195c7d))
+    trophyMem = bit(trophy["bit"], 0x195c7d)
+    achievement(title = "W" + i + " Speed Runner", description = "Finish World " + i + " in " + trophy["timeLimit"] + ":00 or less, and then view the Trophies menu.", points = 10,
+        trigger = WasBitflagSetInGame(trophyMem)
     )
+    
+    array_push(trophies, trophyMem) // Add the speedrunning tropies to the array defined above.
 }
+
+trophyConditions = {}
+
+for j in trophies
+{
+    trophyConditions[i] = GenerateConditionFromBitflag(j)
+    i = i + 1
+}
+
+GenerateSaveProtectedAchievementFromConditions({
+    "name": "Overachiever",
+    "description": "Earn twenty trophies, and then view the Trophies menu.",
+    "points": 25,
+    "threshold": 20
+}, trophyConditions, always_true())
 
 leaderboard(title = "Time Attack - Destiny Islands", description = "Seal the Destiny Islands Keyhole as quickly as you can.",
     start = IsInLocation("DestinyStorm") && !IsInSystemSector(),
@@ -2557,6 +2703,13 @@ leaderboard(title = "Score Attack - Olympus Coliseum, Layer 5", description = "G
 leaderboard(title = "Score Attack - Olympus Coliseum, Layer 15", description = "Get as many points as you can in the Olympus Coliseum Keyhole, up to Layer 15.",
     start = IsInLocation("OlympusLayer15") && IsTotalScoreJustDisplayed() && !IsInSystemSector(),
     cancel = !IsInLocation("OlympusLayer15") || IsInSystemSector(),
+    submit = IsTotalScoreJustDisplayed(),
+    value = dword(bossScorePointer() + 8)
+)
+
+leaderboard(title = "Score Attack - Olympus Coliseum, Layer 30", description = "Get as many points as you can in the Olympus Coliseum Keyhole, up to Layer 30.",
+    start = IsInLocation("OlympusLayer30") && IsTotalScoreJustDisplayed() && !IsInSystemSector(),
+    cancel = !IsInLocation("OlympusLayer30") || IsInSystemSector(),
     submit = IsTotalScoreJustDisplayed(),
     value = dword(bossScorePointer() + 8)
 )
@@ -2623,3 +2776,4 @@ leaderboard(title = "Time Attack - Castle Oblivion", description = "Defeat the f
     submit = IsBossRankJustDisplayed(),
     value = bossMilliseconds() / 10
 )
+
