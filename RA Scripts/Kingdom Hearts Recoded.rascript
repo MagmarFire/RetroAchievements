@@ -2511,14 +2511,8 @@ achievement(title = "Champion Collector", description = "Collect 70% of all abil
 )
 
 function avatarCollector() => bit7(0x195c7f)
-achievement(title = "Avatar Collector (?)", description = "Collect 50% avatar parts.", points = 10,
-    trigger = WasBitflagSetInGame(avatarCollector())
-)
 
 function avatarSweeper() => bit6(0x195c7f)
-achievement(title = "Avatar Sweeper (?)", description = "Complete all 100 floors of the Avatar Sector.", points = 25,
-    trigger = WasBitflagSetInGame(avatarSweeper())
-)
 
 function icerOfTitans() => bit5(0x195c7f)
 achievement(title = "Icer of Titans", description = "Defeat the Ice Titan.", points = 10,
@@ -2704,6 +2698,7 @@ achievement(title = "Technician", description = "Replay and complete every world
     trigger = WasBitflagSetInGame(technician())
 )
 
+
 speedrunnerTrophies = {
     1: { "bit": 7, "timeLimit": 5 },
     2: { "bit": 6, "timeLimit": 15 },
@@ -2715,14 +2710,13 @@ speedrunnerTrophies = {
     8: { "bit": 0, "timeLimit": 10 },
 }
 
-
 function twilightTriumph() => bit3(0x195c7f)
 function eliminatorsEnd() => bit4(0x195c7f)
 trophies = [
     championCollector(), cheater(), sultanOfSlot(), sectorSweeper(), lordOfLoot(), rarePrizeRoundup(),
     technician(), fatalFlawless(), criticalAcclaim(), proudAchievement(), questBester(), closedBook(),
     commandMaster(), converterCRLv100(), converterLv100(), weaponWizard(), justiceForAll(), twilightTriumph(),
-    eliminatorsEnd(), icerOfTitans(), avatarSweeper(), avatarCollector()
+    eliminatorsEnd(), icerOfTitans()
 ]
 
 for i in speedrunnerTrophies
@@ -2746,7 +2740,7 @@ for j in trophies
 
 GenerateSaveProtectedAchievementFromConditions({
     "name": "Overachiever",
-    "description": "Earn twenty trophies, and then view the Trophies menu.",
+    "description": "Earn twenty trophies that don't require Tag Mode, and then view the Trophies menu.",
     "points": 25,
     "threshold": 20
 }, trophyConditions, always_true())
