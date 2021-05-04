@@ -2062,8 +2062,15 @@ achievement(title = "Keyblade Beats Rock", points = 25,
 
 achievement(title = "Exceptional Astronomical Abilities", points = 5,
     description = "Earn a Star rank in the Agrabah Keyhole (Proud Mode or higher; Level 20 or below).",
-    trigger = IsAtLeastOnDifficulty("Proud") &&  BossScoreIsDisplayedAndAtLeast(35000)
+    trigger = IsAtLeastOnDifficulty("Proud") && BossScoreIsDisplayedAndAtLeast(35000)
         && never(!IsInLocation("AgrabahKeyholeTerminus")) && Level() <= 20
+)
+
+achievement(title = "The Donald Special", points = 5,
+    description = "Survive the enemy gauntlet at the Great Crest in Hollow Bastion without any healing items equipped (Critical Mode; Level 22 or below).",
+    trigger = IsAtLeastOnDifficulty("Critical") && Level() <= 22 && once(WasInLocation("HollowBastionEntranceLower") && IsInLocation("HollowBastionCrest"))
+        && never(tally(1, NumberOfHealingItemCommandsEquipped())) && IsInLocation("HollowBastionTower")
+        && never(IsLoadingSaveFile()) // So the player doesn't simply reload a save file from the High Tower after a game over.
 )
 
 achievement(title = "Sour Stomach", points = 10,
@@ -2781,4 +2788,5 @@ leaderboard(title = "Time Attack - Castle Oblivion", description = "Defeat the f
     submit = IsBossRankJustDisplayed(),
     value = bossMilliseconds() / 10
 )
+
 
