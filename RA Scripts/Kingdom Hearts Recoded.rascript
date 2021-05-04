@@ -2299,6 +2299,83 @@ achievement(title = "Threadripper", points = 25,
     trigger = WasBitflagSetInGame(ultimaWeapon())
 )
 
+lowestLevelVirtualBitsToRealBits = {
+    "Hollow Bastion, Part I": {
+        0: { "addr": 0x195be1, "bit": 3 },
+        1: { "addr": 0x195be1, "bit": 4 },
+        2: { "addr": 0x195be1, "bit": 5 },
+        3: { "addr": 0x195be1, "bit": 6 },
+        4: { "addr": 0x195be1, "bit": 7 },
+        5: { "addr": 0x195be1, "bit": 0 },
+        6: { "addr": 0x195be1, "bit": 1 },
+    },
+    "Hollow Bastion, Part II": {
+        0: { "addr": 0x195be0, "bit": 4 },
+        1: { "addr": 0x195be0, "bit": 5 },
+        2: { "addr": 0x195be0, "bit": 6 },
+        3: { "addr": 0x195be0, "bit": 7 },
+        4: { "addr": 0x195be1, "bit": 0 },
+        5: { "addr": 0x195be1, "bit": 1 },
+        6: { "addr": 0x195be1, "bit": 2 },
+    },
+    "Castle Oblivion": {
+        0: { "addr": 0x195be7, "bit": 5 },
+        1: { "addr": 0x195be7, "bit": 6 },
+        2: { "addr": 0x195be7, "bit": 7 },
+        3: { "addr": 0x195be0, "bit": 0 },
+        4: { "addr": 0x195be0, "bit": 1 },
+        5: { "addr": 0x195be0, "bit": 2 },
+        6: { "addr": 0x195be0, "bit": 3 },
+    }
+}
+
+function WasWorldCompletedOnLevel1(worldName)
+{
+    worldBits = lowestLevelVirtualBitsToRealBits[worldName]
+    trigger = always_true()
+    
+    for i in worldBits
+    {
+        bit = worldBits[i]
+        trigger = trigger && bit(bit["bit"], bit["addr"]) == 0
+    }
+    
+    return trigger
+}
+
+function WorldLowestLevelChanged(worldName)
+{
+    worldBits = lowestLevelVirtualBitsToRealBits[worldName]
+    trigger = always_false()
+    
+    for i in worldBits
+    {
+        bit = worldBits[i]
+        realBit = bit(bit["bit"], bit["addr"])
+        trigger = trigger || Delta(realBit) != realBit
+    }
+    
+    return trigger
+}
+
+function castleOblivionStoryEntry() => bit5(0x195bd9)
+
+lv1Conditions = {
+    0: { "countsWhen": (WasWorldCompletedOnLevel1("Hollow Bastion, Part I") && hollowBastionStoryEntry() == 1),
+        "recalculateWhen": (WorldLowestLevelChanged("Hollow Bastion, Part I") || Delta(hollowBastionStoryEntry()) != hollowBastionStoryEntry()) },
+    1: { "countsWhen": (WasWorldCompletedOnLevel1("Hollow Bastion, Part II") && hollowBastionIIStoryEntry() == 1),
+        "recalculateWhen": (WorldLowestLevelChanged("Hollow Bastion, Part II") || Delta(hollowBastionIIStoryEntry()) != hollowBastionIIStoryEntry()) },
+    2: { "countsWhen": (WasWorldCompletedOnLevel1("Castle Oblivion") && castleOblivionStoryEntry() == 1),
+        "recalculateWhen": (WorldLowestLevelChanged("Castle Oblivion") || Delta(castleOblivionStoryEntry()) != castleOblivionStoryEntry()) },
+}
+
+GenerateSaveProtectedAchievementFromConditions({
+    "name": "Life on the Edge Case",
+    "description": "Complete Hollow Bastion, Parts I or II, or Castle Oblivion at Level 1 on Proud Mode or higher.",
+    "points": 50,
+    "threshold": 1
+}, lv1Conditions, IsAtLeastOnDifficulty("Proud"))
+
 prizeBlox = [
     bit0(0x195b38), bit1(0x195b38), bit2(0x195b38), bit3(0x195b38), bit4(0x195b38), bit5(0x195b38), bit6(0x195b38), bit7(0x195b38), // Wonderland
     bit0(0x195b3f), bit1(0x195b3f), bit2(0x195b3f), bit3(0x195b3f), bit4(0x195b3f), bit5(0x195b3f), bit6(0x195b3f), bit7(0x195b3f), 
