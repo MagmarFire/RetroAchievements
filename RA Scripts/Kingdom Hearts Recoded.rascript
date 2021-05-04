@@ -1147,9 +1147,8 @@ function IsOnLoadMenu() => titleScreenStatus() == 8
 function WasInAvatarMenu() => titleScreenStatus() == 0 && prev(titleScreenStatus()) == 0x9
 
 function IsAlwaysInGame() => unless(IsOnSaveOrLoadMenu()) && never(IsOnLoadMenu()) && never(IsOnTitleScreen())
-    // HOW THE @#%!$ DOES THIS WORK!?
-    && unless(!IsPointer(saveLoadPtrAddr()) && WasPointer(saveLoadPtrAddr()) && Delta(OldSaveLoadState()) == 0x9 && WasInAvatarMenu()
-    )
+    // WHY THE @#%!$ DOES THIS NOT BREAK WHEN LEAVING THE AVATAR MENU!?
+    && unless(!IsPointer(saveLoadPtrAddr()) && WasPointer(saveLoadPtrAddr()) && Delta(OldSaveLoadState()) == 0x9 && WasInAvatarMenu())
 
 function WasValueSet(mem, oldValue, newValue)
 {
