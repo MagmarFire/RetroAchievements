@@ -258,6 +258,9 @@ function BossTimeIsDisplayedAndAtMost(milliseconds)
     return IsBossScorePointerActive() && bossMilliseconds() <= milliseconds && IsBossRankJustDisplayed()
 }
 
+// $060B51: < LV PLAYER SORA >
+function Level() => byte(0x060B51) + 1
+
 // Title screen status
 // 
 // 0 = Licensed by Nintendo
@@ -272,31 +275,33 @@ function titleScreenStatus() => dword(0x19c494)
 
 function sessionPlayTime() => dword(0x056e9c)
 function savedPlayTime() => dword(0x198360)
+
+function framesBeforeClockStartsTickingUp() => 85843
 function PlayTimeToFrames()
 {
-    return sessionPlayTime() * 215543160 / 28704724 + savedPlayTime() * 60
+    return sessionPlayTime() * 15 / 2 - 55028 + savedPlayTime() * 60
 }
 
 soa1 = GetLocationByName("SoA1")
 soa2 = GetLocationByName("SoA2")
 rich_presence_conditional_display(IsOnTitleScreen(), "On the title screen")
 
-rich_presence_conditional_display(worldId() == 0 && areaId() == 0x1, soa1["display"] + " | Play Time: {0}",
-    rich_presence_value("PlayTime", PlayTimeToFrames(), "FRAMES")
+rich_presence_conditional_display(worldId() == 0 && areaId() == 0x1, soa1["display"] + " | Level {0}",
+    rich_presence_value("Level", Level(), "VALUE")
 )
 
-rich_presence_conditional_display(worldId() == 0 && areaId() == 0x2, soa2["display"] + " | Play Time: {0}",
-    rich_presence_value("PlayTime", PlayTimeToFrames(), "FRAMES")
+rich_presence_conditional_display(worldId() == 0 && areaId() == 0x2, "In the " + soa2["display"] + " | Level {0}",
+    rich_presence_value("Level", Level(), "VALUE")
 )
 
 for world in worlds
 {
-    rich_presence_conditional_display(IsInSystemSector() && worldId() == world, worlds[world] + ": System Sector | Play Time: {0}",
-        rich_presence_value("PlayTime", PlayTimeToFrames(), "FRAMES")
+    rich_presence_conditional_display(IsInSystemSector() && worldId() == world, worlds[world] + ": System Sector | Level {0}",
+        rich_presence_value("Level", Level(), "VALUE")
     )
-    rich_presence_conditional_display(worldId() == world, worlds[world] + ": {0} | Play Time: {1}",
+    rich_presence_conditional_display(worldId() == world, worlds[world] + ": {0} | Level {1}",
         rich_presence_lookup("Areas" + world, areaId(), GetAreaRPLookup(world)),
-        rich_presence_value("PlayTime", PlayTimeToFrames(), "FRAMES")
+        rich_presence_value("Level", Level(), "VALUE")
     )
 }
 
@@ -346,9 +351,6 @@ function playTime() => dword(0x056E9C)
 // $0608D4: Ability set for clock level 2 - 16-bit
 // $0608D6: Ability set for clock level 3 - 16-bit
 // $0608D8: Ability set for clock level MAX - 16-bit
-
-// $060B51: < LV PLAYER SORA >
-function Level() => byte(0x060B51) + 1
 
 // $060B52: < HP PLAYER - SORA >
 function hp() => byte(0x060B52)
