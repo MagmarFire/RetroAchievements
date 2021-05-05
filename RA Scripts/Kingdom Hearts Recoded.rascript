@@ -2133,7 +2133,7 @@ achievement(title = "Flame Damping", points = 5,
     trigger = IsAtLeastOnDifficulty("Proud") && Level() <= 27 && never(!IsInLocation("HollowBastionDragon")) && BossScoreIsDisplayedAndAtLeast(32000) && never(HPCheatIsBeingUsed())
 )
 
-achievement(title = "Draconic Rage", points = 10,
+achievement(title = "Draconic Rage", points = 25,
     description = "Earn a Star rank escaping from inside Riku's data (Proud Mode or higher; Level 27 or below; no HP Cheat).",
     trigger = IsAtLeastOnDifficulty("Proud") && Level() <= 27 && never(!IsInLocation("HollowBastionDragon")) && BossScoreIsDisplayedAndAtLeast(50000) && never(HPCheatIsBeingUsed())
 )
@@ -2159,8 +2159,8 @@ achievement(title = "Dark Embrace", points = 25,
 )
 
 achievement(title = "Shallow Copy", points = 25,
-    description = "Defeat Sora's Heartless with a score of 30000 or more (Proud Mode or higher; Level 30 or below; no HP Cheat).",
-    trigger = IsAtLeastOnDifficulty("Proud") && Level() <= 30 && never(!IsInLocation("HollowBastionCentralCorruption")) && BossScoreIsDisplayedAndAtLeast(30000)
+    description = "Earn a Star rank against Sora's Heartless (Proud Mode or higher; Level 30 or below; no HP Cheat).",
+    trigger = IsAtLeastOnDifficulty("Proud") && Level() <= 30 && never(!IsInLocation("HollowBastionCentralCorruption")) && BossScoreIsDisplayedAndAtLeast(40000)
         && never(HPCheatIsBeingUsed())
 )
 
@@ -2840,28 +2840,28 @@ leaderboard(title = "Score Attack - Hollow Bastion", description = "Get as many 
     value = dword(bossScorePointer() + 8)
 )
 
-leaderboard(title = "Time Attack - Hollow Bastion II", description = "Escape from inside Riku's data as quickly as you can.",
+leaderboard(title = "Time Attack - Hollow Bastion II A", description = "Escape from inside Riku's data as quickly as you can.",
     start = IsInLocation("HollowBastionDragon") && !IsInSystemSector(),
     cancel = !IsInLocation("HollowBastionDragon") || IsInSystemSector(),
     submit = IsBossRankJustDisplayed(),
     value = bossMilliseconds() / 10
 )
 
-leaderboard(title = "Score Attack - Hollow Bastion II", description = "Get as many points as you can escaping from inside Riku's data.",
+leaderboard(title = "Score Attack - Hollow Bastion II A", description = "Get as many points as you can escaping from inside Riku's data.",
     start = IsInLocation("HollowBastionDragon") && IsTotalScoreJustDisplayed() && !IsInSystemSector(),
     cancel = !IsInLocation("HollowBastionDragon") || IsInSystemSector(),
     submit = IsTotalScoreJustDisplayed(),
     value = dword(bossScorePointer() + 8)
 )
 
-leaderboard(title = "Time Attack - Hollow Bastion III", description = "Defeat Sora’s Heartless as quickly as you can.",
+leaderboard(title = "Time Attack - Hollow Bastion II B", description = "Defeat Sora’s Heartless as quickly as you can.",
     start = IsInLocation("HollowBastionCentralCorruption") && !IsInSystemSector(),
     cancel = !IsInLocation("HollowBastionCentralCorruption") || IsInSystemSector(),
     submit = IsBossRankJustDisplayed(),
     value = bossMilliseconds() / 10
 )
 
-leaderboard(title = "Score Attack - Hollow Bastion III", description = "Get as many points as you can defeating Sora’s Heartless.",
+leaderboard(title = "Score Attack - Hollow Bastion II B", description = "Get as many points as you can defeating Sora’s Heartless.",
     start = IsInLocation("HollowBastionCentralCorruption") && IsTotalScoreJustDisplayed() && !IsInSystemSector(),
     cancel = !IsInLocation("HollowBastionCentralCorruption") || IsInSystemSector(),
     submit = IsTotalScoreJustDisplayed(),
@@ -2874,5 +2874,3 @@ leaderboard(title = "Time Attack - Castle Oblivion", description = "Defeat the f
     submit = IsBossRankJustDisplayed(),
     value = bossMilliseconds() / 10
 )
-
-
