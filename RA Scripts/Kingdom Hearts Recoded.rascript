@@ -2239,7 +2239,7 @@ achievement(title = "Banco", points = 10,
         && sectorPoints() > Delta(sectorPoints()) // Ensure integer underflow doesn't happen.
 )
 
-achievement(title = "High-Stakes Gambler", points = 50,
+achievement(title = "High-Stakes Gambler", points = 25,
     description = "Earn a total of 150,000 Sector Points or more from a single wager in a system sector.",
     trigger = IsInSystemSector() && sectorPoints() - Delta(sectorPoints()) >= 150000
         && sectorPoints() > Delta(sectorPoints()) // Ensure integer underflow doesn't happen.
@@ -2388,7 +2388,7 @@ lv1Conditions = {
 // This is also why it's worth 25 instead of 50.
 GenerateSaveProtectedAchievementFromConditions({
     "name": "Life on the Edge Case [m]",
-    "description": "Complete Hollow Bastion, Parts I or II, or Castle Oblivion at Level 1 on Proud Mode or higher.",
+    "description": "Set a record of Level 1 in Hollow Bastion, Parts I or II, or Castle Oblivion on Proud Mode or higher.",
     "points": 25,
     "threshold": 1
 }, lv1Conditions, IsAtLeastOnDifficulty("Proud"))
