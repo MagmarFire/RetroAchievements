@@ -17,8 +17,15 @@ function status() => word(0x056f50)
 function worldId() => byte(0x19836c)
 function areaId() => byte(0x19836d)
 
+// Pointer to system sector data, including how many enemies are left before the terminal opens. 0x0 when not in a system sector.
+//
+// +0x0 = Sector Points. Updates when finishing a floor or redeeming them at the end of a system sector (32-bit)
 systemSectorAddr = 0x19ecf4
-function IsInSystemSector() => dword(systemSectorAddr) != 0x0 && byte(systemSectorAddr + 3) == 0x2
+function systemSectorPtr() => tbyte(systemSectorAddr)
+function IsInSystemSector() => systemSectorPtr() != 0x0 && byte(systemSectorAddr + 3) == 0x2
+
+function sectorPoints() => dword(systemSectorPtr())
+
 function KeyholeCheckpointPassed() => minigamePopupState() == 0x3
 
 function TitleScreenAlmostReady() => titleScreenStatus() == 5
@@ -2232,15 +2239,14 @@ achievement(title = "Bling, Bling!", points = 5,
     trigger = WasValueSetInGame(extraAccessorySlotsUnlocked(), 2, 3) && measured(extraAccessorySlotsUnlocked() == 3)
 )
 
-function sectorPoints() => dword(0x3de2ac)
-achievement(title = "Banco", points = 10,
-    description = "Earn a total of 50,000 Sector Points or more from a single wager in a system sector.",
+achievement(title = "Banco", points = 10, id = 152926, badge = "171670",
+    description = "Earn a total of 50,000 Sector Points or more from a single floor in a system sector.",
     trigger = IsInSystemSector() && sectorPoints() - Delta(sectorPoints()) >= 50000
         && sectorPoints() > Delta(sectorPoints()) // Ensure integer underflow doesn't happen.
 )
 
 achievement(title = "High-Stakes Gambler", points = 25, id = 152940, badge = "171693",
-    description = "Earn a total of 150,000 Sector Points or more from a single wager in a system sector.",
+    description = "Earn a total of 150,000 Sector Points or more from a single floor in a system sector.",
     trigger = IsInSystemSector() && sectorPoints() - Delta(sectorPoints()) >= 150000
         && sectorPoints() > Delta(sectorPoints()) // Ensure integer underflow doesn't happen.
 )
