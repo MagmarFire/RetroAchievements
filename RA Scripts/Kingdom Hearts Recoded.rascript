@@ -1864,12 +1864,12 @@ function HPCheatIsBeingUsed()
 }
 
 function dodgeRollActive() => bit0(0x1986f0)
-achievement(title = "Smooth Operator", description = "Defeat the Darkside without the Dodge Roll ability equipped (Critical Mode; Level 2 or below; no HP Cheat).",
+achievement(title = "Smooth Operator", description = "Defeat the Darkside without the Dodge Roll ability equipped (Critical Mode, Level 2 or below, no HP Cheat).",
     points = 5,
     trigger = IsAtLeastOnDifficulty("Critical") && dodgeRollActive() == 0 && JustDefeatedEnemy("Darkside") && Level() <= 2 && never(HPCheatIsBeingUsed())
 )
 
-achievement(title = "I Am the New God", description = "Earn a Star rank against the Darkside (Proud Mode or higher; Level 5 or below; no HP Cheat).",
+achievement(title = "I Am the New God", description = "Earn a Star rank against the Darkside (Proud Mode or higher, Level 5 or below, no HP Cheat).",
     points = 10,
     trigger = IsAtLeastOnDifficulty("Proud") && Level() <= 5 && never(!IsInLocation("DestinyStorm")) && BossScoreIsDisplayedAndAtLeast(40000) && never(HPCheatIsBeingUsed())
 )
@@ -1880,7 +1880,7 @@ function JustFellOrGotCaughtInSidescrollingStages() => soraSidescrollingState() 
 function IsAlwaysInTraverseTownKeyhole() => never(!IsInLocation("TraverseKeyholeFirst") && !IsInLocation("TraverseKeyholeSecond")
         && !IsInLocation("TraverseKeyholeThird") && !IsInLocation("TraverseKeyholeFall") && !IsInLocation("TraverseKeyholeTerminus"))
 achievement(title = "Saved a Framerule", points = 25,
-    description = "Complete the Traverse Town Keyhole without falling into pits, getting caught behind blox, or dying (Critical Mode; Level 7 or below; no HP Cheat).",
+    description = "Complete the Traverse Town Keyhole without falling into pits, getting caught behind blox, or dying (Critical Mode, Level 7 or below, no HP Cheat).",
     trigger = IsAtLeastOnDifficulty("Critical") && Level() <= 7 && IsAlwaysInTraverseTownKeyhole()
         && once(KeyholeCheckpointPassed() && !IsMinigameActive() && IsInLocation("TraverseKeyholeFirst"))
         && never(hp() <= 0) && JustDefeatedEnemy("Guard Armor") && never(JustFellOrGotCaughtInSidescrollingStages()) && never(HPCheatIsBeingUsed())
@@ -1911,7 +1911,7 @@ achievement(title = "Dedicated Specialist", points = 5,
             UsedOverlayCommand(windSpinDartUsesLeft()) ]))
 )
 
-achievement(title = "Our Princess of Heart Is in Another World", description = "Earn a Star rank against the Guard Armor (Proud Mode or higher; Level 9 or below; no HP Cheat).",
+achievement(title = "Our Princess of Heart Is in Another World", description = "Earn a Star rank against the Guard Armor (Proud Mode or higher, Level 9 or below, no HP Cheat).",
     points = 10,
     trigger = IsAtLeastOnDifficulty("Proud") && Level() <= 9 && never(!IsInLocation("TraverseKeyholeTerminus")) && BossScoreIsDisplayedAndAtLeast(30000) && never(HPCheatIsBeingUsed())
 )
@@ -1957,12 +1957,12 @@ achievement(title = "Avoided the Guillotine", points = 25,
 )
 
 achievement(title = "Guilt and Penalty", points = 10,
-    description = "Complete the Wonderland Keyhole with a score of 22000 or more (Proud Mode or higher; Level 15 or below; no HP Cheat).",
+    description = "Complete the Wonderland Keyhole with a score of 22000 or more (Proud Mode or higher, Level 15 or below, no HP Cheat).",
     trigger = IsAtLeastOnDifficulty("Proud") && Level() <= 15 && never(!IsInLocation("WonderlandKeyholeTerminus")) && BossScoreIsDisplayedAndAtLeast(22000) && never(HPCheatIsBeingUsed())
 )
 
 achievement(title = "Astral Heir", points = 25,
-    description = "Earn a Star rank in the Wonderland Keyhole (Proud Mode or higher; Level 15 or below; no HP Cheat).",
+    description = "Earn a Star rank in the Wonderland Keyhole (Proud Mode or higher, Level 15 or below, no HP Cheat).",
     trigger = IsAtLeastOnDifficulty("Proud") && Level() <= 15 && never(!IsInLocation("WonderlandKeyholeTerminus")) && BossScoreIsDisplayedAndAtLeast(45000) && never(HPCheatIsBeingUsed())
 )
 
@@ -1998,7 +1998,7 @@ function ConsumedALicenseOfType(type)
 }
 
 achievement(title = "Lethal Force Authorized", points = 5,
-    description = "Defeat both Cerberus and Hades without using any more than five licenses total between them (Proud Mode or higher; Level 20 or below; no HP Cheat.).",
+    description = "Defeat both Cerberus and Hades without using any more than five licenses total between them (Proud Mode or higher, Level 20 or below, no HP Cheat.).",
     trigger = IsAtLeastOnDifficulty("Proud") && Level() <= 20
         && once(OlympusColiseumKeyholeCheckpoint()) && never(HPCheatIsBeingUsed())
         // A pauselock is used to ensure the checkpoint doesn't get re-established if the player uses too many licenses in the Cerberus fight.
@@ -2010,7 +2010,7 @@ achievement(title = "Lethal Force Authorized", points = 5,
 // TODO: Like Wonderland above, we're duplicating the OlympusLayer15 check to work around a "Combination of &&s and ||s is too complex" error.
 // This can be simplified after this RATools bug is fixed.
 achievement(title = "There Is No Escape", points = 5,
-    description = "Earn a Star rank in the Olympus Coliseum Keyhole (Critical Mode; Level 20 or below; no HP Cheat).",
+    description = "Earn a Star rank in the Olympus Coliseum Keyhole (Critical Mode, Level 20 or below, no HP Cheat).",
     trigger = IsAtLeastOnDifficulty("Critical") &&  BossScoreIsDisplayedAndAtLeast(30000) && never(HPCheatIsBeingUsed())
         && never(!IsInLocation("OlympusLayer5") && !IsInLocation("OlympusLayer15") && !IsInLocation("OlympusLayer30")
          && !IsInLocation("OlympusLayer15") && !IsInLocation("OlympusLayer15"))
@@ -2018,14 +2018,14 @@ achievement(title = "There Is No Escape", points = 5,
 )
 
 achievement(title = "Martial Technique", points = 10,
-    description = "Defeat the Rock Titan using neither Auto-Block-L nor Timing-L licenses (Critical Mode; Level 25 or below; no HP Cheat).",
+    description = "Defeat the Rock Titan using neither Auto-Block-L nor Timing-L licenses (Critical Mode, Level 25 or below, no HP Cheat).",
     trigger = IsAtLeastOnDifficulty("Critical") && Level() <= 25 && never(HPCheatIsBeingUsed())
         && once(OlympusColiseumKeyholeCheckpoint()) && never(!IsInTurnBasedBattle())
         && JustDefeatedEnemy("Rock Titan") && never(ConsumedALicenseOfType(0xd7)) && never(ConsumedALicenseOfType(0xd8))
 )
 
 achievement(title = "Monster Hunter", points = 5,
-    description = "Defeat the Behemoth without using the Reload-L license (Critical Mode; Level 37 or below; no HP Cheat)",
+    description = "Defeat the Behemoth without using the Reload-L license (Critical Mode, Level 37 or below, no HP Cheat).",
     trigger = IsAtLeastOnDifficulty("Critical") && Level() <= 37 && never(HPCheatIsBeingUsed())
         && once(OlympusColiseumKeyholeCheckpoint()) && never(!IsInTurnBasedBattle())
         && JustDefeatedEnemy("Behemoth") && never(ConsumedALicenseOfType(0xd4))
@@ -2033,7 +2033,7 @@ achievement(title = "Monster Hunter", points = 5,
 
 function cloudIsInParty() => bit6(0x19c513)
 achievement(title = "Teamwork? Not Interested", points = 10,
-    description = "Defeat the Ice Titan without Cloud in your party (Critical Mode; Level 40 or below; no HP Cheat)",
+    description = "Defeat the Ice Titan without Cloud in your party (Critical Mode, Level 40 or below, no HP Cheat).",
     trigger = IsAtLeastOnDifficulty("Critical") && Level() <= 40 && never(HPCheatIsBeingUsed())
         && once(OlympusColiseumKeyholeCheckpoint()) && never(!IsInTurnBasedBattle())
         && JustDefeatedEnemy("Ice Titan") && cloudIsInParty() == 0
@@ -2054,7 +2054,7 @@ if (1 == 0)
 }
 
 achievement(title = "Mano-a-Many", points = 3,
-    description = "Defeat Jafar in the Lamp Chamber without defeating any other enemy (Critical Mode; Level 20 or below; no HP Cheat).",
+    description = "Defeat Jafar in the Lamp Chamber without defeating any other enemy (Critical Mode, Level 20 or below, no HP Cheat).",
     trigger = never(JustDefeatedEnemy("Blox Bug")) && never(!IsInLocation("AgrabahLamp")) && Level() <= 20 && IsAtLeastOnDifficulty("Critical") && never(HPCheatIsBeingUsed())
         && (once(WasInLocation("AgrabahGauntlet") && IsInLocation("AgrabahLamp")) && JustDefeatedEnemy("Jafar") // Initial entry into the room
             || once(Delta(hp()) == 0 && hp() == maxHP()) && JustDefeatedEnemy("Jafar")) // Cover a game over situation
@@ -2062,20 +2062,20 @@ achievement(title = "Mano-a-Many", points = 3,
 
 eternityCharmId = 0x12d
 achievement(title = "Keyblade Beats Rock", points = 25,
-    description = "Defeat Jafar's genie form with 50 max HP or less and without Second Chance active (Critical Mode; Level 20 or below; no HP Cheat).",
+    description = "Defeat Jafar's genie form with 50 max HP or less and without Second Chance active (Critical Mode, Level 20 or below, no HP Cheat).",
     trigger = IsAtLeastOnDifficulty("Critical") && JustDefeatedEnemy("Jafar (Genie)") && never(HPCheatIsBeingUsed())
         && never(!IsInLocation("AgrabahKeyholeTerminus")) && Level() <= 20 && maxHP() <= 50
         && !HasAccessoryEquipped(eternityCharmId)
 )
 
 achievement(title = "Exceptional Astronomical Abilities", points = 5,
-    description = "Earn a Star rank in the Agrabah Keyhole (Proud Mode or higher; Level 20 or below; no HP Cheat).",
+    description = "Earn a Star rank in the Agrabah Keyhole (Proud Mode or higher, Level 20 or below, no HP Cheat).",
     trigger = IsAtLeastOnDifficulty("Proud") && BossScoreIsDisplayedAndAtLeast(35000) && never(HPCheatIsBeingUsed())
         && never(!IsInLocation("AgrabahKeyholeTerminus")) && Level() <= 20
 )
 
 achievement(title = "The Donald Special", points = 5,
-    description = "Survive the enemy gauntlet at the Great Crest in Hollow Bastion without any healing items equipped (Critical Mode; Level 22 or below; no HP Cheat).",
+    description = "Survive the enemy gauntlet at the Great Crest in Hollow Bastion without any healing items equipped (Critical Mode, Level 22 or below, no HP Cheat).",
     trigger = IsAtLeastOnDifficulty("Critical") && Level() <= 22 && once(WasInLocation("HollowBastionEntranceLower") && IsInLocation("HollowBastionCrest"))
         && never(tally(1, NumberOfHealingItemCommandsEquipped())) && IsInLocation("HollowBastionTower")
         && never(IsLoadingSaveFile()) // So the player doesn't simply reload a save file from the High Tower after a game over.
@@ -2083,14 +2083,14 @@ achievement(title = "The Donald Special", points = 5,
 )
 
 achievement(title = "Sour Stomach", points = 10,
-    description = "Defeat Pete in Hollow Bastion without the Dodge Roll ability active (Critical Mode; Level 22 or below; no HP Cheat).",
+    description = "Defeat Pete in Hollow Bastion without the Dodge Roll ability active (Critical Mode, Level 22 or below, no HP Cheat).",
     trigger = dodgeRollActive() == 0 && IsAtLeastOnDifficulty("Critical") && Level() <= 22 && JustDefeatedEnemy("Pete")
         && never(!IsInLocation("HollowBastionKeyholeChapel")) && never(HPCheatIsBeingUsed())
 )
 
 curativeCommands = GetCommandsByProperty("category", "Curative")
 achievement(title = "Waste Not, Want Not", points = 10,
-    description = "Defeat Data-Riku in Hollow Bastion equipping only a single HP-restoring item command as your primary source of healing (Critical Mode; Level 22 or below; no HP Cheat).",
+    description = "Defeat Data-Riku in Hollow Bastion equipping only a single HP-restoring item command as your primary source of healing (Critical Mode, Level 22 or below, no HP Cheat).",
     trigger = Level() <= 22 && IsAtLeastOnDifficulty("Critical") && JustDefeatedEnemy("Data-Riku")
         && never(HasAnyGivenCommandsEquipped(curativeCommands))
         && never(tally(2, NumberOfHealingItemCommandsEquipped())) && never(!IsInLocation("HollowBastionKeyholeChapel"))
@@ -2098,19 +2098,19 @@ achievement(title = "Waste Not, Want Not", points = 10,
 )
 
 achievement(title = "Speed Deletion", points = 10,
-    description = "Complete the Hollow Bastion Keyhole with a score of 23000 or more (Proud Mode or higher; Level 22 or below; no HP Cheat).",
+    description = "Complete the Hollow Bastion Keyhole with a score of 23000 or more (Proud Mode or higher, Level 22 or below, no HP Cheat).",
     trigger = IsAtLeastOnDifficulty("Proud") && Level() <= 22 && never(!IsInLocation("HollowBastionKeyholeChapel")) && BossScoreIsDisplayedAndAtLeast(23000)
         && never(HPCheatIsBeingUsed())
 )
 
 achievement(title = "Speed Shredding", points = 25,
-    description = "Earn a Star rank in the Hollow Bastion Keyhole (Proud Mode or higher; Level 22 or below; no HP Cheat).",
+    description = "Earn a Star rank in the Hollow Bastion Keyhole (Proud Mode or higher, Level 22 or below, no HP Cheat).",
     trigger = IsAtLeastOnDifficulty("Proud") && Level() <= 22 && never(!IsInLocation("HollowBastionKeyholeChapel")) && BossScoreIsDisplayedAndAtLeast(40000)
         && never(HPCheatIsBeingUsed())
 )
 
 achievement(title = "Graceful Degradation", points = 10,
-    description = "Defeat the Data-Riku inside Riku's data without equipping any commands (Critical Mode; Level 25 or below; no HP Cheat).",
+    description = "Defeat the Data-Riku inside Riku's data without equipping any commands (Critical Mode, Level 25 or below, no HP Cheat).",
     trigger = Level() <= 25 && IsAtLeastOnDifficulty("Critical") && JustDefeatedEnemy("Data-Riku") && never(HPCheatIsBeingUsed())
         && never(HasAnyCommandsEquipped()) && never(!IsInLocation("HollowBastionChapelRiku"))
 )
@@ -2125,18 +2125,18 @@ achievement(title = "Resistance Training", points = 5,
 )
 
 achievement(title = "Grounded Mortal", points = 10,
-    description = "Defeat Dragon Maleficent without High Jump, Air Slide, or Glide equipped (Critical Mode; Level 27 or below; no HP Cheat).",
+    description = "Defeat Dragon Maleficent without High Jump, Air Slide, or Glide equipped (Critical Mode, Level 27 or below, no HP Cheat).",
     trigger = IsInLocation("HollowBastionDragon") && JustDefeatedEnemy("Dragon") && Level() <= 27 && IsAtLeastOnDifficulty("Critical") && never(HPCheatIsBeingUsed())
         && never(HighJumpEquipped() || AirSlideEquipped() || GlideEquipped())
 )
 
 achievement(title = "Flame Damping", points = 5,
-    description = "Get a score of 32000 or more during the escape from inside Riku's data (Proud Mode or higher; Level 27 or below; no HP Cheat).",
+    description = "Get a score of 32000 or more during the escape from inside Riku's data (Proud Mode or higher, Level 27 or below, no HP Cheat).",
     trigger = IsAtLeastOnDifficulty("Proud") && Level() <= 27 && never(!IsInLocation("HollowBastionDragon")) && BossScoreIsDisplayedAndAtLeast(32000) && never(HPCheatIsBeingUsed())
 )
 
 achievement(title = "Draconic Rage", points = 25,
-    description = "Earn a Star rank escaping from inside Riku's data (Proud Mode or higher; Level 27 or below; no HP Cheat).",
+    description = "Earn a Star rank escaping from inside Riku's data (Proud Mode or higher, Level 27 or below, no HP Cheat).",
     trigger = IsAtLeastOnDifficulty("Proud") && Level() <= 27 && never(!IsInLocation("HollowBastionDragon")) && BossScoreIsDisplayedAndAtLeast(50000) && never(HPCheatIsBeingUsed())
 )
 
@@ -2151,7 +2151,7 @@ achievement(title = "Underclocking", points = 10,
 
 rangedCommands = GetCommandsByProperty("category", "Ranged")
 achievement(title = "Dark Embrace", points = 25,
-    description = "Defeat Sora's Heartless without equipping any ranged commands and with only one command per group (Critical Mode; Level 30 or below; no HP Cheat).",
+    description = "Defeat Sora's Heartless without equipping any ranged commands and with only one command per group (Critical Mode, Level 30 or below, no HP Cheat).",
     trigger = IsAtLeastOnDifficulty("Critical") && Level() <= 30 && never(!IsInLocation("HollowBastionCentralCorruption"))
         && once(WasInLocation("HollowBastionDataTunnel") && IsInLocation("HollowBastionCentralCorruption"))
         && never(HasAnyCommandEquippedInAnySubslotB()) && never(HasGivenRawCommandsEquipped(rangedCommands)) && unless(IsInMenu())
@@ -2161,7 +2161,7 @@ achievement(title = "Dark Embrace", points = 25,
 )
 
 achievement(title = "Shallow Copy", points = 25,
-    description = "Earn a Star rank against Sora's Heartless (Proud Mode or higher; Level 30 or below; no HP Cheat).",
+    description = "Earn a Star rank against Sora's Heartless (Proud Mode or higher, Level 30 or below, no HP Cheat).",
     trigger = IsAtLeastOnDifficulty("Proud") && Level() <= 30 && never(!IsInLocation("HollowBastionCentralCorruption")) && BossScoreIsDisplayedAndAtLeast(40000)
         && never(HPCheatIsBeingUsed())
 )
@@ -2207,7 +2207,7 @@ function accessory3() => word(0x198854)
 function accessory4() => word(0x198856)
 
 achievement(title = "Bite the Bullet", points = 10,
-    description = "Defeat the final boss without any accessories equipped (Critical Mode; Level 35 or below; no HP Cheat).",
+    description = "Defeat the final boss without any accessories equipped (Critical Mode, Level 35 or below, no HP Cheat).",
     trigger = IsInLocation("CastleOblivionSorrow") && JustDefeatedEnemy("Data-Roxas") && Level() <= 35 && IsAtLeastOnDifficulty("Critical")
         && accessory1() == 0xffff && accessory2() == 0xffff && accessory3() == 0xffff && accessory4() == 0xffff
         && never(HPCheatIsBeingUsed())
@@ -2215,7 +2215,7 @@ achievement(title = "Bite the Bullet", points = 10,
 
 timeLimit = 210
 achievement(title = "Painkiller", points = 5,
-    description = "Defeat the final boss within " + SecondsToFormat(timeLimit) + " (Proud Mode or higher; Level 35 or below; no HP Cheat).",
+    description = "Defeat the final boss within " + SecondsToFormat(timeLimit) + " (Proud Mode or higher, Level 35 or below, no HP Cheat).",
     trigger = IsAtLeastOnDifficulty("Proud") && Level() <= 35 && never(!IsInLocation("CastleOblivionSorrow")) && BossTimeIsDisplayedAndAtMost(timeLimit * 1000)
         && never(HPCheatIsBeingUsed())
 )
@@ -2239,7 +2239,7 @@ achievement(title = "Banco", points = 10,
         && sectorPoints() > Delta(sectorPoints()) // Ensure integer underflow doesn't happen.
 )
 
-achievement(title = "High-Stakes Gambler", points = 25,
+achievement(title = "High-Stakes Gambler", points = 25, id = 152940, badge = "171693",
     description = "Earn a total of 150,000 Sector Points or more from a single wager in a system sector.",
     trigger = IsInSystemSector() && sectorPoints() - Delta(sectorPoints()) >= 150000
         && sectorPoints() > Delta(sectorPoints()) // Ensure integer underflow doesn't happen.
@@ -2390,6 +2390,8 @@ GenerateSaveProtectedAchievementFromConditions({
     "name": "Life on the Edge Case [m]",
     "description": "Set a record of Level 1 in Hollow Bastion, Parts I or II, or Castle Oblivion on Proud Mode or higher.",
     "points": 25,
+    "id": 152949,
+    "badge": "171705",
     "threshold": 1
 }, lv1Conditions, IsAtLeastOnDifficulty("Proud"))
 
@@ -2523,7 +2525,7 @@ GenerateSaveProtectedAchievementFromConditions({
 }, cheatsUsedConditions, always_true())
 
 function championCollector() => bit0(0x195c78)
-achievement(title = "Champion Collector", description = "Collect 70% of all abilities, chips, cheats, weapons, and items; and then view the Trophies menu.", points = 10,
+achievement(title = "Champion Collector", description = "Collect 70% of all abilities, chips, cheats, weapons, and items, and then view the Trophies menu.", points = 10,
     trigger = WasBitflagSetInGame(championCollector())
 )
 
