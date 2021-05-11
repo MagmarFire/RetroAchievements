@@ -1973,9 +1973,11 @@ achievement(title = "Astral Heir", points = 25,
     trigger = IsAtLeastOnDifficulty("Proud") && Level() <= 15 && never(!IsInLocation("WonderlandKeyholeTerminus")) && BossScoreIsDisplayedAndAtLeast(45000) && never(HPCheatIsBeingUsed())
 )
 
-function turnBasedBattlePtr() => tbyte(0x1a47c4)
+function IsAPointer(addr) => byte(addr + 3) == 0x2 && tbyte(addr) > 0
+function turnBasedBattlePtrAddr() => 0x1a47c4
+function turnBasedBattlePtr() => tbyte(turnBasedBattlePtrAddr())
 function IsInTurnBasedBattle() => turnBasedBattlePtr() != 0x0 && IsInWorld("Olympus Coliseum")
-function OlympusColiseumKeyholeCheckpoint() => Delta(turnBasedBattlePtr()) == 0x0 && turnBasedBattlePtr() != 0x0 && IsInWorld("Olympus Coliseum")
+function OlympusColiseumKeyholeCheckpoint() => Delta(turnBasedBattlePtr()) == 0x0 && IsAPointer(turnBasedBattlePtrAddr()) && IsInWorld("Olympus Coliseum")
 function licenseBaseAddr() => 0x0608e0
 function ConsumedALicenseAtAddr(idAddr)
 {
@@ -2004,7 +2006,7 @@ function ConsumedALicenseOfType(type)
     return consumedLicense
 }
 
-achievement(title = "Lethal Force Authorized", points = 5,
+achievement(title = "Lethal Force Authorized", points = 5, id = 152997, badge = "171704",
     description = "Defeat both Cerberus and Hades without using any more than five licenses total between them (Proud Mode or higher, Level 20 or below, no HP Cheat.).",
     trigger = IsAtLeastOnDifficulty("Proud") && Level() <= 20
         && once(OlympusColiseumKeyholeCheckpoint()) && never(HPCheatIsBeingUsed())
@@ -2024,14 +2026,14 @@ achievement(title = "There Is No Escape", points = 5,
          && (Level() <= 20 || always_false()) // Trick RATools into generating the correct code by forcing use of OrNext.
 )
 
-achievement(title = "Martial Technique", points = 10,
+achievement(title = "Martial Technique", points = 10, id = 152999, badge = "171708",
     description = "Defeat the Rock Titan using neither Auto-Block-L nor Timing-L licenses (Critical Mode, Level 25 or below, no HP Cheat).",
     trigger = IsAtLeastOnDifficulty("Critical") && Level() <= 25 && never(HPCheatIsBeingUsed())
         && once(OlympusColiseumKeyholeCheckpoint()) && never(!IsInTurnBasedBattle())
         && JustDefeatedEnemy("Rock Titan") && never(ConsumedALicenseOfType(0xd7)) && never(ConsumedALicenseOfType(0xd8))
 )
 
-achievement(title = "Monster Hunter", points = 5,
+achievement(title = "Monster Hunter", points = 5, id = 153000, badge = "171709",
     description = "Defeat the Behemoth without using the Reload-L license (Critical Mode, Level 37 or below, no HP Cheat).",
     trigger = IsAtLeastOnDifficulty("Critical") && Level() <= 37 && never(HPCheatIsBeingUsed())
         && once(OlympusColiseumKeyholeCheckpoint()) && never(!IsInTurnBasedBattle())
@@ -2039,7 +2041,7 @@ achievement(title = "Monster Hunter", points = 5,
 )
 
 function cloudIsInParty() => bit6(0x19c513)
-achievement(title = "Teamwork? Not Interested", points = 10,
+achievement(title = "Teamwork? Not Interested", points = 10, id = 153009, badge = "171735",
     description = "Defeat the Ice Titan without Cloud in your party (Critical Mode, Level 40 or below, no HP Cheat).",
     trigger = IsAtLeastOnDifficulty("Critical") && Level() <= 40 && never(HPCheatIsBeingUsed())
         && once(OlympusColiseumKeyholeCheckpoint()) && never(!IsInTurnBasedBattle())
@@ -2540,7 +2542,7 @@ function avatarCollector() => bit7(0x195c7f)
 function avatarSweeper() => bit6(0x195c7f)
 
 function icerOfTitans() => bit5(0x195c7f)
-achievement(title = "Icer of Titans", description = "Defeat the Ice Titan.", points = 10,
+achievement(title = "Icer of Titans", description = "Defeat the Ice Titan.", points = 10, id = 152942, badge = "171696",
     trigger = once(OlympusColiseumKeyholeCheckpoint()) && never(!IsInTurnBasedBattle()) && JustDefeatedEnemy("Ice Titan")
 )
 

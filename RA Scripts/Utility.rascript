@@ -62,3 +62,5 @@ for cluster in clusters
 {
     achievement(title = ArrayToString(cluster), description = "", points = 0, trigger = always_false())
 }
+
+function IsAPointer(addr) => byte(addr + 3) == 0x2 && tbyte(addr) > 0
