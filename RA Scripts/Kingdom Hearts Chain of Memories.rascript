@@ -1093,6 +1093,44 @@ function playerReloadCounter() => word(battlePointer() + 0x80fc)
 function enemyReloadCounter() => word(battlePointer() + 0x80fe)
 function cardValueInPlay() => byte(battlePointer() + 0x80c2)
 
+// Data representing a card in combat is twelve bytes wide.
+// [Card ID (16-bit)][byte][byte][byte][byte][byte][0x1 = is stocked (8-bit)][0x1 = is consumed, such as by a reload (8-bit)][byte][0x1 = is used]
+// Note: For this and all subsequent functions, a deck offset is the offset between an address somewhere after the reload counter and the head of the dynamic deck memory,
+// which may vary from battle to battle.
+function topOfDeckBaseAddr(deckOffset) => battlePointer() + 0x8100 + deckOffset
+function headOfDynamicCardAddrInSlot(slotIndex, deckOffset) => topOfDeckBaseAddr(deckOffset) + slotIndex * 12
+function GetIdOfDynamicCardInSlot(slotIndex, deckOffset)
+{
+    headOfCardAddr = headOfDynamicCardAddrInSlot(slotIndex, deckOffset)
+    return word(headOfCardAddr)
+}
+
+function DynamicCardInSlotWasJustUsed(slotIndex, deckOffset)
+{
+    headOfCardAddr = headOfDynamicCardAddrInSlot(slotIndex, deckOffset)
+    usedBit = byte(headOfCardAddr + 8)
+    return Delta(usedBit) == 0 && usedBit == 1
+}
+
+function DynamicCardInSlotWasJustReloaded(slotIndex, deckOffset)
+{
+    headOfCardAddr = headOfDynamicCardAddrInSlot(slotIndex, deckOffset)
+    usedByte = byte(headOfCardAddr + 8)
+    return Delta(usedByte) == 1 && usedByte == 0
+}
+
+function NeverReloadedNumberOfCards(cardsReloaded, deckOffset, numberOfCardsInDeck)
+{
+    reloaded = []
+    
+    for i in range(0, numberOfCardsInDeck - 1)
+    {
+        array_push(reloaded, DynamicCardInSlotWasJustReloaded(i, deckOffset))
+    }
+    
+    return never(tally(cardsReloaded, reloaded))
+}
+
 // One of three pointers that appear to influence battles in some way, like HP and the like
 // It's misleading to call it a battle pointer, though, as it does not consistently nullify when in the field. (32-bit)
 //
@@ -2023,11 +2061,26 @@ achievement(
     trigger = WasBitflagSetInGame(ansem()) && IsInMainStory()
 )
 
+maleficentDeckOffset = 0x74
+function reloadStateDuringRikuMaleficentBattle() => byte(0x03a628)
+function JustStartedReloadingDuringRikuMaleficentBattle() => Delta(reloadStateDuringRikuMaleficentBattle()) == 0 && reloadStateDuringRikuMaleficentBattle() == 1
+maleficentHpMapReverse = {
+    1: 0x12c
+}
+function maleficentHpReverse() => word(0x03ac14)
+
+achievement(title = "Double Dipping [m]", points = 10,
+    description = "Defeat Maleficent in Reverse/Rebirth without reloading more than once using your reload card.",
+    trigger = BossHPValueCheckpointIsSet(maleficentHpReverse(), maleficentHpMapReverse, "Hollow Bastion", 0x8) && IsInReverseRebirth()
+        && EnemyWithSpecificAddressWasJustDefeated(maleficentHpReverse(), TRUE) && never(!IsInBattle())
+        && never(repeated(2, JustStartedReloadingDuringRikuMaleficentBattle()))
+)
+
 achievement(
-    title = "Around Green Flames", description = "Floor 1st... (Reb)", points = 10,
+    title = "The Depths of Darkness", description = "Defeat Maleficent in Reverse/Rebirth.", points = 5,
     id = 15651, badge = "15121", published = "10/16/2014 6:27:09 AM", modified = "7/7/2020 2:26:33 AM",
-    trigger = worldId() == 0x08 && battlefieldId() == 0x0A && once(bit3(0x04230D) == 0x0) && bit3(0x04230D) == 0x1 && 
-              bit3(0x04232D) == 0x1 && byte(0x042692) == 0x9C && byte(0x042346) == 0x08
+    trigger = BossHPValueCheckpointIsSet(maleficentHpReverse(), maleficentHpMapReverse, "Hollow Bastion", 0x8) && IsInReverseRebirth()
+        && EnemyWithSpecificAddressWasJustDefeated(maleficentHpReverse(), FALSE) && never(!IsInBattle())
 )
 
 achievement(
@@ -2158,3 +2211,4 @@ leaderboard(title = "Time Attack - Parasite Cage (Sora's Story)",
     submit = EnemyWithSpecificAddressWasJustDefeated(parasiteCageHp(), FALSE),
     value = measured(FrameHasAdvanced() && !IsPaused())
 )
+
