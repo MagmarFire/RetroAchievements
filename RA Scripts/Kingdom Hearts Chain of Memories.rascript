@@ -1136,6 +1136,7 @@ function NeverReloadedNumberOfCards(cardsReloaded, deckOffset, numberOfCardsInDe
 //
 // +0x7e6c to get the player's vertical acceleration when in battle (32-bit)
 // +0x7e8c to get the player's current (dynamic) HP when in battle (16-bit)
+// +0x7cd0 to get Riku's current (dynamic) HP when in battle (16-bit)
 function playerBattlePointer() => tbyte(0x03ca28)
 
 // One of two pointers that appear related to boss information (32-bit)
@@ -1147,6 +1148,8 @@ function bossPointer() => tbyte(0x034988)
 function enemyHp() => word(bossPointer() + 0x7f74)
 
 function playerHp() => word(playerBattlePointer() + 0x7e8c)
+
+function rikuPlayerHp() => word(playerBattlePointer() + 0x7cd0)
 
 function playerBattleState() => word(playerBattlePointer() + 0x7e58)
 
@@ -2083,11 +2086,20 @@ achievement(
         && EnemyWithSpecificAddressWasJustDefeated(maleficentHpReverse(), FALSE) && never(!IsInBattle())
 )
 
+hpThreshold = 10
+function ansemHp() => rikuHp()
+function DefeatedAnsemOnFloorB12(useTrigger) => never(!IsInWorld("Castle Oblivion, Hall")) && never(battlefieldId() != 0x0C) && BattleStartedCheckpoint() && IsOnFloor(1)
+        && EnemyWithSpecificAddressWasJustDefeated(ansemHp(), useTrigger) && once(ansemHp() == 0x190) && IsInReverseRebirth()
+achievement(title = "Fighting Hearty [m]", points = 5,
+    description = "Defeat Ansem on Floor B12 without your HP being at more than " + hpThreshold + " below its maximum.",
+    trigger = DefeatedAnsemOnFloorB12(TRUE)
+        && never(rikuPlayerHp() < maxHp() - hpThreshold)
+)
+
 achievement(
-    title = "Darkness...", description = "Floor 1st... (Reb)", points = 10,
+    title = "The Seeker of Darkness", description = "Defeat Ansem on Floor B12.", points = 3,
     id = 15652, badge = "15104", published = "10/16/2014 6:27:15 AM", modified = "7/7/2020 2:26:27 AM",
-    trigger = worldId() == 0x00 && battlefieldId() == 0x0C && once(floor() == 0x00) && floor() == 0x01 && 
-              word(0x0421CE) == 0xFF01 && byte(0x042346) == 0x08
+    trigger = DefeatedAnsemOnFloorB12(FALSE)
 )
 
 achievement(
