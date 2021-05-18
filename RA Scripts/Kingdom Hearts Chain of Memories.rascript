@@ -2102,11 +2102,51 @@ achievement(
     trigger = DefeatedAnsemOnFloorB12(FALSE)
 )
 
+function jafarHp() => word(0x03abfc)
+function jafarMaxHp() => word(0x03abfe)
+function AlternativeNotInBattleCheck(maxHpMem, hpMap)
+{
+    trigger = always_true()
+    
+    for floor in hpMap
+    {
+        maxHpValue = hpMap[floor]
+        trigger = trigger && never(!IsInBattle() && Delta(maxHpMem) == maxHpValue && maxHpMem != maxHpValue)
+    }
+    
+    return trigger
+}
+
+function WasJafarJustDefeated(useTriggerWhen)
+{
+    finalTrigger = Delta(jafarHp()) > 0 && jafarHp() == 0
+    
+    if (useTriggerWhen == TRUE)
+    {
+        finalTrigger = trigger_when(finalTrigger)
+    }
+    
+    return // We're not using EnemyWithSpecificAddressWasJustDefeated() because the battle pointer is set to NULL as soon as Jafar's HP goes to zero.
+        // So we need to make sure that it has time to recognize his HP as zero.
+        finalTrigger
+        && BossHPValueCheckpointIsSet(jafarHp(), jafarHpMap, "Agrabah", 0x2)
+        
+        // Different reset conditions, since we can't rely on just the battle pointer.
+        && never(rikuPlayerHp() == 0)
+        && AlternativeNotInBattleCheck(jafarMaxHp(), jafarHpMap)
+}
+
 achievement(
-    title = "In the Sea of Fire", description = "Floor... (Reb)", points = 10,
+    title = "The Depths of Treasure", description = "Defeat Jafar in Reverse/Rebirth.", points = 5,
     id = 15653, badge = "15126", published = "10/16/2014 6:27:21 AM", modified = "7/7/2020 2:26:20 AM",
-    trigger = worldId() == 0x01 && battlefieldId() == 0x03 && once(bit6(0x04230C) == 0x0) && bit6(0x04230C) == 0x1 && 
-              bit6(0x04232C) == 0x1 && byte(0x042346) == 0x08
+    trigger = IsInReverseRebirth()
+        && WasJafarJustDefeated(FALSE)
+)
+
+achievement(title = "Wishproof [m]", description = "Defeat Jafar in Reverse/Rebirth without getting hit.", points = 10,
+    trigger = IsInReverseRebirth()
+        && never(rikuPlayerHp() < Delta(rikuPlayerHp()))
+        && WasJafarJustDefeated(TRUE)
 )
 
 achievement(
