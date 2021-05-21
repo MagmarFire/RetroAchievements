@@ -1708,7 +1708,7 @@ function PlayerIsUsingSummon() => Delta(playerBattleState()) == 0x12 || Delta(pl
 function summonLastUsed() => word(0x03b26c)
 function DonaldOrGoofyIsActive() => summonLastUsed() == 0x8d9c || summonLastUsed() == 0x8db4
     
-achievement(title = "Come Forth, Blue-Eyes White Dragon!", points = 5,
+achievement(title = "Come Forth, Blue-Eyes White Dragon! [m]", points = 5,
     description = "Finish off Marluxia's second phase with a summon.",
     trigger = never(!IsInWorld("Castle Oblivion, Hall")) && never(battlefieldId() != 0x0C) && BattleStartedCheckpoint() && IsOnFloor(13) && IsInMainStory()
         // We're not using EnemyWithSpecificAddressWasJustDefeated() because the battle pointer is set to NULL as soon as Marluxia's HP goes to zero.
@@ -2149,11 +2149,32 @@ achievement(title = "Wishproof [m]", description = "Defeat Jafar in Reverse/Rebi
         && WasJafarJustDefeated(TRUE)
 )
 
+function parasiteCageReverseRebirthHp() => word(0x038ea0)
+
+function EnteredBattleWithParasiteCageInReverseRebirth() => BossHPValueCheckpointIsSet(parasiteCageReverseRebirthHp(), parasiteCageHpMap, "Monstro", 0x2) && never(!IsInBattle())
+
+function DefeatedParasiteCageInReverseRebirth(useTrigger) => EnteredBattleWithParasiteCageInReverseRebirth()
+    && EnemyWithSpecificAddressWasJustDefeated(parasiteCageReverseRebirthHp(), useTrigger)
+
 achievement(
-    title = "More Parasites", description = "Floor... (Reb)", points = 10,
+    title = "The Depths of a Wish", description = "Defeat the Parasite Cage in Reverse/Rebirth.", points = 5,
     id = 15654, badge = "15130", published = "10/16/2014 6:27:28 AM", modified = "7/7/2020 2:26:13 AM",
-    trigger = worldId() == 0x05 && battlefieldId() == 0x05 && once(bit1(0x04230D) == 0x0) && bit1(0x04230D) == 0x1 && 
-              bit1(0x04232D) == 0x1 && byte(0x042346) == 0x08
+    trigger = IsInReverseRebirth() && DefeatedParasiteCageInReverseRebirth(FALSE)
+)
+
+function verticalPosition() => dword(playerBattlePointer() + 0x7cb0)
+
+function IsOnGroundDuringParasiteCageFight()
+{
+    return verticalPosition() >= 0xfffff800 || verticalPosition() == 0x0
+}
+
+timeLimit = 70
+achievement(title = "The Floor Is Poison [m]", points = 10,
+    description = "Defeat the Parasite Cage in Reverse/Rebirth without touching the ground for longer than " + SecondsToFormat(timeLimit) + ".",
+    trigger = IsInReverseRebirth() && DefeatedParasiteCageInReverseRebirth(TRUE)
+        && never(repeated(SecondsToFrames(timeLimit), IsOnGroundDuringParasiteCageFight()))
+        && unless(IsPaused())
 )
 
 achievement(
@@ -2264,3 +2285,10 @@ leaderboard(title = "Time Attack - Parasite Cage (Sora's Story)",
     value = measured(FrameHasAdvanced() && !IsPaused())
 )
 
+leaderboard(title = "The Floor Is Poison, Best Times [UNTESTED]",
+    description = "Defeat the Parasite Cage in Reverse/Rebirth while touching the ground for as little time as possible.",
+	start = EnteredBattleWithParasiteCageInReverseRebirth(),
+	cancel = !IsInBattle(),
+	submit = EnemyWithSpecificAddressWasJustDefeated(parasiteCageReverseRebirthHp(), FALSE),
+	value = measured(IsOnGroundDuringParasiteCageFight() && unless(IsPaused()))
+)
