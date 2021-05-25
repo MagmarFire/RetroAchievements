@@ -1514,6 +1514,12 @@ achievement(
 )
 
 hookHpMap = {
+    1: 0x190,
+    2: 0x1b7,
+    3: 0x1d3,
+    4: 0x205,
+    5: 0x22c,
+    6: 0x253,
     7: 0x27a,
     8: 0x2a1,
     9: 0x2c8,
@@ -2177,6 +2183,9 @@ achievement(title = "The Floor Is Poison [m]", points = 10,
         && unless(IsPaused())
 )
 
+function currentDarkPoints() => word(0x03bfc8)
+function vexenReverseRebirthHp() => word(0x03a98c)
+
 function WasVexenDefeatedInReverseRebirth(useTrigger) => never(!IsInWorld("Castle Oblivion, Hall")) && never(battlefieldId() != 0x0C) && BattleStartedCheckpoint() && IsOnFloor(3)
     && IsInReverseRebirth()
         && EnemyWithSpecificAddressWasJustDefeated(vexenReverseRebirthHp(), useTrigger) && once(vexenReverseRebirthHp() == 0x460)
@@ -2187,8 +2196,6 @@ achievement(
     trigger = WasVexenDefeatedInReverseRebirth(FALSE) && !VexenAutoLifeIsActive()
 )
 
-function currentDarkPoints() => word(0x03bfc8)
-function vexenReverseRebirthHp() => word(0x03a98c)
 achievement(title = "Endless Seething [m]", points = 10,
     description = "Defeat Vexen in Reverse/Rebirth without ever leaving Dark Mode, if activated.",
     trigger = WasVexenDefeatedInReverseRebirth(TRUE)
@@ -2196,11 +2203,22 @@ achievement(title = "Endless Seething [m]", points = 10,
         && trigger_when(!VexenAutoLifeIsActive()) // The cheevo will trigger prematurely if Vexen's HP goes to zero when he has Auto-Life active, so we need to check for it.
 )
 
+function hookReverseRebirthHp() => word(0x03a9ec)
+function enemyCardsLeft() => byte(battlePointer() + 0x8856)
+
+function HookReverseRebirthBattleCheckpointReachedAndBattleWon(useTrigger) => BossHPValueCheckpointIsSet(hookReverseRebirthHp(), hookHpMap, "Never Land", 0x6)
+        && EnemyWithSpecificAddressWasJustDefeated(hookReverseRebirthHp(), useTrigger) && never(!IsInBattle())
+        && IsInReverseRebirth()
+
 achievement(
-    title = "You can Fly", description = "Floor... (Reb)", points = 10,
+    title = "The Depths of Faith", description = "Defeat Hook in Reverse/Rebirth.", points = 5,
     id = 15656, badge = "15145", published = "10/16/2014 6:27:38 AM", modified = "7/7/2020 2:26:03 AM",
-    trigger = worldId() == 0x07 && battlefieldId() == 0x08 && once(bit2(0x04230D) == 0x0) && bit2(0x04230D) == 0x1 && 
-              bit2(0x04232D) == 0x1 && byte(0x042346) == 0x08
+    trigger = HookReverseRebirthBattleCheckpointReachedAndBattleWon(FALSE)
+)
+
+achievement(title = "Retired, Extremely Dangerous [m]", points = 10,
+    description = "Defeat Hook in Reverse/Rebirth without using any enemy cards.",
+    trigger = HookReverseRebirthBattleCheckpointReachedAndBattleWon(TRUE) && never(enemyCardsLeft() < Delta(enemyCardsLeft()))
 )
 
 achievement(
