@@ -263,14 +263,27 @@ rich_presence_display("Sora is in " + RichPresenceTemplateString(),
 
 // 0x03c000: Bit 0: A button
 //           Bit 1: B button
+//           Bit 2: Select button
+//           Bit 3: Start button
 //           Bit 4: D-pad Right
 //           Bit 5: D-pad Left
 //           Bit 6: D-pad Up
 //           Bit 7: D-pad Down
+// 0x03c001: Bit 0: R button
+//           Bit 1: L button
 function inputFlagsAddr() => 0x03c000
+function inputFlags2Addr() => 0x03c001
 function dpadFlags() => high4(inputFlagsAddr())
 function aIsPressed() => bit0(inputFlagsAddr())
 function bIsPressed() => bit1(inputFlagsAddr())
+function selectIsPressed() => bit2(inputFlagsAddr())
+function startIsPressed() => bit3(inputFlagsAddr())
+function dpadRightPressed() => bit4(inputFlagsAddr())
+function dpadLeftPressed() => bit5(inputFlagsAddr())
+function dpadUpPressed() => bit6(inputFlagsAddr())
+function dpadDownPressed() => bit7(inputFlagsAddr())
+function rIsPressed() => bit0(inputFlags2Addr())
+function lIsPressed() => bit1(inputFlags2Addr())
 
 function DpadIsPressed() => dpadFlags() > 0
 
@@ -2259,11 +2272,28 @@ achievement(title = "Purity [m]", points = 10,
         && never(AccumulatedGivenNumberOfDarkPoints(dpLimit))
 )
 
+function rikuReplicaB8Hp() => word(0x03a80c)
+function WasRikuReplicaDefeatedOnFloorB8(useTrigger) => never(!IsInWorld("Castle Oblivion, Hall")) && never(battlefieldId() != 0x0C) && BattleStartedCheckpoint() && IsOnFloor(5)
+    && IsInReverseRebirth() && EnemyWithSpecificAddressWasJustDefeated(rikuReplicaB8Hp(), useTrigger) && once(rikuReplicaB8Hp() == 0x460)
+
+// todo: include this title change in a new revision proposal
 achievement(
-    title = "And Another...", description = "Basement 7th... (Reb)", points = 10,
+    title = "My Shadow", description = "Defeat the Riku replica on Floor B8.", points = 3,
     id = 15658, badge = "15152", published = "10/16/2014 6:27:52 AM", modified = "7/7/2020 2:25:53 AM",
-    trigger = worldId() == 0x00 && battlefieldId() == 0x0C && once(floor() == 0x04) && floor() == 0x05 && 
-              word(0x0421CE) == 0xFF05 && byte(0x042346) == 0x08
+    trigger = WasRikuReplicaDefeatedOnFloorB8(FALSE)
+)
+
+function TotalButtonsUsed(buttonThreshold)
+{
+    return tally(buttonThreshold, [ once(aIsPressed() == 1), once(bIsPressed() == 1), once(lIsPressed() == 1), once(rIsPressed() == 1),
+        once(startIsPressed() == 1), once(selectIsPressed() == 1), once(dpadUpPressed() == 1), once(dpadDownPressed() == 1),
+        once(dpadLeftPressed() == 1), once(dpadRightPressed() == 1) ])
+}
+
+buttonLimit = 4
+achievement(title = "Technical Tightrope [m]", points = 10,
+    description = "Defeat the Riku replica on Floor B8 without using any more than " + buttonLimit + " different buttons.",
+    trigger = WasRikuReplicaDefeatedOnFloorB8(TRUE) && never(TotalButtonsUsed(buttonLimit + 1))
 )
 
 achievement(
