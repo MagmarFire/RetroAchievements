@@ -1060,10 +1060,15 @@ function BossHPValueCheckpointIsSet(bossHp, bossHpMap, worldName, roomId)
     for floor in bossHpMap
     {
         hpValue = bossHpMap[floor]
-        trigger = trigger || once(roomId() == roomId && IsInWorld(worldName) && BattleStartedCheckpoint() && IsOnFloor(floor) && bossHp == hpValue)
+        trigger = trigger || once(BossHPValueCheckpointIsSetForAnyFloor(bossHp, hpValue, worldName, roomId) && IsOnFloor(floor))
     }
     
     return trigger
+}
+
+function BossHPValueCheckpointIsSetForAnyFloor(bossHp, maxBossHp, worldName, roomId)
+{
+    return roomId() == roomId && IsInWorld(worldName) && BattleStartedCheckpoint() && bossHp == maxBossHp
 }
 
 // Not to be used for a checkpoint.
@@ -2221,11 +2226,37 @@ achievement(title = "Retired, Extremely Dangerous [m]", points = 10,
     trigger = HookReverseRebirthBattleCheckpointReachedAndBattleWon(TRUE) && never(enemyCardsLeft() < Delta(enemyCardsLeft()))
 )
 
+function guardArmorReverseRebirthHp() => word(0x03a32c)
+function GuardArmorWasDefeatedInReverseRebirth(useTrigger) => once(BossHPValueCheckpointIsSetForAnyFloor(guardArmorReverseRebirthHp(), 0xc8, "Traverse Town", 0x7))
+        && IsInReverseRebirth()
+        && EnemyWithSpecificAddressWasJustDefeated(guardArmorReverseRebirthHp(), useTrigger) && never(!IsInBattle())
+
 achievement(
-    title = "Armors", description = "Floor... (Reb)", points = 10,
+    title = "The Depths of Worlds Lost", description = "Defeat the Guard Armor in Reverse/Rebirth.", points = 5,
     id = 15657, badge = "15149", published = "10/16/2014 6:27:45 AM", modified = "7/7/2020 2:25:58 AM",
-    trigger = once(bit3(0x04230C) == 0x0) && bit3(0x04230C) == 0x1 && worldId() == 0x0A && battlefieldId() == 0x0B && 
-              bit3(0x04232C) == 0x1 && byte(0x042346) == 0x08
+    trigger = GuardArmorWasDefeatedInReverseRebirth(FALSE)
+)
+
+function AccumulatedGivenNumberOfDarkPoints(dpThreshold)
+{
+    conditions = []
+    for i in range(1, 9) // Different number of increases that DP can possibly change by.
+    {
+        // We have to duplicate the conditions here in order to emulate MultHits, which, as of this writing, there don't appear to be plans to support.
+        for j in range(1, i)
+        {
+            array_push(conditions, currentDarkPoints() - Delta(currentDarkPoints()) == i)
+        }
+    }
+    
+    return tally(dpThreshold, conditions)
+}
+
+dpLimit = 18
+achievement(title = "Purity [m]", points = 10,
+    description = "Defeat the Guard Armor in Reverse/Rebirth without accumulating a total of " + dpLimit + " Dark Points over the course of the battle.",
+    trigger = GuardArmorWasDefeatedInReverseRebirth(TRUE)
+        && never(AccumulatedGivenNumberOfDarkPoints(dpLimit))
 )
 
 achievement(
