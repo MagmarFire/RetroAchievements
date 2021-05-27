@@ -1468,6 +1468,7 @@ achievement(title = "Dark Leech [m]", points = 5,
 )
 
 ursulaHpMap = {
+    6: 0x253,
     7: 0x27a,
     8: 0x2a1,
     9: 0x2ca,
@@ -2296,11 +2297,20 @@ achievement(title = "Technical Tightrope [m]", points = 10,
     trigger = WasRikuReplicaDefeatedOnFloorB8(TRUE) && never(TotalButtonsUsed(buttonLimit + 1))
 )
 
+function ursulaReverseRebirthHp() => word(0x03ac10)
+function WasUrsulaDefeatedInReverseRebirth(useTrigger) => BossHPValueCheckpointIsSet(ursulaReverseRebirthHp(), ursulaHpMap, "Atlantica", 0x7)
+        && EnemyWithSpecificAddressWasJustDefeated(ursulaReverseRebirthHp(), useTrigger) && never(!IsInBattle())
+        && IsInReverseRebirth()
+
 achievement(
-    title = "Tentacles...", description = "Floor... (Reb)", points = 10,
+    title = "The Depths of Melodies", description = "Defeat Ursula in Reverse/Rebirth.", points = 5,
     id = 15659, badge = "15153", published = "10/16/2014 6:27:57 AM", modified = "7/7/2020 2:25:48 AM",
-    trigger = worldId() == 0x02 && battlefieldId() == 0x04 && once(bit7(0x04230C) == 0x0) && bit7(0x04230C) == 0x1 && 
-              bit7(0x04232C) == 0x1 && byte(0x042346) == 0x08
+    trigger = WasUrsulaDefeatedInReverseRebirth(FALSE)
+)
+
+achievement(title = "Medical Negligence [m]", points = 5,
+    description = "Defeat Ursula in Reverse/Rebirth without healing.",
+    trigger = WasUrsulaDefeatedInReverseRebirth(TRUE) && never(rikuPlayerHp() > Delta(rikuPlayerHp()))
 )
 
 achievement(
