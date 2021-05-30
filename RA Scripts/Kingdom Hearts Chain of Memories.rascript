@@ -1169,7 +1169,13 @@ function playerHp() => word(playerBattlePointer() + 0x7e8c)
 
 function rikuPlayerHp() => word(playerBattlePointer() + 0x7cd0)
 
-function playerBattleState() => word(playerBattlePointer() + 0x7e58)
+function soraBattleState() => word(playerBattlePointer() + 0x7e58)
+
+function rikuBattleState() => word(playerBattlePointer() + 0x7c9c)
+
+function IsUsingKingMickey() => rikuBattleState() == 0x1a
+
+function IsActivatingDarkMode() => rikuBattleState() == 0x20
 
 function bossState() => byte(bossPointer() + 0x7f28)
 
@@ -1274,7 +1280,11 @@ oogieBoogieHpMap = {
     3: 0x255,
     4: 0x286,
     5: 0x2b7,
-    6: 0x2e8
+    6: 0x2e8,
+    7: 0x318,
+    8: 0x349,
+    9: 0x37a,
+    10: 0x3ab
 }
 
 achievement(
@@ -1348,7 +1358,11 @@ hadesHpMap = {
     3: 0x1de,
     4: 0x205,
     5: 0x22c,
-    6: 0x253
+    6: 0x253,
+    7: 0x27a,
+    8: 0x2a1,
+    9: 0x2c8,
+    10: 0x2ef
 }
 
 achievement(title = "Burning the Candle at Both Ends [m]", points = 10,
@@ -1596,8 +1610,8 @@ vexenIIHpMap = {
 function vexenEnemyCardEffect() => dword(0x03bcf4)
 function VexenAutoLifeIsActive() => vexenEnemyCardEffect() == 0x1b
 
-function PlayerSlipped() => Delta(playerBattleState()) != playerBattleState() && playerBattleState() == 0x24
-function PlayerIsFrozen() => Delta(playerBattleState()) != playerBattleState() && playerBattleState() == 0x53
+function PlayerSlipped() => Delta(soraBattleState()) != soraBattleState() && soraBattleState() == 0x24
+function PlayerIsFrozen() => Delta(soraBattleState()) != soraBattleState() && soraBattleState() == 0x53
 achievement(title = "Sturdy Footing [m]", points = 10,
     description = "Defeat Vexen in Twilight Town without slipping on ice or getting frozen more than once.",
     trigger = BossHPValueCheckpointIsSet(vexenHp(), vexenIIHpMap, "Twilight Town", 0x7) && IsInMainStory()
@@ -1606,7 +1620,7 @@ achievement(title = "Sturdy Footing [m]", points = 10,
         && trigger_when(!VexenAutoLifeIsActive()) // The cheevo will trigger prematurely if Vexen's HP goes to zero when he has Auto-Life active, so we need to check for it.
 )
 
-function PlayerIsPerformingNormalAttack() => playerBattleState() == 0x10
+function PlayerIsPerformingNormalAttack() => soraBattleState() == 0x10
 achievement(title = "Prestidigitation [m]", points = 25,
     description = "Defeat Riku on the eleventh floor in Sora's story without using attack cards for anything but sleights, and without equipping magic cards (Deck 2 only).",
     trigger = never(!IsInWorld("Castle Oblivion, Hall")) && never(battlefieldId() != 0x0C) && BattleStartedCheckpoint() && IsOnFloor(11)
@@ -1717,7 +1731,7 @@ achievement(
 marluxiaIIMaxHpValue = 0x8bd
 function marluxiaIIHp() => word(0x039f50)
 function marluxiaIIMaxHp() => word(0x039f52)
-function PlayerIsUsingSummon() => Delta(playerBattleState()) == 0x12 || Delta(playerBattleState()) >= 0x17 && Delta(playerBattleState()) <= 0x1b
+function PlayerIsUsingSummon() => Delta(soraBattleState()) == 0x12 || Delta(soraBattleState()) >= 0x17 && Delta(soraBattleState()) <= 0x1b
 
 // Appears to affect which summon is used during Marluxia II (16-bit)
 //
@@ -2313,18 +2327,45 @@ achievement(title = "Medical Negligence [m]", points = 5,
     trigger = WasUrsulaDefeatedInReverseRebirth(TRUE) && never(rikuPlayerHp() > Delta(rikuPlayerHp()))
 )
 
-achievement(
-    title = "Trick or Treat", description = "Floor... (Reb)", points = 10,
-    id = 15660, badge = "15154", published = "10/16/2014 6:28:03 AM", modified = "7/7/2020 2:25:43 AM",
-    trigger = worldId() == 0x06 && battlefieldId() == 0x07 && once(bit0(0x04230D) == 0x0) && bit0(0x04230D) == 0x1 && 
-              bit0(0x04232D) == 0x1 && byte(0x042346) == 0x08
-)
+function oogieBoogieReverseRebirthHp() => word(0x03ac2c)
+function WasOogieBoogieDefeatedInReverseRebirth(useTrigger) => BossHPValueCheckpointIsSet(oogieBoogieReverseRebirthHp(), oogieBoogieHpMap, "Halloween Town", 0x4)
+        && EnemyWithSpecificAddressWasJustDefeated(oogieBoogieReverseRebirthHp(), useTrigger) && never(!IsInBattle())
+        && IsInReverseRebirth()
 
 achievement(
-    title = "Hero Test", description = "Floor... (Reb)", points = 10,
+    title = "The Depths of Memory", description = "Defeat Oogie Boogie in Reverse/Rebirth.", points = 5,
+    id = 15660, badge = "15154", published = "10/16/2014 6:28:03 AM", modified = "7/7/2020 2:25:43 AM",
+    trigger = WasOogieBoogieDefeatedInReverseRebirth(FALSE)
+)
+
+function isReloadingDuringOogieBoogieReverseRebirthBattle() => byte(0x03a668) == 1 || IsUsingKingMickey() // King Mickey reloading, for some reason, counts as a card use, and we don't want that.
+function oogieBoogieEnemyCardsLeft() => word(0x03a656)
+function oogieBoogieRegularCardsLeft() => word(0x03a650)
+function UsedCardInOogieBoogieBattle() => Delta(oogieBoogieRegularCardsLeft()) > oogieBoogieRegularCardsLeft()
+    || Delta(oogieBoogieEnemyCardsLeft()) > oogieBoogieEnemyCardsLeft()
+cardLimit = 40
+achievement(title = "Underplay [m]", points = 10,
+    description = "Defeat Oogie Boogie in Reverse/Rebirth using only " + cardLimit + " cards or less.",
+    trigger = WasOogieBoogieDefeatedInReverseRebirth(TRUE)
+        && never(repeated(cardLimit + 1, UsedCardInOogieBoogieBattle()))
+        && unless(isReloadingDuringOogieBoogieReverseRebirthBattle())
+)
+
+function hadesReverseRebirthHp() => word(0x03a92c)
+function WasHadesDefeatedInReverseRebirth(useTrigger) => BossHPValueCheckpointIsSet(hadesReverseRebirthHp(), hadesHpMap, "Olympus Coliseum", 0x8)
+        && EnemyWithSpecificAddressWasJustDefeated(hadesReverseRebirthHp(), useTrigger) && never(!IsInBattle())
+        && IsInReverseRebirth()
+
+achievement(
+    title = "The Depths of Heroism", description = "Defeat Hades in Reverse/Rebirth.", points = 5,
     id = 15661, badge = "15159", published = "10/16/2014 6:28:08 AM", modified = "7/7/2020 2:25:39 AM",
-    trigger = worldId() == 0x03 && battlefieldId() == 0x06 && once(bit4(0x04230C) == 0x0) && bit4(0x04230C) == 0x1 && 
-              bit4(0x04232C) == 0x1 && byte(0x042346) == 0x08
+    trigger = WasHadesDefeatedInReverseRebirth(FALSE)
+)
+
+achievement(title = "Without Sin [m]", points = 25,
+    description = "Defeat Hades in Reverse/Rebirth without activating Dark Mode.",
+    trigger = WasHadesDefeatedInReverseRebirth(TRUE)
+        && never(IsActivatingDarkMode())
 )
 
 achievement(
