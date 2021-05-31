@@ -2412,11 +2412,23 @@ achievement(title = "Half the Floor Is Lava [m]", points = 10,
     trigger = WasLexaeusDefeated(TRUE) && never(rikuXCoord() >= halfwayPoint)
 )
 
+function darksideReverseRebirthHp() => word(0x03aadc)
+function WasDarksideDefeatedInReverseRebirth(useTrigger) => never(!IsInWorld("Destiny Islands")) && never(battlefieldId() != 0x9) && BattleStartedCheckpoint() && IsOnFloor(10)
+    && IsInReverseRebirth()
+    && EnemyWithSpecificAddressWasJustDefeated(darksideReverseRebirthHp(), useTrigger) && once(darksideReverseRebirthHp() == 0x467)
+
 achievement(
-    title = "Darker...", description = "Basement 3rd... (Reb)", points = 10,
+    title = "The Depths of Paradise", description = "Defeat the Darkside in Reverse/Rebirth.", points = 5,
     id = 15664, badge = "15174", published = "10/16/2014 6:28:24 AM", modified = "7/7/2020 2:25:23 AM",
-    trigger = worldId() == 0x09 && battlefieldId() == 0x09 && once(bit4(0x04230D) == 0x0) && bit4(0x04230D) == 0x1 && 
-              bit4(0x04232D) == 0x1 && byte(0x042346) == 0x08
+    trigger = WasDarksideDefeatedInReverseRebirth(FALSE)
+)
+
+darksideDeckSize = 19
+cardLimit = 70
+achievement(title = "Decked Out [m]", points = 25,
+    description = "Defeat the Darkside in Reverse/Rebirth without reloading more than " + cardLimit + " cards.",
+    trigger = WasDarksideDefeatedInReverseRebirth(TRUE)
+        && never(ReloadedNumberOfCards(cardLimit + 1, 0x81e0, darksideDeckSize))
 )
 
 achievement(
