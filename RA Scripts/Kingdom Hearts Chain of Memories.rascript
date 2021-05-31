@@ -1110,12 +1110,13 @@ function numberOfStockedCardsForPlayer() => byte(battlePointer() + 0x80de)
 function playerReloadCounter() => word(battlePointer() + 0x80fc)
 function enemyReloadCounter() => word(battlePointer() + 0x80fe)
 function cardValueInPlay() => byte(battlePointer() + 0x80c2)
+function IsManuallyReloading() => byte(battlePointer() + 0x8888) == 1
 
 // Data representing a card in combat is twelve bytes wide.
 // [Card ID (16-bit)][byte][byte][byte][byte][byte][0x1 = is stocked (8-bit)][0x1 = is consumed, such as by a reload (8-bit)][byte][0x1 = is used]
-// Note: For this and all subsequent functions, a deck offset is the offset between an address somewhere after the reload counter and the head of the dynamic deck memory,
+// Note: For this and all subsequent functions, a deck offset is the offset between the address in the battle pointer and the address of the ID of the first card in the dynamic deck memory,
 // which may vary from battle to battle.
-function topOfDeckBaseAddr(deckOffset) => battlePointer() + 0x8100 + deckOffset
+function topOfDeckBaseAddr(deckOffset) => battlePointer() + deckOffset
 function headOfDynamicCardAddrInSlot(slotIndex, deckOffset) => topOfDeckBaseAddr(deckOffset) + slotIndex * 12
 function GetIdOfDynamicCardInSlot(slotIndex, deckOffset)
 {
@@ -1137,7 +1138,7 @@ function DynamicCardInSlotWasJustReloaded(slotIndex, deckOffset)
     return Delta(usedByte) == 1 && usedByte == 0
 }
 
-function NeverReloadedNumberOfCards(cardsReloaded, deckOffset, numberOfCardsInDeck)
+function ReloadedNumberOfCards(cardsReloaded, deckOffset, numberOfCardsInDeck)
 {
     reloaded = []
     
@@ -1146,7 +1147,7 @@ function NeverReloadedNumberOfCards(cardsReloaded, deckOffset, numberOfCardsInDe
         array_push(reloaded, DynamicCardInSlotWasJustReloaded(i, deckOffset))
     }
     
-    return never(tally(cardsReloaded, reloaded))
+    return tally(cardsReloaded, reloaded)
 }
 
 // One of three pointers that appear to influence battles in some way, like HP and the like
@@ -1397,7 +1398,11 @@ trickmasterHpMap = {
     3: 0x255,
     4: 0x286,
     5: 0x2b7,
-    6: 0x2e8
+    6: 0x2e8,
+    7: 0x318,
+    8: 0x349,
+    9: 0x37a,
+    10: 0x3ab
 }
 
 function trickmasterHp() => word(0x03a978)
@@ -2368,11 +2373,24 @@ achievement(title = "Without Sin [m]", points = 25,
         && never(IsActivatingDarkMode())
 )
 
+function trickmasterReverseRebirthHp() => word(0x03a7b8)
+function WasTrickmasterDefeatedInReverseRebirth(useTrigger) => BossHPValueCheckpointIsSet(trickmasterReverseRebirthHp(), trickmasterHpMap, "Wonderland", 0x6)
+        && EnemyWithSpecificAddressWasJustDefeated(trickmasterReverseRebirthHp(), useTrigger) && never(!IsInBattle())
+        && IsInReverseRebirth()
+
 achievement(
-    title = "The Rabbit Hole", description = "Floor... (Reb)", points = 10,
+    title = "The Depths of the Rabbit Hole", description = "Defeat the Trickmaster in Reverse/Rebirth.", points = 5,
     id = 15662, badge = "15164", published = "10/16/2014 6:28:12 AM", modified = "7/7/2020 2:25:35 AM",
-    trigger = worldId() == 0x04 && battlefieldId() == 0x01 && once(bit5(0x04230C) == 0x0) && bit5(0x04230C) == 0x1 && 
-              bit5(0x04232C) == 0x1 && byte(0x042346) == 0x08
+    trigger = WasTrickmasterDefeatedInReverseRebirth(FALSE)
+)
+
+cardLimit = 32
+function isManuallyReloadingDuringTrickmasterBattleInReverseRebirth() => byte(0x039ba8)
+achievement(title = "From the Graveyard [m]", points = 10,
+    description = "Defeat the Trickmaster in Reverse/Rebirth without reloading more than " + cardLimit + " cards, except via Dark Mode or MM Miracle.",
+    trigger = WasTrickmasterDefeatedInReverseRebirth(TRUE)
+        && never(ReloadedNumberOfCards(cardLimit + 1, 0x81e0, 12))
+        && unless(IsActivatingDarkMode() || IsUsingKingMickey())
 )
 
 achievement(
