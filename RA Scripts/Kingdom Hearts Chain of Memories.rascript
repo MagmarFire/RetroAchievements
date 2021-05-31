@@ -2215,8 +2215,8 @@ function IsOnGroundDuringParasiteCageFight()
     return verticalPosition() >= 0xfffff800 || verticalPosition() == 0x0
 }
 
-timeLimit = 70
-achievement(title = "The Floor Is Poison [m]", points = 10,
+timeLimit = 60
+achievement(title = "The Floor Is Poison [m]", points = 25,
     description = "Defeat the Parasite Cage in Reverse/Rebirth without touching the ground for longer than " + SecondsToFormat(timeLimit) + ".",
     trigger = IsInReverseRebirth() && DefeatedParasiteCageInReverseRebirth(TRUE)
         && never(repeated(SecondsToFrames(timeLimit), IsOnGroundDuringParasiteCageFight()))
@@ -2457,7 +2457,7 @@ leaderboard(title = "Time Attack - Parasite Cage (Sora's Story)",
     value = measured(FrameHasAdvanced() && !IsPaused())
 )
 
-leaderboard(title = "The Floor Is Poison, Best Times [UNTESTED]",
+leaderboard(title = "The Floor Is Poison, Best Times",
     description = "Defeat the Parasite Cage in Reverse/Rebirth while touching the ground for as little time as possible.",
 	start = EnteredBattleWithParasiteCageInReverseRebirth(),
 	cancel = !IsInBattle(),
