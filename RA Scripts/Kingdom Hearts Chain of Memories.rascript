@@ -2447,12 +2447,19 @@ achievement(title = "To the Shadow Realm with You! [m]", points = 5,
     trigger = WasRikuReplicaDefeatedOnFloorB2(TRUE) && trigger_when(IsInDarkMode())
 )
 
+function ansemB1Hp() => word(0x03a9cc)
+function WasAnsemDefeatedOnFloorB1(useTrigger) => never(!IsInWorld("Castle Oblivion")) && roomId() == 0x2 && BattleStartedCheckpoint() && IsOnFloor(12)
+    && IsInReverseRebirth() && EnemyWithSpecificAddressWasJustDefeated(ansemB1Hp(), useTrigger) && once(ansemB1Hp() == 0x8c0)
+
 achievement(
-    title = "Final II...", description = "Floor... (Reb)", points = 25,
+    title = "The Road to Dawn", description = "Escape Castle Oblivion in Reverse/Rebirth.", points = 25,
     id = 15666, badge = "15179", published = "10/16/2014 6:28:40 AM", modified = "7/7/2020 2:25:14 AM",
-    trigger = worldId() == 0x0C && battlefieldId() == 0x0C && once(byte(0x03A9CC) == 0x20) && byte(0x03A9CC) == 0x00 && 
-              once(byte(0x03A9CD) == 0x08) && byte(0x03A9CD) == 0x00 && once(word(0x03A9CE) == 0x0820) && word(0x03A9CE) == 0x0000 && 
-              bit4(0x04230D) == 0x1
+    trigger = never(!IsInWorld("Castle Oblivion")) && never(battlefieldId() != 0x0C) && IsOnFloor(12) && CreditsStarted() && IsInReverseRebirth()
+)
+
+achievement(title = "Nullary Hand [m]", points = 10,
+    description = "Defeat Ansem on Floor B1 without stocking cards.",
+    trigger = WasAnsemDefeatedOnFloorB1(TRUE) && never(numberOfStockedCardsForPlayer() > 0)
 )
 
 achievement(
