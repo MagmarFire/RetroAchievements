@@ -2431,11 +2431,20 @@ achievement(title = "Decked Out [m]", points = 25,
         && never(ReloadedNumberOfCards(cardLimit + 1, 0x81e0, darksideDeckSize))
 )
 
+function rikuIIReverseRebirthHp() => rikuReplicaB8Hp()
+function WasRikuReplicaDefeatedOnFloorB2(useTrigger) => never(!IsInWorld("Twilight Town")) && roomId() == 0x2 && BattleStartedCheckpoint() && IsOnFloor(11)
+    && IsInReverseRebirth() && EnemyWithSpecificAddressWasJustDefeated(rikuIIReverseRebirthHp(), useTrigger) && once(rikuIIReverseRebirthHp() == 0x690)
+
 achievement(
-    title = "Light and Dark", description = "Basement 2nd... (Reb)", points = 10,
+    title = "The Depths of Dusk", description = "Defeat the Riku replica on Floor B2.", points = 5,
     id = 15665, badge = "15178", published = "10/16/2014 6:28:32 AM", modified = "7/7/2020 2:25:18 AM",
-    trigger = worldId() == 0x00 && battlefieldId() == 0x0C && once(floor() == 0x0A) && floor() == 0x0B && 
-              word(0x0421CE) == 0xFF0B && byte(0x042346) == 0x08
+    trigger = WasRikuReplicaDefeatedOnFloorB2(FALSE)
+)
+
+function IsInDarkMode() => once(rikuBattleState() == 0x20 && never(rikuBattleState() == 0x22))
+achievement(title = "To the Shadow Realm with You! [m]", points = 5,
+    description = "Finish off the Riku replica on Floor B2 in Dark Mode.",
+    trigger = WasRikuReplicaDefeatedOnFloorB2(TRUE) && trigger_when(IsInDarkMode())
 )
 
 achievement(
