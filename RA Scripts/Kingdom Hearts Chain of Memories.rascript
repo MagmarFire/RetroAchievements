@@ -2470,13 +2470,6 @@ achievement(
                (once(attackPoints() == 0x1D) && attackPoints() == 0x1E))
 )
 
-achievement(
-    title = "The Final Floor", description = "Floor...", points = 5,
-    id = 41891, badge = "43185", published = "11/8/2016 6:47:41 PM", modified = "11/8/2016 6:47:41 PM",
-    trigger = worldId() == 0x00 && battlefieldId() == 0x0C && once(bit0(0x04230E) == 0x0) && bit0(0x04230E) == 0x1 && 
-              bit6(0x04232E) == 0x1 && bit6(0x04230D) == 0x1 && byte(0x042346) == 0x0A
-)
-
 leaderboard(title = "Time Attack - Parasite Cage (Sora's Story)",
     description = "Defeat the Parasite Cage in Sora's story as quickly as you can.",
     start = BossHPValueCheckpointIsSet(parasiteCageHp(), parasiteCageHpMap, "Monstro", 0x4) && never(!IsInBattle()),
