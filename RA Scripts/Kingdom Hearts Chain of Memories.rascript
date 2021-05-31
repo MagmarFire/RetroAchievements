@@ -1174,6 +1174,8 @@ function soraBattleState() => word(playerBattlePointer() + 0x7e58)
 
 function rikuBattleState() => word(playerBattlePointer() + 0x7c9c)
 
+function rikuXCoord() => dword(playerBattlePointer() + 0x7ca8)
+
 function IsUsingKingMickey() => rikuBattleState() == 0x1a
 
 function IsActivatingDarkMode() => rikuBattleState() == 0x20
@@ -2393,11 +2395,21 @@ achievement(title = "From the Graveyard [m]", points = 10,
         && unless(IsActivatingDarkMode() || IsUsingKingMickey())
 )
 
+function lexaeusHp() => vexenReverseRebirthHp()
+function WasLexaeusDefeated(useTrigger) => never(!IsInWorld("Castle Oblivion, Hall")) && never(battlefieldId() != 0x0C) && BattleStartedCheckpoint() && IsOnFloor(9)
+    && IsInReverseRebirth()
+    && EnemyWithSpecificAddressWasJustDefeated(lexaeusHp(), useTrigger) && once(lexaeusHp() == 0x690)
+
 achievement(
-    title = "Power...", description = "Basement 4th... (Reb)", points = 10,
+    title = "The Silent Hero", description = "Defeat Lexaeus.", points = 3,
     id = 15663, badge = "15166", published = "10/16/2014 6:28:17 AM", modified = "7/7/2020 2:25:27 AM",
-    trigger = worldId() == 0x00 && battlefieldId() == 0x0C && once(bit0(0x042313) == 0x0) && bit0(0x042313) == 0x1 && 
-              bit0(0x042333) == 0x1 && byte(0x042346) == 0x08
+    trigger = WasLexaeusDefeated(FALSE)
+)
+
+halfwayPoint = 0x11100 // This is technically further right than the center of the battlefield, but I figure the extra buffer space will feel better and be more intuitive.
+achievement(title = "Half the Floor Is Lava [m]", points = 10,
+    description = "Defeat Lexaeus without crossing into the right half of the battlefield.",
+    trigger = WasLexaeusDefeated(TRUE) && never(rikuXCoord() >= halfwayPoint)
 )
 
 achievement(
