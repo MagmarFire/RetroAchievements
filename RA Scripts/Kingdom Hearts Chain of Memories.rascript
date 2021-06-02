@@ -1857,221 +1857,37 @@ GenerateSaveProtectedAchievementFromConditions({
 }, architectConditions, IsInMainStory())
 
 function lionheart() => bit0(0x042304)
-achievement(
-    title = "Lionheart", description = "Obtain a Lionheart card for the first time.", points = 5,
-    id = 15581, badge = "14873", published = "10/16/2014 6:05:29 AM", modified = "7/7/2020 2:22:26 AM",
-    trigger = WasBitflagSetInGame(lionheart())
-)
-
 function threeWishes() => bit0(0x042303)
-achievement(
-    title = "Three Wishes", description = "Obtain a Three Wishes card for the first time.", points = 5,
-    id = 15627, badge = "14872", published = "10/16/2014 6:18:57 AM", modified = "7/7/2020 2:22:32 AM",
-    trigger = WasBitflagSetInGame(threeWishes())
-)
-
 function oneWingedAngel() => bit7(0x042304)
-achievement(
-    title = "One-Winged Angel", description = "Obtain a One-Winged Angel card for the first time.", points = 5,
-    id = 15628, badge = "15189", published = "10/16/2014 6:19:09 AM", modified = "7/7/2020 2:22:37 AM",
-    trigger = WasBitflagSetInGame(oneWingedAngel())
-)
-
 function diamondDust() => bit6(0x042304)
-achievement(
-    title = "Diamond Dust", description = "Obtain a Diamond Dust card for the first time.", points = 5,
-    id = 15629, badge = "15187", published = "10/16/2014 6:19:25 AM", modified = "7/7/2020 2:22:57 AM",
-    trigger = WasBitflagSetInGame(diamondDust())
-)
-
 function ultimaWeapon() => bit5(0x042304)
-achievement(
-    title = "Ultima Weapon", description = "Obtain an Ultima Weapon card for the first time.", points = 5,
-    id = 15630, badge = "15184", published = "10/16/2014 6:19:36 AM", modified = "9/29/2019 12:07:01 PM",
-    trigger = WasBitflagSetInGame(ultimaWeapon())
-)
-
 function pumpkinheadEntry() => bit2(0x042303)
-achievement(
-    title = "Pumpkinhead", description = "Obtain a Pumpkinhead card for the first time.", points = 5,
-    id = 15631, badge = "14874", published = "10/16/2014 6:19:59 AM", modified = "7/7/2020 2:23:04 AM",
-    trigger = WasBitflagSetInGame(pumpkinheadEntry())
-)
-
 function wishingStar() => bit4(0x042303)
-achievement(
-    title = "Wishing Star", description = "Obtain a Wishing Star card for the first time.", points = 5,
-    id = 15632, badge = "14879", published = "10/16/2014 6:20:07 AM", modified = "7/7/2020 2:23:09 AM",
-    trigger = WasBitflagSetInGame(wishingStar())
-)
-
 function olympia() => bit7(0x042303)
-achievement(
-    title = "Olympia", description = "Obtain an Olympia card for the first time.", points = 5,
-    id = 15634, badge = "14908", published = "10/16/2014 6:21:13 AM", modified = "7/7/2020 2:23:14 AM",
-    trigger = WasBitflagSetInGame(olympia())
-)
-
 function metalChocobo() => bit6(0x042303)
-achievement(
-    title = "Metal Chocobo", description = "Obtain a Metal Chocobo card for the first time.", points = 5,
-    id = 15635, badge = "14910", published = "10/16/2014 6:21:20 AM", modified = "7/7/2020 2:23:19 AM",
-    trigger = WasBitflagSetInGame(metalChocobo())
-)
-
 function spellbinder() => bit5(0x042303)
-achievement(
-    title = "Spellbinder", description = "Obtain a Spellbinder card for the first time.", points = 5,
-    id = 15636, badge = "14930", published = "10/16/2014 6:21:25 AM", modified = "7/7/2020 2:23:25 AM",
-    trigger = WasBitflagSetInGame(spellbinder())
-)
-
 function divineRose() => bit2(0x042304)
-achievement(
-    title = "Divine Rose", description = "Obtain a Divine Rose card for the first time.", points = 5,
-    id = 15637, badge = "15006", published = "10/16/2014 6:21:29 AM", modified = "7/7/2020 2:23:29 AM",
-    trigger = WasBitflagSetInGame(divineRose())
-)
-
 function crabclaw() => bit1(0x042303)
-achievement(
-    title = "Crabclaw", description = "Obtain a Crabclaw card for the first time.", points = 5,
-    id = 15638, badge = "14933", published = "10/16/2014 6:21:34 AM", modified = "7/7/2020 2:23:35 AM",
-    trigger = WasBitflagSetInGame(crabclaw())
-)
-
 function fairyHarp() => bit3(0x042303)
-achievement(
-    title = "Fairy Harp", description = "Obtain a Fairy Harp card for the first time.", points = 5,
-    id = 15639, badge = "15012", published = "10/16/2014 6:21:39 AM", modified = "7/7/2020 2:23:40 AM",
-    trigger = WasBitflagSetInGame(fairyHarp())
-)
-
 function ladyLuck() => bit1(0x042304)
-achievement(
-    title = "Lady Luck", description = "Obtain a Lady Luck card for the first time.", points = 5,
-    id = 15641, badge = "14914", published = "10/16/2014 6:21:50 AM", modified = "7/7/2020 2:23:51 AM",
-    trigger = WasBitflagSetInGame(ladyLuck())
-)
 
 function slidingDash() => bit0(0x0422cc)
-achievement(
-    title = "The First of Many", description = "Learn the Sliding Dash sleight.", points = 1,
-    id = 15613, badge = "15212", published = "10/16/2014 6:15:51 AM", modified = "7/7/2020 2:24:02 AM",
-    trigger = WasBitflagSetInGame(slidingDash())
-)
-
 function blazingDonaldUnlocked() => bit3(0x0422d7)
-achievement(
-    title = "Blazing Donald", description = "Learn the Blazing Donald sleight.", points = 1,
-    id = 15614, badge = "14868", published = "10/16/2014 6:16:30 AM", modified = "7/7/2020 2:24:09 AM",
-    trigger = WasBitflagSetInGame(blazingDonaldUnlocked())
-)
-
 function stopRaid() => bit3(0x0422cf)
-achievement(
-    title = "Stop Raid", description = "Learn the Stop Raid sleight.", points = 3,
-    id = 15615, badge = "14915", published = "10/16/2014 6:16:43 AM", modified = "10/16/2014 6:23:10 AM",
-    trigger = WasBitflagSetInGame(stopRaid())
-)
-
 function quake() => bit6(0x0422d4)
-achievement(
-    title = "Quake", description = "Learn the Quake sleight.", points = 3,
-    id = 15616, badge = "15003", published = "10/16/2014 6:17:15 AM", modified = "10/16/2014 6:23:13 AM",
-    trigger = WasBitflagSetInGame(quake())
-)
-
 function thunderRaid() => bit1(0x0422cf)
-achievement(
-    title = "Thunder Raid", description = "Learn the Thunder Raid sleight.", points = 3,
-    id = 15617, badge = "15009", published = "10/16/2014 6:17:24 AM", modified = "10/16/2014 6:23:15 AM",
-    trigger = WasBitflagSetInGame(thunderRaid())
-)
-
 function warp() => bit0(0x0422D5)
-achievement(
-    title = "Warp", description = "Learn the Warp sleight.", points = 3,
-    id = 15618, badge = "15016", published = "10/16/2014 6:17:31 AM", modified = "10/16/2014 6:23:17 AM",
-    trigger = WasBitflagSetInGame(warp())
-)
-
 function firagaBreak() => bit0(0x0422d4)
-achievement(
-    title = "Firaga Break", description = "Learn the Firaga Break sleight.", points = 3,
-    id = 15620, badge = "15221", published = "10/16/2014 6:17:58 AM", modified = "10/16/2014 6:23:21 AM",
-    trigger = WasBitflagSetInGame(firagaBreak())
-)
-
 function fireBreak() => bit7(0x0422ce)
-achievement(
-    title = "Burner", description = "Learn the Fire Raid sleight.", points = 3,
-    id = 15621, badge = "15218", published = "10/16/2014 6:18:02 AM", modified = "10/16/2014 6:23:24 AM",
-    trigger = WasBitflagSetInGame(fireBreak())
-)
-
 function crossSlashPlus() => bit1(0x0422d7)
-achievement(
-    title = "Cross-Whip", description = "Learn the Cross-Slash+ sleight.", points = 3,
-    id = 15622, badge = "15213", published = "10/16/2014 6:18:08 AM", modified = "8/14/2018 12:38:08 PM",
-    trigger = WasBitflagSetInGame(crossSlashPlus())
-)
-
 function judgment() => bit4(0x0422cf)
-achievement(
-    title = "Divine Justice", description = "Learn the Judgment sleight.", points = 3,
-    id = 15623, badge = "15210", published = "10/16/2014 6:18:13 AM", modified = "10/16/2014 6:23:28 AM",
-    trigger = WasBitflagSetInGame(judgment())
-)
-
 function blizzardRaid() => bit0(0x0422cf)
-achievement(
-    title = "Blizzard Raid ", description = "Learn the Blizzard Raid sleight.", points = 3,
-    id = 15624, badge = "15209", published = "10/16/2014 6:18:20 AM", modified = "10/16/2014 6:23:31 AM",
-    trigger = WasBitflagSetInGame(blizzardRaid())
-)
-
 function homingBlizzara() => bit2(0x0422d4)
-achievement(
-    title = "Homing Blizzara", description = "Learn the Homing Blizzara sleight.", points = 3,
-    id = 15625, badge = "15207", published = "10/16/2014 6:18:24 AM", modified = "10/16/2014 6:23:33 AM",
-    trigger = WasBitflagSetInGame(homingBlizzara())
-)
-
 function gravityRaid() => bit2(0x0422cf)
-achievement(
-    title = "Gravity Raid", description = "Learn the Gravity Raid sleight.", points = 3,
-    id = 15633, badge = "14876", published = "10/16/2014 6:21:08 AM", modified = "10/16/2014 6:23:50 AM",
-    trigger = WasBitflagSetInGame(gravityRaid())
-)
-
 function megalixir() => bit4(0x042307)
-achievement(
-    title = "Megalixir", description = "Obtain a Megalixir card for the first time.", points = 3,
-    id = 15647, badge = "15019", published = "10/16/2014 6:22:45 AM", modified = "11/8/2016 6:44:41 PM",
-    trigger = WasBitflagSetInGame(megalixir())
-)
-
 function stop() => bit5(0x042305)
-achievement(
-    title = "Time Stop", description = "Obtain a Stop card for the first time.", points = 3,
-    id = 15645, badge = "15204", published = "10/16/2014 6:22:27 AM", modified = "10/16/2014 6:24:18 AM",
-    trigger = WasBitflagSetInGame(stop())
-)
-
 function gravityCardEntry() => bit4(0x042305)
-achievement(
-    title = "Always Down", description = "Obtain a Gravity card for the first time.", points = 3,
-    id = 15646, badge = "15205", published = "10/16/2014 6:22:35 AM", modified = "10/16/2014 6:24:21 AM",
-    trigger = WasBitflagSetInGame(gravityCardEntry())
-)
-
 function mushu() => bit4(0x042306)
-achievement(
-    title = "Mushu", description = "Get a Mushu card for the first time.", points = 3,
-    id = 15644, badge = "15010", published = "10/16/2014 6:22:17 AM", modified = "10/16/2014 6:24:16 AM",
-    trigger = WasBitflagSetInGame(mushu())
-)
 
 function lexaeus() => bit0(0x042313)
 achievement(
