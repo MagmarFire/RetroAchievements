@@ -1603,7 +1603,6 @@ achievement(title = "Broken Furnace [m]", points = 5,
 )
 
 function twilightTownStoryEntry() => bit6(0x0422f5)
-// todo: update revision plan for new title
 achievement(
     title = "Memory of Dusk", description = "Complete Twilight Town in Sora's story.", points = 5,
     id = 15599, badge = "15017", published = "10/16/2014 6:11:42 AM", modified = "7/7/2020 2:16:58 AM",
@@ -1690,7 +1689,6 @@ achievement(
         && EnemyWithSpecificAddressWasJustDefeated(rikuHp(), FALSE) && once(rikuHp() == 0x690)
 )
 
-// todo: update revision plan with new title and score
 achievement(
     title = "Quelled Savagery", description = "Defeat Larxene on the twelfth floor.", points = 3,
     id = 15601, badge = "15025", published = "10/16/2014 6:12:06 AM", modified = "7/7/2020 2:17:19 AM",
@@ -1811,27 +1809,6 @@ achievement(
     id = 41892, badge = "43183", published = "11/8/2016 6:47:54 PM", modified = "7/7/2020 2:25:02 AM",
     trigger = never(!IsInWorld("Castle Oblivion, Hall")) && never(battlefieldId() != 0x0C) && IsOnFloor(13) && marluxiaCardEntry() == 1
         && CreditsStarted() && maxHp() == 0x0050 && IsInMainStory()
-)
-
-achievement(
-    title = "Cura+", description = "Reach 290 HP points", points = 5,
-    id = 15608, badge = "14880", published = "10/16/2014 6:14:34 AM", modified = "7/7/2020 2:18:10 AM",
-    trigger = once(maxHp() == 0x0113) && maxHp() == 0x0122 && IsInMainStory()
-)
-
-achievement(
-    title = "Leveling Up", description = "Reach the MAX in Bonus A or Bonus B", points = 10,
-    id = 15609, badge = "15007", published = "10/16/2014 6:14:45 AM", modified = "9/26/2019 11:37:01 AM",
-    trigger = IsInMainStory() &&
-              ((once(maxHp() == 0x0221) && maxHp() == 0x0230) ||
-               (once(maxCp() == 0x0753) && maxCp() == 0x076C))
-)
-
-function keyToRewardsEntry() => bit2(0x042311)
-achievement(
-    title = "Room of Rewards", description = "Obtain a Key to Rewards for the first time.", points = 5,
-    id = 15610, badge = "15008", published = "10/16/2014 6:14:53 AM", modified = "7/7/2020 2:18:19 AM",
-    trigger = WasBitflagSetInGame(keyToRewardsEntry())
 )
 
 architectBitflags = [
@@ -2460,14 +2437,6 @@ achievement(
 achievement(title = "Nullary Hand [m]", points = 10,
     description = "Defeat Ansem on Floor B1 without stocking cards.",
     trigger = WasAnsemDefeatedOnFloorB1(TRUE) && never(numberOfStockedCardsForPlayer() > 0)
-)
-
-achievement(
-    title = "Level Boost", description = "Reach the MAX in Bonus A or Bonus B (Reb)", points = 10,
-    id = 15667, badge = "15030", published = "10/16/2014 6:39:25 AM", modified = "10/8/2019 2:07:01 PM",
-    trigger = byte(0x042346) == 0x08 &&
-              ((once(maxHp() == 0x0221) && maxHp() == 0x0230) ||
-               (once(attackPoints() == 0x1D) && attackPoints() == 0x1E))
 )
 
 leaderboard(title = "Time Attack - Parasite Cage (Sora's Story)",
