@@ -57,9 +57,10 @@ function SecondsToFrames(seconds) => seconds * 60
 //                                and so everything must be recalculated
 //
 // onlyAvailableWhen: A condition that must be true in all conditions for the achievement to trigger.
-function GenerateSaveProtectedAchievementFromConditions(cheevo, conditions, onlyAvailableWhen)
+function GenerateCheevoFromConditions(cheevo, conditions, onlyAvailableWhen)
 {
     loadedCounts = []
+    suspendedCounts = []
     totalCounts = []
     resetAlt = always_false()
 
@@ -67,10 +68,11 @@ function GenerateSaveProtectedAchievementFromConditions(cheevo, conditions, only
     {
         condition = conditions[i]
         
-        // This is the score when the game is loaded. If he loaded score is greater than or equal to the threshold--that is,
+        // This is the score when the game is loaded. If the loaded score is greater than or equal to the threshold--that is,
         // if the save file would satisfy enough conditions to trigger the achievement on load--this should trigger a
         // permanant pauselock to serve as save protection.
         array_push(loadedCounts, once(condition["countsWhen"] && IsLoadingSaveFile()))
+        array_push(suspendedCounts, once(condition["countsWhen"] && IsLoadingSuspendedFile()))
         
         // We want both loaded and session counts here (that is, we don't care if we're loading a save file when these are tallied).
         // This way, loading a save doesn't invalidate the achievement outright if a player hasn't actually earned it yet.
@@ -79,11 +81,37 @@ function GenerateSaveProtectedAchievementFromConditions(cheevo, conditions, only
         resetAlt = resetAlt || condition["recalculateWhen"]
     }
 
-    achievement(title = cheevo["name"], description = cheevo["description"], points = cheevo["points"], id = cheevo["id"], badge = cheevo["badge"],
-        trigger = !IsLoadingSaveFile() &&
-            measured(tally(cheevo["threshold"], totalCounts), onlyAvailableWhen) && unless(tally(cheevo["threshold"], loadedCounts))
-            && never(resetAlt)
-    )
+    if (length(cheevo) == 6) // No better way currently of checking for the existence of "id" or "badge", so we need to count the number of keys.
+    {
+        achievement(title = cheevo["name"], description = cheevo["description"], points = cheevo["points"], id = cheevo["id"], badge = cheevo["badge"],
+            trigger = !IsLoadingSaveFile() && !IsLoadingSuspendedFile()
+                && measured(tally(cheevo["threshold"], totalCounts), onlyAvailableWhen) && disable_when(tally(cheevo["threshold"], loadedCounts), PressStartReady())
+                && disable_when(tally(cheevo["threshold"], suspendedCounts), PressStartReady())
+                && never(resetAlt)
+        )
+    }
+    else
+    {
+        // We need to copy the above without the ID or badge parameters because there's no easy way to ignore certain paramters if they don't exist.
+        achievement(title = cheevo["name"], description = cheevo["description"], points = cheevo["points"],
+            trigger = !IsLoadingSaveFile() && !IsLoadingSuspendedFile()
+                && measured(tally(cheevo["threshold"], totalCounts), onlyAvailableWhen) && disable_when(tally(cheevo["threshold"], loadedCounts), PressStartReady())
+                && disable_when(tally(cheevo["threshold"], suspendedCounts), PressStartReady())
+                && never(resetAlt)
+        )
+    }
+}
+
+function GenerateCheevoFromBitflags(cheevo, bitflags, onlyAvailableWhen)
+{
+    conditions = {}
+    for i in range(0, length(bitflags) - 1)
+    {
+        bit = bitflags[i]
+        conditions[i] = GenerateConditionFromBitflag(bit)
+    }
+    
+    GenerateCheevoFromConditions(cheevo, conditions, onlyAvailableWhen)
 }
 
 function GenerateConditionFromBitflag(mem)
@@ -108,9 +136,29 @@ function gameTransitionState() => byte(0x03bfc2)
 //          Can probably be used for save protection.
 function loadAnimationState() => word(0x03bfc8)
 
+// 0x5 = "Press Start" ready
+// 0x6 -> 0x8 (final) = "New Game"/"Load"
+// 0x9 = Load menu/In game
+function titleScreenState() => byte(0x03d088)
+
+function PressStartReady() => titleScreenState() == 0x5
+
+// 0x0 = New Game
+// 0x1 = Load Game
+// 0x2 = Link
+// 0x3 = Continue
+// 0x4 = New Game (Sora)
+// 0x5 = New Game (Riku)
+function titleScreenIndex() => byte(0x03d0b2)
+
 function IsLoadingSaveFile()
 {
     return Delta(gameTransitionState()) == 0 && (loadAnimationState() == 0x9189 || loadAnimationState() == 0x9279)
+}
+
+function IsLoadingSuspendedFile()
+{
+    return titleScreenState() == 0x9 && Delta(titleScreenState()) != 0x9 && titleScreenIndex() == 0x3
 }
 
 function WasValueSet(mem, oldValue, newValue)
@@ -120,7 +168,7 @@ function WasValueSet(mem, oldValue, newValue)
 
 function WasValueSetInGame(mem, oldValue, newValue)
 {
-    return WasValueSet(mem, oldValue, newValue) && !IsLoadingSaveFile()
+    return WasValueSet(mem, oldValue, newValue) && !IsLoadingSaveFile() && !IsLoadingSuspendedFile()
 }
 
 function WasBitflagSetInGame(mem)
@@ -199,7 +247,10 @@ function IsOnFloor(floor) => floor() + 1 == floor
 function floor1WorldId() => byte(0x042346)
 
 function IsInMainStory() => floor1WorldId() == GetWorldIdByName("Traverse Town")
+function JustLoadedMainStory() => Delta(floor1WorldId()) == 0x0 && IsInMainStory()
+
 function IsInReverseRebirth() => floor1WorldId() == GetWorldIdByName("Hollow Bastion")
+function JustloadedReverseRebirth() => Delta(floor1WorldId()) == 0x0 && IsInReverseRebirth()
 
 // $0422B8: Max HP (16-bit)
 function maxHp() => word(0x0422B8)
@@ -1220,6 +1271,149 @@ function CurrentDeckHasASizeOfAtLeast(sizeLimit)
         || currentDeck() == 2 && deck3TotalCards() >= sizeLimit
 }
 
+// * = free card, or a card that a player will get just by progressing through the game anyway
+collectorBitflags = [
+    // Attack cards
+    bit0(0x042303), // Three Wishes
+    bit1(0x042303), // Crabclaw
+    bit2(0x042303), // Pumpkinhead
+    bit3(0x042303), // Fairy Harp
+    bit4(0x042303), // Wishing Star
+    bit5(0x042303), // Spellbinder
+    bit6(0x042303), // Metal Chocobo
+    bit7(0x042303), // Olympia
+    bit0(0x042304), // Lionheart
+    bit1(0x042304), // Lady Luck
+    bit2(0x042304), // Divine Rose
+    bit3(0x042304), // Oathkeeper*
+    bit4(0x042304), // Oblivion*
+    bit5(0x042304), // Ultima Weapon
+    bit6(0x042304), // Diamond Dust
+    bit7(0x042304), // One-Winged Angel
+    
+    // Magic cards
+    bit0(0x042305), // Fire*
+    bit1(0x042305), // Blizzard*
+    bit2(0x042305), // Thunder*
+    bit3(0x042305), // Cure*
+    bit4(0x042305), // Gravity
+    bit5(0x042305), // Stop
+    bit6(0x042305), // Aero*
+    bit7(0x042305), // Simba*
+    bit0(0x042306), // Genie*
+    bit1(0x042306), // Bambi*
+    bit2(0x042306), // Dumbo*
+    bit3(0x042306), // Tinker Bell*
+    bit4(0x042306), // Mushu
+    bit5(0x042306), // Cloud*
+    
+    // Item cards
+    bit6(0x042306), // Potion*
+    bit7(0x042306), // Hi-Potion*
+    bit0(0x042307), // Mega-Potion*
+    bit1(0x042307), // Ether*
+    bit2(0x042307), // Mega-Ether*
+    bit3(0x042307), // Elixir
+    bit4(0x042307), // Megalixir
+    
+    // Friend cards
+    bit5(0x042307), // Donald*
+    bit6(0x042307), // Goofy*
+    bit7(0x042307), // Aladdin*
+    bit0(0x042308), // Ariel*
+    bit1(0x042308), // Jack*
+    bit2(0x042308), // Peter Pan*
+    bit3(0x042308), // Beast*
+    
+    // Enemy cards
+    bit4(0x042308), // Shadow
+    bit5(0x042308), // Red Nocturne
+    bit6(0x042308), // Blue Rhapsody
+    bit7(0x042308), // Yellow Opera
+    bit0(0x042309), // Green Requiem
+    bit1(0x042309), // Sea Neon
+    bit2(0x042309), // White Mushroom
+    bit3(0x042309), // Black Fungus
+    bit4(0x042309), // Soldier
+    bit5(0x042309), // Powerwild
+    bit6(0x042309), // Bouncywild
+    bit7(0x042309), // Air Soldier
+    bit0(0x04230a), // Bandit
+    bit1(0x04230a), // Barrel Spider
+    bit2(0x04230a), // Search Ghost
+    bit3(0x04230a), // Screwdiver
+    bit4(0x04230a), // Wight Knight
+    bit5(0x04230a), // Gargoyle
+    bit6(0x04230a), // Pirate
+    bit7(0x04230a), // Air Pirate
+    bit0(0x04230b), // Darkball
+    bit1(0x04230b), // Wyvern
+    bit2(0x04230b), // Wizard
+    bit3(0x04230b), // Neoshadow
+    bit4(0x04230b), // Large Body
+    bit5(0x04230b), // Fat Bandit
+    bit6(0x04230b), // Aquatank
+    bit7(0x04230b), // Defender
+    bit0(0x04230c), // Tornado Step
+    bit1(0x04230c), // Crescendo
+    bit2(0x04230c), // Creeper Plant
+    bit3(0x04230c), // Guard Armor*
+    bit4(0x04230c), // Hades*
+    bit5(0x04230c), // Trickmaster*
+    bit6(0x04230c), // Jafar*
+    bit7(0x04230c), // Ursula*
+    bit0(0x04230d), // Oogie Boogie*
+    bit1(0x04230d), // Parasite Cage*
+    bit2(0x04230d), // Hook*
+    bit3(0x04230d), // Dragon Maleficent*
+    bit4(0x04230d), // Darkside*
+    bit5(0x04230d), // Larxene*
+    bit6(0x04230d), // Axel*
+    bit7(0x04230d), // Vexen*
+    bit0(0x04230e), // Marluxia*
+    bit6(0x042312), // Card Soldier*
+    bit7(0x042312), // Riku*
+    bit0(0x042313), // Lexaeus
+    bit1(0x042313), // Ansem
+]
+
+// The number of cards the player will get just by playing the game anyway. This affects the card thresholds below.
+// Adjust as necessary.
+freeCards = 41
+
+rookieThreshold = freeCards + (length(collectorBitflags) - freeCards) / 10
+GenerateCheevoFromBitflags({
+    "name": "Rookie Collector",
+    "description": ("Collect " + rookieThreshold + " non-map cards in Sora's story."),
+    "points": 5,
+    "threshold": rookieThreshold,
+    "id": 156793,
+    "badge": "00000",
+}, collectorBitflags, IsInMainStory())
+
+regularThreshold = freeCards + (length(collectorBitflags) - freeCards) / 4
+GenerateCheevoFromBitflags({
+    "name": "Regular Collector",
+    "description": ("Collect " + regularThreshold + " non-map cards in Sora's story."),
+    "points": 10,
+    "threshold": regularThreshold
+}, collectorBitflags, IsInMainStory())
+
+veteranThreshold = freeCards + (length(collectorBitflags) - freeCards) / 2
+GenerateCheevoFromBitflags({
+    "name": "Veteran Collector",
+    "description": ("Collect " + veteranThreshold + " non-map cards in Sora's story."),
+    "points": 25,
+    "threshold": veteranThreshold
+}, collectorBitflags, IsInMainStory())
+
+GenerateCheevoFromBitflags({
+    "name": "Legendary Collector",
+    "description": "Collect all non-map cards in Sora's story.",
+    "points": 50,
+    "threshold": length(collectorBitflags)
+}, collectorBitflags, IsInMainStory())
+
 function shadowJournalEntry() => bit4(0x0422fe)
 achievement(
     title = "Heartless Hunter", description = "Defeat your first Heartless in Castle Oblivion.", points = 1,
@@ -1464,7 +1658,7 @@ poohGiftConditions = {
     6: GenerateConditionFromBitflag(bit1(0x042306)) // Bambi
 }
 
-GenerateSaveProtectedAchievementFromConditions({
+GenerateCheevoFromConditions({
     "name": "Friendly Fellows",
     "description": "Acquire all card and sleight rewards from Pooh and his friends.",
     "points": 10,
@@ -1496,13 +1690,15 @@ ursulaHpMap = {
     10: 0x2ef,
 }
 
+// todo: retest!
 theBendsTimeLimit = 45
 function ursulaHp() => word(0x03add0)
 achievement(title = "The Bends [m]", points = 25,
     description = "Defeat Ursula in Sora's story while healing at least once every " + theBendsTimeLimit + " seconds.",
     trigger = BossHPValueCheckpointIsSet(ursulaHp(), ursulaHpMap, "Atlantica", 0xb)
         && EnemyWithSpecificAddressWasJustDefeated(ursulaHp(), TRUE) && never(!IsInBattle())
-        && never(repeated(SecondsToFrames(theBendsTimeLimit), FrameHasAdvanced() && never(playerHp() > Delta(playerHp()))))
+        //&& never(repeated(SecondsToFrames(theBendsTimeLimit), FrameHasAdvanced() && never(playerHp() > Delta(playerHp()))))
+        && disable_when(repeated(SecondsToFrames(theBendsTimeLimit), FrameHasAdvanced()), playerHp() > Delta(playerHp()) || !IsInBattle())
         && unless(IsPaused()) && IsInMainStory()
 )
 
@@ -1840,36 +2036,14 @@ architectBitflags = [
     bit2(0x042311),
 ]
 
-architectConditions = {}
-
-for i in architectBitflags
-{
-    architectConditions[length(architectConditions)] = GenerateConditionFromBitflag(i)
-}
-
-GenerateSaveProtectedAchievementFromConditions({
+GenerateCheevoFromBitflags({
     "name": "Architect",
     "description": "Complete the Map Cards section of Jiminy's journal.",
     "points": 10,
     "id": 15612,
     "badge": "15228",
-    "threshold": length(architectConditions)
-}, architectConditions, IsInMainStory())
-
-function lionheart() => bit0(0x042304)
-function threeWishes() => bit0(0x042303)
-function oneWingedAngel() => bit7(0x042304)
-function diamondDust() => bit6(0x042304)
-function ultimaWeapon() => bit5(0x042304)
-function pumpkinheadEntry() => bit2(0x042303)
-function wishingStar() => bit4(0x042303)
-function olympia() => bit7(0x042303)
-function metalChocobo() => bit6(0x042303)
-function spellbinder() => bit5(0x042303)
-function divineRose() => bit2(0x042304)
-function crabclaw() => bit1(0x042303)
-function fairyHarp() => bit3(0x042303)
-function ladyLuck() => bit1(0x042304)
+    "threshold": length(architectBitflags)
+}, architectBitflags, IsInMainStory())
 
 function slidingDash() => bit0(0x0422cc)
 function blazingDonaldUnlocked() => bit3(0x0422d7)
@@ -2234,10 +2408,12 @@ achievement(
     trigger = WasRikuReplicaDefeatedOnFloorB2(FALSE)
 )
 
-function IsInDarkMode() => once(rikuBattleState() == 0x20 && never(rikuBattleState() == 0x22))
+// todo: retest!
+function IsInDarkMode() => rikuBattleState() == 0x20
 achievement(title = "To the Shadow Realm with You! [m]", points = 5,
     description = "Finish off the Riku replica on Floor B2 in Dark Mode.",
-    trigger = WasRikuReplicaDefeatedOnFloorB2(TRUE) && trigger_when(IsInDarkMode())
+    trigger = WasRikuReplicaDefeatedOnFloorB2(TRUE) && trigger_when(once(IsInDarkMode()))
+        && disable_when(rikuBattleState() == 0x22, IsInDarkMode())
 )
 
 function ansemB1Hp() => word(0x03a9cc)
