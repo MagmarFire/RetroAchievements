@@ -1410,6 +1410,121 @@ GenerateCheevoFromBitflags({
     "badge": "00000"
 }, collectorBitflags, IsInMainStory())
 
+
+// Free sleights, or sleights that the player would get normally as they progress through the game, are commented out.
+sleightBitflags = [
+    bit0(0x0422cc), // Sliding Dash
+    bit1(0x0422cc), // Blitz
+    bit2(0x0422cc), // Stun Impact
+    bit3(0x0422cc), // Zantetsuken
+    bit4(0x0422cc), // Strike Raid
+    bit5(0x0422cc), // Sonic Blade
+    bit6(0x0422cc), // Ars Arcanum
+    bit7(0x0422cc), // Ragnarok
+    
+    //bit0(0x0422cd), // Trinity Limit
+    //bit1(0x0422cd), // Fira
+    //bit2(0x0422cd), // Firaga
+    //bit3(0x0422cd), // Blizzara
+    //bit4(0x0422cd), // Blizzaga
+    //bit5(0x0422cd), // Thundara
+    //bit6(0x0422cd), // Thundaga
+    //bit7(0x0422cd), // Cura
+    
+    //bit0(0x0422ce), // Curaga
+    bit1(0x0422ce), // Gravira
+    bit2(0x0422ce), // Graviga
+    bit3(0x0422ce), // Stopra
+    bit4(0x0422ce), // Stopga
+    //bit5(0x0422ce), // Aerora
+    //bit6(0x0422ce), // Aeroga
+    bit7(0x0422ce), // Fire Raid
+    
+    bit0(0x0422cf), // Blizzard Raid
+    bit1(0x0422cf), // Thunder Raid
+    bit2(0x0422cf), // Gravity Raid
+    bit3(0x0422cf), // Stop Raid
+    bit4(0x0422cf), // Judgment
+    bit5(0x0422cf), // Reflect Raid
+    bit6(0x0422cf), // Homing Fira
+    
+    bit0(0x0422d4), // Firaga Break
+    bit1(0x0422d4), // Mega Flare
+    bit2(0x0422d4), // Homing Blizzara
+    bit3(0x0422d4), // Aqua Splash
+    bit4(0x0422d4), // Shock Impact
+    bit5(0x0422d4), // Tornado
+    bit6(0x0422d4), // Quake
+    //bit7(0x0422d4), // Warpinator
+    
+    bit0(0x0422d5), // Warp
+    bit1(0x0422d5), // Bind
+    bit2(0x0422d5), // Confuse
+    //bit3(0x0422d5), // Terror
+    bit4(0x0422d5), // Synchro
+    bit5(0x0422d5), // Gifted Miracle
+    bit6(0x0422d5), // Teleport
+    bit7(0x0422d5), // Holy
+    
+    //bit0(0x0422d6), // Proud Roar
+    //bit1(0x0422d6), // Splash
+    //bit2(0x0422d6), // Paradise
+    bit3(0x0422d6), // Idyll Romp
+    bit4(0x0422d6), // Flare Breath
+    //bit5(0x0422d6), // Showtime
+    //bit6(0x0422d6), // Twinkle
+    //bit7(0x0422d6), // Cross-slash
+    
+    //bit0(0x0422d7), // Omnislash
+    bit1(0x0422d7), // Cross-slash+
+    //bit2(0x0422d7), // Magic
+    bit3(0x0422d7), // Blazing Donald
+    //bit4(0x0422d7), // Goofy Charge
+    //bit5(0x0422d7), // Goofy Tornado
+    //bit6(0x0422d7), // Sandstorm
+    bit7(0x0422d7), // Surprise!
+    
+    //bit0(0x0422d8), // Spiral Wave
+    //bit1(0x0422d8), // Hummingbird
+    //bit2(0x0422d8), // Ferocious Lunge
+]
+
+beginnerSleightThreshold = length(sleightBitflags) / 10
+GenerateCheevoFromBitflags({
+    "name": "Beginner Legerdemain",
+    "description": "Learn 10% of all optional sleights.",
+    "points": 3,
+    "threshold": beginnerSleightThreshold,
+    "badge": "00000",
+}, sleightBitflags, IsInMainStory())
+
+standardSleightThreshold = length(sleightBitflags) / 4
+GenerateCheevoFromBitflags({
+    "name": "Standard Legerdemain",
+    "description": "Learn 25% of all optional sleights.",
+    "points": 5,
+    "threshold": standardSleightThreshold,
+    "badge": "00000",
+}, sleightBitflags, IsInMainStory())
+
+proudSleightThreshold = length(sleightBitflags) / 2
+GenerateCheevoFromBitflags({
+    "name": "Proud Legerdemain",
+    "description": "Learn 50% of all optional sleights.",
+    "points": 10,
+    "threshold": proudSleightThreshold,
+    "badge": "00000",
+}, sleightBitflags, IsInMainStory())
+
+criticalSleightThreshold = length(sleightBitflags)
+GenerateCheevoFromBitflags({
+    "name": "Critical Legerdemain",
+    "description": "Learn all optional sleights.",
+    "points": 25,
+    "threshold": criticalSleightThreshold,
+    "badge": "00000",
+}, sleightBitflags, IsInMainStory())
+
 function shadowJournalEntry() => bit4(0x0422fe)
 achievement(
     title = "Heartless Hunter", description = "Defeat your first Heartless in Castle Oblivion.", points = 1,
