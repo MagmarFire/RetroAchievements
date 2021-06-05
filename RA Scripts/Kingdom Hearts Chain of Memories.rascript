@@ -71,8 +71,7 @@ function GenerateCheevoFromConditions(cheevo, conditions, onlyAvailableWhen)
         // This is the score when the game is loaded. If the loaded score is greater than or equal to the threshold--that is,
         // if the save file would satisfy enough conditions to trigger the achievement on load--this should trigger a
         // permanant pauselock to serve as save protection.
-        array_push(loadedCounts, once(condition["countsWhen"] && IsLoadingSaveFile()))
-        array_push(suspendedCounts, once(condition["countsWhen"] && IsLoadingSuspendedFile()))
+        array_push(loadedCounts, once(condition["countsWhen"] && IsLoadingSaveFileForMainGame()))
         
         // We want both loaded and session counts here (that is, we don't care if we're loading a save file when these are tallied).
         // This way, loading a save doesn't invalidate the achievement outright if a player hasn't actually earned it yet.
@@ -80,24 +79,23 @@ function GenerateCheevoFromConditions(cheevo, conditions, onlyAvailableWhen)
         
         resetAlt = resetAlt || condition["recalculateWhen"]
     }
+    
+    trigger = tally(0, [ !IsLoadingSaveFileForMainGame() ]) // Force this into an OrNext construct to optimize the resulting code.
+                && measured(tally(cheevo["threshold"], totalCounts), onlyAvailableWhen) && unless(tally(cheevo["threshold"], loadedCounts))
+                && never(resetAlt)
+                || never(PressStartReady()) && always_false() // Create an alt that resets everything when the player first sees the title screen.
 
     if (length(cheevo) == 6) // No better way currently of checking for the existence of "id" or "badge", so we need to count the number of keys.
     {
         achievement(title = cheevo["name"], description = cheevo["description"], points = cheevo["points"], id = cheevo["id"], badge = cheevo["badge"],
-            trigger = !IsLoadingSaveFile() && !IsLoadingSuspendedFile()
-                && measured(tally(cheevo["threshold"], totalCounts), onlyAvailableWhen) && disable_when(tally(cheevo["threshold"], loadedCounts), PressStartReady())
-                && disable_when(tally(cheevo["threshold"], suspendedCounts), PressStartReady())
-                && never(resetAlt)
+            trigger = trigger
         )
     }
     else
     {
         // We need to copy the above without the ID or badge parameters because there's no easy way to ignore certain paramters if they don't exist.
-        achievement(title = cheevo["name"], description = cheevo["description"], points = cheevo["points"],
-            trigger = !IsLoadingSaveFile() && !IsLoadingSuspendedFile()
-                && measured(tally(cheevo["threshold"], totalCounts), onlyAvailableWhen) && disable_when(tally(cheevo["threshold"], loadedCounts), PressStartReady())
-                && disable_when(tally(cheevo["threshold"], suspendedCounts), PressStartReady())
-                && never(resetAlt)
+        achievement(title = cheevo["name"], description = cheevo["description"], points = cheevo["points"], badge = cheevo["badge"],
+            trigger = trigger
         )
     }
 }
@@ -151,14 +149,9 @@ function PressStartReady() => titleScreenState() == 0x5
 // 0x5 = New Game (Riku)
 function titleScreenIndex() => byte(0x03d0b2)
 
-function IsLoadingSaveFile()
+function IsLoadingSaveFileForMainGame()
 {
-    return Delta(gameTransitionState()) == 0 && (loadAnimationState() == 0x9189 || loadAnimationState() == 0x9279)
-}
-
-function IsLoadingSuspendedFile()
-{
-    return titleScreenState() == 0x9 && Delta(titleScreenState()) != 0x9 && titleScreenIndex() == 0x3
+    return Delta(floor1WorldId()) == 0x0 && floor1WorldId() == GetWorldIdByName("Traverse Town")
 }
 
 function WasValueSet(mem, oldValue, newValue)
@@ -166,14 +159,14 @@ function WasValueSet(mem, oldValue, newValue)
     return Delta(mem) == oldValue && mem == newValue
 }
 
-function WasValueSetInGame(mem, oldValue, newValue)
+function WasValueSetInMainGame(mem, oldValue, newValue)
 {
-    return WasValueSet(mem, oldValue, newValue) && !IsLoadingSaveFile() && !IsLoadingSuspendedFile()
+    return WasValueSet(mem, oldValue, newValue) && !IsLoadingSaveFileForMainGame()
 }
 
-function WasBitflagSetInGame(mem)
+function WasBitflagSetInMainGame(mem)
 {
-    return WasValueSetInGame(mem, 0, 1)
+    return WasValueSetInMainGame(mem, 0, 1)
 }
 
 function worldId() => byte(0x0421CC)
@@ -1396,7 +1389,8 @@ GenerateCheevoFromBitflags({
     "name": "Regular Collector",
     "description": ("Collect " + regularThreshold + " non-map cards in Sora's story."),
     "points": 10,
-    "threshold": regularThreshold
+    "threshold": regularThreshold,
+    "badge": "00000"
 }, collectorBitflags, IsInMainStory())
 
 veteranThreshold = freeCards + (length(collectorBitflags) - freeCards) / 2
@@ -1404,21 +1398,23 @@ GenerateCheevoFromBitflags({
     "name": "Veteran Collector",
     "description": ("Collect " + veteranThreshold + " non-map cards in Sora's story."),
     "points": 25,
-    "threshold": veteranThreshold
+    "threshold": veteranThreshold,
+    "badge": "00000"
 }, collectorBitflags, IsInMainStory())
 
 GenerateCheevoFromBitflags({
     "name": "Legendary Collector",
     "description": "Collect all non-map cards in Sora's story.",
     "points": 50,
-    "threshold": length(collectorBitflags)
+    "threshold": length(collectorBitflags),
+    "badge": "00000"
 }, collectorBitflags, IsInMainStory())
 
 function shadowJournalEntry() => bit4(0x0422fe)
 achievement(
     title = "Heartless Hunter", description = "Defeat your first Heartless in Castle Oblivion.", points = 1,
     id = 15580, badge = "12277", published = "10/16/2014 6:04:37 AM", modified = "11/8/2016 6:46:53 PM",
-    trigger = WasBitflagSetInGame(shadowJournalEntry()) && IsInMainStory()
+    trigger = WasBitflagSetInMainGame(shadowJournalEntry()) && IsInMainStory()
 )
 
 function guardArmorCardObtained() => bit3(0x04230c)
@@ -1469,7 +1465,7 @@ function agrabahStoryEntry() => bit7(0x0422f4)
 achievement(
     title = "Memory of Treasure", description = "Complete Agrabah in Sora's story.", points = 5,
     id = 15584, badge = "14870", published = "10/16/2014 6:07:55 AM", modified = "7/7/2020 2:12:56 AM",
-    trigger = WasBitflagSetInGame(agrabahStoryEntry()) && IsInMainStory()
+    trigger = WasBitflagSetInMainGame(agrabahStoryEntry()) && IsInMainStory()
 )
 
 oogieBoogieHpMap = {
@@ -1496,7 +1492,7 @@ function halloweenTownEntry() => bit0(0x0422f5)
 achievement(
     title = "Memory of Memory", description = "Complete Halloween Town in Sora's story.", points = 5,
     id = 15585, badge = "14878", published = "10/16/2014 6:08:08 AM", modified = "7/7/2020 2:13:00 AM",
-    trigger = WasBitflagSetInGame(halloweenTownEntry()) && IsInMainStory()
+    trigger = WasBitflagSetInMainGame(halloweenTownEntry()) && IsInMainStory()
 )
 
 timeLimit = 180
@@ -1521,7 +1517,7 @@ function monstroEntry() => bit1(0x0422f5)
 achievement(
     title = "Memory of a Wish", description = "Complete Monstro in Sora's story.", points = 5,
     id = 15587, badge = "14883", published = "10/16/2014 6:08:32 AM", modified = "7/7/2020 2:13:09 AM",
-    trigger = WasBitflagSetInGame(monstroEntry()) && IsInMainStory()
+    trigger = WasBitflagSetInMainGame(monstroEntry()) && IsInMainStory()
 )
 
 function cloudHp() => word(0x03abcc)
@@ -1586,7 +1582,7 @@ function olympusColiseumStoryEntry() => bit6(0x0422f4)
 achievement(
     title = "Memory of Heroism", description = "Complete Olympus Coliseum in Sora's story.", points = 5,
     id = 15588, badge = "14912", published = "10/16/2014 6:09:40 AM", modified = "7/7/2020 2:13:21 AM",
-    trigger = WasBitflagSetInGame(olympusColiseumStoryEntry()) && IsInMainStory()
+    trigger = WasBitflagSetInMainGame(olympusColiseumStoryEntry()) && IsInMainStory()
 )
 
 trickmasterHpMap = {
@@ -1615,7 +1611,7 @@ function wonderlandStoryEntry() => bit5(0x0422f4)
 achievement(
     title = "Memory of the Rabbit Hole", description = "Complete Wonderland in Sora's story.", points = 5,
     id = 15590, badge = "14924", published = "10/16/2014 6:09:55 AM", modified = "7/7/2020 2:13:36 AM",
-    trigger = WasBitflagSetInGame(wonderlandStoryEntry()) && IsInMainStory()
+    trigger = WasBitflagSetInMainGame(wonderlandStoryEntry()) && IsInMainStory()
 )
 
 function larxeneHp() => word(0x03abac)
@@ -1643,7 +1639,7 @@ achievement(title = "Save the Bees [m]", points = 5,
               // Ensure we reset after we leave the world, but only after the Bambi bitflag has a chance to flip.
     trigger = never(once(WasInWorld("the Hundred Acre Wood")) && repeated(2, !IsInWorld("the Hundred Acre Wood"))) && IsInMainStory()
         && once(!WasInWorld("the Hundred Acre Wood") && IsInWorld("the Hundred Acre Wood")) // Checkpoint when entering the world
-        && WasBitflagSetInGame(bambi()) && never(poohEnergyBars() == 0)
+        && WasBitflagSetInMainGame(bambi()) && never(poohEnergyBars() == 0)
         // Due to how we're programming this, we need to also make sure that the player is actually in the Hundred Acre Wood before increasing hit targets.
         && never(repeated(2, IsInWorld("the Hundred Acre Wood") && poohEnergyBars() > Delta(poohEnergyBars())))
 )
@@ -1706,7 +1702,7 @@ function atlanticaStoryEntry() => bit2(0x0422f5)
 achievement(
     title = "Memory of Melodies", description = "Complete Atlantica in Sora's story.", points = 5,
     id = 15595, badge = "15004", published = "10/16/2014 6:11:11 AM", modified = "7/7/2020 2:16:28 AM",
-    trigger = WasBitflagSetInGame(atlanticaStoryEntry()) && IsInMainStory()
+    trigger = WasBitflagSetInMainGame(atlanticaStoryEntry()) && IsInMainStory()
 )
 
 itemCards = GetCardsByProperty("type", "Item")
@@ -1723,7 +1719,7 @@ function warpinator() => bit7(0x0422D4)
 achievement(
     title = "Driven to Seize", description = "Defeat Riku on the eighth floor in Sora's story.", points = 3,
     id = 15596, badge = "15005", published = "10/16/2014 6:11:18 AM", modified = "7/7/2020 2:16:42 AM",
-    trigger = WasBitflagSetInGame(warpinator()) && IsInMainStory()
+    trigger = WasBitflagSetInMainGame(warpinator()) && IsInMainStory()
 )
 
 maleficentHpMap = {
@@ -1746,7 +1742,7 @@ function hollowBastionStoryEntry() => bit4(0x0422f5)
 achievement(
     title = "Memory of Darkness", description = "Complete Hollow Bastion in Sora's story.", points = 5,
     id = 15597, badge = "15011", published = "10/16/2014 6:11:28 AM", modified = "7/7/2020 2:16:37 AM",
-    trigger = WasBitflagSetInGame(hollowBastionStoryEntry()) && IsInMainStory()
+    trigger = WasBitflagSetInMainGame(hollowBastionStoryEntry()) && IsInMainStory()
 )
 
 hookHpMap = {
@@ -1775,7 +1771,7 @@ function neverLandStoryEntry() => bit3(0x0422f5)
 achievement(
     title = "Memory of Faith", description = "Complete Never Land in Sora's story.", points = 5,
     id = 15598, badge = "15013", published = "10/16/2014 6:11:35 AM", modified = "7/7/2020 2:16:47 AM",
-    trigger = WasBitflagSetInGame(neverLandStoryEntry()) && IsInMainStory()
+    trigger = WasBitflagSetInMainGame(neverLandStoryEntry()) && IsInMainStory()
 )
 
 function vexenHp() => word(0x03ab4c)
@@ -1802,7 +1798,7 @@ function twilightTownStoryEntry() => bit6(0x0422f5)
 achievement(
     title = "Memory of Dusk", description = "Complete Twilight Town in Sora's story.", points = 5,
     id = 15599, badge = "15017", published = "10/16/2014 6:11:42 AM", modified = "7/7/2020 2:16:58 AM",
-    trigger = WasBitflagSetInGame(twilightTownStoryEntry()) && IsInMainStory()
+    trigger = WasBitflagSetInMainGame(twilightTownStoryEntry()) && IsInMainStory()
 )
 
 vexenIIHpMap = {
@@ -1858,7 +1854,7 @@ function destinyIslandsStoryEntry() => bit7(0x0422f5)
 achievement(
     title = "Memory of Paradise", description = "Complete the Destiny Islands in Sora's story.", points = 5,
     id = 15600, badge = "15020", published = "10/16/2014 6:11:58 AM", modified = "7/7/2020 2:17:08 AM",
-    trigger = WasBitflagSetInGame(destinyIslandsStoryEntry()) && IsInMainStory()
+    trigger = WasBitflagSetInMainGame(destinyIslandsStoryEntry()) && IsInMainStory()
 )
 
 nonKingdomKeyAttackCards = []
@@ -2067,14 +2063,14 @@ function lexaeus() => bit0(0x042313)
 achievement(
     title = "Lexaeus", description = "Obtain the Lexaeus card in Sora's story.", points = 5,
     id = 15650, badge = "15185", published = "10/16/2014 6:26:31 AM", modified = "11/8/2016 5:30:58 PM",
-    trigger = WasBitflagSetInGame(lexaeus()) && IsInMainStory()
+    trigger = WasBitflagSetInMainGame(lexaeus()) && IsInMainStory()
 )
 
 function ansem() => bit1(0x042313)
 achievement(
     title = "Ansem", description = "Obtain the Ansem card in Sora's story.", points = 5,
     id = 15649, badge = "15186", published = "10/16/2014 6:26:26 AM", modified = "10/16/2014 6:48:37 AM",
-    trigger = WasBitflagSetInGame(ansem()) && IsInMainStory()
+    trigger = WasBitflagSetInMainGame(ansem()) && IsInMainStory()
 )
 
 maleficentDeckOffset = 0x74
