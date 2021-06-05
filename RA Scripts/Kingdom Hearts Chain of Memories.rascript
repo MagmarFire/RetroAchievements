@@ -1754,7 +1754,7 @@ achievement(title = "Save the Bees [m]", points = 5,
               // Ensure we reset after we leave the world, but only after the Bambi bitflag has a chance to flip.
     trigger = never(once(WasInWorld("the Hundred Acre Wood")) && repeated(2, !IsInWorld("the Hundred Acre Wood"))) && IsInMainStory()
         && once(!WasInWorld("the Hundred Acre Wood") && IsInWorld("the Hundred Acre Wood")) // Checkpoint when entering the world
-        && WasBitflagSetInMainGame(bambi()) && never(poohEnergyBars() == 0)
+        && trigger_when(WasBitflagSetInMainGame(bambi())) && never(poohEnergyBars() == 0)
         // Due to how we're programming this, we need to also make sure that the player is actually in the Hundred Acre Wood before increasing hit targets.
         && never(repeated(2, IsInWorld("the Hundred Acre Wood") && poohEnergyBars() > Delta(poohEnergyBars())))
 )
@@ -2173,20 +2173,6 @@ function megalixir() => bit4(0x042307)
 function stop() => bit5(0x042305)
 function gravityCardEntry() => bit4(0x042305)
 function mushu() => bit4(0x042306)
-
-function lexaeus() => bit0(0x042313)
-achievement(
-    title = "Lexaeus", description = "Obtain the Lexaeus card in Sora's story.", points = 5,
-    id = 15650, badge = "15185", published = "10/16/2014 6:26:31 AM", modified = "11/8/2016 5:30:58 PM",
-    trigger = WasBitflagSetInMainGame(lexaeus()) && IsInMainStory()
-)
-
-function ansem() => bit1(0x042313)
-achievement(
-    title = "Ansem", description = "Obtain the Ansem card in Sora's story.", points = 5,
-    id = 15649, badge = "15186", published = "10/16/2014 6:26:26 AM", modified = "10/16/2014 6:48:37 AM",
-    trigger = WasBitflagSetInMainGame(ansem()) && IsInMainStory()
-)
 
 maleficentDeckOffset = 0x74
 function reloadStateDuringRikuMaleficentBattle() => byte(0x03a628)
