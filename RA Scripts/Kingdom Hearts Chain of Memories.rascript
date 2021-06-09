@@ -57,9 +57,10 @@ function SecondsToFrames(seconds) => seconds * 60
 //                                and so everything must be recalculated
 //
 // onlyAvailableWhen: A condition that must be true in all conditions for the achievement to trigger.
-function GenerateSaveProtectedAchievementFromConditions(cheevo, conditions, onlyAvailableWhen)
+function GenerateCheevoFromConditions(cheevo, conditions, onlyAvailableWhen)
 {
     loadedCounts = []
+    suspendedCounts = []
     totalCounts = []
     resetAlt = always_false()
 
@@ -67,10 +68,10 @@ function GenerateSaveProtectedAchievementFromConditions(cheevo, conditions, only
     {
         condition = conditions[i]
         
-        // This is the score when the game is loaded. If he loaded score is greater than or equal to the threshold--that is,
+        // This is the score when the game is loaded. If the loaded score is greater than or equal to the threshold--that is,
         // if the save file would satisfy enough conditions to trigger the achievement on load--this should trigger a
         // permanant pauselock to serve as save protection.
-        array_push(loadedCounts, once(condition["countsWhen"] && IsLoadingSaveFile()))
+        array_push(loadedCounts, once(condition["countsWhen"] && IsLoadingSaveFileForMainGame()))
         
         // We want both loaded and session counts here (that is, we don't care if we're loading a save file when these are tallied).
         // This way, loading a save doesn't invalidate the achievement outright if a player hasn't actually earned it yet.
@@ -78,12 +79,37 @@ function GenerateSaveProtectedAchievementFromConditions(cheevo, conditions, only
         
         resetAlt = resetAlt || condition["recalculateWhen"]
     }
+    
+    trigger = tally(0, [ !IsLoadingSaveFileForMainGame() ]) // Force this into an OrNext construct to optimize the resulting code.
+                && measured(tally(cheevo["threshold"], totalCounts), onlyAvailableWhen) && unless(tally(cheevo["threshold"], loadedCounts))
+                && never(resetAlt)
+                || never(PressStartReady()) && always_false() // Create an alt that resets everything when the player first sees the title screen.
 
-    achievement(title = cheevo["name"], description = cheevo["description"], points = cheevo["points"], id = cheevo["id"], badge = cheevo["badge"],
-        trigger = !IsLoadingSaveFile() &&
-            measured(tally(cheevo["threshold"], totalCounts), onlyAvailableWhen) && unless(tally(cheevo["threshold"], loadedCounts))
-            && never(resetAlt)
-    )
+    if (length(cheevo) == 6) // No better way currently of checking for the existence of "id" or "badge", so we need to count the number of keys.
+    {
+        achievement(title = cheevo["name"], description = cheevo["description"], points = cheevo["points"], id = cheevo["id"], badge = cheevo["badge"],
+            trigger = trigger
+        )
+    }
+    else
+    {
+        // We need to copy the above without the ID or badge parameters because there's no easy way to ignore certain paramters if they don't exist.
+        achievement(title = cheevo["name"], description = cheevo["description"], points = cheevo["points"], badge = cheevo["badge"],
+            trigger = trigger
+        )
+    }
+}
+
+function GenerateCheevoFromBitflags(cheevo, bitflags, onlyAvailableWhen)
+{
+    conditions = {}
+    for i in range(0, length(bitflags) - 1)
+    {
+        bit = bitflags[i]
+        conditions[i] = GenerateConditionFromBitflag(bit)
+    }
+    
+    GenerateCheevoFromConditions(cheevo, conditions, onlyAvailableWhen)
 }
 
 function GenerateConditionFromBitflag(mem)
@@ -108,9 +134,24 @@ function gameTransitionState() => byte(0x03bfc2)
 //          Can probably be used for save protection.
 function loadAnimationState() => word(0x03bfc8)
 
-function IsLoadingSaveFile()
+// 0x5 = "Press Start" ready
+// 0x6 -> 0x8 (final) = "New Game"/"Load"
+// 0x9 = Load menu/In game
+function titleScreenState() => byte(0x03d088)
+
+function PressStartReady() => titleScreenState() == 0x5
+
+// 0x0 = New Game
+// 0x1 = Load Game
+// 0x2 = Link
+// 0x3 = Continue
+// 0x4 = New Game (Sora)
+// 0x5 = New Game (Riku)
+function titleScreenIndex() => byte(0x03d0b2)
+
+function IsLoadingSaveFileForMainGame()
 {
-    return Delta(gameTransitionState()) == 0 && (loadAnimationState() == 0x9189 || loadAnimationState() == 0x9279)
+    return Delta(floor1WorldId()) == 0x0 && floor1WorldId() == GetWorldIdByName("Traverse Town")
 }
 
 function WasValueSet(mem, oldValue, newValue)
@@ -118,14 +159,14 @@ function WasValueSet(mem, oldValue, newValue)
     return Delta(mem) == oldValue && mem == newValue
 }
 
-function WasValueSetInGame(mem, oldValue, newValue)
+function WasValueSetInMainGame(mem, oldValue, newValue)
 {
-    return WasValueSet(mem, oldValue, newValue) && !IsLoadingSaveFile()
+    return WasValueSet(mem, oldValue, newValue) && !IsLoadingSaveFileForMainGame()
 }
 
-function WasBitflagSetInGame(mem)
+function WasBitflagSetInMainGame(mem)
 {
-    return WasValueSetInGame(mem, 0, 1)
+    return WasValueSetInMainGame(mem, 0, 1)
 }
 
 function worldId() => byte(0x0421CC)
@@ -199,7 +240,10 @@ function IsOnFloor(floor) => floor() + 1 == floor
 function floor1WorldId() => byte(0x042346)
 
 function IsInMainStory() => floor1WorldId() == GetWorldIdByName("Traverse Town")
+function JustLoadedMainStory() => Delta(floor1WorldId()) == 0x0 && IsInMainStory()
+
 function IsInReverseRebirth() => floor1WorldId() == GetWorldIdByName("Hollow Bastion")
+function JustloadedReverseRebirth() => Delta(floor1WorldId()) == 0x0 && IsInReverseRebirth()
 
 // $0422B8: Max HP (16-bit)
 function maxHp() => word(0x0422B8)
@@ -1220,11 +1264,272 @@ function CurrentDeckHasASizeOfAtLeast(sizeLimit)
         || currentDeck() == 2 && deck3TotalCards() >= sizeLimit
 }
 
+// * = free card, or a card that a player will get just by progressing through the game anyway
+collectorBitflags = [
+    // Attack cards
+    bit0(0x042303), // Three Wishes
+    bit1(0x042303), // Crabclaw
+    bit2(0x042303), // Pumpkinhead
+    bit3(0x042303), // Fairy Harp
+    bit4(0x042303), // Wishing Star
+    bit5(0x042303), // Spellbinder
+    bit6(0x042303), // Metal Chocobo
+    bit7(0x042303), // Olympia
+    bit0(0x042304), // Lionheart
+    bit1(0x042304), // Lady Luck
+    bit2(0x042304), // Divine Rose
+    bit3(0x042304), // Oathkeeper*
+    bit4(0x042304), // Oblivion*
+    bit5(0x042304), // Ultima Weapon
+    bit6(0x042304), // Diamond Dust
+    bit7(0x042304), // One-Winged Angel
+    
+    // Magic cards
+    bit0(0x042305), // Fire*
+    bit1(0x042305), // Blizzard*
+    bit2(0x042305), // Thunder*
+    bit3(0x042305), // Cure*
+    bit4(0x042305), // Gravity
+    bit5(0x042305), // Stop
+    bit6(0x042305), // Aero*
+    bit7(0x042305), // Simba*
+    bit0(0x042306), // Genie*
+    bit1(0x042306), // Bambi*
+    bit2(0x042306), // Dumbo*
+    bit3(0x042306), // Tinker Bell*
+    bit4(0x042306), // Mushu
+    bit5(0x042306), // Cloud*
+    
+    // Item cards
+    bit6(0x042306), // Potion*
+    bit7(0x042306), // Hi-Potion*
+    bit0(0x042307), // Mega-Potion*
+    bit1(0x042307), // Ether*
+    bit2(0x042307), // Mega-Ether*
+    bit3(0x042307), // Elixir
+    bit4(0x042307), // Megalixir
+    
+    // Friend cards
+    bit5(0x042307), // Donald*
+    bit6(0x042307), // Goofy*
+    bit7(0x042307), // Aladdin*
+    bit0(0x042308), // Ariel*
+    bit1(0x042308), // Jack*
+    bit2(0x042308), // Peter Pan*
+    bit3(0x042308), // Beast*
+    
+    // Enemy cards
+    bit4(0x042308), // Shadow
+    bit5(0x042308), // Red Nocturne
+    bit6(0x042308), // Blue Rhapsody
+    bit7(0x042308), // Yellow Opera
+    bit0(0x042309), // Green Requiem
+    bit1(0x042309), // Sea Neon
+    bit2(0x042309), // White Mushroom
+    bit3(0x042309), // Black Fungus
+    bit4(0x042309), // Soldier
+    bit5(0x042309), // Powerwild
+    bit6(0x042309), // Bouncywild
+    bit7(0x042309), // Air Soldier
+    bit0(0x04230a), // Bandit
+    bit1(0x04230a), // Barrel Spider
+    bit2(0x04230a), // Search Ghost
+    bit3(0x04230a), // Screwdiver
+    bit4(0x04230a), // Wight Knight
+    bit5(0x04230a), // Gargoyle
+    bit6(0x04230a), // Pirate
+    bit7(0x04230a), // Air Pirate
+    bit0(0x04230b), // Darkball
+    bit1(0x04230b), // Wyvern
+    bit2(0x04230b), // Wizard
+    bit3(0x04230b), // Neoshadow
+    bit4(0x04230b), // Large Body
+    bit5(0x04230b), // Fat Bandit
+    bit6(0x04230b), // Aquatank
+    bit7(0x04230b), // Defender
+    bit0(0x04230c), // Tornado Step
+    bit1(0x04230c), // Crescendo
+    bit2(0x04230c), // Creeper Plant
+    bit3(0x04230c), // Guard Armor*
+    bit4(0x04230c), // Hades*
+    bit5(0x04230c), // Trickmaster*
+    bit6(0x04230c), // Jafar*
+    bit7(0x04230c), // Ursula*
+    bit0(0x04230d), // Oogie Boogie*
+    bit1(0x04230d), // Parasite Cage*
+    bit2(0x04230d), // Hook*
+    bit3(0x04230d), // Dragon Maleficent*
+    bit4(0x04230d), // Darkside*
+    bit5(0x04230d), // Larxene*
+    bit6(0x04230d), // Axel*
+    bit7(0x04230d), // Vexen*
+    bit0(0x04230e), // Marluxia*
+    bit6(0x042312), // Card Soldier*
+    bit7(0x042312), // Riku*
+    bit0(0x042313), // Lexaeus
+    bit1(0x042313), // Ansem
+]
+
+// The number of cards the player will get just by playing the game anyway. This affects the card thresholds below.
+// Adjust as necessary.
+freeCards = 41
+
+rookieThreshold = freeCards + (length(collectorBitflags) - freeCards) / 10
+GenerateCheevoFromBitflags({
+    "name": "Rookie Collector",
+    "description": ("Collect " + rookieThreshold + " non-map cards in Sora's story."),
+    "points": 5,
+    "threshold": rookieThreshold,
+    "id": 156793,
+    "badge": "00000",
+}, collectorBitflags, IsInMainStory())
+
+regularThreshold = freeCards + (length(collectorBitflags) - freeCards) / 4
+GenerateCheevoFromBitflags({
+    "name": "Regular Collector",
+    "description": ("Collect " + regularThreshold + " non-map cards in Sora's story."),
+    "points": 10,
+    "threshold": regularThreshold,
+    "badge": "00000"
+}, collectorBitflags, IsInMainStory())
+
+veteranThreshold = freeCards + (length(collectorBitflags) - freeCards) / 2
+GenerateCheevoFromBitflags({
+    "name": "Veteran Collector",
+    "description": ("Collect " + veteranThreshold + " non-map cards in Sora's story."),
+    "points": 25,
+    "threshold": veteranThreshold,
+    "badge": "00000"
+}, collectorBitflags, IsInMainStory())
+
+GenerateCheevoFromBitflags({
+    "name": "Legendary Collector",
+    "description": "Collect all non-map cards in Sora's story.",
+    "points": 50,
+    "threshold": length(collectorBitflags),
+    "badge": "00000"
+}, collectorBitflags, IsInMainStory())
+
+
+// Free sleights, or sleights that the player would get normally as they progress through the game, are commented out.
+sleightBitflags = [
+    bit0(0x0422cc), // Sliding Dash
+    bit1(0x0422cc), // Blitz
+    bit2(0x0422cc), // Stun Impact
+    bit3(0x0422cc), // Zantetsuken
+    bit4(0x0422cc), // Strike Raid
+    bit5(0x0422cc), // Sonic Blade
+    bit6(0x0422cc), // Ars Arcanum
+    bit7(0x0422cc), // Ragnarok
+    
+    //bit0(0x0422cd), // Trinity Limit
+    //bit1(0x0422cd), // Fira
+    //bit2(0x0422cd), // Firaga
+    //bit3(0x0422cd), // Blizzara
+    //bit4(0x0422cd), // Blizzaga
+    //bit5(0x0422cd), // Thundara
+    //bit6(0x0422cd), // Thundaga
+    //bit7(0x0422cd), // Cura
+    
+    //bit0(0x0422ce), // Curaga
+    bit1(0x0422ce), // Gravira
+    bit2(0x0422ce), // Graviga
+    bit3(0x0422ce), // Stopra
+    bit4(0x0422ce), // Stopga
+    //bit5(0x0422ce), // Aerora
+    //bit6(0x0422ce), // Aeroga
+    bit7(0x0422ce), // Fire Raid
+    
+    bit0(0x0422cf), // Blizzard Raid
+    bit1(0x0422cf), // Thunder Raid
+    bit2(0x0422cf), // Gravity Raid
+    bit3(0x0422cf), // Stop Raid
+    bit4(0x0422cf), // Judgment
+    bit5(0x0422cf), // Reflect Raid
+    bit6(0x0422cf), // Homing Fira
+    
+    bit0(0x0422d4), // Firaga Break
+    bit1(0x0422d4), // Mega Flare
+    bit2(0x0422d4), // Homing Blizzara
+    bit3(0x0422d4), // Aqua Splash
+    bit4(0x0422d4), // Shock Impact
+    bit5(0x0422d4), // Tornado
+    bit6(0x0422d4), // Quake
+    //bit7(0x0422d4), // Warpinator
+    
+    bit0(0x0422d5), // Warp
+    bit1(0x0422d5), // Bind
+    bit2(0x0422d5), // Confuse
+    //bit3(0x0422d5), // Terror
+    bit4(0x0422d5), // Synchro
+    bit5(0x0422d5), // Gifted Miracle
+    bit6(0x0422d5), // Teleport
+    bit7(0x0422d5), // Holy
+    
+    //bit0(0x0422d6), // Proud Roar
+    //bit1(0x0422d6), // Splash
+    //bit2(0x0422d6), // Paradise
+    bit3(0x0422d6), // Idyll Romp
+    bit4(0x0422d6), // Flare Breath
+    //bit5(0x0422d6), // Showtime
+    //bit6(0x0422d6), // Twinkle
+    //bit7(0x0422d6), // Cross-slash
+    
+    //bit0(0x0422d7), // Omnislash
+    bit1(0x0422d7), // Cross-slash+
+    //bit2(0x0422d7), // Magic
+    bit3(0x0422d7), // Blazing Donald
+    //bit4(0x0422d7), // Goofy Charge
+    //bit5(0x0422d7), // Goofy Tornado
+    //bit6(0x0422d7), // Sandstorm
+    bit7(0x0422d7), // Surprise!
+    
+    //bit0(0x0422d8), // Spiral Wave
+    //bit1(0x0422d8), // Hummingbird
+    //bit2(0x0422d8), // Ferocious Lunge
+]
+
+beginnerSleightThreshold = length(sleightBitflags) / 10
+GenerateCheevoFromBitflags({
+    "name": "Beginner Legerdemain",
+    "description": "Learn 10% of all optional sleights.",
+    "points": 3,
+    "threshold": beginnerSleightThreshold,
+    "badge": "00000",
+}, sleightBitflags, IsInMainStory())
+
+standardSleightThreshold = length(sleightBitflags) / 4
+GenerateCheevoFromBitflags({
+    "name": "Standard Legerdemain",
+    "description": "Learn 25% of all optional sleights.",
+    "points": 5,
+    "threshold": standardSleightThreshold,
+    "badge": "00000",
+}, sleightBitflags, IsInMainStory())
+
+proudSleightThreshold = length(sleightBitflags) / 2
+GenerateCheevoFromBitflags({
+    "name": "Proud Legerdemain",
+    "description": "Learn 50% of all optional sleights.",
+    "points": 10,
+    "threshold": proudSleightThreshold,
+    "badge": "00000",
+}, sleightBitflags, IsInMainStory())
+
+criticalSleightThreshold = length(sleightBitflags)
+GenerateCheevoFromBitflags({
+    "name": "Critical Legerdemain",
+    "description": "Learn all optional sleights.",
+    "points": 25,
+    "threshold": criticalSleightThreshold,
+    "badge": "00000",
+}, sleightBitflags, IsInMainStory())
+
 function shadowJournalEntry() => bit4(0x0422fe)
 achievement(
     title = "Heartless Hunter", description = "Defeat your first Heartless in Castle Oblivion.", points = 1,
     id = 15580, badge = "12277", published = "10/16/2014 6:04:37 AM", modified = "11/8/2016 6:46:53 PM",
-    trigger = WasBitflagSetInGame(shadowJournalEntry()) && IsInMainStory()
+    trigger = WasBitflagSetInMainGame(shadowJournalEntry()) && IsInMainStory()
 )
 
 function guardArmorCardObtained() => bit3(0x04230c)
@@ -1275,7 +1580,7 @@ function agrabahStoryEntry() => bit7(0x0422f4)
 achievement(
     title = "Memory of Treasure", description = "Complete Agrabah in Sora's story.", points = 5,
     id = 15584, badge = "14870", published = "10/16/2014 6:07:55 AM", modified = "7/7/2020 2:12:56 AM",
-    trigger = WasBitflagSetInGame(agrabahStoryEntry()) && IsInMainStory()
+    trigger = WasBitflagSetInMainGame(agrabahStoryEntry()) && IsInMainStory()
 )
 
 oogieBoogieHpMap = {
@@ -1302,7 +1607,7 @@ function halloweenTownEntry() => bit0(0x0422f5)
 achievement(
     title = "Memory of Memory", description = "Complete Halloween Town in Sora's story.", points = 5,
     id = 15585, badge = "14878", published = "10/16/2014 6:08:08 AM", modified = "7/7/2020 2:13:00 AM",
-    trigger = WasBitflagSetInGame(halloweenTownEntry()) && IsInMainStory()
+    trigger = WasBitflagSetInMainGame(halloweenTownEntry()) && IsInMainStory()
 )
 
 timeLimit = 180
@@ -1327,7 +1632,7 @@ function monstroEntry() => bit1(0x0422f5)
 achievement(
     title = "Memory of a Wish", description = "Complete Monstro in Sora's story.", points = 5,
     id = 15587, badge = "14883", published = "10/16/2014 6:08:32 AM", modified = "7/7/2020 2:13:09 AM",
-    trigger = WasBitflagSetInGame(monstroEntry()) && IsInMainStory()
+    trigger = WasBitflagSetInMainGame(monstroEntry()) && IsInMainStory()
 )
 
 function cloudHp() => word(0x03abcc)
@@ -1392,7 +1697,7 @@ function olympusColiseumStoryEntry() => bit6(0x0422f4)
 achievement(
     title = "Memory of Heroism", description = "Complete Olympus Coliseum in Sora's story.", points = 5,
     id = 15588, badge = "14912", published = "10/16/2014 6:09:40 AM", modified = "7/7/2020 2:13:21 AM",
-    trigger = WasBitflagSetInGame(olympusColiseumStoryEntry()) && IsInMainStory()
+    trigger = WasBitflagSetInMainGame(olympusColiseumStoryEntry()) && IsInMainStory()
 )
 
 trickmasterHpMap = {
@@ -1421,7 +1726,7 @@ function wonderlandStoryEntry() => bit5(0x0422f4)
 achievement(
     title = "Memory of the Rabbit Hole", description = "Complete Wonderland in Sora's story.", points = 5,
     id = 15590, badge = "14924", published = "10/16/2014 6:09:55 AM", modified = "7/7/2020 2:13:36 AM",
-    trigger = WasBitflagSetInGame(wonderlandStoryEntry()) && IsInMainStory()
+    trigger = WasBitflagSetInMainGame(wonderlandStoryEntry()) && IsInMainStory()
 )
 
 function larxeneHp() => word(0x03abac)
@@ -1449,7 +1754,7 @@ achievement(title = "Save the Bees [m]", points = 5,
               // Ensure we reset after we leave the world, but only after the Bambi bitflag has a chance to flip.
     trigger = never(once(WasInWorld("the Hundred Acre Wood")) && repeated(2, !IsInWorld("the Hundred Acre Wood"))) && IsInMainStory()
         && once(!WasInWorld("the Hundred Acre Wood") && IsInWorld("the Hundred Acre Wood")) // Checkpoint when entering the world
-        && WasBitflagSetInGame(bambi()) && never(poohEnergyBars() == 0)
+        && trigger_when(WasBitflagSetInMainGame(bambi())) && never(poohEnergyBars() == 0)
         // Due to how we're programming this, we need to also make sure that the player is actually in the Hundred Acre Wood before increasing hit targets.
         && never(repeated(2, IsInWorld("the Hundred Acre Wood") && poohEnergyBars() > Delta(poohEnergyBars())))
 )
@@ -1464,7 +1769,7 @@ poohGiftConditions = {
     6: GenerateConditionFromBitflag(bit1(0x042306)) // Bambi
 }
 
-GenerateSaveProtectedAchievementFromConditions({
+GenerateCheevoFromConditions({
     "name": "Friendly Fellows",
     "description": "Acquire all card and sleight rewards from Pooh and his friends.",
     "points": 10,
@@ -1496,13 +1801,15 @@ ursulaHpMap = {
     10: 0x2ef,
 }
 
+// todo: retest!
 theBendsTimeLimit = 45
 function ursulaHp() => word(0x03add0)
 achievement(title = "The Bends [m]", points = 25,
     description = "Defeat Ursula in Sora's story while healing at least once every " + theBendsTimeLimit + " seconds.",
     trigger = BossHPValueCheckpointIsSet(ursulaHp(), ursulaHpMap, "Atlantica", 0xb)
         && EnemyWithSpecificAddressWasJustDefeated(ursulaHp(), TRUE) && never(!IsInBattle())
-        && never(repeated(SecondsToFrames(theBendsTimeLimit), FrameHasAdvanced() && never(playerHp() > Delta(playerHp()))))
+        //&& never(repeated(SecondsToFrames(theBendsTimeLimit), FrameHasAdvanced() && never(playerHp() > Delta(playerHp()))))
+        && disable_when(repeated(SecondsToFrames(theBendsTimeLimit), FrameHasAdvanced()), playerHp() > Delta(playerHp()) || !IsInBattle())
         && unless(IsPaused()) && IsInMainStory()
 )
 
@@ -1510,7 +1817,7 @@ function atlanticaStoryEntry() => bit2(0x0422f5)
 achievement(
     title = "Memory of Melodies", description = "Complete Atlantica in Sora's story.", points = 5,
     id = 15595, badge = "15004", published = "10/16/2014 6:11:11 AM", modified = "7/7/2020 2:16:28 AM",
-    trigger = WasBitflagSetInGame(atlanticaStoryEntry()) && IsInMainStory()
+    trigger = WasBitflagSetInMainGame(atlanticaStoryEntry()) && IsInMainStory()
 )
 
 itemCards = GetCardsByProperty("type", "Item")
@@ -1527,7 +1834,7 @@ function warpinator() => bit7(0x0422D4)
 achievement(
     title = "Driven to Seize", description = "Defeat Riku on the eighth floor in Sora's story.", points = 3,
     id = 15596, badge = "15005", published = "10/16/2014 6:11:18 AM", modified = "7/7/2020 2:16:42 AM",
-    trigger = WasBitflagSetInGame(warpinator()) && IsInMainStory()
+    trigger = WasBitflagSetInMainGame(warpinator()) && IsInMainStory()
 )
 
 maleficentHpMap = {
@@ -1550,7 +1857,7 @@ function hollowBastionStoryEntry() => bit4(0x0422f5)
 achievement(
     title = "Memory of Darkness", description = "Complete Hollow Bastion in Sora's story.", points = 5,
     id = 15597, badge = "15011", published = "10/16/2014 6:11:28 AM", modified = "7/7/2020 2:16:37 AM",
-    trigger = WasBitflagSetInGame(hollowBastionStoryEntry()) && IsInMainStory()
+    trigger = WasBitflagSetInMainGame(hollowBastionStoryEntry()) && IsInMainStory()
 )
 
 hookHpMap = {
@@ -1579,7 +1886,7 @@ function neverLandStoryEntry() => bit3(0x0422f5)
 achievement(
     title = "Memory of Faith", description = "Complete Never Land in Sora's story.", points = 5,
     id = 15598, badge = "15013", published = "10/16/2014 6:11:35 AM", modified = "7/7/2020 2:16:47 AM",
-    trigger = WasBitflagSetInGame(neverLandStoryEntry()) && IsInMainStory()
+    trigger = WasBitflagSetInMainGame(neverLandStoryEntry()) && IsInMainStory()
 )
 
 function vexenHp() => word(0x03ab4c)
@@ -1603,11 +1910,10 @@ achievement(title = "Broken Furnace [m]", points = 5,
 )
 
 function twilightTownStoryEntry() => bit6(0x0422f5)
-// todo: update revision plan for new title
 achievement(
     title = "Memory of Dusk", description = "Complete Twilight Town in Sora's story.", points = 5,
     id = 15599, badge = "15017", published = "10/16/2014 6:11:42 AM", modified = "7/7/2020 2:16:58 AM",
-    trigger = WasBitflagSetInGame(twilightTownStoryEntry()) && IsInMainStory()
+    trigger = WasBitflagSetInMainGame(twilightTownStoryEntry()) && IsInMainStory()
 )
 
 vexenIIHpMap = {
@@ -1663,7 +1969,7 @@ function destinyIslandsStoryEntry() => bit7(0x0422f5)
 achievement(
     title = "Memory of Paradise", description = "Complete the Destiny Islands in Sora's story.", points = 5,
     id = 15600, badge = "15020", published = "10/16/2014 6:11:58 AM", modified = "7/7/2020 2:17:08 AM",
-    trigger = WasBitflagSetInGame(destinyIslandsStoryEntry()) && IsInMainStory()
+    trigger = WasBitflagSetInMainGame(destinyIslandsStoryEntry()) && IsInMainStory()
 )
 
 nonKingdomKeyAttackCards = []
@@ -1690,7 +1996,6 @@ achievement(
         && EnemyWithSpecificAddressWasJustDefeated(rikuHp(), FALSE) && once(rikuHp() == 0x690)
 )
 
-// todo: update revision plan with new title and score
 achievement(
     title = "Quelled Savagery", description = "Defeat Larxene on the twelfth floor.", points = 3,
     id = 15601, badge = "15025", published = "10/16/2014 6:12:06 AM", modified = "7/7/2020 2:17:19 AM",
@@ -1813,27 +2118,6 @@ achievement(
         && CreditsStarted() && maxHp() == 0x0050 && IsInMainStory()
 )
 
-achievement(
-    title = "Cura+", description = "Reach 290 HP points", points = 5,
-    id = 15608, badge = "14880", published = "10/16/2014 6:14:34 AM", modified = "7/7/2020 2:18:10 AM",
-    trigger = once(maxHp() == 0x0113) && maxHp() == 0x0122 && IsInMainStory()
-)
-
-achievement(
-    title = "Leveling Up", description = "Reach the MAX in Bonus A or Bonus B", points = 10,
-    id = 15609, badge = "15007", published = "10/16/2014 6:14:45 AM", modified = "9/26/2019 11:37:01 AM",
-    trigger = IsInMainStory() &&
-              ((once(maxHp() == 0x0221) && maxHp() == 0x0230) ||
-               (once(maxCp() == 0x0753) && maxCp() == 0x076C))
-)
-
-function keyToRewardsEntry() => bit2(0x042311)
-achievement(
-    title = "Room of Rewards", description = "Obtain a Key to Rewards for the first time.", points = 5,
-    id = 15610, badge = "15008", published = "10/16/2014 6:14:53 AM", modified = "7/7/2020 2:18:19 AM",
-    trigger = WasBitflagSetInGame(keyToRewardsEntry())
-)
-
 architectBitflags = [
     bit0(0x04230F),
     bit1(0x04230F),
@@ -1863,252 +2147,32 @@ architectBitflags = [
     bit2(0x042311),
 ]
 
-architectConditions = {}
-
-for i in architectBitflags
-{
-    architectConditions[length(architectConditions)] = GenerateConditionFromBitflag(i)
-}
-
-GenerateSaveProtectedAchievementFromConditions({
+GenerateCheevoFromBitflags({
     "name": "Architect",
     "description": "Complete the Map Cards section of Jiminy's journal.",
     "points": 10,
     "id": 15612,
     "badge": "15228",
-    "threshold": length(architectConditions)
-}, architectConditions, IsInMainStory())
-
-function lionheart() => bit0(0x042304)
-achievement(
-    title = "Lionheart", description = "Obtain a Lionheart card for the first time.", points = 5,
-    id = 15581, badge = "14873", published = "10/16/2014 6:05:29 AM", modified = "7/7/2020 2:22:26 AM",
-    trigger = WasBitflagSetInGame(lionheart())
-)
-
-function threeWishes() => bit0(0x042303)
-achievement(
-    title = "Three Wishes", description = "Obtain a Three Wishes card for the first time.", points = 5,
-    id = 15627, badge = "14872", published = "10/16/2014 6:18:57 AM", modified = "7/7/2020 2:22:32 AM",
-    trigger = WasBitflagSetInGame(threeWishes())
-)
-
-function oneWingedAngel() => bit7(0x042304)
-achievement(
-    title = "One-Winged Angel", description = "Obtain a One-Winged Angel card for the first time.", points = 5,
-    id = 15628, badge = "15189", published = "10/16/2014 6:19:09 AM", modified = "7/7/2020 2:22:37 AM",
-    trigger = WasBitflagSetInGame(oneWingedAngel())
-)
-
-function diamondDust() => bit6(0x042304)
-achievement(
-    title = "Diamond Dust", description = "Obtain a Diamond Dust card for the first time.", points = 5,
-    id = 15629, badge = "15187", published = "10/16/2014 6:19:25 AM", modified = "7/7/2020 2:22:57 AM",
-    trigger = WasBitflagSetInGame(diamondDust())
-)
-
-function ultimaWeapon() => bit5(0x042304)
-achievement(
-    title = "Ultima Weapon", description = "Obtain an Ultima Weapon card for the first time.", points = 5,
-    id = 15630, badge = "15184", published = "10/16/2014 6:19:36 AM", modified = "9/29/2019 12:07:01 PM",
-    trigger = WasBitflagSetInGame(ultimaWeapon())
-)
-
-function pumpkinheadEntry() => bit2(0x042303)
-achievement(
-    title = "Pumpkinhead", description = "Obtain a Pumpkinhead card for the first time.", points = 5,
-    id = 15631, badge = "14874", published = "10/16/2014 6:19:59 AM", modified = "7/7/2020 2:23:04 AM",
-    trigger = WasBitflagSetInGame(pumpkinheadEntry())
-)
-
-function wishingStar() => bit4(0x042303)
-achievement(
-    title = "Wishing Star", description = "Obtain a Wishing Star card for the first time.", points = 5,
-    id = 15632, badge = "14879", published = "10/16/2014 6:20:07 AM", modified = "7/7/2020 2:23:09 AM",
-    trigger = WasBitflagSetInGame(wishingStar())
-)
-
-function olympia() => bit7(0x042303)
-achievement(
-    title = "Olympia", description = "Obtain an Olympia card for the first time.", points = 5,
-    id = 15634, badge = "14908", published = "10/16/2014 6:21:13 AM", modified = "7/7/2020 2:23:14 AM",
-    trigger = WasBitflagSetInGame(olympia())
-)
-
-function metalChocobo() => bit6(0x042303)
-achievement(
-    title = "Metal Chocobo", description = "Obtain a Metal Chocobo card for the first time.", points = 5,
-    id = 15635, badge = "14910", published = "10/16/2014 6:21:20 AM", modified = "7/7/2020 2:23:19 AM",
-    trigger = WasBitflagSetInGame(metalChocobo())
-)
-
-function spellbinder() => bit5(0x042303)
-achievement(
-    title = "Spellbinder", description = "Obtain a Spellbinder card for the first time.", points = 5,
-    id = 15636, badge = "14930", published = "10/16/2014 6:21:25 AM", modified = "7/7/2020 2:23:25 AM",
-    trigger = WasBitflagSetInGame(spellbinder())
-)
-
-function divineRose() => bit2(0x042304)
-achievement(
-    title = "Divine Rose", description = "Obtain a Divine Rose card for the first time.", points = 5,
-    id = 15637, badge = "15006", published = "10/16/2014 6:21:29 AM", modified = "7/7/2020 2:23:29 AM",
-    trigger = WasBitflagSetInGame(divineRose())
-)
-
-function crabclaw() => bit1(0x042303)
-achievement(
-    title = "Crabclaw", description = "Obtain a Crabclaw card for the first time.", points = 5,
-    id = 15638, badge = "14933", published = "10/16/2014 6:21:34 AM", modified = "7/7/2020 2:23:35 AM",
-    trigger = WasBitflagSetInGame(crabclaw())
-)
-
-function fairyHarp() => bit3(0x042303)
-achievement(
-    title = "Fairy Harp", description = "Obtain a Fairy Harp card for the first time.", points = 5,
-    id = 15639, badge = "15012", published = "10/16/2014 6:21:39 AM", modified = "7/7/2020 2:23:40 AM",
-    trigger = WasBitflagSetInGame(fairyHarp())
-)
-
-function ladyLuck() => bit1(0x042304)
-achievement(
-    title = "Lady Luck", description = "Obtain a Lady Luck card for the first time.", points = 5,
-    id = 15641, badge = "14914", published = "10/16/2014 6:21:50 AM", modified = "7/7/2020 2:23:51 AM",
-    trigger = WasBitflagSetInGame(ladyLuck())
-)
+    "threshold": length(architectBitflags)
+}, architectBitflags, IsInMainStory())
 
 function slidingDash() => bit0(0x0422cc)
-achievement(
-    title = "The First of Many", description = "Learn the Sliding Dash sleight.", points = 1,
-    id = 15613, badge = "15212", published = "10/16/2014 6:15:51 AM", modified = "7/7/2020 2:24:02 AM",
-    trigger = WasBitflagSetInGame(slidingDash())
-)
-
 function blazingDonaldUnlocked() => bit3(0x0422d7)
-achievement(
-    title = "Blazing Donald", description = "Learn the Blazing Donald sleight.", points = 1,
-    id = 15614, badge = "14868", published = "10/16/2014 6:16:30 AM", modified = "7/7/2020 2:24:09 AM",
-    trigger = WasBitflagSetInGame(blazingDonaldUnlocked())
-)
-
 function stopRaid() => bit3(0x0422cf)
-achievement(
-    title = "Stop Raid", description = "Learn the Stop Raid sleight.", points = 3,
-    id = 15615, badge = "14915", published = "10/16/2014 6:16:43 AM", modified = "10/16/2014 6:23:10 AM",
-    trigger = WasBitflagSetInGame(stopRaid())
-)
-
 function quake() => bit6(0x0422d4)
-achievement(
-    title = "Quake", description = "Learn the Quake sleight.", points = 3,
-    id = 15616, badge = "15003", published = "10/16/2014 6:17:15 AM", modified = "10/16/2014 6:23:13 AM",
-    trigger = WasBitflagSetInGame(quake())
-)
-
 function thunderRaid() => bit1(0x0422cf)
-achievement(
-    title = "Thunder Raid", description = "Learn the Thunder Raid sleight.", points = 3,
-    id = 15617, badge = "15009", published = "10/16/2014 6:17:24 AM", modified = "10/16/2014 6:23:15 AM",
-    trigger = WasBitflagSetInGame(thunderRaid())
-)
-
 function warp() => bit0(0x0422D5)
-achievement(
-    title = "Warp", description = "Learn the Warp sleight.", points = 3,
-    id = 15618, badge = "15016", published = "10/16/2014 6:17:31 AM", modified = "10/16/2014 6:23:17 AM",
-    trigger = WasBitflagSetInGame(warp())
-)
-
 function firagaBreak() => bit0(0x0422d4)
-achievement(
-    title = "Firaga Break", description = "Learn the Firaga Break sleight.", points = 3,
-    id = 15620, badge = "15221", published = "10/16/2014 6:17:58 AM", modified = "10/16/2014 6:23:21 AM",
-    trigger = WasBitflagSetInGame(firagaBreak())
-)
-
 function fireBreak() => bit7(0x0422ce)
-achievement(
-    title = "Burner", description = "Learn the Fire Raid sleight.", points = 3,
-    id = 15621, badge = "15218", published = "10/16/2014 6:18:02 AM", modified = "10/16/2014 6:23:24 AM",
-    trigger = WasBitflagSetInGame(fireBreak())
-)
-
 function crossSlashPlus() => bit1(0x0422d7)
-achievement(
-    title = "Cross-Whip", description = "Learn the Cross-Slash+ sleight.", points = 3,
-    id = 15622, badge = "15213", published = "10/16/2014 6:18:08 AM", modified = "8/14/2018 12:38:08 PM",
-    trigger = WasBitflagSetInGame(crossSlashPlus())
-)
-
 function judgment() => bit4(0x0422cf)
-achievement(
-    title = "Divine Justice", description = "Learn the Judgment sleight.", points = 3,
-    id = 15623, badge = "15210", published = "10/16/2014 6:18:13 AM", modified = "10/16/2014 6:23:28 AM",
-    trigger = WasBitflagSetInGame(judgment())
-)
-
 function blizzardRaid() => bit0(0x0422cf)
-achievement(
-    title = "Blizzard Raid ", description = "Learn the Blizzard Raid sleight.", points = 3,
-    id = 15624, badge = "15209", published = "10/16/2014 6:18:20 AM", modified = "10/16/2014 6:23:31 AM",
-    trigger = WasBitflagSetInGame(blizzardRaid())
-)
-
 function homingBlizzara() => bit2(0x0422d4)
-achievement(
-    title = "Homing Blizzara", description = "Learn the Homing Blizzara sleight.", points = 3,
-    id = 15625, badge = "15207", published = "10/16/2014 6:18:24 AM", modified = "10/16/2014 6:23:33 AM",
-    trigger = WasBitflagSetInGame(homingBlizzara())
-)
-
 function gravityRaid() => bit2(0x0422cf)
-achievement(
-    title = "Gravity Raid", description = "Learn the Gravity Raid sleight.", points = 3,
-    id = 15633, badge = "14876", published = "10/16/2014 6:21:08 AM", modified = "10/16/2014 6:23:50 AM",
-    trigger = WasBitflagSetInGame(gravityRaid())
-)
-
 function megalixir() => bit4(0x042307)
-achievement(
-    title = "Megalixir", description = "Obtain a Megalixir card for the first time.", points = 3,
-    id = 15647, badge = "15019", published = "10/16/2014 6:22:45 AM", modified = "11/8/2016 6:44:41 PM",
-    trigger = WasBitflagSetInGame(megalixir())
-)
-
 function stop() => bit5(0x042305)
-achievement(
-    title = "Time Stop", description = "Obtain a Stop card for the first time.", points = 3,
-    id = 15645, badge = "15204", published = "10/16/2014 6:22:27 AM", modified = "10/16/2014 6:24:18 AM",
-    trigger = WasBitflagSetInGame(stop())
-)
-
 function gravityCardEntry() => bit4(0x042305)
-achievement(
-    title = "Always Down", description = "Obtain a Gravity card for the first time.", points = 3,
-    id = 15646, badge = "15205", published = "10/16/2014 6:22:35 AM", modified = "10/16/2014 6:24:21 AM",
-    trigger = WasBitflagSetInGame(gravityCardEntry())
-)
-
 function mushu() => bit4(0x042306)
-achievement(
-    title = "Mushu", description = "Get a Mushu card for the first time.", points = 3,
-    id = 15644, badge = "15010", published = "10/16/2014 6:22:17 AM", modified = "10/16/2014 6:24:16 AM",
-    trigger = WasBitflagSetInGame(mushu())
-)
-
-function lexaeus() => bit0(0x042313)
-achievement(
-    title = "Lexaeus", description = "Obtain the Lexaeus card in Sora's story.", points = 5,
-    id = 15650, badge = "15185", published = "10/16/2014 6:26:31 AM", modified = "11/8/2016 5:30:58 PM",
-    trigger = WasBitflagSetInGame(lexaeus()) && IsInMainStory()
-)
-
-function ansem() => bit1(0x042313)
-achievement(
-    title = "Ansem", description = "Obtain the Ansem card in Sora's story.", points = 5,
-    id = 15649, badge = "15186", published = "10/16/2014 6:26:26 AM", modified = "10/16/2014 6:48:37 AM",
-    trigger = WasBitflagSetInGame(ansem()) && IsInMainStory()
-)
 
 maleficentDeckOffset = 0x74
 function reloadStateDuringRikuMaleficentBattle() => byte(0x03a628)
@@ -2441,10 +2505,12 @@ achievement(
     trigger = WasRikuReplicaDefeatedOnFloorB2(FALSE)
 )
 
-function IsInDarkMode() => once(rikuBattleState() == 0x20 && never(rikuBattleState() == 0x22))
+// todo: retest!
+function IsInDarkMode() => rikuBattleState() == 0x20
 achievement(title = "To the Shadow Realm with You! [m]", points = 5,
     description = "Finish off the Riku replica on Floor B2 in Dark Mode.",
-    trigger = WasRikuReplicaDefeatedOnFloorB2(TRUE) && trigger_when(IsInDarkMode())
+    trigger = WasRikuReplicaDefeatedOnFloorB2(TRUE) && trigger_when(once(IsInDarkMode()))
+        && disable_when(rikuBattleState() == 0x22, IsInDarkMode())
 )
 
 function ansemB1Hp() => word(0x03a9cc)
@@ -2460,14 +2526,6 @@ achievement(
 achievement(title = "Nullary Hand [m]", points = 10,
     description = "Defeat Ansem on Floor B1 without stocking cards.",
     trigger = WasAnsemDefeatedOnFloorB1(TRUE) && never(numberOfStockedCardsForPlayer() > 0)
-)
-
-achievement(
-    title = "Level Boost", description = "Reach the MAX in Bonus A or Bonus B (Reb)", points = 10,
-    id = 15667, badge = "15030", published = "10/16/2014 6:39:25 AM", modified = "10/8/2019 2:07:01 PM",
-    trigger = byte(0x042346) == 0x08 &&
-              ((once(maxHp() == 0x0221) && maxHp() == 0x0230) ||
-               (once(attackPoints() == 0x1D) && attackPoints() == 0x1E))
 )
 
 leaderboard(title = "Time Attack - Parasite Cage (Sora's Story)",
