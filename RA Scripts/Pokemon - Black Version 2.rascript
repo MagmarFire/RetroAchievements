@@ -61,18 +61,7 @@ function TotalNumberOfObtainablePokemonInASingleSaveFile() => length(GetObtainab
 function areaId() => word(0x23b444)
 
 locations = {
-    0x1b6: {  "id": 0x1b6, "key": "AspertiaGate", "display": "the Aspertia Gate", "prep": "at", }, 
-0x1b5: {  "id": 0x1b5, "key": "Route19", "display": "Route 19", "prep": "on", }, 
-0x1ab: {  "id": 0x1ab, "key": "Aspertia", "display": "Aspertia City", "prep": "in", }, 
-0x1b1: {  "id": 0x1b1, "key": "AspertiaHouseTR1F", "display": "Aspertia City", "prep": "in", }, 
-0x1b2: {  "id": 0x1b2, "key": "AspertiaHouseTR2F", "display": "Aspertia City", "prep": "in", }, 
-0x1b3: {  "id": 0x1b3, "key": "AspertiaPokemonCenter", "display": "the Aspertia City Pokemon Center", "prep": "at", }, 
-0x1ad: {  "id": 0x1ad, "key": "AspertiaHouseCL1F", "display": "Aspertia City", "prep": "in", }, 
-0x1ae: {  "id": 0x1ae, "key": "AspertiaHouseCL2F", "display": "Aspertia City", "prep": "in", }, 
-0x1af: {  "id": 0x1af, "key": "AspertiaHouseBL1F", "display": "Aspertia City", "prep": "in", }, 
-0x1b0: {  "id": 0x1b0, "key": "AspertiaHouseBL2F", "display": "Aspertia City", "prep": "in", }, 
-0x1ac: {  "id": 0x1ac, "key": "PlayerHouse", "display": "home", "prep": "", }, 
-
+0x1b6: { "id": 0x1b6, "key": "AspertiaGate", "display": "the Aspertia Gate", "prep": "at", }, 0x1b5: { "id": 0x1b5, "key": "Route19", "display": "Route 19", "prep": "on", }, 0x1ab: { "id": 0x1ab, "key": "Aspertia", "display": "Aspertia City", "prep": "in", }, 0x1b1: { "id": 0x1b1, "key": "AspertiaHouseTR1F", "display": "Aspertia City", "prep": "in", }, 0x1b2: { "id": 0x1b2, "key": "AspertiaHouseTR2F", "display": "Aspertia City", "prep": "in", }, 0x1b3: { "id": 0x1b3, "key": "AspertiaPokemonCenter", "display": "the Aspertia City Pokemon Center", "prep": "at", }, 0x1ad: { "id": 0x1ad, "key": "AspertiaHouseCL1F", "display": "Aspertia City", "prep": "in", }, 0x1ae: { "id": 0x1ae, "key": "AspertiaHouseCL2F", "display": "Aspertia City", "prep": "in", }, 0x1af: { "id": 0x1af, "key": "AspertiaHouseBL1F", "display": "Aspertia City", "prep": "in", }, 0x1b0: { "id": 0x1b0, "key": "AspertiaHouseBL2F", "display": "Aspertia City", "prep": "in", }, 0x1ac: { "id": 0x1ac, "key": "PlayerHouse", "display": "home", "prep": "", }, 
 }
 
 function GetLocationByKey(key)
