@@ -64,3 +64,15 @@ for cluster in clusters
 }
 
 function IsAPointer(addr) => byte(addr + 3) == 0x2 && tbyte(addr) > 0
+
+function CreateHitTargetedAndNextChain(permutation)
+{
+    trigger = always_true()
+    
+    for condition in permutation
+    {
+        trigger = once(trigger && once(condition))
+    }
+    
+    return trigger
+}
