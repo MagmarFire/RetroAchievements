@@ -61,7 +61,7 @@ function TotalNumberOfObtainablePokemonInASingleSaveFile() => length(GetObtainab
 function areaId() => word(0x23b444)
 
 locations = {
-0x1b6: { "id": 0x1b6, "key": "AspertiaGate", "display": "the Aspertia Gate", "prep": "at", }, 0x1b5: { "id": 0x1b5, "key": "Route19", "display": "Route 19", "prep": "on", }, 0x1ab: { "id": 0x1ab, "key": "Aspertia", "display": "Aspertia City", "prep": "in", }, 0x1b1: { "id": 0x1b1, "key": "AspertiaHouseTR1F", "display": "Aspertia City", "prep": "in", }, 0x1b2: { "id": 0x1b2, "key": "AspertiaHouseTR2F", "display": "Aspertia City", "prep": "in", }, 0x1b3: { "id": 0x1b3, "key": "AspertiaPokemonCenter", "display": "the Aspertia City Pokemon Center", "prep": "at", }, 0x1ad: { "id": 0x1ad, "key": "AspertiaHouseCL1F", "display": "Aspertia City", "prep": "in", }, 0x1ae: { "id": 0x1ae, "key": "AspertiaHouseCL2F", "display": "Aspertia City", "prep": "in", }, 0x1af: { "id": 0x1af, "key": "AspertiaHouseBL1F", "display": "Aspertia City", "prep": "in", }, 0x1b0: { "id": 0x1b0, "key": "AspertiaHouseBL2F", "display": "Aspertia City", "prep": "in", }, 0x1ac: { "id": 0x1ac, "key": "PlayerHouse", "display": "home", "prep": "", }, 
+0x1b6: { "id": 0x1b6, "key": "AspertiaGate", "display": "the Aspertia Gate", "prep": "at", }, 0x1b5: { "id": 0x1b5, "key": "Route19", "display": "Route 19", "prep": "on", }, 0x1ab: { "id": 0x1ab, "key": "Aspertia", "display": "Aspertia City", "prep": "in", }, 0x1b1: { "id": 0x1b1, "key": "AspertiaHouseTR1F", "display": "Aspertia City", "prep": "in", }, 0x1b2: { "id": 0x1b2, "key": "AspertiaHouseTR2F", "display": "Aspertia City", "prep": "in", }, 0x1b3: { "id": 0x1b3, "key": "AspertiaPokemonCenter", "display": "the Aspertia City Pokemon Center", "prep": "at", }, 0x1ad: { "id": 0x1ad, "key": "AspertiaHouseCL1F", "display": "Aspertia City", "prep": "in", }, 0x1ae: { "id": 0x1ae, "key": "AspertiaHouseCL2F", "display": "Aspertia City", "prep": "in", }, 0x1af: { "id": 0x1af, "key": "AspertiaHouseBL1F", "display": "Aspertia City", "prep": "in", }, 0x1b0: { "id": 0x1b0, "key": "AspertiaHouseBL2F", "display": "Aspertia City", "prep": "in", }, 0x1ac: { "id": 0x1ac, "key": "PlayerHouse", "display": "home", "prep": "", }, 0x1b7: { "id": 0x1b7, "key": "Floccesy", "display": "Floccesy Town", "prep": "in", }, 0x1bb: { "id": 0x1bb, "key": "FloccesyPokemonCenter", "display": "the Floccesy Town Pokemon Center", "prep": "at", }, 0x1b9: { "id": 0x1b9, "key": "FloccesyHouseBC", "display": "Floccesy Town", "prep": "in", }, 0x1ba: { "id": 0x1ba, "key": "FloccesyHouseBR", "display": "Floccesy Town", "prep": "in", }, 0x1be: { "id": 0x1be, "key": "Route20", "display": "Route 20", "prep": "on", }, 0x1bc: { "id": 0x1bc, "key": "Route20Ranch", "display": "Floccesy Ranch", "prep": "at", }, 0x1bd: { "id": 0x1bd, "key": "FloccesyRanch", "display": "Floccesy Ranch", "prep": "at", }, 0x1b8: { "id": 0x1b8, "key": "FloccesyDojo", "display": "Floccesy Town", "prep": "in", }, 0x1b4: { "id": 0x1b4, "key": "TrainerSchool", "display": "the Trainer School", "prep": "at", }, 0x1e9: { "id": 0x1e9, "key": "AspertiaGym", "display": "the Aspertia City Gym", "prep": "at", }, 
 }
 
 function GetLocationByKey(key)
@@ -274,3 +274,54 @@ achievement(title = "Onto the Road", points = 1, badge = "00000",
     trigger = aspertiaGateFlag() == 0 && openingFlag() == 7 && IsInLocation("AspertiaGate")
 )
 
+function numberOfPokemonInPlayerParty() => byte(0x21e3e8)
+function pokemonSlotOffset() => 0x224
+function pokemonBattleSlot1BaseAddr() => 0x25b1f0
+function musicId() => word(0x243ae0)
+function GymLeaderVictoryMusicIsPlaying() => musicId() == 0x47e
+
+// 0x426 = Gym
+// 0x46c = Gym Leader battle
+function GymLeaderBattleMusicJustStartedPlaying() => musicId() == 0x46c && Delta(musicId()) == 0x0
+
+// Battle slots appear to function like a twelve-item array. The player fills slots until they run out of Pokemon, at which point the slots get filled by the opponent's Pokemon.
+//
+// For example, if the player has two Pokemon and the opponent has three, the array will look like this:
+//
+// [p1] [p2] [o1] [o2] [o3] [] [] [] [] [] [] []
+//
+// Each slot has an offset difference of 0x224.
+// This function assumes a zero-based index.
+function GetPokemonInBattleSlot(slotId)
+{
+    slotBaseAddr = pokemonBattleSlot1BaseAddr() + slotId * pokemonSlotOffset()
+    return {
+        "id": word(slotBaseAddr),
+        "level": byte(slotBaseAddr + 12)
+    }
+}
+
+function AveragePartyLevelIsAtMost(level, maxPartySize = 6)
+{
+    trigger = always_false()
+    
+    for i in range(0, maxPartySize - 1)
+    {
+        totalLevel = 0
+        for j in range(0, i)
+        {
+            mon = GetPokemonInBattleSlot(j)
+            totalLevel = totalLevel + mon["level"]
+        }
+        
+        trigger = trigger || numberOfPokemonInPlayerParty() == i + 1 && totalLevel <= level * (i + 1)
+    }
+    
+    return trigger
+}
+
+achievement(title = "An Even Fight [m]", points = 10, badge = "00000",
+    description = "Defeat Cheren with a party of at most two Pokemon and an average level of 10 or below.",
+    trigger = AveragePartyLevelIsAtMost(10, 2) && once(GymLeaderBattleMusicJustStartedPlaying() && numberOfPokemonInPlayerParty() <= 2) && never(!IsInLocation("AspertiaGym"))
+        && trigger_when(GymLeaderVictoryMusicIsPlaying())
+)
