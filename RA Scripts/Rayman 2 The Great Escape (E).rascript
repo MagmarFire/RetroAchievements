@@ -106,6 +106,53 @@ function areaId() => dword(0x0C6DF9)
 // $7A325E: lums vert ancien 2
 // $7A325F: lums vert ancient suite
 
+// This function allows the creation of achievements with built-in save protection that deal with a collection of values being set
+// throughout the game. The schemas for both parameters are as follows:
+//
+// cheevo: "name": title
+//         "description": self-explanatory
+//         "points": self-explanatory
+//         "threshold": how many values in the "addresses" dictionary must be set before this achievement is triggered
+//
+// conditions: "countsWhen": the condition that must be true in order for it to be counted in the total
+//             "recalculateWhen": the condition that indicates that relevant values in the condition have changed,
+//                                and so everything must be recalculated
+//
+// onlyAvailableWhen: A condition that must be true in all conditions for the achievement to trigger.
+function GenerateCheevoFromConditions(cheevo, conditions, onlyAvailableWhen)
+{
+    loadedCounts = []
+    totalCounts = []
+    resetAlt = always_false()
+
+    for i in conditions
+    {
+        condition = conditions[i]
+
+        // This is the score when the game is loaded. If the loaded score is greater than or equal to the threshold--that is,
+        // if the save file would satisfy enough conditions to trigger the achievement on load--this should trigger a
+        // permanant pauselock to serve as save protection.
+        array_push(loadedCounts, once(condition["countsWhen"] && IsLoadingSaveFile()))
+
+        // We want both loaded and session counts here (that is, we don't care if we're loading a save file when these are tallied).
+        // This way, loading a save doesn't invalidate the achievement outright if a player hasn't actually earned it yet.
+        array_push(totalCounts, once(condition["countsWhen"]))
+
+        resetAlt = resetAlt || condition["recalculateWhen"]
+    }
+
+    achievement(title = cheevo["name"], description = cheevo["description"], points = cheevo["points"], badge = cheevo["badge"],
+        trigger = IsInGame() &&
+            measured(tally(cheevo["threshold"], totalCounts)) && unless(tally(cheevo["threshold"], loadedCounts))
+            && never(resetAlt) && onlyAvailableWhen && (always_false() || never(Delta(char1()) == 0 && char1() == 0))
+    )
+}
+
+function GenerateConditionFromBitflag(bit)
+{
+    return { "countsWhen": (bit == 1), "recalculateWhen": (Delta(bit) != bit) }
+}
+
 MapLookup = {
     0xcccc: "Main Menu",
     0x6e75: "Main Menu",
@@ -393,15 +440,15 @@ achievement(
 )
 
 achievement(
-    title = "You and how many more?", description = "Beat the Sanctuary of Stone and Fire without losing the Golden Fists", points = 10,
-    id = 71960, badge = "165892", published = "2/14/2019 11:54:54 PM", modified = "4/5/2021 3:05:28 PM",
-    trigger = prev(word(0x0E5C34)) == 30061 && word(0x0E5C34) == 31075 && byte(0x0C8CA1) == 1
+    title = "Thanks for playing", description = "Get the 1000th lum", points = 25,
+    id = 71540, badge = "165893", published = "2/5/2019 4:39:26 AM", modified = "4/5/2021 3:05:50 PM",
+    trigger = word(0x0E5C34) == 29282 && areaId() == 31242 && byte(0x7A08E6) == 43
 )
 
 achievement(
-    title = "Thanks, dude", description = "Destroy a total of 10 cages", points = 5,
-    id = 71527, badge = "165880", published = "2/5/2019 4:39:04 AM", modified = "4/5/2021 3:05:31 PM",
-    trigger = prev(byte(0x224941)) == 9 && byte(0x224941) == 10
+    title = "You and how many more?", description = "Beat the Sanctuary of Stone and Fire without losing the Golden Fists", points = 10,
+    id = 71960, badge = "165892", published = "2/14/2019 11:54:54 PM", modified = "4/5/2021 3:05:28 PM",
+    trigger = prev(word(0x0E5C34)) == 30061 && word(0x0E5C34) == 31075 && byte(0x0C8CA1) == 1
 )
 
 achievement(
@@ -456,15 +503,9 @@ achievement(
 )
 
 achievement(
-    title = "Thanks, pal", description = "Destroy all 80 cages", points = 25,
-    id = 71529, badge = "165881", published = "2/5/2019 4:39:07 AM", modified = "4/5/2021 3:05:48 PM",
-    trigger = prev(byte(0x224941)) == 79 && byte(0x224941) == 80
-)
-
-achievement(
-    title = "Thanks for playing", description = "Get the 1000th lum", points = 25,
-    id = 71540, badge = "165893", published = "2/5/2019 4:39:26 AM", modified = "4/5/2021 3:05:50 PM",
-    trigger = word(0x0E5C34) == 29282 && areaId() == 31242 && byte(0x7A08E6) == 43
+    title = "Thanks, dude", description = "Destroy a total of 10 cages", points = 5,
+    id = 71527, badge = "165880", published = "2/5/2019 4:39:04 AM", modified = "4/5/2021 3:05:31 PM",
+    trigger = prev(byte(0x224941)) == 9 && byte(0x224941) == 10
 )
 
 achievement(
@@ -474,16 +515,16 @@ achievement(
 )
 
 achievement(
+    title = "Thanks, pal", description = "Destroy all 80 cages", points = 25,
+    id = 71529, badge = "165881", published = "2/5/2019 4:39:07 AM", modified = "4/5/2021 3:05:48 PM",
+    trigger = prev(byte(0x224941)) == 79 && byte(0x224941) == 80
+)
+
+achievement(
     title = "No fairy can beat me !", description = "Beat race under 01 37 00 in the walk of power", points = 15,
     id = 54232, badge = "55960", published = "11/2/2017 7:06:10 PM", modified = "11/4/2017 8:00:13 PM",
     trigger = byte(0x008000) == 0 && byte(0x5ECF37) <= 71 && byte(0x5ECF36) <= 189 && byte(0x1768B4) == 172 && 
               word(0x1FA780) == 44312
-)
-
-achievement(
-    title = "Call me tarzan", description = "Get the first fist upgrade", points = 5,
-    id = 54208, badge = "55948", published = "11/2/2017 7:03:46 PM", modified = "11/2/2017 7:20:46 PM",
-    trigger = repeated(13, byte(0x224A10) == 45) && byte(0x224A10) == 109
 )
 
 achievement(
@@ -531,25 +572,11 @@ achievement(
     trigger = byte(0x224A10) == 109 && byte(0x224A16) == 64
 )
 
-rich_presence_conditional_display(word(0x0E5C34) == 52428, "{0}",
-    rich_presence_lookup("Map", word(0x0E5C34), MapLookup)
-)
+//rich_presence_conditional_display(IsOnMainMenu(), "In the main menu...")
 
-rich_presence_conditional_display(word(0x0E5C34) == 28277, "{0}",
-    rich_presence_lookup("Map", word(0x0E5C34), MapLookup)
-)
-
-rich_presence_conditional_display(word(0x0E5C34) == 26988, "{0}",
-    rich_presence_lookup("Map", word(0x0E5C34), MapLookup)
-)
-
-rich_presence_conditional_display(word(0x0E5C34) == 25695, "{0}",
-    rich_presence_lookup("Map", word(0x0E5C34), MapLookup)
-)
-
-rich_presence_conditional_display(word(0x0E5C34) == 24934, "{0}",
-    rich_presence_lookup("Map", word(0x0E5C34), MapLookup)
-)
+//rich_presence_conditional_display(SaveFileIsLoaded(), "Rayman is {0}",
+//    rich_presence_lookup("Map", word(0x0E5C34), MapLookup)
+//)
 
 rich_presence_conditional_display(word(0x0E5C34) == 28781, "{0} | 🌞x{1}/999 lums| 🔒x{2}/80 cages",
     rich_presence_lookup("Map", word(0x0E5C34), MapLookup),
