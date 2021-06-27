@@ -1381,7 +1381,7 @@ GenerateCheevoFromBitflags({
     "points": 5,
     "threshold": rookieThreshold,
     "id": 156793,
-    "badge": "00000",
+    "badge": "180269",
 }, collectorBitflags, IsInMainStory())
 
 regularThreshold = freeCards + (length(collectorBitflags) - freeCards) / 4
@@ -1390,7 +1390,8 @@ GenerateCheevoFromBitflags({
     "description": ("Collect " + regularThreshold + " non-map cards in Sora's story."),
     "points": 10,
     "threshold": regularThreshold,
-    "badge": "00000"
+    "id": 160403,
+    "badge": "180262"
 }, collectorBitflags, IsInMainStory())
 
 veteranThreshold = freeCards + (length(collectorBitflags) - freeCards) / 2
@@ -1399,7 +1400,8 @@ GenerateCheevoFromBitflags({
     "description": ("Collect " + veteranThreshold + " non-map cards in Sora's story."),
     "points": 25,
     "threshold": veteranThreshold,
-    "badge": "00000"
+    "id": 160404,
+    "badge": "180263"
 }, collectorBitflags, IsInMainStory())
 
 GenerateCheevoFromBitflags({
@@ -1407,7 +1409,8 @@ GenerateCheevoFromBitflags({
     "description": "Collect all non-map cards in Sora's story.",
     "points": 50,
     "threshold": length(collectorBitflags),
-    "badge": "00000"
+    "id": 160405,
+    "badge": "180264"
 }, collectorBitflags, IsInMainStory())
 
 
@@ -1495,7 +1498,8 @@ GenerateCheevoFromBitflags({
     "description": "Learn 10% of all optional sleights.",
     "points": 3,
     "threshold": beginnerSleightThreshold,
-    "badge": "00000",
+    "id": 160406,
+    "badge": "180265",
 }, sleightBitflags, IsInMainStory())
 
 standardSleightThreshold = length(sleightBitflags) / 4
@@ -1504,7 +1508,8 @@ GenerateCheevoFromBitflags({
     "description": "Learn 25% of all optional sleights.",
     "points": 5,
     "threshold": standardSleightThreshold,
-    "badge": "00000",
+    "id": 160407,
+    "badge": "180266",
 }, sleightBitflags, IsInMainStory())
 
 proudSleightThreshold = length(sleightBitflags) / 2
@@ -1513,7 +1518,8 @@ GenerateCheevoFromBitflags({
     "description": "Learn 50% of all optional sleights.",
     "points": 10,
     "threshold": proudSleightThreshold,
-    "badge": "00000",
+    "id": 160408,
+    "badge": "180267",
 }, sleightBitflags, IsInMainStory())
 
 criticalSleightThreshold = length(sleightBitflags)
@@ -1522,7 +1528,8 @@ GenerateCheevoFromBitflags({
     "description": "Learn all optional sleights.",
     "points": 25,
     "threshold": criticalSleightThreshold,
-    "badge": "00000",
+    "id": 160409,
+    "badge": "180268",
 }, sleightBitflags, IsInMainStory())
 
 function shadowJournalEntry() => bit4(0x0422fe)
@@ -1645,7 +1652,7 @@ cloudHpMap = {
     6: 0x174
 }
 
-survivalLimit = 120
+survivalLimit = 90
 function EnoughTimeHasAdvancedForWarOfAttrition() => repeated(SecondsToFrames(survivalLimit), FrameHasAdvanced())
 achievement(title = "War of Attrition [m]", points = 5,
     description = "Survive for " + SecondsToFormat(survivalLimit) + " against Cloud without pressing A or stocking cards, and then defeat him.",
@@ -1805,7 +1812,7 @@ ursulaHpMap = {
 theBendsTimeLimit = 45
 function ursulaHp() => word(0x03add0)
 achievement(title = "The Bends [m]", points = 25,
-    description = "Defeat Ursula in Sora's story while healing at least once every " + theBendsTimeLimit + " seconds.",
+    description = "Defeat Ursula in Sora's story without going more than " + theBendsTimeLimit + " seconds at a time without healing.",
     trigger = BossHPValueCheckpointIsSet(ursulaHp(), ursulaHpMap, "Atlantica", 0xb)
         && EnemyWithSpecificAddressWasJustDefeated(ursulaHp(), TRUE) && never(!IsInBattle())
         //&& never(repeated(SecondsToFrames(theBendsTimeLimit), FrameHasAdvanced() && never(playerHp() > Delta(playerHp()))))
