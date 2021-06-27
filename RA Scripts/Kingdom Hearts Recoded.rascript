@@ -1,16 +1,64 @@
 // Kingdom Hearts Re:coded
 // #ID = 14828
 
+function Delta(addr) => prev(addr)
+
+function GenerateConditionFromBitflag(bit) => { "countsWhen": (bit == 1), "recalculateWhen": (Delta(bit) != bit) }
+
+// Game status(?) (Changes depending on game state and appears to have a detrimental effect when frozen)
+//
+// 0x0 = various; also seems to be a value this address flickers to when transitioning between some game states
+// 0x3 = on the Title Screen
+// 0x7 = text cutscene
+// 0xc = Menu
+// 0xf = in the field
+function status() => word(0x056f50)
+
 function worldId() => byte(0x19836c)
 function areaId() => byte(0x19836d)
-function IsInSystemSector() => dword(0x19ecf4) != 0x0
+
+// Pointer to system sector data, including how many enemies are left before the terminal opens. 0x0 when not in a system sector.
+//
+// +0x0 = Sector Points. Updates when finishing a floor or redeeming them at the end of a system sector (32-bit)
+systemSectorAddr = 0x19ecf4
+function systemSectorPtr() => tbyte(systemSectorAddr)
+function IsInSystemSector() => systemSectorPtr() != 0x0 && byte(systemSectorAddr + 3) == 0x2
+
+function sectorPoints() => dword(systemSectorPtr())
+
 function KeyholeCheckpointPassed() => minigamePopupState() == 0x3
+
+function TitleScreenAlmostReady() => titleScreenStatus() == 5
+
+function TitleScreenReady() => titleScreenStatus() == 6
+
+function IsWatchingOpeningMovie() => titleScreenStatus() == 0xc
+
+function IsWatchingMovieInTheatreMenu() => titleScreenStatus() == 0xb
+
+function IsOnTheatreMenu() => titleScreenStatus() == 0xa
+
+function IsOnTitleScreen() => TitleScreenAlmostReady() || TitleScreenReady() || IsWatchingOpeningMovie() || IsOnTheatreMenu() || IsWatchingMovieInTheatreMenu()
+
+function SecondsToFormat(value)
+{
+    leadingZero = ""
+    if (value % 60 < 10)
+    {
+        leadingZero = "0"
+    }
+    return value / 60 + ":" + leadingZero + value % 60
+}
 
 worlds = {
     0: "Destiny Islands",
     1: "Traverse Town",
     2: "Wonderland",
     3: "Olympus Coliseum",
+    4: "Agrabah",
+    5: "Hollow Bastion",
+    6: "Hollow Bastion",
+    7: "Castle Oblivion"
 }
 
 areas = {
@@ -45,6 +93,95 @@ areas = {
 29: { "worldId": 0x2, "name": "WonderlandKeyholeTerminus", "display": "Keyhole / Terminus", "areaId": 0xc, },
 30: { "worldId": 0x3, "name": "OlympusOutside", "display": "Outside the Coliseum", "areaId": 0x1d, },
 31: { "worldId": 0x3, "name": "OlympusVestibule", "display": "Vestibule", "areaId": 0x1e, },
+32: { "worldId": 0x3, "name": "OlympusLayer1", "display": "Layer 1", "areaId": 0x1, },
+33: { "worldId": 0x3, "name": "OlympusSave", "display": "Save Room", "areaId": 0x1f, },
+34: { "worldId": 0x3, "name": "OlympusLayer2", "display": "Layer 2", "areaId": 0x2, },
+35: { "worldId": 0x3, "name": "OlympusLayer3", "display": "Layer 3", "areaId": 0x3, },
+36: { "worldId": 0x3, "name": "OlympusLayer4", "display": "Layer 4", "areaId": 0x4, },
+37: { "worldId": 0x3, "name": "OlympusLayer5", "display": "Layer 5", "areaId": 0x5, },
+38: { "worldId": 0x3, "name": "OlympusLayer6", "display": "Layer 6", "areaId": 0x6, },
+39: { "worldId": 0x3, "name": "OlympusLayer7", "display": "Layer 7", "areaId": 0x7, },
+40: { "worldId": 0x3, "name": "OlympusLayer8", "display": "Layer 8", "areaId": 0x8, },
+41: { "worldId": 0x3, "name": "OlympusLayer9", "display": "Layer 9", "areaId": 0x9, },
+42: { "worldId": 0x3, "name": "OlympusLayer10", "display": "Layer 10", "areaId": 0xa, },
+43: { "worldId": 0x3, "name": "OlympusLayer11", "display": "Layer 11", "areaId": 0xb, },
+44: { "worldId": 0x3, "name": "OlympusLayer12", "display": "Layer 12", "areaId": 0xc, },
+45: { "worldId": 0x3, "name": "OlympusLayer13", "display": "Layer 13", "areaId": 0xd, },
+46: { "worldId": 0x3, "name": "OlympusLayer14", "display": "Layer 14", "areaId": 0xe, },
+47: { "worldId": 0x3, "name": "OlympusLayer15", "display": "Layer 15", "areaId": 0x21, },
+48: { "worldId": 0x4, "name": "AgrabahPlaza", "display": "Plaza", "areaId": 0x6, },
+49: { "worldId": 0x4, "name": "AgrabahAlley", "display": "Alley", "areaId": 0x8, },
+50: { "worldId": 0x4, "name": "AgrabahStreet", "display": "Main Street", "areaId": 0x2, },
+51: { "worldId": 0x4, "name": "AgrabahPalace", "display": "Palace Gates", "areaId": 0x3, },
+52: { "worldId": 0x4, "name": "AgrabahPlazaFrozen", "display": "Plaza", "areaId": 0xa, },
+53: { "worldId": 0x4, "name": "AgrabahPalaceFrozen", "display": "Palace Gates", "areaId": 0xc, },
+54: { "worldId": 0x4, "name": "AgrabahStreetFrozen", "display": "Main Street", "areaId": 0xb, },
+55: { "worldId": 0x4, "name": "AgrabahAlleyFrozen", "display": "Alley", "areaId": 0xd, },
+56: { "worldId": 0x4, "name": "AgrabahCaveEntranceNoEntry", "display": "Cave / Entrance", "areaId": 0x12, },
+57: { "worldId": 0x4, "name": "AgrabahBazaarFrozen", "display": "Bazaar", "areaId": 0xe, },
+58: { "worldId": 0x4, "name": "AgrabahBazaar", "display": "Bazaar", "areaId": 0x9, },
+59: { "worldId": 0x4, "name": "AgrabahCaveEntrance", "display": "Cave / Entrance", "areaId": 0x1, },
+60: { "worldId": 0x4, "name": "AgrabahCaveBeginnings", "display": "Cave / Hall of Beginnings", "areaId": 0x4, },
+61: { "worldId": 0x4, "name": "AgrabahGauntlet", "display": "Cave / Gauntlet", "areaId": 0x5, },
+62: { "worldId": 0x4, "name": "AgrabahGauntletLower", "display": "Cave / Gauntlet", "areaId": 0x11, },
+63: { "worldId": 0x4, "name": "AgrabahLamp", "display": "Cave / Lamp Chamber", "areaId": 0x7, },
+64: { "worldId": 0x4, "name": "AgrabahKeyholeTerminus", "display": "Keyhole / Terminus", "areaId": 0xf, },
+65: { "worldId": 0x5, "name": "HollowBastionGates", "display": "Castle Gates", "areaId": 0x2, },
+66: { "worldId": 0x5, "name": "HollowBastionWaterway", "display": "Waterway", "areaId": 0x3, },
+67: { "worldId": 0x5, "name": "HollowBastionEntranceLower", "display": "Entrance Hall (Lower Level)", "areaId": 0x4, },
+68: { "worldId": 0x5, "name": "HollowBastionLibrary1", "display": "Library 1", "areaId": 0x6, },
+69: { "worldId": 0x5, "name": "HollowBastionLibrary3", "display": "Library 3", "areaId": 0x8, },
+70: { "worldId": 0x5, "name": "HollowBastionLibrary4", "display": "Library 4", "areaId": 0x9, },
+71: { "worldId": 0x5, "name": "HollowBastionLibrary2", "display": "Library 2", "areaId": 0x7, },
+72: { "worldId": 0x5, "name": "HollowBastionEntranceUpper", "display": "Entrance Hall (Upper Level)", "areaId": 0x5, },
+73: { "worldId": 0x5, "name": "HollowBastionCrest", "display": "Great Crest", "areaId": 0xa, },
+74: { "worldId": 0x5, "name": "HollowBastionTower", "display": "High Tower", "areaId": 0xb, },
+75: { "worldId": 0x5, "name": "HollowBastionGrandHall", "display": "Grand Hall", "areaId": 0xd, },
+76: { "worldId": 0x5, "name": "HollowBastionKeyholeEntrance", "display": "Somewhere in the datascape…", "areaId": 0x0, },
+77: { "worldId": 0x5, "name": "HollowBastionKeyholeChapel", "display": "Keyhole / Chapel", "areaId": 0xc, },
+78: { "worldId": 0x6, "name": "HollowBastionIIInsideRiku", "display": "Inside Riku’s Data", "areaId": 0x8, },
+79: { "worldId": 0x4, "name": "AgrabahCaveGauntletLower2", "display": "Cave / Gauntlet", "areaId": 0x10, },
+80: { "worldId": 0x6, "name": "HollowBastionDestinyIslands", "display": "Destiny Islands", "areaId": 0x9, },
+81: { "worldId": 0x6, "name": "HollowBastionFirstDistrict", "display": "First District", "areaId": 0xa, },
+82: { "worldId": 0x6, "name": "HollowBastionSecondDistrict", "display": "Second District", "areaId": 0xb, },
+83: { "worldId": 0x6, "name": "HollowBastionClearing", "display": "Clearing", "areaId": 0x4, },
+84: { "worldId": 0x6, "name": "HollowBastionLotusForest", "display": "Lotus Forest", "areaId": 0x5, },
+85: { "worldId": 0x6, "name": "HollowBastionCaveBeginnings", "display": "Cave / Hall of Beginnings", "areaId": 0x7, },
+86: { "worldId": 0x6, "name": "HollowBastionCaveEntrance", "display": "Cave / Entrance", "areaId": 0x6, },
+87: { "worldId": 0x6, "name": "HollowBastionChapelRiku", "display": "Chapel", "areaId": 0x3, },
+88: { "worldId": 0x6, "name": "HollowBastionEscapeRiku", "display": "Inside Riku’s Data", "areaId": 0xc, },
+89: { "worldId": 0x6, "name": "HollowBastionDragon", "display": "Chapel (Dragon’s Lair)", "areaId": 0x2, },
+90: { "worldId": 0x6, "name": "HollowBastionGrandHall2", "display": "Grand Hall", "areaId": 0xe, },
+91: { "worldId": 0x6, "name": "HollowBastionDataTunnel", "display": "Data Tunnel", "areaId": 0xd, },
+92: { "worldId": 0x6, "name": "HollowBastionCentralCorruption", "display": "Central Corruption", "areaId": 0x1, },
+93: { "worldId": 0x7, "name": "CastleOblivionHall", "display": "Entrance Hall", "areaId": 0x7, },
+94: { "worldId": 0x7, "name": "CastleOblivionSomewhere", "display": "Somewhere in the datascape…", "areaId": 0x1, },
+95: { "worldId": 0x7, "name": "CastleOblivionSomewhere2", "display": "Somewhere in the datascape…", "areaId": 0xa, },
+96: { "worldId": 0x7, "name": "CastleOblivionDestinyIslands", "display": "Destiny Islands", "areaId": 0x9, },
+97: { "worldId": 0x7, "name": "CastleOblivionTraverseTown", "display": "Traverse Town", "areaId": 0x1, },
+98: { "worldId": 0x7, "name": "CastleOblivionWonderland", "display": "Wonderland", "areaId": 0x2, },
+99: { "worldId": 0x7, "name": "CastleOblivionOlympusColiseum", "display": "Olympus Coliseum", "areaId": 0x3, },
+100: { "worldId": 0x7, "name": "CastleOblivionAgrabah", "display": "Agrabah", "areaId": 0x4, },
+101: { "worldId": 0x7, "name": "CastleOblivionHollowBastionObstacleCourse", "display": "Hollow Bastion", "areaId": 0x6, },
+102: { "worldId": 0x7, "name": "CastleOblivionSorrow", "display": "Station of Sorrow", "areaId": 0x8, },
+103: { "worldId": 0x7, "name": "CastleOblivionHollowBastion", "display": "Hollow Bastion", "areaId": 0x5, },
+104: { "worldId": 0x3, "name": "OlympusLayer16", "display": "Layer 16", "areaId": 0xf, },
+105: { "worldId": 0x3, "name": "OlympusLayer17", "display": "Layer 17", "areaId": 0x10, },
+106: { "worldId": 0x3, "name": "OlympusLayer18", "display": "Layer 18", "areaId": 0x11, },
+107: { "worldId": 0x3, "name": "OlympusSave2", "display": "Save Room", "areaId": 0x20, },
+108: { "worldId": 0x3, "name": "OlympusLayer19", "display": "Layer 19", "areaId": 0x12, },
+109: { "worldId": 0x3, "name": "OlympusLayer20", "display": "Layer 20", "areaId": 0x13, },
+110: { "worldId": 0x3, "name": "OlympusLayer21", "display": "Layer 21", "areaId": 0x14, },
+111: { "worldId": 0x3, "name": "OlympusLayer22", "display": "Layer 22", "areaId": 0x15, },
+112: { "worldId": 0x3, "name": "OlympusLayer23", "display": "Layer 23", "areaId": 0x16, },
+113: { "worldId": 0x3, "name": "OlympusLayer24", "display": "Layer 24", "areaId": 0x17, },
+114: { "worldId": 0x3, "name": "OlympusLayer25", "display": "Layer 25", "areaId": 0x18, },
+115: { "worldId": 0x3, "name": "OlympusLayer26", "display": "Layer 26", "areaId": 0x19, },
+116: { "worldId": 0x3, "name": "OlympusLayer27", "display": "Layer 27", "areaId": 0x1a, },
+117: { "worldId": 0x3, "name": "OlympusLayer28", "display": "Layer 28", "areaId": 0x1b, },
+118: { "worldId": 0x3, "name": "OlympusLayer29", "display": "Layer 29", "areaId": 0x1c, },
+119: { "worldId": 0x3, "name": "OlympusLayer30", "display": "Layer 30", "areaId": 0x22, },
+
 }
 
 function GetLocationByName(name)
@@ -113,11 +250,23 @@ function IsBossRankJustDisplayed() => Delta(byte(bossScoreDisplayStatusPointer()
 // We have a hit target here because the status value cycles through numbers a couple times.
 function IsTotalScoreJustDisplayed() => once(byte(bossScoreDisplayStatusPointer()) == 1) && Delta(byte(bossScoreDisplayStatusPointer())) == 0xa && byte(bossScoreDisplayStatusPointer()) == 0x7
     && never(!IsBossScorePointerActive())
+    
+function IsTotalScoreJustDisplayedForAchievement() => once(byte(bossScoreDisplayStatusPointer()) == 1) && Delta(byte(bossScoreDisplayStatusPointer())) == 0xa
+    && byte(bossScoreDisplayStatusPointer()) == 0x7
+    && IsBossScorePointerActive()
 
 function BossScoreIsDisplayedAndAtLeast(threshold)
 {
     return IsBossScorePointerActive() && dword(bossScorePointer() + 8) >= threshold && IsBossRankJustDisplayed()
 }
+
+function BossTimeIsDisplayedAndAtMost(milliseconds)
+{
+    return IsBossScorePointerActive() && bossMilliseconds() <= milliseconds && IsBossRankJustDisplayed()
+}
+
+// $060B51: < LV PLAYER SORA >
+function Level() => byte(0x060B51) + 1
 
 // Title screen status
 // 
@@ -129,39 +278,56 @@ function BossScoreIsDisplayedAndAtLeast(threshold)
 // 5 = Title Screen almost ready
 // 6 = Title Screen ready
 // 8 = Load Menu
-function titleScreenStatus() => byte(0x19c494)
+function titleScreenStatus() => dword(0x19c494)
 
 function sessionPlayTime() => dword(0x056e9c)
 function savedPlayTime() => dword(0x198360)
+
+function framesBeforeClockStartsTickingUp() => 85843
 function PlayTimeToFrames()
 {
-    return sessionPlayTime() * 215543160 / 28704724 + savedPlayTime() * 60
+    return sessionPlayTime() * 15 / 2 - 55028 + savedPlayTime() * 60
 }
 
 soa1 = GetLocationByName("SoA1")
 soa2 = GetLocationByName("SoA2")
-rich_presence_conditional_display(worldId() == 0 && areaId() == 0x1, soa1["display"] + " | Play Time: {0}",
-    rich_presence_value("PlayTime", PlayTimeToFrames(), "FRAMES")
+rich_presence_conditional_display(IsOnTitleScreen(), "On the title screen")
+
+rich_presence_conditional_display(worldId() == 0 && areaId() == 0x1, soa1["display"] + " | Level {0}",
+    rich_presence_value("Level", Level(), "VALUE")
 )
 
-rich_presence_conditional_display(worldId() == 0 && areaId() == 0x2, soa2["display"] + " | Play Time: {0}",
-    rich_presence_value("PlayTime", PlayTimeToFrames(), "FRAMES")
+rich_presence_conditional_display(worldId() == 0 && areaId() == 0x2, "In the " + soa2["display"] + " | Level {0}",
+    rich_presence_value("Level", Level(), "VALUE")
 )
 
 for world in worlds
 {
-    rich_presence_conditional_display(IsInSystemSector() && worldId() == world, worlds[world] + ": System Sector | Play Time: {0}",
-        rich_presence_value("PlayTime", PlayTimeToFrames(), "FRAMES")
+    rich_presence_conditional_display(IsInSystemSector() && worldId() == world, worlds[world] + ": System Sector | Level {0}",
+        rich_presence_value("Level", Level(), "VALUE")
     )
-    rich_presence_conditional_display(worldId() == world, worlds[world] + ": {0} | Play Time: {1}",
+    rich_presence_conditional_display(worldId() == world, worlds[world] + ": {0} | Level {1}",
         rich_presence_lookup("Areas" + world, areaId(), GetAreaRPLookup(world)),
-        rich_presence_value("PlayTime", PlayTimeToFrames(), "FRAMES")
+        rich_presence_value("Level", Level(), "VALUE")
     )
 }
 
 rich_presence_display("Somewhere in the datascape...")
 
-function Delta(addr) => prev(addr)
+function IsPointer(addr) => byte(addr + 3) == 0x2
+function WasPointer(addr) => prior(byte(addr + 3)) == 0x2
+
+// Returns a new pointer address at the given half-address with a given negative offset.
+// Intended to standardize usages of negative pointer offsets, since those are not supported with the current tools.
+// ---
+// halfPointer (16-bit): The value of a tbyte pointer, truncated to a 16-bit value.
+// pointerMayBeAtLeast (int): The value that the pointer is expected to not be less than.
+//                            It should generally be the pointer's original value minus its truncated value.
+// negativeOffset (int): The negative offset to apply in order to get the ultimate, desired address.
+function GetAddressWithNegativeOffset(halfPointer, pointerMayBeAtLeast, negativeOffset)
+{
+    return halfPointer + pointerMayBeAtLeast - negativeOffset
+}
 
 // $056130: Steps taken (?) (32-bit)
 
@@ -192,9 +358,6 @@ function playTime() => dword(0x056E9C)
 // $0608D4: Ability set for clock level 2 - 16-bit
 // $0608D6: Ability set for clock level 3 - 16-bit
 // $0608D8: Ability set for clock level MAX - 16-bit
-
-// $060B51: < LV PLAYER SORA >
-function level() => byte(0x060B51)
 
 // $060B52: < HP PLAYER - SORA >
 function hp() => byte(0x060B52)
@@ -561,11 +724,13 @@ function IsMinigameActive() => byte(minigameStatePointer() + minigameActiveOffse
 //          - !3 and 4 = fast
 function difficulty() => bit0(0x1986fa) + bit1(0x1986fa) + bit1(0x1986fa) // Can't multiply by 2 because reasons.
 
+function IsOnBeginnerMode() => difficulty() == 0x0
+
 function IsAtLeastOnDifficulty(value)
 {
     if (value == "Beginner")
     {
-        return difficulty() == 0x0
+        return IsOnBeginnerMode()
     }
     else if (value == "Standard")
     {
@@ -735,6 +900,19 @@ function IsAtLeastOnDifficulty(value)
 //          0x0136 - Adamant Belt
 //          0x0137 - Liberty Crown
 //          0x0138 - Heat Sink Belt
+
+function accessory1() => word(0x198850)
+function accessory2() => word(0x198852)
+function accessory3() => word(0x198854)
+function accessory4() => word(0x198856)
+function HasAccessoryEquipped(accessoryId)
+{
+    return accessory1() == accessoryId
+        || accessory2() == accessoryId
+        || accessory3() == accessoryId
+        || accessory4() == accessoryId
+}
+
 // $198858: Amount of uses left of the command in slot 1 if it is an item
 // $19885C: Amount of uses left of the command in slot 2 if it is an item
 // $198860: Amount of uses left of the command in slot 3 if it is an item
@@ -943,14 +1121,7 @@ function bossMilliseconds() => dword(0x1efc88)
 // $3DE2BC: Displayed amount of enemies defeated on the current system sector floor - 16-bit
 // $3DE2BE: Display cap for the amount of bug baddies defeated on the current system sector floor - 16-bit
 
-// Game status(?) (Changes depending on game state and appears to have a detrimental effect when frozen)
-//
-// 0x0 = various; also seems to be a value this address flickers to when transitioning between some game states
-// 0x3 = on the Title Screen
-// 0x7 = text cutscene
-// 0xc = Menu
-// 0xf = in the field
-function status() => word(0x056f50)
+function IsInMenu() => status() == 0xc || status() == 0x0
 
 // Menu ID (?) (16-bit)
 // 
@@ -970,21 +1141,23 @@ function status() => word(0x056f50)
 // 0x12 = Tutorials
 function menuId() => word(0x0bea84)
 
-function IsFileLoaded() => status() != 0x0 && status() != 0x3 && !IsOnSaveOrLoadMenu()
+function saveLoadPtrAddr() => 0x0c5e00
+function saveLoadPtr() => tbyte(saveLoadPtrAddr())
+function loadState() => byte(saveLoadPtr() + 4)
+function OldSaveLoadState() => byte(prior(saveLoadPtr()) + 4)
 
-function IsLoadingSaveFile() => prior(titleScreenStatus()) == 0x8 && titleScreenStatus() == 0
+// 0x9 means that it's transitioning to a loaded save file; it's what we're using to determine when a pauselock can activate.
+function IsLoadingSaveFile() => !IsPointer(saveLoadPtrAddr()) && WasPointer(saveLoadPtrAddr()) && OldSaveLoadState() == 0x9
 
 function IsOnSaveOrLoadMenu() => menuId() == 0x6
 
 function IsOnLoadMenu() => titleScreenStatus() == 8
 
-function TitleScreenAlmostReady() => titleScreenStatus() == 5
-
-function TitleScreenReady() => titleScreenStatus() == 6
-
-function IsOnTitleScreen() => TitleScreenAlmostReady() || TitleScreenReady()
+function WasInAvatarMenu() => titleScreenStatus() == 0 && prev(titleScreenStatus()) == 0x9
 
 function IsAlwaysInGame() => unless(IsOnSaveOrLoadMenu()) && never(IsOnLoadMenu()) && never(IsOnTitleScreen())
+    // WHY THE @#%!$ DOES THIS NOT BREAK WHEN LEAVING THE AVATAR MENU!?
+    && unless(!IsPointer(saveLoadPtrAddr()) && WasPointer(saveLoadPtrAddr()) && Delta(OldSaveLoadState()) == 0x9 && WasInAvatarMenu())
 
 function WasValueSet(mem, oldValue, newValue)
 {
@@ -1029,7 +1202,7 @@ function GenerateSaveProtectedAchievementFromConditions(cheevo, conditions, only
     {
         condition = conditions[i]
         
-        // This is the score when the game is loaded. If he loaded score is greater than or equal to the threshold--that is,
+        // This is the score when the game is loaded. If the loaded score is greater than or equal to the threshold--that is,
         // if the save file would satisfy enough conditions to trigger the achievement on load--this should trigger a
         // permanant pauselock to serve as save protection.
         array_push(loadedCounts, once(condition["countsWhen"] && IsLoadingSaveFile()))
@@ -1089,7 +1262,6 @@ enemies = {
 37: { "name": "Angel Star", "bits": { 0: { "addr": 0x00195BB5, "bit": 3 }, 1: { "addr": 0x00195BB5, "bit": 4 }, 2: { "addr": 0x00195BB5, "bit": 5 }, 3: { "addr": 0x00195BB5, "bit": 6 }, 4: { "addr": 0x00195BB5, "bit": 7 }, 5: { "addr": 0x00195BB6, "bit": 0 }, 6: { "addr": 0x00195BB6, "bit": 1 }, 7: { "addr": 0x00195BB6, "bit": 2 }, 8: { "addr": 0x00195BB6, "bit": 3 }, 9: { "addr": 0x00195BB6, "bit": 4 }, 10: { "addr": 0x00195BB6, "bit": 5 }, 11: { "addr": 0x00195BB6, "bit": 6 }, 12: { "addr": 0x00195BB6, "bit": 7 }, 13: { "addr": 0x00195BB7, "bit": 0 }, 14: { "addr": 0x00195BB7, "bit": 1 }, 15: { "addr": 0x00195BB7, "bit": 2 }, 16: { "addr": 0x00195BB7, "bit": 3 }, }, },
 38: { "name": "Gold Tricholoma", "bits": { 0: { "addr": 0x00195BBF, "bit": 0 }, 1: { "addr": 0x00195BBF, "bit": 1 }, 2: { "addr": 0x00195BBF, "bit": 2 }, 3: { "addr": 0x00195BBF, "bit": 3 }, 4: { "addr": 0x00195BBF, "bit": 4 }, 5: { "addr": 0x00195BBF, "bit": 5 }, 6: { "addr": 0x00195BBF, "bit": 6 }, 7: { "addr": 0x00195BBF, "bit": 7 }, 8: { "addr": 0x00195BB8, "bit": 0 }, 9: { "addr": 0x00195BB8, "bit": 1 }, 10: { "addr": 0x00195BB8, "bit": 2 }, 11: { "addr": 0x00195BB8, "bit": 3 }, 12: { "addr": 0x00195BB8, "bit": 4 }, 13: { "addr": 0x00195BB8, "bit": 5 }, 14: { "addr": 0x00195BB8, "bit": 6 }, 15: { "addr": 0x00195BB8, "bit": 7 }, 16: { "addr": 0x00195BB9, "bit": 0 }, }, },
 39: { "name": "Eliminator", "bits": { 0: { "addr": 0x00195BB9, "bit": 1 }, 1: { "addr": 0x00195BB9, "bit": 2 }, 2: { "addr": 0x00195BB9, "bit": 3 }, 3: { "addr": 0x00195BB9, "bit": 4 }, 4: { "addr": 0x00195BB9, "bit": 5 }, 5: { "addr": 0x00195BB9, "bit": 6 }, 6: { "addr": 0x00195BB9, "bit": 7 }, 7: { "addr": 0x00195BBA, "bit": 0 }, 8: { "addr": 0x00195BBA, "bit": 1 }, 9: { "addr": 0x00195BBA, "bit": 2 }, 10: { "addr": 0x00195BBA, "bit": 3 }, 11: { "addr": 0x00195BBA, "bit": 4 }, 12: { "addr": 0x00195BBA, "bit": 5 }, 13: { "addr": 0x00195BBA, "bit": 6 }, 14: { "addr": 0x00195BBA, "bit": 7 }, 15: { "addr": 0x00195BBB, "bit": 0 }, 16: { "addr": 0x00195BBB, "bit": 1 }, }, },
-
 }
 
 function GetEnemyByName(name)
@@ -1145,11 +1317,8 @@ function DidDefeatEnemy(name)
     return defeated
 }
 
-enemiesConditions = {}
-
-for i in enemies
+function GenerateConditionForEnemy(enemy)
 {
-    enemy = enemies[i]
     countsWhen = always_false()
     recalculateWhen = always_false()
     
@@ -1161,15 +1330,447 @@ for i in enemies
         recalculateWhen = recalculateWhen || Delta(mem) != mem
     }
     
-    enemiesConditions[i] = { "countsWhen": countsWhen, "recalculateWhen": recalculateWhen }
+    return { "countsWhen": countsWhen, "recalculateWhen": recalculateWhen }
 }
 
-GenerateSaveProtectedAchievementFromConditions({
-    "name": "Enemies Test",
-    "description": "Defeat two types of enemies.",
-    "points": 0,
-    "threshold": 2,
-}, enemiesConditions, always_true())
+enemiesConditions = {}
+
+for i in enemies
+{
+    enemiesConditions[i] = GenerateConditionForEnemy(enemies[i])
+}
+
+// ============================== COMMANDS ============================== //
+commands = {
+0xFF: { "id": 0xFF, "name": "N/A", "category": "N/A", "isBasic": 1 },
+0x00: { "id": 0x00, "name": "Quick Blitz", "category": "Melee", "isBasic": 1 },
+0x01: { "id": 0x01, "name": "Sliding Dash", "category": "Melee", "isBasic": 1 },
+0x02: { "id": 0x02, "name": "Round Blitz", "category": "Melee", "isBasic": 1 },
+0x03: { "id": 0x03, "name": "Strike Raid", "category": "Ranged", "isBasic": 1 },
+0x04: { "id": 0x04, "name": "Rising Strike", "category": "Melee", "isBasic": 0 },
+0x05: { "id": 0x05, "name": "Sliding Rush", "category": "Melee", "isBasic": 1 },
+0x06: { "id": 0x06, "name": "Aerial Sweep", "category": "Melee", "isBasic": 0 },
+0x07: { "id": 0x07, "name": "Air Sweep", "category": "Melee", "isBasic": 1 },
+0x08: { "id": 0x08, "name": "Aerial Slam", "category": "Melee", "isBasic": 1 },
+0x09: { "id": 0x09, "name": "Land Crash", "category": "Melee", "isBasic": 1 },
+0x0a: { "id": 0x0a, "name": "Fire Edge", "category": "Melee", "isBasic": 0 },
+0x0b: { "id": 0x0b, "name": "Blizzard Edge", "category": "Melee", "isBasic": 0 },
+0x0c: { "id": 0x0c, "name": "Thunder Edge", "category": "Melee", "isBasic": 0 },
+0x0d: { "id": 0x0d, "name": "Aero Edge", "category": "Melee", "isBasic": 0 },
+0x0e: { "id": 0x0e, "name": "Heat Dash", "category": "Melee", "isBasic": 0 },
+0x0f: { "id": 0x0f, "name": "Ice Dash", "category": "Melee", "isBasic": 0 },
+0x10: { "id": 0x10, "name": "Spark Dash", "category": "Melee", "isBasic": 0 },
+0x11: { "id": 0x11, "name": "Wind Dash", "category": "Melee", "isBasic": 0 },
+0x12: { "id": 0x12, "name": "Fire Blast", "category": "Melee", "isBasic": 0 },
+0x13: { "id": 0x13, "name": "Blizzard Blast", "category": "Melee", "isBasic": 0 },
+0x14: { "id": 0x14, "name": "Thunder Blast", "category": "Melee", "isBasic": 0 },
+0x15: { "id": 0x15, "name": "Aero Blast", "category": "Melee", "isBasic": 0 },
+0x16: { "id": 0x16, "name": "Fire Raid", "category": "Ranged", "isBasic": 0 },
+0x17: { "id": 0x17, "name": "Blizzard Raid", "category": "Ranged", "isBasic": 0 },
+0x18: { "id": 0x18, "name": "Thunder Raid", "category": "Ranged", "isBasic": 0 },
+0x19: { "id": 0x19, "name": "Aero Raid", "category": "Ranged", "isBasic": 0 },
+0x1a: { "id": 0x1a, "name": "Fire Buster", "category": "Melee", "isBasic": 0 },
+0x1b: { "id": 0x1b, "name": "Blizzard Buster", "category": "Melee", "isBasic": 0 },
+0x1c: { "id": 0x1c, "name": "Thunder Buster", "category": "Melee", "isBasic": 0 },
+0x1d: { "id": 0x1d, "name": "Aero Buster", "category": "Melee", "isBasic": 0 },
+0x1e: { "id": 0x1e, "name": "Heat Sweep", "category": "Melee", "isBasic": 0 },
+0x1f: { "id": 0x1f, "name": "Ice Sweep", "category": "Melee", "isBasic": 0 },
+0x20: { "id": 0x20, "name": "Spark Sweep", "category": "Melee", "isBasic": 0 },
+0x21: { "id": 0x21, "name": "Wind Sweep", "category": "Melee", "isBasic": 0 },
+0x22: { "id": 0x22, "name": "Heat Storm", "category": "Melee", "isBasic": 0 },
+0x23: { "id": 0x23, "name": "Ice Storm", "category": "Melee", "isBasic": 0 },
+0x24: { "id": 0x24, "name": "Spark Storm", "category": "Melee", "isBasic": 0 },
+0x25: { "id": 0x25, "name": "Wind Storm", "category": "Melee", "isBasic": 0 },
+0x26: { "id": 0x26, "name": "Fire Slam", "category": "Melee", "isBasic": 0 },
+0x27: { "id": 0x27, "name": "Blizzard Slam", "category": "Melee", "isBasic": 0 },
+0x28: { "id": 0x28, "name": "Thunder Slam", "category": "Melee", "isBasic": 0 },
+0x29: { "id": 0x29, "name": "Aero Slam", "category": "Melee", "isBasic": 0 },
+0x2a: { "id": 0x2a, "name": "Heat Dive", "category": "Melee", "isBasic": 0 },
+0x2b: { "id": 0x2b, "name": "Ice Dive", "category": "Melee", "isBasic": 0 },
+0x2c: { "id": 0x2c, "name": "Spark Dive", "category": "Melee", "isBasic": 0 },
+0x2d: { "id": 0x2d, "name": "Wind Dive", "category": "Melee", "isBasic": 0 },
+0x2e: { "id": 0x2e, "name": "Stun Impact", "category": "Melee", "isBasic": 0 },
+0x2f: { "id": 0x2f, "name": "Muscle Strike", "category": "Melee", "isBasic": 0 },
+0x30: { "id": 0x30, "name": "Chain Rave", "category": "Melee", "isBasic": 0 },
+0x31: { "id": 0x31, "name": "Rising Rush", "category": "Melee", "isBasic": 0 },
+0x32: { "id": 0x32, "name": "Zantetsuken", "category": "Melee", "isBasic": 0 },
+0x33: { "id": 0x33, "name": "Eruption", "category": "Melee", "isBasic": 0 },
+0x34: { "id": 0x34, "name": "Gravity Drop", "category": "Melee", "isBasic": 0 },
+0x35: { "id": 0x35, "name": "Shock Fall", "category": "Melee", "isBasic": 0 },
+0x36: { "id": 0x36, "name": "Judgment Triad", "category": "Ranged", "isBasic": 0 },
+0x37: { "id": 0x37, "name": "Fire", "category": "Ranged", "isBasic": 1 },
+0x38: { "id": 0x38, "name": "Fira", "category": "Ranged", "isBasic": 0 },
+0x39: { "id": 0x39, "name": "Firaga", "category": "Ranged", "isBasic": 0 },
+0x3a: { "id": 0x3a, "name": "Blizzard", "category": "Ranged", "isBasic": 1 },
+0x3b: { "id": 0x3b, "name": "Blizzara", "category": "Ranged", "isBasic": 0 },
+0x3c: { "id": 0x3c, "name": "Blizzaga", "category": "Ranged", "isBasic": 0 },
+0x3d: { "id": 0x3d, "name": "Thunder", "category": "Ranged", "isBasic": 1 },
+0x3e: { "id": 0x3e, "name": "Thundara", "category": "Ranged", "isBasic": 0 },
+0x3f: { "id": 0x3f, "name": "Thundaga", "category": "Ranged", "isBasic": 0 },
+0x40: { "id": 0x40, "name": "Aero", "category": "Ranged", "isBasic": 1 },
+0x41: { "id": 0x41, "name": "Aerora", "category": "Ranged", "isBasic": 0 },
+0x42: { "id": 0x42, "name": "Aeroga", "category": "Ranged", "isBasic": 0 },
+0x43: { "id": 0x43, "name": "Magnet", "category": "Ranged", "isBasic": 1 },
+0x44: { "id": 0x44, "name": "Magnera", "category": "Ranged", "isBasic": 0 },
+0x45: { "id": 0x45, "name": "Magnega", "category": "Ranged", "isBasic": 0 },
+0x46: { "id": 0x46, "name": "Cure", "category": "Curative", "isBasic": 1 },
+0x47: { "id": 0x47, "name": "Cura", "category": "Curative", "isBasic": 0 },
+0x48: { "id": 0x48, "name": "Curaga", "category": "Curative", "isBasic": 0 },
+0x49: { "id": 0x49, "name": "Slow", "category": "Ranged", "isBasic": 1 },
+0x4a: { "id": 0x4a, "name": "Stop", "category": "Ranged", "isBasic": 1 },
+0x4b: { "id": 0x4b, "name": "Confuse", "category": "Ranged", "isBasic": 1 },
+0x4c: { "id": 0x4c, "name": "Firaga Burst", "category": "Ranged", "isBasic": 0 },
+0x4d: { "id": 0x4d, "name": "Triple Firaga", "category": "Ranged", "isBasic": 0 },
+0x4e: { "id": 0x4e, "name": "Triple Burst", "category": "Ranged", "isBasic": 0 },
+0x4f: { "id": 0x4f, "name": "Blizzaga Pursuit", "category": "Ranged", "isBasic": 0 },
+0x50: { "id": 0x50, "name": "Triple Blizzaga", "category": "Ranged", "isBasic": 0 },
+0x51: { "id": 0x51, "name": "Triple Pursuit", "category": "Ranged", "isBasic": 0 },
+0x52: { "id": 0x52, "name": "Thunder Tracer", "category": "Ranged", "isBasic": 0 },
+0x53: { "id": 0x53, "name": "Pulse Tracer", "category": "Ranged", "isBasic": 0 },
+0x54: { "id": 0x54, "name": "Tornado Tracer", "category": "Ranged", "isBasic": 0 },
+0x55: { "id": 0x55, "name": "Wind Tracer", "category": "Ranged", "isBasic": 0 },
+0x56: { "id": 0x56, "name": "Magnet Grab", "category": "Ranged", "isBasic": 0 },
+0x57: { "id": 0x57, "name": "Esuna", "category": "Curative", "isBasic": 1 },
+0x58: { "id": 0x58, "name": "Flame Fall", "category": "Ranged", "isBasic": 0 },
+0x59: { "id": 0x59, "name": "Icicle Mine", "category": "Ranged", "isBasic": 0 },
+0x5a: { "id": 0x5a, "name": "Exo Spark", "category": "Ranged", "isBasic": 0 },
+0x5b: { "id": 0x5b, "name": "Cyclone", "category": "Ranged", "isBasic": 0 },
+0x5c: { "id": 0x5c, "name": "Quake", "category": "Ranged", "isBasic": 0 },
+}
+
+conversionCombinations = {
+0: { "targetId": 0x46, "command1Id": 0x02, "command2Id": 0x49, },
+1: { "targetId": 0x47, "command1Id": 0x17, "command2Id": 0x46, },
+2: { "targetId": 0x47, "command1Id": 0x44, "command2Id": 0x46, },
+3: { "targetId": 0x47, "command1Id": 0x49, "command2Id": 0x46, },
+4: { "targetId": 0x47, "command1Id": 0x4a, "command2Id": 0x46, },
+5: { "targetId": 0x48, "command1Id": 0x2a, "command2Id": 0x47, },
+6: { "targetId": 0x48, "command1Id": 0x4b, "command2Id": 0x47, },
+7: { "targetId": 0x48, "command1Id": 0x57, "command2Id": 0x47, },
+8: { "targetId": 0x16, "command1Id": 0x03, "command2Id": 0x01, },
+9: { "targetId": 0x16, "command1Id": 0x04, "command2Id": 0x19, },
+10: { "targetId": 0x16, "command1Id": 0x08, "command2Id": 0x0e, },
+11: { "targetId": 0x16, "command1Id": 0x37, "command2Id": 0x03, },
+12: { "targetId": 0x16, "command1Id": 0x38, "command2Id": 0x03, },
+13: { "targetId": 0x17, "command1Id": 0x03, "command2Id": 0x01, },
+14: { "targetId": 0x17, "command1Id": 0x04, "command2Id": 0x16, },
+15: { "targetId": 0x17, "command1Id": 0x08, "command2Id": 0x0f, },
+16: { "targetId": 0x17, "command1Id": 0x3a, "command2Id": 0x03, },
+17: { "targetId": 0x17, "command1Id": 0x3b, "command2Id": 0x03, },
+18: { "targetId": 0x18, "command1Id": 0x03, "command2Id": 0x02, },
+19: { "targetId": 0x18, "command1Id": 0x04, "command2Id": 0x17, },
+20: { "targetId": 0x18, "command1Id": 0x08, "command2Id": 0x10, },
+21: { "targetId": 0x18, "command1Id": 0x3d, "command2Id": 0x03, },
+22: { "targetId": 0x18, "command1Id": 0x3e, "command2Id": 0x03, },
+23: { "targetId": 0x19, "command1Id": 0x09, "command2Id": 0x09, },
+24: { "targetId": 0x19, "command1Id": 0x08, "command2Id": 0x11, },
+25: { "targetId": 0x19, "command1Id": 0x11, "command2Id": 0x18, },
+26: { "targetId": 0x19, "command1Id": 0x40, "command2Id": 0x03, },
+27: { "targetId": 0x19, "command1Id": 0x41, "command2Id": 0x03, },
+28: { "targetId": 0x36, "command1Id": 0x2f, "command2Id": 0x55, },
+29: { "targetId": 0x38, "command1Id": 0x0a, "command2Id": 0x02, },
+30: { "targetId": 0x38, "command1Id": 0x37, "command2Id": 0x0a, },
+31: { "targetId": 0x38, "command1Id": 0x37, "command2Id": 0x46, },
+32: { "targetId": 0x38, "command1Id": 0x37, "command2Id": 0x49, },
+33: { "targetId": 0x38, "command1Id": 0x46, "command2Id": 0x0a, },
+34: { "targetId": 0x38, "command1Id": 0x49, "command2Id": 0x0a, },
+35: { "targetId": 0x38, "command1Id": 0x4a, "command2Id": 0x0a, },
+36: { "targetId": 0x39, "command1Id": 0x12, "command2Id": 0x16, },
+37: { "targetId": 0x39, "command1Id": 0x38, "command2Id": 0x22, },
+38: { "targetId": 0x39, "command1Id": 0x4b, "command2Id": 0x22, },
+39: { "targetId": 0x39, "command1Id": 0x57, "command2Id": 0x22, },
+40: { "targetId": 0x3b, "command1Id": 0x0f, "command2Id": 0x00, },
+41: { "targetId": 0x3b, "command1Id": 0x3a, "command2Id": 0x0b, },
+42: { "targetId": 0x3b, "command1Id": 0x3a, "command2Id": 0x37, },
+43: { "targetId": 0x3b, "command1Id": 0x3a, "command2Id": 0x3d, },
+44: { "targetId": 0x3b, "command1Id": 0x3a, "command2Id": 0x46, },
+45: { "targetId": 0x3b, "command1Id": 0x3a, "command2Id": 0x49, },
+46: { "targetId": 0x3b, "command1Id": 0x46, "command2Id": 0x0b, },
+47: { "targetId": 0x3b, "command1Id": 0x49, "command2Id": 0x0b, },
+48: { "targetId": 0x3b, "command1Id": 0x4a, "command2Id": 0x0b, },
+49: { "targetId": 0x3c, "command1Id": 0x0f, "command2Id": 0x14, },
+50: { "targetId": 0x3c, "command1Id": 0x1d, "command2Id": 0x23, },
+51: { "targetId": 0x3c, "command1Id": 0x2b, "command2Id": 0x3b, },
+52: { "targetId": 0x3c, "command1Id": 0x4b, "command2Id": 0x23, },
+53: { "targetId": 0x3c, "command1Id": 0x57, "command2Id": 0x23, },
+54: { "targetId": 0x3e, "command1Id": 0x0c, "command2Id": 0x37, },
+55: { "targetId": 0x3e, "command1Id": 0x10, "command2Id": 0x02, },
+56: { "targetId": 0x3e, "command1Id": 0x3d, "command2Id": 0x0c, },
+57: { "targetId": 0x3e, "command1Id": 0x3d, "command2Id": 0x37, },
+58: { "targetId": 0x3e, "command1Id": 0x3d, "command2Id": 0x46, },
+59: { "targetId": 0x3e, "command1Id": 0x3d, "command2Id": 0x49, },
+60: { "targetId": 0x3e, "command1Id": 0x46, "command2Id": 0x0c, },
+61: { "targetId": 0x3e, "command1Id": 0x49, "command2Id": 0x0c, },
+62: { "targetId": 0x3e, "command1Id": 0x4a, "command2Id": 0x0c, },
+63: { "targetId": 0x3f, "command1Id": 0x0c, "command2Id": 0x19, },
+64: { "targetId": 0x3f, "command1Id": 0x0c, "command2Id": 0x21, },
+65: { "targetId": 0x3f, "command1Id": 0x3e, "command2Id": 0x24, },
+66: { "targetId": 0x3f, "command1Id": 0x4b, "command2Id": 0x24, },
+67: { "targetId": 0x3f, "command1Id": 0x57, "command2Id": 0x24, },
+68: { "targetId": 0x41, "command1Id": 0x40, "command2Id": 0x0d, },
+69: { "targetId": 0x41, "command1Id": 0x46, "command2Id": 0x0d, },
+70: { "targetId": 0x41, "command1Id": 0x49, "command2Id": 0x0d, },
+71: { "targetId": 0x41, "command1Id": 0x4a, "command2Id": 0x0d, },
+72: { "targetId": 0x42, "command1Id": 0x21, "command2Id": 0x46, },
+73: { "targetId": 0x42, "command1Id": 0x21, "command2Id": 0x49, },
+74: { "targetId": 0x42, "command1Id": 0x41, "command2Id": 0x25, },
+75: { "targetId": 0x42, "command1Id": 0x4b, "command2Id": 0x25, },
+76: { "targetId": 0x42, "command1Id": 0x57, "command2Id": 0x25, },
+77: { "targetId": 0x44, "command1Id": 0x27, "command2Id": 0x43, },
+78: { "targetId": 0x44, "command1Id": 0x46, "command2Id": 0x43, },
+79: { "targetId": 0x44, "command1Id": 0x49, "command2Id": 0x43, },
+80: { "targetId": 0x44, "command1Id": 0x4a, "command2Id": 0x43, },
+81: { "targetId": 0x45, "command1Id": 0x48, "command2Id": 0x44, },
+82: { "targetId": 0x45, "command1Id": 0x4b, "command2Id": 0x44, },
+83: { "targetId": 0x45, "command1Id": 0x57, "command2Id": 0x44, },
+84: { "targetId": 0x49, "command1Id": 0x01, "command2Id": 0x46, },
+85: { "targetId": 0x49, "command1Id": 0x04, "command2Id": 0x46, },
+86: { "targetId": 0x4c, "command1Id": 0x2e, "command2Id": 0x31, },
+87: { "targetId": 0x4c, "command1Id": 0x38, "command2Id": 0x4e, },
+88: { "targetId": 0x4c, "command1Id": 0x39, "command2Id": 0x26, },
+89: { "targetId": 0x4c, "command1Id": 0x39, "command2Id": 0x4e, },
+90: { "targetId": 0x4d, "command1Id": 0x2a, "command2Id": 0x39, },
+91: { "targetId": 0x4d, "command1Id": 0x2f, "command2Id": 0x31, },
+92: { "targetId": 0x4d, "command1Id": 0x39, "command2Id": 0x4c, },
+93: { "targetId": 0x4d, "command1Id": 0x4e, "command2Id": 0x39, },
+94: { "targetId": 0x4e, "command1Id": 0x30, "command2Id": 0x31, },
+95: { "targetId": 0x4e, "command1Id": 0x38, "command2Id": 0x16, },
+96: { "targetId": 0x4e, "command1Id": 0x38, "command2Id": 0x4d, },
+97: { "targetId": 0x4e, "command1Id": 0x39, "command2Id": 0x4d, },
+98: { "targetId": 0x4f, "command1Id": 0x17, "command2Id": 0x3c, },
+99: { "targetId": 0x4f, "command1Id": 0x2f, "command2Id": 0x2e, },
+100: { "targetId": 0x4f, "command1Id": 0x3c, "command2Id": 0x50, },
+101: { "targetId": 0x4f, "command1Id": 0x51, "command2Id": 0x3c, },
+102: { "targetId": 0x50, "command1Id": 0x30, "command2Id": 0x2e, },
+103: { "targetId": 0x50, "command1Id": 0x3c, "command2Id": 0x51, },
+104: { "targetId": 0x50, "command1Id": 0x53, "command2Id": 0x3c, },
+105: { "targetId": 0x50, "command1Id": 0x54, "command2Id": 0x3c, },
+106: { "targetId": 0x51, "command1Id": 0x30, "command2Id": 0x2f, },
+107: { "targetId": 0x51, "command1Id": 0x3b, "command2Id": 0x2f, },
+108: { "targetId": 0x51, "command1Id": 0x3c, "command2Id": 0x30, },
+109: { "targetId": 0x51, "command1Id": 0x4f, "command2Id": 0x50, },
+110: { "targetId": 0x52, "command1Id": 0x3e, "command2Id": 0x53, },
+111: { "targetId": 0x52, "command1Id": 0x3f, "command2Id": 0x14, },
+112: { "targetId": 0x52, "command1Id": 0x3f, "command2Id": 0x39, },
+113: { "targetId": 0x52, "command1Id": 0x3f, "command2Id": 0x53, },
+114: { "targetId": 0x53, "command1Id": 0x20, "command2Id": 0x3f, },
+115: { "targetId": 0x53, "command1Id": 0x3e, "command2Id": 0x3f, },
+116: { "targetId": 0x53, "command1Id": 0x3f, "command2Id": 0x42, },
+117: { "targetId": 0x53, "command1Id": 0x3f, "command2Id": 0x52, },
+118: { "targetId": 0x54, "command1Id": 0x39, "command2Id": 0x48, },
+119: { "targetId": 0x54, "command1Id": 0x41, "command2Id": 0x11, },
+120: { "targetId": 0x54, "command1Id": 0x41, "command2Id": 0x55, },
+121: { "targetId": 0x54, "command1Id": 0x42, "command2Id": 0x55, },
+122: { "targetId": 0x54, "command1Id": 0x45, "command2Id": 0x39, },
+123: { "targetId": 0x55, "command1Id": 0x42, "command2Id": 0x39, },
+124: { "targetId": 0x55, "command1Id": 0x54, "command2Id": 0x42, },
+125: { "targetId": 0x55, "command1Id": 0x57, "command2Id": 0x42, },
+126: { "targetId": 0x56, "command1Id": 0x44, "command2Id": 0x45, },
+127: { "targetId": 0x56, "command1Id": 0x45, "command2Id": 0x3c, },
+128: { "targetId": 0x56, "command1Id": 0x4a, "command2Id": 0x45, },
+129: { "targetId": 0x56, "command1Id": 0x55, "command2Id": 0x45, },
+130: { "targetId": 0x58, "command1Id": 0x4f, "command2Id": 0x3f, },
+131: { "targetId": 0x59, "command1Id": 0x4f, "command2Id": 0x56, },
+132: { "targetId": 0x5a, "command1Id": 0x50, "command2Id": 0x3f, },
+133: { "targetId": 0x5b, "command1Id": 0x55, "command2Id": 0x53, },
+134: { "targetId": 0x5c, "command1Id": 0x32, "command2Id": 0x5b, },
+}
+
+function GetConversionCombosByTargetId(targetId)
+{
+    combos = []
+    
+    for i in conversionCombinations
+    {
+        combo = conversionCombinations[i]
+        if (combo["targetId"] == targetId)
+        {
+            array_push(combos, combo)
+        }
+    }
+    
+    return combos
+}
+
+function GetCommandByName(commandName)
+{
+    return GetCommandByProperty("name", commandName)
+}
+
+function GetCommandByProperty(propertyName, propertyValue)
+{
+    for id in commands
+    {
+        command = commands[id]
+        if (command[propertyName] == propertyValue)
+        {
+            return command
+        }
+    }
+}
+
+function GetCommandsByProperty(propertyName, propertyValue)
+{
+    batches = GetCommandBatchesByProperty(propertyName, propertyValue, 0)
+    return batches[0]
+}
+
+function GetCommandBatchesByProperty(propertyName, propertyValue, batchSize)
+{
+    retCommandBatches = []
+    currentBatch = []
+    for id in commands
+    {
+        command = commands[id]
+        if (command[propertyName] == propertyValue)
+        {
+            array_push(currentBatch, command)
+        }
+        
+        if (length(currentBatch) >= batchSize && batchSize != 0)
+        {
+            array_push(retCommandBatches, currentBatch)
+            currentBatch = []
+        }
+    }
+    
+    if (length(currentBatch) > 0)
+    {
+        array_push(retCommandBatches, currentBatch)
+    }
+    
+    return retCommandBatches
+}
+
+// Returns the ID of the command in a given subslot. A subslot is one of the two slots in a command group.
+// Group 1 has subslots 0 and 1, Group 2 has subslots 2 and 3, and so on.
+function commandBaseAddr() => 0x05ffc8
+function installedInventoryBaseAddr() => 0x19881c
+function GetCommandIdBySubslotId(subslotId)
+{
+    return byte(commandBaseAddr() + subslotId * 12 + 11)
+}
+
+// Normally, this holds indices to the command that's installed, but if it's an item, an ID is used.
+// As such, this function is primarily used to see if a player has a particular item command installed.
+function GetInstalledItemIdByCommandGroupId(groupId)
+{
+    return byte(installedInventoryBaseAddr() + groupId * 4)
+}
+
+function IsCommandInstalledInSubslot(subslotId)
+{
+    return bit1(commandBaseAddr() + subslotId * 12) == 1
+}
+
+function HasAnyCommandsEquipped()
+{
+    commandInstalled = always_false()
+    for i in range(0, 7) // One loop per command group
+    {
+        commandInstalled = commandInstalled || IsCommandInstalledInSubslot(2 * i)
+    }
+    return commandInstalled
+}
+
+function NamedCommandIsInstalledInGivenGroup(namedCommand, groupId)
+{
+    slotAId = GetCommandIdBySubslotId(groupId * 2)
+    slotAInstalled = IsCommandInstalledInSubslot(groupId * 2)
+    
+    // We only care about Subslot A, as that is what determines what the final command is if it's not a command conversion.
+    return slotAInstalled && slotAId == namedCommand["id"]
+}
+
+function HasCommandEquipped(commandName)
+{
+    rawCommandInstalled = always_false()
+    commandConversionInstalled = always_false()
+    namedCommand = GetCommandByName(commandName)
+    
+    for i in range(0, 7) // One loop per command group
+    {
+        slotAId = GetCommandIdBySubslotId(i * 2)
+        slotAInstalled = IsCommandInstalledInSubslot(i * 2)
+        slotBId = GetCommandIdBySubslotId(i * 2 + 1)
+        slotBInstalled = IsCommandInstalledInSubslot(i * 2 + 1)
+        
+        // We only care about Subslot A, as that is what determines what the final command is if it's not a command conversion.
+        namedCommandIsInstalledInThisGroup = NamedCommandIsInstalledInGivenGroup(namedCommand, i)
+        namedCommandIsInstalledInThisGroupViaConversion
+            = SubslotCombinationResultsInGivenCommandConversion(slotAId, slotAInstalled, slotBId, slotBInstalled, namedCommand)
+        rawCommandInstalled = rawCommandInstalled || namedCommandIsInstalledInThisGroup
+        commandConversionInstalled = commandConversionInstalled || namedCommandIsInstalledInThisGroupViaConversion
+    }
+    
+    return rawCommandInstalled || commandConversionInstalled
+}
+
+function HasAnyCommandEquippedInAnySubslotB()
+{
+    trigger = always_false()
+    for i in range(0, 7) // One loop per command group
+    {
+        slotBInstalled = IsCommandInstalledInSubslot(i * 2 + 1)
+        
+        trigger = trigger || slotBInstalled
+    }
+    
+    return trigger
+}
+
+function HasAnyGivenCommandsEquipped(namedCommands)
+{
+    trigger = always_false()
+    for command in namedCommands
+    {
+        trigger = trigger || HasCommandEquipped(command["name"])
+    }
+    
+    return trigger
+}
+
+function HasGivenRawCommandsEquipped(namedCommands)
+{
+    trigger = always_false()
+    for command in namedCommands
+    {
+        for i in range(0, 7) // One loop per command group
+        {
+            trigger = trigger || NamedCommandIsInstalledInGivenGroup(command, i)
+        }
+    }
+    
+    return trigger
+}
+
+function SubslotCombinationResultsInGivenCommandConversion(slotAId, slotAInstalled, slotBId, slotBInstalled, command)
+{
+    combos = GetConversionCombosByTargetId(command["id"])
+    trigger = always_false()
+    
+    for combo in combos
+    {
+        trigger = trigger || slotAId == combo["command1Id"] && slotBId == combo["command2Id"] && slotAInstalled && slotBInstalled
+        trigger = trigger || slotAId == combo["command2Id"] && slotBId == combo["command1Id"] && slotAInstalled && slotBInstalled
+    }
+    
+    return trigger
+}
+
+function NumberOfHealingItemCommandsEquipped()
+{
+    conditions = []
+    for i in range(0, 7) // One loop per command group
+    {
+        itemId = GetInstalledItemIdByCommandGroupId(i)
+        array_push(conditions, once(itemId == 0x80 || itemId == 0x81 || itemId == 0x85 || itemId == 0x86))
+    }
+    
+    return conditions
+}
+
+// ============================== /COMMANDS ============================== //
 
 function mapTutorial() => bit6(0x195c85)
 achievement(title = "The Arguments You Have Presented Seem Believable", description = "Receive your first instructions from King Mickey on the Destiny Islands.",
@@ -1195,15 +1796,89 @@ achievement(title = "Released Candidate", description = "Complete Wonderland.",
     trigger = WasBitflagSetInGame(wonderlandStoryEntry())
 )
 
-function dodgeRollActive() => bit0(0x1986f0)
-achievement(title = "Smooth Operator", description = "Defeat the Darkside without the Dodge Roll ability equipped (Critical Mode; Level 2 or below).",
-    points = 5,
-    trigger = IsAtLeastOnDifficulty("Critical") && dodgeRollActive() == 0 && JustDefeatedEnemy("Darkside") && level() <= 2
+function olympusColiseumStoryEntry() => bit1(0x195bda)
+achievement(title = "Race Condition", description = "Complete Olympus Coliseum.",
+    points = 3,
+    trigger = WasBitflagSetInGame(olympusColiseumStoryEntry())
 )
 
-achievement(title = "I Am the New God", description = "Earn a Star rank against the Darkside (Proud Mode or higher; Level 5 or below).",
+function agrabahStoryEntry() => bit0(0x195bda)
+achievement(title = "Key Cracking", description = "Complete Agrabah.",
+    points = 3,
+    trigger = WasBitflagSetInGame(agrabahStoryEntry())
+)
+
+function dialoguePtr() => tbyte(0x0c9f38)
+function currentCharInDialoguePtr() => tbyte(dialoguePtr())
+function currentChar() => word(currentCharInDialoguePtr())
+
+function CharToInt(char)
+{
+    // Not including every ASCII character because this function is probably only being used once, and only the following characters are used.
+    chars = {
+        ".": 0x2e,
+        "W": 0x57,
+        "a": 0x61,
+        "h": 0x68,
+        "j": 0x6a,
+        "s": 0x73,
+        "t": 0x74,
+        "u": 0x75,
+    }
+    
+    return chars[char]
+}
+
+function TextIsDisplayed(charArray)
+{
+    trigger = always_true()
+    
+    for char in charArray
+    {
+        trigger = trigger && once(currentChar() == CharToInt(char))
+    }
+    
+    return once(trigger)
+}
+
+function hollowBastionPt1StoryEntry() => bit7(0x195bd9)
+achievement(title = "My Friends Are My Power, I Guess", description = "Reclaim your Keyblade.",
+    points = 1,
+    trigger = never((dialoguePtr() == 0 || currentCharInDialoguePtr() == 0) && IsInLocation("HollowBastionGrandHall"))
+        && hollowBastionPt1StoryEntry() == 0 // We neither need nor want players to earn this achievement on subsequent visits to this world.
+        && (once(IsInLocation("HollowBastionGrandHall") && TextIsDisplayed(["W", "h", "a", "t", ".", ".", ".", "j", "u", "s", "t", ".", ".", "."])) // If specific dialogue is encountered, sans skipping.
+            // Failsafe condition; merely check to see if you're entering the Keyhole.
+            || WasInLocation("HollowBastionGrandHall") && IsInLocation("HollowBastionKeyholeEntrance"))
+            
+)
+
+function hollowBastionStoryEntry() => bit7(0x195bd9)
+achievement(title = "Endless QA", description = "Complete Hollow Bastion, Part I.",
+    points = 3,
+    trigger = WasBitflagSetInGame(hollowBastionStoryEntry())
+)
+
+function hollowBastionIIStoryEntry() => bit6(0x195bd9)
+achievement(title = "Escape Sequence", description = "Complete Hollow Bastion, Part II.",
+    points = 3,
+    trigger = WasBitflagSetInGame(hollowBastionIIStoryEntry())
+)
+
+function HPCheatIsBeingUsed()
+{
+    hpCheatValue = byte(0x1986fb)
+    return hpCheatValue < 100
+}
+
+function dodgeRollActive() => bit0(0x1986f0)
+achievement(title = "Smooth Operator", description = "Defeat the Darkside without the Dodge Roll ability equipped (Critical Mode, Level 2 or below, no HP Cheat).",
+    points = 5,
+    trigger = IsAtLeastOnDifficulty("Critical") && dodgeRollActive() == 0 && JustDefeatedEnemy("Darkside") && Level() <= 2 && never(HPCheatIsBeingUsed())
+)
+
+achievement(title = "I Am the New God", description = "Earn a Star rank against the Darkside (Proud Mode or higher, Level 5 or below, no HP Cheat).",
     points = 10,
-    trigger = IsAtLeastOnDifficulty("Proud") && level() <= 5 && never(!IsInLocation("DestinyStorm")) && BossScoreIsDisplayedAndAtLeast(40000)
+    trigger = IsAtLeastOnDifficulty("Proud") && Level() <= 5 && never(!IsInLocation("DestinyStorm")) && BossScoreIsDisplayedAndAtLeast(40000) && never(HPCheatIsBeingUsed())
 )
 
 soraSidescrollStateOffset = 0x2d32
@@ -1212,26 +1887,26 @@ function JustFellOrGotCaughtInSidescrollingStages() => soraSidescrollingState() 
 function IsAlwaysInTraverseTownKeyhole() => never(!IsInLocation("TraverseKeyholeFirst") && !IsInLocation("TraverseKeyholeSecond")
         && !IsInLocation("TraverseKeyholeThird") && !IsInLocation("TraverseKeyholeFall") && !IsInLocation("TraverseKeyholeTerminus"))
 achievement(title = "Saved a Framerule", points = 25,
-    description = "Complete the Traverse Town Keyhole without falling into pits, getting caught behind blox, or dying (Critical Mode; Level 7 or below).",
-    trigger = IsAtLeastOnDifficulty("Critical") && level() <= 7 && IsAlwaysInTraverseTownKeyhole()
+    description = "Complete the Traverse Town Keyhole without falling into pits, getting caught behind blox, or dying (Critical Mode, Level 7 or below, no HP Cheat).",
+    trigger = IsAtLeastOnDifficulty("Critical") && Level() <= 7 && IsAlwaysInTraverseTownKeyhole()
         && once(KeyholeCheckpointPassed() && !IsMinigameActive() && IsInLocation("TraverseKeyholeFirst"))
-        && never(hp() <= 0) && JustDefeatedEnemy("Guard Armor") && never(JustFellOrGotCaughtInSidescrollingStages())
+        && never(hp() <= 0) && JustDefeatedEnemy("Guard Armor") && never(JustFellOrGotCaughtInSidescrollingStages()) && never(HPCheatIsBeingUsed())
 )
 
 minigameMiscPointerAddr = 0x0a04c4
 function minigameMiscHalfPointer() => word(minigameMiscPointerAddr)
 
 fireLungeUsesNegativeOffset = 0x9f6
-function fireLungeUsesLeft() => byte(minigameMiscHalfPointer() + 0x230000 - fireLungeUsesNegativeOffset)
+function fireLungeUsesLeft() => byte(GetAddressWithNegativeOffset(minigameMiscHalfPointer(), 0x230000, fireLungeUsesNegativeOffset))
 
 thunderRainUsesNegativeOffset = 0x9ba
-function thunderRainUsesLeft() => byte(minigameMiscHalfPointer() + 0x230000 - thunderRainUsesNegativeOffset)
+function thunderRainUsesLeft() => byte(GetAddressWithNegativeOffset(minigameMiscHalfPointer(), 0x230000, thunderRainUsesNegativeOffset))
 
 blizzardDartUsesNegativeOffset = 0x97e
-function blizzardDartUsesLeft() => byte(minigameMiscHalfPointer() + 0x230000 - blizzardDartUsesNegativeOffset)
+function blizzardDartUsesLeft() => byte(GetAddressWithNegativeOffset(minigameMiscHalfPointer(), 0x230000, blizzardDartUsesNegativeOffset))
 
 windSpinUsesNegativeOffset = 0x942
-function windSpinDartUsesLeft() => byte(minigameMiscHalfPointer() + 0x230000 - windSpinUsesNegativeOffset)
+function windSpinDartUsesLeft() => byte(GetAddressWithNegativeOffset(minigameMiscHalfPointer(), 0x230000, windSpinUsesNegativeOffset))
 
 function UsedOverlayCommand(addr) => once(Delta(addr) == addr + 1)
 achievement(title = "Dedicated Specialist", points = 5,
@@ -1243,9 +1918,9 @@ achievement(title = "Dedicated Specialist", points = 5,
             UsedOverlayCommand(windSpinDartUsesLeft()) ]))
 )
 
-achievement(title = "Our Princess of Heart Is in Another World", description = "Earn a Star rank against the Guard Armor (Proud Mode or higher; Level 9 or below).",
+achievement(title = "Our Princess of Heart Is in Another World", description = "Earn a Star rank against the Guard Armor (Proud Mode or higher, Level 9 or below, no HP Cheat).",
     points = 10,
-    trigger = IsAtLeastOnDifficulty("Proud") && level() <= 9 && never(!IsInLocation("TraverseKeyholeTerminus")) && BossScoreIsDisplayedAndAtLeast(30000)
+    trigger = IsAtLeastOnDifficulty("Proud") && Level() <= 9 && never(!IsInLocation("TraverseKeyholeTerminus")) && BossScoreIsDisplayedAndAtLeast(30000) && never(HPCheatIsBeingUsed())
 )
 
 // The current save protection algorithm won't work here because the bits appear to be loaded after all the other save's data is loaded.
@@ -1289,13 +1964,269 @@ achievement(title = "Avoided the Guillotine", points = 25,
 )
 
 achievement(title = "Guilt and Penalty", points = 10,
-    description = "Complete the Wonderland Keyhole with a score of 22000 or more (Proud Mode or higher; Level 15 or below).",
-    trigger = IsAtLeastOnDifficulty("Proud") && level() <= 15 && never(!IsInLocation("WonderlandKeyholeTerminus")) && BossScoreIsDisplayedAndAtLeast(22000)
+    description = "Complete the Wonderland Keyhole with a score of 22000 or more (Proud Mode or higher, Level 15 or below, no HP Cheat).",
+    trigger = IsAtLeastOnDifficulty("Proud") && Level() <= 15 && never(!IsInLocation("WonderlandKeyholeTerminus")) && BossScoreIsDisplayedAndAtLeast(22000) && never(HPCheatIsBeingUsed())
 )
 
 achievement(title = "Astral Heir", points = 25,
-    description = "Earn a Star rank in the Wonderland Keyhole (Proud Mode or higher; Level 15 or below).",
-    trigger = IsAtLeastOnDifficulty("Proud") && level() <= 15 && never(!IsInLocation("WonderlandKeyholeTerminus")) && BossScoreIsDisplayedAndAtLeast(45000)
+    description = "Earn a Star rank in the Wonderland Keyhole (Proud Mode or higher, Level 15 or below, no HP Cheat).",
+    trigger = IsAtLeastOnDifficulty("Proud") && Level() <= 15 && never(!IsInLocation("WonderlandKeyholeTerminus")) && BossScoreIsDisplayedAndAtLeast(45000) && never(HPCheatIsBeingUsed())
+)
+
+function IsAPointer(addr) => byte(addr + 3) == 0x2 && tbyte(addr) > 0
+function turnBasedBattlePtrAddr() => 0x1a47c4
+function turnBasedBattlePtr() => tbyte(turnBasedBattlePtrAddr())
+function IsInTurnBasedBattle() => turnBasedBattlePtr() != 0x0 && IsInWorld("Olympus Coliseum")
+function OlympusColiseumKeyholeCheckpoint() => Delta(turnBasedBattlePtr()) == 0x0 && IsAPointer(turnBasedBattlePtrAddr()) && IsInWorld("Olympus Coliseum")
+function licenseBaseAddr() => 0x0608e0
+function ConsumedALicenseAtAddr(idAddr)
+{
+    return Delta(byte(idAddr + 4)) > byte(idAddr + 4)
+}
+
+function ConsumedALicense()
+{
+    consumedLicense = always_false()
+    for i in range(0, 7) // Eight licenses total
+    {
+        consumedLicense = consumedLicense || ConsumedALicenseAtAddr(licenseBaseAddr() + i * 12) // License data appears to be twelve bytes in width.
+    }
+    return consumedLicense
+}
+
+function ConsumedALicenseOfType(type)
+{
+    consumedLicense = always_false()
+    for i in range(0, 7) // Eight licenses total
+    {
+        licenseAddr = licenseBaseAddr() + i * 12
+        consumedLicense = consumedLicense || ConsumedALicenseAtAddr(licenseAddr) // License data appears to be twelve bytes in width.
+            && byte(licenseAddr) == type
+    }
+    return consumedLicense
+}
+
+achievement(title = "Lethal Force Authorized", points = 5, id = 152997, badge = "171704",
+    description = "Defeat both Cerberus and Hades without using any more than five licenses total between them (Proud Mode or higher, Level 20 or below, no HP Cheat.).",
+    trigger = IsAtLeastOnDifficulty("Proud") && Level() <= 20
+        && once(OlympusColiseumKeyholeCheckpoint()) && never(HPCheatIsBeingUsed())
+        // A pauselock is used to ensure the checkpoint doesn't get re-established if the player uses too many licenses in the Cerberus fight.
+        && unless(repeated(6, ConsumedALicense() && turnBasedBattlePtr() != 0x0))
+        && (never(!IsInLocation("OlympusLayer5")) && always_false() // This is to reset the pauselock while also allowing us to create alts for Hades' defeat.
+            || JustDefeatedEnemy("Hades"))
+)
+
+// TODO: Like Wonderland above, we're duplicating the OlympusLayer15 check to work around a "Combination of &&s and ||s is too complex" error.
+// This can be simplified after this RATools bug is fixed.
+achievement(title = "There Is No Escape", points = 5,
+    description = "Earn a Star rank in the Olympus Coliseum Keyhole (Critical Mode, Level 20 or below, no HP Cheat).",
+    trigger = IsAtLeastOnDifficulty("Critical") &&  BossScoreIsDisplayedAndAtLeast(30000) && never(HPCheatIsBeingUsed())
+        && never(!IsInLocation("OlympusLayer5") && !IsInLocation("OlympusLayer15") && !IsInLocation("OlympusLayer30")
+         && !IsInLocation("OlympusLayer15") && !IsInLocation("OlympusLayer15"))
+         && (Level() <= 20 || always_false()) // Trick RATools into generating the correct code by forcing use of OrNext.
+)
+
+achievement(title = "Martial Technique", points = 10, id = 152999, badge = "171708",
+    description = "Defeat the Rock Titan using neither Auto-Block-L nor Timing-L licenses (Critical Mode, Level 25 or below, no HP Cheat).",
+    trigger = IsAtLeastOnDifficulty("Critical") && Level() <= 25 && never(HPCheatIsBeingUsed())
+        && once(OlympusColiseumKeyholeCheckpoint()) && never(!IsInTurnBasedBattle())
+        && JustDefeatedEnemy("Rock Titan") && never(ConsumedALicenseOfType(0xd7)) && never(ConsumedALicenseOfType(0xd8))
+)
+
+achievement(title = "Monster Hunter", points = 5, id = 153000, badge = "171709",
+    description = "Defeat the Behemoth without using the Reload-L license (Critical Mode, Level 37 or below, no HP Cheat).",
+    trigger = IsAtLeastOnDifficulty("Critical") && Level() <= 37 && never(HPCheatIsBeingUsed())
+        && once(OlympusColiseumKeyholeCheckpoint()) && never(!IsInTurnBasedBattle())
+        && JustDefeatedEnemy("Behemoth") && never(ConsumedALicenseOfType(0xd4))
+)
+
+function cloudIsInParty() => bit6(0x19c513)
+achievement(title = "Teamwork? Not Interested", points = 10, id = 153009, badge = "171735",
+    description = "Defeat the Ice Titan without Cloud in your party (Critical Mode, Level 40 or below, no HP Cheat).",
+    trigger = IsAtLeastOnDifficulty("Critical") && Level() <= 40 && never(HPCheatIsBeingUsed())
+        && once(OlympusColiseumKeyholeCheckpoint()) && never(!IsInTurnBasedBattle())
+        && JustDefeatedEnemy("Ice Titan") && cloudIsInParty() == 0
+)
+
+// Putting this on the cutting room floor for now; their implementation for calculating time is a bit too complex for me to want to write code around for now.
+// Plus, the achievement probably isn't that particularly challenging anyway, since you just get booted back to the entrance of the current room if you run out of time
+// with all of your time put back into the pool.
+if (1 == 0)
+{
+    function agrabahTimeElapsedInRoom() => dword(0x1efc8c)
+    function agrabahTimeLimitInRoom() => dword(0x19ee18)
+    achievement(title = "No Need for an Hourglass", points = 3,
+        description = "Reclaim the magic lamp from Iago before time runs out the first time and without collecting any time prizes.",
+        trigger = once(WasInLocation("AgrabahPlaza") && IsInLocation("AgrabahPlazaFrozen")) && IsInLocation("AgrabahCaveEntrance")
+            && never(agrabahTimeElapsedInRoom() >= agrabahTimeLimitInRoom())
+    ) 
+}
+
+achievement(title = "Mano-a-Many", points = 3,
+    description = "Defeat Jafar in the Lamp Chamber without defeating any other enemy (Critical Mode, Level 20 or below, no HP Cheat).",
+    trigger = never(JustDefeatedEnemy("Blox Bug")) && never(!IsInLocation("AgrabahLamp")) && Level() <= 20 && IsAtLeastOnDifficulty("Critical") && never(HPCheatIsBeingUsed())
+        && (once(WasInLocation("AgrabahGauntlet") && IsInLocation("AgrabahLamp")) && JustDefeatedEnemy("Jafar") // Initial entry into the room
+            || once(Delta(hp()) == 0 && hp() == maxHP()) && JustDefeatedEnemy("Jafar")) // Cover a game over situation
+)
+
+eternityCharmId = 0x12d
+achievement(title = "Keyblade Beats Rock", points = 25,
+    description = "Defeat Jafar's genie form with 50 max HP or less and without Second Chance active (Critical Mode, Level 20 or below, no HP Cheat).",
+    trigger = IsAtLeastOnDifficulty("Critical") && JustDefeatedEnemy("Jafar (Genie)") && never(HPCheatIsBeingUsed())
+        && never(!IsInLocation("AgrabahKeyholeTerminus")) && Level() <= 20 && maxHP() <= 50
+        && !HasAccessoryEquipped(eternityCharmId)
+)
+
+achievement(title = "Exceptional Astronomical Abilities", points = 5,
+    description = "Earn a Star rank in the Agrabah Keyhole (Proud Mode or higher, Level 20 or below, no HP Cheat).",
+    trigger = IsAtLeastOnDifficulty("Proud") && BossScoreIsDisplayedAndAtLeast(35000) && never(HPCheatIsBeingUsed())
+        && never(!IsInLocation("AgrabahKeyholeTerminus")) && Level() <= 20
+)
+
+achievement(title = "The Donald Special", points = 5,
+    description = "Survive the enemy gauntlet at the Great Crest in Hollow Bastion without any healing items equipped (Critical Mode, Level 22 or below, no HP Cheat).",
+    trigger = IsAtLeastOnDifficulty("Critical") && Level() <= 22 && once(WasInLocation("HollowBastionEntranceLower") && IsInLocation("HollowBastionCrest"))
+        && never(tally(1, NumberOfHealingItemCommandsEquipped())) && IsInLocation("HollowBastionTower")
+        && never(IsLoadingSaveFile()) // So the player doesn't simply reload a save file from the High Tower after a game over.
+        && never(HPCheatIsBeingUsed())
+)
+
+achievement(title = "Sour Stomach", points = 10,
+    description = "Defeat Pete in Hollow Bastion without the Dodge Roll ability active (Critical Mode, Level 22 or below, no HP Cheat).",
+    trigger = dodgeRollActive() == 0 && IsAtLeastOnDifficulty("Critical") && Level() <= 22 && JustDefeatedEnemy("Pete")
+        && never(!IsInLocation("HollowBastionKeyholeChapel")) && never(HPCheatIsBeingUsed())
+)
+
+curativeCommands = GetCommandsByProperty("category", "Curative")
+achievement(title = "Waste Not, Want Not", points = 10,
+    description = "Defeat Data-Riku in Hollow Bastion equipping only a single HP-restoring item command as your primary source of healing (Critical Mode, Level 22 or below, no HP Cheat).",
+    trigger = Level() <= 22 && IsAtLeastOnDifficulty("Critical") && JustDefeatedEnemy("Data-Riku")
+        && never(HasAnyGivenCommandsEquipped(curativeCommands))
+        && never(tally(2, NumberOfHealingItemCommandsEquipped())) && never(!IsInLocation("HollowBastionKeyholeChapel"))
+        && never(HPCheatIsBeingUsed())
+)
+
+achievement(title = "Speed Deletion", points = 10,
+    description = "Complete the Hollow Bastion Keyhole with a score of 23000 or more (Proud Mode or higher, Level 22 or below, no HP Cheat).",
+    trigger = IsAtLeastOnDifficulty("Proud") && Level() <= 22 && never(!IsInLocation("HollowBastionKeyholeChapel")) && BossScoreIsDisplayedAndAtLeast(23000)
+        && never(HPCheatIsBeingUsed())
+)
+
+achievement(title = "Speed Shredding", points = 25,
+    description = "Earn a Star rank in the Hollow Bastion Keyhole (Proud Mode or higher, Level 22 or below, no HP Cheat).",
+    trigger = IsAtLeastOnDifficulty("Proud") && Level() <= 22 && never(!IsInLocation("HollowBastionKeyholeChapel")) && BossScoreIsDisplayedAndAtLeast(40000)
+        && never(HPCheatIsBeingUsed())
+)
+
+achievement(title = "Graceful Degradation", points = 10,
+    description = "Defeat the Data-Riku inside Riku's data without equipping any commands (Critical Mode, Level 25 or below, no HP Cheat).",
+    trigger = Level() <= 25 && IsAtLeastOnDifficulty("Critical") && JustDefeatedEnemy("Data-Riku") && never(HPCheatIsBeingUsed())
+        && never(HasAnyCommandsEquipped()) && never(!IsInLocation("HollowBastionChapelRiku"))
+)
+
+function HighJumpEquipped() => bit4(0x1986f0) == 1
+function AirSlideEquipped() => bit7(0x1986f0) == 1 || bit0(0x1986f2) == 1 || bit1(0x1986f2) == 1
+function GlideEquipped() => bit7(0x1986f2) == 1
+achievement(title = "Resistance Training", points = 5,
+    description = "Reach the Dragon's Lair with either High Jump, Air Slide, Glide, or none of the above equipped.",
+    trigger = IsInLocation("HollowBastionDragon") && WasInLocation("HollowBastionEscapeRiku") && never(!IsInLocation("HollowBastionDragon")) &&
+        never(tally(2, [ once(HighJumpEquipped()), once(AirSlideEquipped()), once(GlideEquipped()) ]))
+)
+
+achievement(title = "Grounded Mortal", points = 10,
+    description = "Defeat Dragon Maleficent without High Jump, Air Slide, or Glide equipped (Critical Mode, Level 27 or below, no HP Cheat).",
+    trigger = IsInLocation("HollowBastionDragon") && JustDefeatedEnemy("Dragon") && Level() <= 27 && IsAtLeastOnDifficulty("Critical") && never(HPCheatIsBeingUsed())
+        && never(HighJumpEquipped() || AirSlideEquipped() || GlideEquipped())
+)
+
+achievement(title = "Flame Damping", points = 5,
+    description = "Get a score of 32000 or more during the escape from inside Riku's data (Proud Mode or higher, Level 27 or below, no HP Cheat).",
+    trigger = IsAtLeastOnDifficulty("Proud") && Level() <= 27 && never(!IsInLocation("HollowBastionDragon")) && BossScoreIsDisplayedAndAtLeast(32000) && never(HPCheatIsBeingUsed())
+)
+
+achievement(title = "Draconic Rage", points = 25,
+    description = "Earn a Star rank escaping from inside Riku's data (Proud Mode or higher, Level 27 or below, no HP Cheat).",
+    trigger = IsAtLeastOnDifficulty("Proud") && Level() <= 27 && never(!IsInLocation("HollowBastionDragon")) && BossScoreIsDisplayedAndAtLeast(50000) && never(HPCheatIsBeingUsed())
+)
+
+achievement(title = "Underclocking", points = 10,
+    description = "Defeat Sora's Heartless (Darkside form) at Level 1 on Standard Mode or higher (no HP Cheat).",
+    trigger = IsAtLeastOnDifficulty("Standard") && Level() <= 1 && never(!IsInLocation("HollowBastionCentralCorruption")) && never(HPCheatIsBeingUsed())
+        && once(IsInLocation("HollowBastionCentralCorruption") && WasInLocation("HollowBastionDataTunnel")) // Battle checkpoint
+        && JustDefeatedEnemy("Sora’s Heartless")
+        && (always_false()
+            || never(Level() > 1) && never(IsOnBeginnerMode()) && unless(IsInMenu()))
+)
+
+rangedCommands = GetCommandsByProperty("category", "Ranged")
+achievement(title = "Dark Embrace", points = 25,
+    description = "Defeat Sora's Heartless without equipping any ranged commands and with only one command per group (Critical Mode, Level 30 or below, no HP Cheat).",
+    trigger = IsAtLeastOnDifficulty("Critical") && Level() <= 30 && never(!IsInLocation("HollowBastionCentralCorruption"))
+        && once(WasInLocation("HollowBastionDataTunnel") && IsInLocation("HollowBastionCentralCorruption"))
+        && never(HasAnyCommandEquippedInAnySubslotB()) && never(HasGivenRawCommandsEquipped(rangedCommands)) && unless(IsInMenu())
+        // We can't check to see if we actually defeated Sora's humanoid Heartless because the game counts winning the first phase of that fight
+        // and not the last. Instead, we need to check to see if the player actually completed all the fights--meaning we need to see if the score is displayed.
+        && IsTotalScoreJustDisplayedForAchievement() && never(HPCheatIsBeingUsed())
+)
+
+achievement(title = "Shallow Copy", points = 25,
+    description = "Earn a Star rank against Sora's Heartless (Proud Mode or higher, Level 30 or below, no HP Cheat).",
+    trigger = IsAtLeastOnDifficulty("Proud") && Level() <= 30 && never(!IsInLocation("HollowBastionCentralCorruption")) && BossScoreIsDisplayedAndAtLeast(40000)
+        && never(HPCheatIsBeingUsed())
+)
+
+endingCards = [
+    bit1(0x195e59), // W6 Extra Card
+    bit2(0x195e59), // W6 Alternate Card
+    bit3(0x195e59), // W6 Normal Card
+    bit4(0x195e59), // W5 Extra Card
+    bit5(0x195e59), // W5 Alternate Card
+    bit6(0x195e59), // W5 Normal Card
+    bit7(0x195e59), // W4 Extra Card
+    bit0(0x195e5a), // W4 Alternate Card
+    bit1(0x195e5a), // W4 Normal Card
+    bit2(0x195e5a), // W3 Extra Card
+    bit3(0x195e5a), // W3 Alternate Card
+    bit4(0x195e5a), // W3 Normal Card
+    bit5(0x195e5a), // W2 Extra Card
+    bit6(0x195e5a), // W2 Alternate Card
+    bit7(0x195e5a), // W2 Normal Card
+    bit0(0x195e5b), // W1 Extra Card
+    bit1(0x195e5b), // W1 Alternate Card
+    bit2(0x195e5b), // W1 Normal Card
+]
+endingCardConditions = {}
+i = 0
+for addr in endingCards
+{
+    endingCardConditions[i] = { "countsWhen": (addr == 1), "recalculateWhen": (addr != Delta(addr)) }
+    i = i + 1
+}
+
+GenerateSaveProtectedAchievementFromConditions({
+    "name": "Hurt's Last Reward",
+    "description": "Obtain all ending cards in Castle Oblivion.",
+    "points": 5,
+    "threshold": 18
+}, endingCardConditions, always_true())
+
+function accessory1() => word(0x198850)
+function accessory2() => word(0x198852)
+function accessory3() => word(0x198854)
+function accessory4() => word(0x198856)
+
+achievement(title = "Bite the Bullet", points = 10,
+    description = "Defeat the final boss without any accessories equipped (Critical Mode, Level 35 or below, no HP Cheat).",
+    trigger = IsInLocation("CastleOblivionSorrow") && JustDefeatedEnemy("Data-Roxas") && Level() <= 35 && IsAtLeastOnDifficulty("Critical")
+        && accessory1() == 0xffff && accessory2() == 0xffff && accessory3() == 0xffff && accessory4() == 0xffff
+        && never(HPCheatIsBeingUsed())
+)
+
+timeLimit = 210
+achievement(title = "Painkiller", points = 5,
+    description = "Defeat the final boss within " + SecondsToFormat(timeLimit) + " (Proud Mode or higher, Level 35 or below, no HP Cheat).",
+    trigger = IsAtLeastOnDifficulty("Proud") && Level() <= 35 && never(!IsInLocation("CastleOblivionSorrow")) && BossTimeIsDisplayedAndAtMost(timeLimit * 1000)
+        && never(HPCheatIsBeingUsed())
 )
 
 function extraCommandSlotsUnlocked() => byte(0x198700)
@@ -1310,6 +2241,20 @@ achievement(title = "Bling, Bling!", points = 5,
     trigger = WasValueSetInGame(extraAccessorySlotsUnlocked(), 2, 3) && measured(extraAccessorySlotsUnlocked() == 3)
 )
 
+achievement(title = "Banco", points = 10, id = 152926, badge = "171670",
+    description = "Earn a total of 50,000 Sector Points or more from a single floor in a system sector.",
+    trigger = IsInSystemSector() && sectorPoints() - Delta(sectorPoints()) >= 50000
+        && sectorPoints() > Delta(sectorPoints()) // Ensure integer underflow doesn't happen.
+)
+
+achievement(title = "High-Stakes Gambler", points = 25, id = 152940, badge = "171693",
+    description = "Earn a total of 150,000 Sector Points or more from a single floor in a system sector.",
+    trigger = IsInSystemSector() && sectorPoints() - Delta(sectorPoints()) >= 150000
+        && sectorPoints() > Delta(sectorPoints()) // Ensure integer underflow doesn't happen.
+)
+
+function ultimaWeapon() => bit0(0x19834a)
+
 sectorRewards = [
     bit0(0x198322), bit1(0x198322), bit2(0x198322), bit3(0x198322), bit4(0x198322),
     bit0(0x198328), bit1(0x198328), bit2(0x198328),
@@ -1321,7 +2266,18 @@ sectorRewards = [
     bit0(0x198338), bit1(0x198338), bit2(0x198338), bit3(0x198338), bit4(0x198338),
     bit0(0x198324), bit1(0x198324), bit2(0x198324), bit3(0x198324), bit4(0x198324), bit5(0x198324),
     bit0(0x198330), bit1(0x198330), bit2(0x198330), bit3(0x198330), bit4(0x198330), bit5(0x198330),
+    bit0(0x198332), bit1(0x198332), bit2(0x198332), bit3(0x198332), bit4(0x198332),
     bit0(0x19833a), bit1(0x19833a), bit2(0x19833a), bit3(0x19833a), bit4(0x19833a),
+    bit0(0x19833e), bit1(0x19833e), bit2(0x19833e), bit3(0x19833e), bit4(0x19833e), bit5(0x19833e),
+    bit0(0x198340), bit1(0x198340), bit2(0x198340), bit3(0x198340), bit4(0x198340), bit5(0x198340),
+    bit0(0x198342), bit1(0x198342), bit2(0x198342), bit3(0x198342), bit4(0x198342), bit5(0x198342),
+    bit0(0x198346), bit1(0x198346), bit2(0x198346), bit3(0x198346),
+    bit0(0x198348), bit1(0x198348), bit2(0x198348), bit3(0x198348), bit4(0x198348), bit5(0x198348), bit6(0x198348),
+    bit0(0x19833c), bit1(0x19833c), bit2(0x19833c), bit3(0x19833c), bit4(0x19833c),
+    bit0(0x198344), bit1(0x198344), bit2(0x198344), bit3(0x198344), bit4(0x198344),
+    ultimaWeapon(), bit1(0x19834a), bit6(0x19834a),
+    bit0(0x198350), bit1(0x198350), bit2(0x198350), bit3(0x198350), bit4(0x198350), bit5(0x198350),
+    bit0(0x198352), bit1(0x198352), bit2(0x198352), bit3(0x198352), bit4(0x198352), bit5(0x198352),
 ]
 
 // Generate conditions for sector rewards from the above addresses.
@@ -1329,33 +2285,214 @@ sectorRewardsConditions = {}
 i = 0
 for addr in sectorRewards
 {
-    sectorRewardsConditions[i] = { "countsWhen": (addr == 1), "recalculateWhen": (addr != Delta(addr)) }
+    sectorRewardsConditions[i] = GenerateConditionFromBitflag(addr)
     i = i + 1
 }
 
 GenerateSaveProtectedAchievementFromConditions({
     "name": "Rookie Cryptominer",
-    "description": "Redeem 10% of all sector rewards.",
-    "points": 5,
-    "threshold": 100, // Not sure how many there are yet, but we may be able to infer it via calculations.
+    "description": "Redeem 10% of all system sector rewards.",
+    "points": 3,
+    "threshold": (length(sectorRewards) / 10),
 }, sectorRewardsConditions, always_true())
 
-function rarePrizeRoundup() => bit5(0x195c78)
-achievement(title = "Rare Prize Roundup", description = "Collect all items from every rare prize blox in the game and view the Trophies screen.", points = 10,
-    trigger = WasBitflagSetInGame(rarePrizeRoundup())
+GenerateSaveProtectedAchievementFromConditions({
+    "name": "Regular Cryptominer",
+    "description": "Redeem 25% of all system sector rewards.",
+    "points": 5,
+    "threshold": (length(sectorRewards) / 4),
+}, sectorRewardsConditions, always_true())
+
+GenerateSaveProtectedAchievementFromConditions({
+    "name": "Veteran Cryptominer",
+    "description": "Redeem 50% of all system sector rewards.",
+    "points": 10,
+    "threshold": (length(sectorRewards) / 2),
+}, sectorRewardsConditions, always_true())
+
+GenerateSaveProtectedAchievementFromConditions({
+    "name": "Legendary Cryptominer",
+    "description": "Redeem all system sector rewards.",
+    "points": 25,
+    "threshold": length(sectorRewards),
+}, sectorRewardsConditions, always_true())
+
+achievement(title = "Threadripper", points = 25,
+    description = "Obtain Ultima Weapon.",
+    trigger = WasBitflagSetInGame(ultimaWeapon())
 )
 
+lowestLevelVirtualBitsToRealBits = {
+    "Hollow Bastion, Part I": {
+        0: { "addr": 0x195be1, "bit": 3 },
+        1: { "addr": 0x195be1, "bit": 4 },
+        2: { "addr": 0x195be1, "bit": 5 },
+        3: { "addr": 0x195be1, "bit": 6 },
+        4: { "addr": 0x195be1, "bit": 7 },
+        5: { "addr": 0x195be1, "bit": 0 },
+        6: { "addr": 0x195be1, "bit": 1 },
+    },
+    "Hollow Bastion, Part II": {
+        0: { "addr": 0x195be0, "bit": 4 },
+        1: { "addr": 0x195be0, "bit": 5 },
+        2: { "addr": 0x195be0, "bit": 6 },
+        3: { "addr": 0x195be0, "bit": 7 },
+        4: { "addr": 0x195be1, "bit": 0 },
+        5: { "addr": 0x195be1, "bit": 1 },
+        6: { "addr": 0x195be1, "bit": 2 },
+    },
+    "Castle Oblivion": {
+        0: { "addr": 0x195be7, "bit": 5 },
+        1: { "addr": 0x195be7, "bit": 6 },
+        2: { "addr": 0x195be7, "bit": 7 },
+        3: { "addr": 0x195be0, "bit": 0 },
+        4: { "addr": 0x195be0, "bit": 1 },
+        5: { "addr": 0x195be0, "bit": 2 },
+        6: { "addr": 0x195be0, "bit": 3 },
+    }
+}
+
+function WasWorldCompletedOnLevel1(worldName)
+{
+    worldBits = lowestLevelVirtualBitsToRealBits[worldName]
+    trigger = always_true()
+    
+    for i in worldBits
+    {
+        bit = worldBits[i]
+        trigger = trigger && bit(bit["bit"], bit["addr"]) == 0
+    }
+    
+    return trigger
+}
+
+function WorldLowestLevelChanged(worldName)
+{
+    worldBits = lowestLevelVirtualBitsToRealBits[worldName]
+    trigger = always_false()
+    
+    for i in worldBits
+    {
+        bit = worldBits[i]
+        realBit = bit(bit["bit"], bit["addr"])
+        trigger = trigger || Delta(realBit) != realBit
+    }
+    
+    return trigger
+}
+
+function castleOblivionStoryEntry() => bit5(0x195bd9)
+
+lv1Conditions = {
+    0: { "countsWhen": (WasWorldCompletedOnLevel1("Hollow Bastion, Part I") && hollowBastionStoryEntry() == 1),
+        "recalculateWhen": (WorldLowestLevelChanged("Hollow Bastion, Part I") || Delta(hollowBastionStoryEntry()) != hollowBastionStoryEntry()) },
+    1: { "countsWhen": (WasWorldCompletedOnLevel1("Hollow Bastion, Part II") && hollowBastionIIStoryEntry() == 1),
+        "recalculateWhen": (WorldLowestLevelChanged("Hollow Bastion, Part II") || Delta(hollowBastionIIStoryEntry()) != hollowBastionIIStoryEntry()) },
+    2: { "countsWhen": (WasWorldCompletedOnLevel1("Castle Oblivion") && castleOblivionStoryEntry() == 1),
+        "recalculateWhen": (WorldLowestLevelChanged("Castle Oblivion") || Delta(castleOblivionStoryEntry()) != castleOblivionStoryEntry()) },
+}
+
+// We'd outlaw usage of the HP Cheat here, but the logic to make it work is too complicated with the current implementation. :(
+// This is also why it's worth 25 instead of 50.
+GenerateSaveProtectedAchievementFromConditions({
+    "name": "Life on the Edge Case [m]",
+    "description": "Set a record of Level 1 in Hollow Bastion, Parts I or II, or Castle Oblivion on Proud Mode or higher.",
+    "points": 25,
+    "id": 152949,
+    "badge": "171705",
+    "threshold": 1
+}, lv1Conditions, IsAtLeastOnDifficulty("Proud"))
+
+prizeBlox = [
+    bit0(0x195b38), bit1(0x195b38), bit2(0x195b38), bit3(0x195b38), bit4(0x195b38), bit5(0x195b38), bit6(0x195b38), bit7(0x195b38), // Wonderland
+    bit0(0x195b3f), bit1(0x195b3f), bit2(0x195b3f), bit3(0x195b3f), bit4(0x195b3f), bit5(0x195b3f), bit6(0x195b3f), bit7(0x195b3f), 
+    
+    bit3(0x195b39), bit5(0x195b39), bit7(0x195b39), // Traverse Town
+    bit0(0x195b3a), bit1(0x195b3a), bit2(0x195b3a), bit3(0x195b3a), bit4(0x195b3a), bit6(0x195b3a), bit7(0x195b3a),
+    
+    bit5(0x195b3b), bit6(0x195b3b), bit7(0x195b3b), // Destiny Islands
+    
+    bit0(0x195b3d), bit0(0x195b3d), bit0(0x195b3d), bit0(0x195b3d), bit0(0x195b3d), bit0(0x195b3d), bit0(0x195b3d), bit0(0x195b3d), // Olympus Coliseum
+    bit0(0x195b3e), bit0(0x195b3e), bit0(0x195b3e), bit0(0x195b3e), bit0(0x195b3e), bit0(0x195b3e), bit0(0x195b3e), bit0(0x195b3e),
+    bit1(0x195b3c), bit2(0x195b3c), bit3(0x195b3c), bit4(0x195b3c), bit5(0x195b3c), bit6(0x195b3c), bit7(0x195b3c),
+
+    bit0(0x195b40), bit1(0x195b40), bit2(0x195b40), bit3(0x195b40), bit4(0x195b40), bit5(0x195b40), bit6(0x195b40), bit7(0x195b40), // Hollow Bastion, Part I
+    bit0(0x195b41), bit1(0x195b41), bit2(0x195b41), bit3(0x195b41), bit4(0x195b41), bit5(0x195b41), bit6(0x195b41), bit7(0x195b41),
+    
+    bit0(0x195b42), bit1(0x195b42), bit2(0x195b42), bit3(0x195b42), bit4(0x195b42), bit5(0x195b42), bit6(0x195b42), bit7(0x195b42), // Agrabah
+    bit0(0x195b43), bit1(0x195b43), bit2(0x195b43), bit3(0x195b43), bit4(0x195b43), bit5(0x195b43), bit6(0x195b43), bit7(0x195b43),
+    
+    bit3(0x195b44), bit4(0x195b44), bit6(0x195b44), // Castle Oblivion
+    bit0(0x195b45), bit1(0x195b45), bit2(0x195b45), bit3(0x195b45), bit4(0x195b45), bit5(0x195b45), bit6(0x195b45), bit7(0x195b45),
+    
+    bit0(0x195b46), bit1(0x195b46), bit2(0x195b46), bit3(0x195b46), bit4(0x195b46), bit5(0x195b46), bit6(0x195b46), bit7(0x195b46), // Hollow Bastion, Part II
+    bit0(0x195b47), bit1(0x195b47), bit2(0x195b47), bit3(0x195b47), bit4(0x195b47), bit5(0x195b47), bit6(0x195b47), bit7(0x195b47),
+]
+
+prizeBloxConditions = {}
+i = 0
+for j in prizeBlox
+{
+    prizeBloxConditions[i] = GenerateConditionFromBitflag(j)
+    i = i + 1
+}
+
+GenerateSaveProtectedAchievementFromConditions({
+    "name": "Rare Prize Pickup",
+    "description": "Destroy 15 rare prize blox.",
+    "points": 3,
+    "threshold": 15
+}, prizeBloxConditions, always_true())
+
+GenerateSaveProtectedAchievementFromConditions({
+    "name": "Rare Prize Hold Up",
+    "description": "Destroy 30 rare prize blox.",
+    "points": 5,
+    "threshold": 30
+}, prizeBloxConditions, always_true())
+
+GenerateSaveProtectedAchievementFromConditions({
+    "name": "Rare Prize Tally Up",
+    "description": "Destroy 60 rare prize blox.",
+    "points": 10,
+    "threshold": 60
+}, prizeBloxConditions, always_true())
+
+function rarePrizeRoundup() => bit5(0x195c78)
+GenerateSaveProtectedAchievementFromConditions({
+    "name": "Rare Prize Roundup",
+    "description": "Destroy all rare prize blox.",
+    "points": 25,
+    "threshold": 111
+}, prizeBloxConditions, always_true())
+
 function lordOfLoot() => bit4(0x195c78)
-achievement(title = "Lord of Loot", description = "Collect at least 80% of enemy item drops.", points = 10,
+achievement(title = "Lord of Loot", description = "Collect at least 80% of enemy item drops, and then view the Trophies menu.", points = 25,
     trigger = WasBitflagSetInGame(lordOfLoot())
 )
 
-// todo: add more sector achievements for completion purposes
+sectorsCompleted = [
+    bit0(0x195bcc), bit1(0x195bcc), bit2(0x195bcc), bit3(0x195bcc), bit4(0x195bcc), bit5(0x195bcc), bit6(0x195bcc), bit7(0x195bcc),
+    bit0(0x195bcd), bit1(0x195bcd), bit2(0x195bcd), bit3(0x195bcd), bit4(0x195bcd), bit5(0x195bcd), bit6(0x195bcd), bit7(0x195bcd),
+    bit0(0x195bd3), bit1(0x195bd3), bit2(0x195bd3), bit3(0x195bd3), bit4(0x195bd3), bit5(0x195bd3), bit6(0x195bd3), bit7(0x195bd3),
+    bit7(0x195bd2)
+]
+sectorsCompletedConditions = {}
+
+i = 0
+for j in sectorsCompleted
+{
+    sectorsCompletedConditions[i] = GenerateConditionFromBitflag(j)
+    i = i + 1
+}
 
 function sectorSweeper() => bit3(0x195c78)
-achievement(title = "Sector Sweeper", description = "Complete all system sectors.", points = 10,
-    trigger = WasBitflagSetInGame(sectorSweeper())
-)
+GenerateSaveProtectedAchievementFromConditions({
+    "name": "Sector Sweeper",
+    "description": "Complete all system sectors.",
+    "points": 10,
+    "threshold": length(sectorsCompleted)
+}, sectorsCompletedConditions, always_true())
 
 function sultanOfSlot() => bit2(0x195c78)
 function chipsInstalled() => byte(0x195c15)
@@ -1375,42 +2512,47 @@ achievement(title = "Sultan of Slot", description = "Install chips in every slot
     trigger = WasValueSetInGame(chipsInstalled(), 199, 200) && measured(chipsInstalled() == 200)
 )
 
+cheatsUsed = [
+    bit0(0x195c16), bit1(0x195c16), bit2(0x195c16), bit3(0x195c16), bit4(0x195c16)
+]
+
+cheatsUsedConditions = {}
+
+for j in cheatsUsed
+{
+    cheatsUsedConditions[i] = GenerateConditionFromBitflag(j)
+    i = i + 1
+}
+
 function cheater() => bit1(0x195c78)
-achievement(title = "Cheater", description = "Use every kind of cheat.", points = 5,
-    trigger = WasBitflagSetInGame(cheater())
-)
+GenerateSaveProtectedAchievementFromConditions({
+    "name": "Cheater",
+    "description": "Use every kind of cheat.",
+    "points": 3,
+    "threshold": length(cheatsUsed)
+}, cheatsUsedConditions, always_true())
 
 function championCollector() => bit0(0x195c78)
-achievement(title = "Champion Collector", description = "Collect 70% of all abilities, chips, cheats, weapons, and items.", points = 10,
+achievement(title = "Champion Collector", description = "Collect 70% of all abilities, chips, cheats, weapons, and items, and then view the Trophies menu.", points = 10,
     trigger = WasBitflagSetInGame(championCollector())
 )
 
 function avatarCollector() => bit7(0x195c7f)
-achievement(title = "Avatar Collector (?)", description = "Collect 50% avatar parts.", points = 10,
-    trigger = WasBitflagSetInGame(avatarCollector())
-)
 
 function avatarSweeper() => bit6(0x195c7f)
-achievement(title = "Avatar Sweeper (?)", description = "Complete all 100 floors of the Avatar Sector.", points = 25,
-    trigger = WasBitflagSetInGame(avatarSweeper())
-)
 
 function icerOfTitans() => bit5(0x195c7f)
-achievement(title = "Icer of Titans", description = "Defeat the Ice Titan.", points = 10,
-    trigger = WasBitflagSetInGame(icerOfTitans())
+achievement(title = "Icer of Titans", description = "Defeat the Ice Titan.", points = 10, id = 152942, badge = "171696",
+    trigger = once(OlympusColiseumKeyholeCheckpoint()) && never(!IsInTurnBasedBattle()) && JustDefeatedEnemy("Ice Titan")
 )
 
-function eliminatorsEnd() => bit4(0x195c7f)
-achievement(title = "Eliminator's End", description = "Defeat an Eliminator.", points = 10,
-    trigger = WasBitflagSetInGame(eliminatorsEnd())
-)
+GenerateSaveProtectedAchievementFromConditions({
+    "name": "Eliminator's End",
+    "description": "Defeat an Eliminator.",
+    "points": 10,
+    "threshold": 1
+}, { 0: GenerateConditionForEnemy(GetEnemyByName("Eliminator")) }, always_true())
 
-function twilightTriumph() => bit3(0x195c7f)
-achievement(title = "Twilight Triumph", description = "Defeat Data-Roxas.", points = 5,
-    trigger = WasBitflagSetInGame(twilightTriumph())
-)
-
-// todo: implement more enemy type cheevos
 GenerateSaveProtectedAchievementFromConditions({
     "name": "Justice for Few",
     "description": "Defeat 10% of all enemy types.",
@@ -1433,47 +2575,63 @@ GenerateSaveProtectedAchievementFromConditions({
 }, enemiesConditions, always_true())
 
 function justiceForAll() => bit2(0x195c7f)
-achievement(title = "Justice for All", description = "Defeat all enemy types.", points = 25,
-    trigger = WasBitflagSetInGame(justiceForAll())
-)
+GenerateSaveProtectedAchievementFromConditions({
+    "name": "Justice for All",
+    "description": "Defeat all enemy types.",
+    "points": 25,
+    "threshold": length(enemies),
+}, enemiesConditions, always_true())
 
 function weaponWizard() => bit1(0x195c7f)
-achievement(title = "Weapon Wizard", description = "Completely power up every type of Keyblade.", points = 25,
+achievement(title = "Weapon Wizard", description = "Completely upgrade every type of Keyblade, and then view the Trophies menu.", points = 25,
     trigger = WasBitflagSetInGame(weaponWizard())
 )
 
 function converterLv100() => bit0(0x195c7f)
-achievement(title = "Converter LV 100", description = "Level up a command to Level 100.", points = 5,
+achievement(title = "Converter LV 100", description = "Level up a command to Level 100, and then view the Trophies menu.", points = 5,
     trigger = WasBitflagSetInGame(converterLv100())
 )
 
 function converterCRLv100() => bit7(0x195c7e)
-achievement(title = "Converter CR LV 100", description = "Level up a command to CR Level 100.", points = 10,
+achievement(title = "Converter CR LV 100", description = "Level up a command to CR Level 100, and then view the Trophies menu.", points = 10,
     trigger = WasBitflagSetInGame(converterCRLv100())
 )
 
 function commandMaster() => bit6(0x195c7e)
-achievement(title = "Command Master", description = "Upgrade every type of attack and magic command to CR.", points = 25,
+achievement(title = "Command Master", description = "Upgrade every type of attack and magic command to CR, and then view the Trophies menu.", points = 50,
     trigger = WasBitflagSetInGame(commandMaster())
 )
 
-function closedBook() => bit5(0x195c7e)
+// NOTE: If the memory here is unstable, use the Castle Oblivion story entry flag instead.
+// It'll trigger earlier than the credits, but it beats spending a crapload of time coming up with a convoluted implementation.
+function creditsState() => dword(0x1acda8)
+function DidCreditsStart() => once(once(once(creditsState() == 0x0) && creditsState() == 0xf0) && creditsState() == 0x1f0)
+	&& never(creditsState() != 0x0 && creditsState() != 0xf0 && creditsState() != 0x1f0)
+function closedBook() => bit5(0x195bd9)
 achievement(title = "Closed Book", description = "Complete the story.", points = 25,
-    trigger = WasBitflagSetInGame(closedBook())
+    trigger = DidCreditsStart() && WasBitflagSetInGame(closedBook())
 )
 
-quests = [
-    bit5(0x195bd4),
-    bit7(0x195bd4),
-]
+characterQuestData = {
+    "Selphie": { "bit0": bit7(0x195bd4), "bit1": bit0(0x195bd5) },
+    "Cid": { "bit0": bit5(0x195bd4), "bit1": bit6(0x195bd4) },
+    "Aladdin": { "bit0": bit7(0x195bdb), "bit1": bit0(0x195bd4) },
+    "Alice": { "bit0": bit3(0x195bd4), "bit1": bit4(0x195bd4) },
+    "Phil": { "bit0": bit1(0x195bd4), "bit1": bit2(0x195bd4) }
+}
 
 // Generate conditions for quests from the above addresses.
 questConditions = {}
 i = 0
-for addr in quests
+for name in characterQuestData
 {
-    questConditions[i] = { "countsWhen": (addr == 1), "recalculateWhen": (addr != Delta(addr)) }
-    i = i + 1
+    character = characterQuestData[name]
+    bit0 = character["bit0"]
+    bit1 = character["bit1"]
+    questConditions[i] = { "countsWhen": (bit0 == 1), "recalculateWhen": (bit0 != Delta(bit0)) }
+    questConditions[i + 1] = { "countsWhen": (bit1 == 1), "recalculateWhen": (bit1 != Delta(bit1)) }
+    questConditions[i + 2] = { "countsWhen": (bit1 == 1), "recalculateWhen": (bit1 != Delta(bit1)) }
+    i = i + 3
 }
 
 GenerateSaveProtectedAchievementFromConditions({
@@ -1491,29 +2649,82 @@ GenerateSaveProtectedAchievementFromConditions({
 }, questConditions, always_true())
 
 function questBester() => bit4(0x195c7e)
-achievement(title = "Quest Bester", description = "Complete all quests.", points = 25,
-    trigger = WasBitflagSetInGame(questBester())
-)
+GenerateSaveProtectedAchievementFromConditions({
+    "name": "Quest Bester",
+    "description": "Complete all quests.",
+    "points": 25,
+    "threshold": (length(characterQuestData) * 3),
+}, questConditions, always_true())
 
+worldDifficulties = {
+    "Destiny Islands": { "Proud": bit4(0x195bd9), "Critical": bit4(0x195bd8) },
+    "Traverse Town": { "Proud": bit3(0x195bd9), "Critical": bit3(0x195bd8) },
+    "Wonderland": { "Proud": bit2(0x195bd9), "Critical": bit2(0x195bd8) },
+    "Olympus Coliseum": { "Proud": bit1(0x195bd9), "Critical": bit1(0x195bd8) },
+    "Agrabah": { "Proud": bit0(0x195bd9), "Critical": bit0(0x195bd8) },
+    "Hollow Bastion, Part I": { "Proud": bit7(0x195bd8), "Critical": bit7(0x195bdf) },
+    "Hollow Bastion, Part II": { "Proud": bit6(0x195bd8), "Critical": bit6(0x195bdf) },
+    "Castle Oblivion": { "Proud": bit5(0x195bd8), "Critical": bit5(0x195bdf) }
+}
+
+criticalModeConditions = {}
+proudModeConditions = {}
+
+i = 0
+for j in worldDifficulties
+{
+    world = worldDifficulties[j]
+    criticalModeConditions[i] = GenerateConditionFromBitflag(world["Critical"])
+    proudModeConditions[i] = { "countsWhen": (world["Critical"] == 1 || world["Proud"] == 1),
+        "recalculateWhen": (Delta(world["Critical"]) != world["Critical"] || Delta(world["Proud"]) != world["Proud"]) }
+    i = i + 1
+}
+
+// We're naming this achievement different from the in-game trophy to help clue into the player that this achievement is not intended to trigger under the same conditions as the trophy itself.
+// The "Proud Achievement" trophy will be earned if the player completes all worlds on Critical Mode, but it will *not* be earned if, say,
+// one world is completed on Proud Mode and the rest are completed on Critical Mode.
 function proudAchievement() => bit3(0x195c7e)
-achievement(title = "Proud Achievement", description = "Replay and complete every world on Proud Mode.", points = 10,
-    trigger = WasBitflagSetInGame(proudAchievement())
-)
+GenerateSaveProtectedAchievementFromConditions({
+    "name": "Adventurer's Pride",
+    "description": "Complete every world on Proud Mode or higher.",
+    "points": 10,
+    "threshold": 8
+}, proudModeConditions, always_true())
 
 function criticalAcclaim() => bit2(0x195c7e)
-achievement(title = "Critical Acclaim", description = "Replay and complete every world on Critical Mode.", points = 25,
-    trigger = WasBitflagSetInGame(criticalAcclaim())
-)
+GenerateSaveProtectedAchievementFromConditions({
+    "name": "Critical Acclaim",
+    "description": "Complete every world on Critical Mode.",
+    "points": 25,
+    "threshold": 8
+}, criticalModeConditions, always_true())
+
+worldsCompletedWith1HP = [
+    bit5(0x195bde), bit6(0x195bde), bit7(0x195bde),
+    bit0(0x195bdf), bit1(0x195bdf), bit2(0x195bdf), bit3(0x195bdf), bit4(0x195bdf)
+]
+
+oneHpConditions = {}
+
+for j in worldsCompletedWith1HP
+{
+    oneHpConditions[i] = GenerateConditionFromBitflag(j)
+    i = i + 1
+}
 
 function fatalFlawless() => bit1(0x195c7e)
-achievement(title = "Fatal Flawless", description = "Replay and complete an episode with the HP Cheat set to 0%.", points = 10,
-    trigger = WasBitflagSetInGame(fatalFlawless())
-)
+GenerateSaveProtectedAchievementFromConditions({
+    "name": "Fatal Flawless",
+    "description": "Complete a world with the HP Cheat set to 0%.",
+    "points": 10,
+    "threshold": 1
+}, oneHpConditions, always_true())
 
 function technician() => bit0(0x195c7e)
-achievement(title = "Technician", description = "Replay and complete every world at Level 15 or lower.", points = 10,
+achievement(title = "Technician", description = "Replay and complete every world at Level 15 or lower, and then view the Trophies menu.", points = 10,
     trigger = WasBitflagSetInGame(technician())
 )
+
 
 speedrunnerTrophies = {
     1: { "bit": 7, "timeLimit": 5 },
@@ -1526,13 +2737,40 @@ speedrunnerTrophies = {
     8: { "bit": 0, "timeLimit": 10 },
 }
 
+function twilightTriumph() => bit3(0x195c7f)
+function eliminatorsEnd() => bit4(0x195c7f)
+trophies = [
+    championCollector(), cheater(), sultanOfSlot(), sectorSweeper(), lordOfLoot(), rarePrizeRoundup(),
+    technician(), fatalFlawless(), criticalAcclaim(), proudAchievement(), questBester(), closedBook(),
+    commandMaster(), converterCRLv100(), converterLv100(), weaponWizard(), justiceForAll(), twilightTriumph(),
+    eliminatorsEnd(), icerOfTitans()
+]
+
 for i in speedrunnerTrophies
 {
     trophy = speedrunnerTrophies[i]
-    achievement(title = "W" + i + " Speed Runner", description = "Finish World " + i + " in " + trophy["timeLimit"] + ":00 or less.", points = 10,
-        trigger = WasBitflagSetInGame(bit(trophy["bit"], 0x195c7d))
+    trophyMem = bit(trophy["bit"], 0x195c7d)
+    achievement(title = "W" + i + " Speed Runner", description = "Finish World " + i + " in " + trophy["timeLimit"] + ":00 or less, and then view the Trophies menu.", points = 10,
+        trigger = WasBitflagSetInGame(trophyMem)
     )
+    
+    array_push(trophies, trophyMem) // Add the speedrunning tropies to the array defined above.
 }
+
+trophyConditions = {}
+
+for j in trophies
+{
+    trophyConditions[i] = GenerateConditionFromBitflag(j)
+    i = i + 1
+}
+
+GenerateSaveProtectedAchievementFromConditions({
+    "name": "Overachiever",
+    "description": "Earn twenty trophies that don't require Tag Mode, and then view the Trophies menu.",
+    "points": 25,
+    "threshold": 20
+}, trophyConditions, always_true())
 
 leaderboard(title = "Time Attack - Destiny Islands", description = "Seal the Destiny Islands Keyhole as quickly as you can.",
     start = IsInLocation("DestinyStorm") && !IsInSystemSector(),
@@ -1563,4 +2801,88 @@ leaderboard(title = "Score Attack - Wonderland", description = "Get as many poin
         && !IsInLocation("WonderlandKeyholeTerminus") || IsInSystemSector(),
     submit = IsTotalScoreJustDisplayed(),
     value = dword(bossScorePointer() + 8)
+)
+
+leaderboard(title = "Score Attack - Olympus Coliseum, Layer 5", description = "Get as many points as you can in the Olympus Coliseum Keyhole, up to Layer 5.",
+    start = IsInLocation("OlympusLayer5") && IsTotalScoreJustDisplayed() && !IsInSystemSector(),
+    cancel = !IsInLocation("OlympusLayer5") || IsInSystemSector(),
+    submit = IsTotalScoreJustDisplayed(),
+    value = dword(bossScorePointer() + 8)
+)
+
+leaderboard(title = "Score Attack - Olympus Coliseum, Layer 15", description = "Get as many points as you can in the Olympus Coliseum Keyhole, up to Layer 15.",
+    start = IsInLocation("OlympusLayer15") && IsTotalScoreJustDisplayed() && !IsInSystemSector(),
+    cancel = !IsInLocation("OlympusLayer15") || IsInSystemSector(),
+    submit = IsTotalScoreJustDisplayed(),
+    value = dword(bossScorePointer() + 8)
+)
+
+leaderboard(title = "Score Attack - Olympus Coliseum, Layer 30", description = "Get as many points as you can in the Olympus Coliseum Keyhole, up to Layer 30.",
+    start = IsInLocation("OlympusLayer30") && IsTotalScoreJustDisplayed() && !IsInSystemSector(),
+    cancel = !IsInLocation("OlympusLayer30") || IsInSystemSector(),
+    submit = IsTotalScoreJustDisplayed(),
+    value = dword(bossScorePointer() + 8)
+)
+
+leaderboard(title = "Time Attack - Agrabah", description = "Seal the Agrabah Keyhole as quickly as you can.",
+    start = IsInLocation("AgrabahKeyholeTerminus") && !IsInSystemSector(),
+    cancel = !IsInLocation("AgrabahKeyholeTerminus") || IsInSystemSector(),
+    submit = IsBossRankJustDisplayed(),
+    value = bossMilliseconds() / 10
+)
+
+leaderboard(title = "Score Attack - Agrabah", description = "Get as many points as you can in the Agrabah Keyhole.",
+    start = IsInLocation("AgrabahKeyholeTerminus") && IsTotalScoreJustDisplayed() && !IsInSystemSector(),
+    cancel = !IsInLocation("AgrabahKeyholeTerminus") || IsInSystemSector(),
+    submit = IsTotalScoreJustDisplayed(),
+    value = dword(bossScorePointer() + 8)
+)
+
+leaderboard(title = "Time Attack - Hollow Bastion", description = "Seal the Hollow Bastion Keyhole as quickly as you can.",
+    start = IsInLocation("HollowBastionKeyholeChapel") && !IsInSystemSector(),
+    cancel = !IsInLocation("HollowBastionKeyholeChapel") || IsInSystemSector(),
+    submit = IsBossRankJustDisplayed(),
+    value = bossMilliseconds() / 10
+)
+
+leaderboard(title = "Score Attack - Hollow Bastion", description = "Get as many points as you can in the Hollow Bastion Keyhole.",
+    start = IsInLocation("HollowBastionKeyholeChapel") && IsTotalScoreJustDisplayed() && !IsInSystemSector(),
+    cancel = !IsInLocation("HollowBastionKeyholeChapel") || IsInSystemSector(),
+    submit = IsTotalScoreJustDisplayed(),
+    value = dword(bossScorePointer() + 8)
+)
+
+leaderboard(title = "Time Attack - Hollow Bastion II A", description = "Escape from inside Riku's data as quickly as you can.",
+    start = IsInLocation("HollowBastionDragon") && !IsInSystemSector(),
+    cancel = !IsInLocation("HollowBastionDragon") || IsInSystemSector(),
+    submit = IsBossRankJustDisplayed(),
+    value = bossMilliseconds() / 10
+)
+
+leaderboard(title = "Score Attack - Hollow Bastion II A", description = "Get as many points as you can escaping from inside Riku's data.",
+    start = IsInLocation("HollowBastionDragon") && IsTotalScoreJustDisplayed() && !IsInSystemSector(),
+    cancel = !IsInLocation("HollowBastionDragon") || IsInSystemSector(),
+    submit = IsTotalScoreJustDisplayed(),
+    value = dword(bossScorePointer() + 8)
+)
+
+leaderboard(title = "Time Attack - Hollow Bastion II B", description = "Defeat Sora’s Heartless as quickly as you can.",
+    start = IsInLocation("HollowBastionCentralCorruption") && !IsInSystemSector(),
+    cancel = !IsInLocation("HollowBastionCentralCorruption") || IsInSystemSector(),
+    submit = IsBossRankJustDisplayed(),
+    value = bossMilliseconds() / 10
+)
+
+leaderboard(title = "Score Attack - Hollow Bastion II B", description = "Get as many points as you can defeating Sora’s Heartless.",
+    start = IsInLocation("HollowBastionCentralCorruption") && IsTotalScoreJustDisplayed() && !IsInSystemSector(),
+    cancel = !IsInLocation("HollowBastionCentralCorruption") || IsInSystemSector(),
+    submit = IsTotalScoreJustDisplayed(),
+    value = dword(bossScorePointer() + 8)
+)
+
+leaderboard(title = "Time Attack - Castle Oblivion", description = "Defeat the final boss as quickly as you can.",
+    start = IsInLocation("CastleOblivionSorrow") && !IsInSystemSector(),
+    cancel = !IsInLocation("CastleOblivionSorrow") || IsInSystemSector(),
+    submit = IsBossRankJustDisplayed(),
+    value = bossMilliseconds() / 10
 )

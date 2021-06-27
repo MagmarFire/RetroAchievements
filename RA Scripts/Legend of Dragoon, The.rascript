@@ -613,14 +613,37 @@ achievement(
     trigger = word(0x052C30) == 0x0172 && byte(0x0BB058) == 0x03 && byte(0x0BAF50) == 0x00
 )
 
+// Tag, You're It
+// Fixes introduced by Bug 38983 and 39009.
+
+panels = [
+    bit4(0x0bacd5), // top-left
+    bit5(0x0bacd5), // bottom-left
+    bit6(0x0bacd5), // center
+    bit7(0x0bacd5), // top-right
+    bit0(0x0bacd6) // bottom-right
+]
+
+function AllPanelsSet()
+{
+    trigger = always_true()
+    for panel in panels
+    {
+        trigger = trigger && once(Delta(panel) == 0 && panel == 1) 
+    }
+    return trigger
+}
+
+function isInSealRoom() => word(0x052C30) == 0x193
 achievement(
     title = "Tag, You're It", description = "Open the sealed teleporter in Kadessa without getting caught by any of the Spinningheads.", points = 5,
     id = 98011, badge = "108037", published = "2/9/2020 2:04:19 AM", modified = "2/13/2020 10:38:29 PM",
-    trigger = once(prev(bit0(0x0BACD6)) == 0x0 && bit0(0x0BACD6) == 0x1) && 
-              once(prev(bit4(0x0BACD5)) == 0x0 && bit4(0x0BACD5) == 0x1) && once(prev(bit5(0x0BACD5)) == 0x0 && bit5(0x0BACD5) == 0x1) && 
-              once(prev(bit6(0x0BACD5)) == 0x0 && bit6(0x0BACD5) == 0x1) && once(prev(bit7(0x0BACD5)) == 0x0 && bit7(0x0BACD5) == 0x1) && unless(once(word(0x0CCDEC) == 0x1021)) && 
-              unless(word(0x052C30) != 0x0193)
+    trigger = AllPanelsSet()
+              && unless(isInSealRoom() && EnteredBattleOnce()) // Don't enter the infinite pauselock if you've somehow entered battle before entering the room.
+              && unless(!isInSealRoom()) // Don't check for bit changes if you're not in the seal room; this is for save protection primarily.
 )
+
+// /Tag, You're It
 
 achievement(
     title = "The Final Countdown", description = "Destroy the head of the Super Virage in Kadessa before its lives reach zero.", points = 25,
