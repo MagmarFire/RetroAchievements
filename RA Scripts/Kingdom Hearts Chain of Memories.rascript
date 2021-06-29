@@ -1208,8 +1208,6 @@ function playerBattlePointer() => tbyte(0x03ca28)
 // +0x7f74 for boss HP (16-bit)
 function bossPointer() => tbyte(0x034988)
 
-function enemyHp() => word(bossPointer() + 0x7f74)
-
 function playerHp() => word(playerBattlePointer() + 0x7e8c)
 
 function rikuPlayerHp() => word(playerBattlePointer() + 0x7cd0)
@@ -1224,13 +1222,9 @@ function IsUsingKingMickey() => rikuBattleState() == 0x1a
 
 function IsActivatingDarkMode() => rikuBattleState() == 0x20
 
-function bossState() => byte(bossPointer() + 0x7f28)
-
 function IsInBattle() => battlePointer() != 0
 
 function BattleStartedCheckpoint() => once(Delta(battlePointer()) == 0x0 && battlePointer() != 0x0)
-
-function EnemyWasJustDefeated() => EnemyWithSpecificAddressWasJustDefeated(enemyHp(), 1)
 
 function EnemyWithSpecificAddressWasJustDefeated(enemyHp, useIndicator)
 {
@@ -1540,12 +1534,14 @@ achievement(
 )
 
 function guardArmorCardObtained() => bit3(0x04230c)
-function UsedGimmickCardWhileFightingGuardArmor() => Delta(bossState()) != 0xa && bossState() == 0xa
+function guardArmorState() => byte(0x03a4a0)
+function UsedGimmickCardWhileFightingGuardArmor() => Delta(guardArmorState()) != 0xa && guardArmorState() == 0xa
+function guardArmorHp() => word(0x03a4ec)
 achievement(
-    title = "No Scheming Allowed [m]", points = 5,
+    title = "No Scheming Allowed [m]", points = 5, id = 160363, badge = "180222",
     description = "Defeat the Guard Armor in Sora's story without using any Gimmick Cards.",
-    trigger = BossHPValueCheckpointIsSet(enemyHp(), { 1: 0xc8 }, "Traverse Town", 0x8) && IsInMainStory()
-        && EnemyWithSpecificAddressWasJustDefeated(enemyHp(), TRUE)
+    trigger = BossHPValueCheckpointIsSet(guardArmorHp(), { 1: 0xc8 }, "Traverse Town", 0x8) && IsInMainStory()
+        && EnemyWithSpecificAddressWasJustDefeated(guardArmorHp(), TRUE)
         && never(UsedGimmickCardWhileFightingGuardArmor()) // Loss condition
 )
 
@@ -1556,15 +1552,18 @@ achievement(
     trigger = roomId() == 0x7 && WasInWorld("Traverse Town") && IsInWorld("Castle Oblivion, Hall") && fireCardEntry() == 0 && IsInMainStory()
 )
 
+function axelFirstFloorHp() => word(0x03362c)
 achievement(
     title = "The Flurry of Dancing Flames", description = "Defeat Axel on the first floor.", points = 3,
-    id = 15583, badge = "15002", published = "10/16/2014 6:07:43 AM", modified = "7/7/2020 2:12:51 AM",
-    trigger = BossHPValueCheckpointIsSet(enemyHp(), { 1: 0x140 }, "Castle Oblivion, Hall", 0x7) && BattleStartedCheckpoint() && EnemyWasJustDefeated() && IsInMainStory()
+    id = 15583, badge = "180412", published = "10/16/2014 6:07:43 AM", modified = "7/7/2020 2:12:51 AM",
+    trigger = BossHPValueCheckpointIsSet(axelFirstFloorHp(), { 1: 0x140 }, "Castle Oblivion, Hall", 0x7) && BattleStartedCheckpoint()
+        && EnemyWithSpecificAddressWasJustDefeated(axelFirstFloorHp(), FALSE) && IsInMainStory()
 )
 
 function IsPausedAgainstAxel() => byte(0x033190) == 1
-achievement(title = "Heat-Resistant Glue [m]", description = "Defeat Axel on the first floor without using the D-pad.", points = 5,
-    trigger = BossHPValueCheckpointIsSet(enemyHp(), { 1: 0x140 }, "Castle Oblivion, Hall", 0x7) && BattleStartedCheckpoint() && EnemyWasJustDefeated()
+achievement(title = "Heat-Resistant Glue [m]", description = "Defeat Axel on the first floor without using the D-pad.", points = 5, id = 160364, badge = "180223",
+    trigger = BossHPValueCheckpointIsSet(axelFirstFloorHp(), { 1: 0x140 }, "Castle Oblivion, Hall", 0x7) && BattleStartedCheckpoint()
+        && EnemyWithSpecificAddressWasJustDefeated(axelFirstFloorHp(), TRUE)
         && never(DpadIsPressed()) && unless(IsPausedAgainstAxel()) && IsInMainStory()
 )
 
@@ -1577,10 +1576,12 @@ jafarHpMap = {
 }
 
 jumpLimit = 45
+function mainJafarHp() => word(0x0338bc)
 function IsPausedAgainstJafar() => byte(0x034970) == 1
 achievement(title = "Delicate Springs [m]", description = "Defeat Jafar in Sora's story without pressing B more than " + jumpLimit + " times.", points = 10,
+    id = 160365, badge = "180224",
     trigger = never(repeated(jumpLimit + 1, !IsPausedAgainstJafar() && Delta(bIsPressed()) != bIsPressed() && bIsPressed() == 1))
-        && BossHPValueCheckpointIsSet(enemyHp(), jafarHpMap, "Agrabah", 0x1) && EnemyWasJustDefeated() && IsInMainStory()
+        && BossHPValueCheckpointIsSet(mainJafarHp(), jafarHpMap, "Agrabah", 0x1) && EnemyWithSpecificAddressWasJustDefeated(mainJafarHp(), TRUE) && IsInMainStory()
 )
 
 function agrabahStoryEntry() => bit7(0x0422f4)
@@ -1601,12 +1602,12 @@ oogieBoogieHpMap = {
     9: 0x37a,
     10: 0x3ab
 }
-
+function mainOogieBoogieHp() => word(0x0338ec)
 achievement(
-    title = "Card Disadvantage [m]", points = 10,
+    title = "Card Disadvantage [m]", points = 10, id = 160366, badge = "180225",
     description = "Defeat Oogie Boogie in Sora's story with a deck of only nine cards or less.",
-    trigger = BossHPValueCheckpointIsSet(enemyHp(), oogieBoogieHpMap, "Halloween Town", 0x6)
-        && EnemyWasJustDefeated() && never(!IsInBattle())
+    trigger = BossHPValueCheckpointIsSet(mainOogieBoogieHp(), oogieBoogieHpMap, "Halloween Town", 0x6)
+        && EnemyWithSpecificAddressWasJustDefeated(mainOogieBoogieHp(), TRUE) && never(!IsInBattle())
         && CurrentDeckHasASizeOfAtMost(9) && IsInMainStory()
 )
 
