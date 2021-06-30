@@ -1534,9 +1534,9 @@ achievement(
 )
 
 function guardArmorCardObtained() => bit3(0x04230c)
-function guardArmorState() => byte(0x03a4a0)
+function guardArmorState() => word(battlePointer() + 0x8ec0)
+function guardArmorHp() => word(battlePointer() + 0x8f0c)
 function UsedGimmickCardWhileFightingGuardArmor() => Delta(guardArmorState()) != 0xa && guardArmorState() == 0xa
-function guardArmorHp() => word(0x03a4ec)
 achievement(
     title = "No Scheming Allowed [m]", points = 5, id = 160363, badge = "180222",
     description = "Defeat the Guard Armor in Sora's story without using any Gimmick Cards.",
@@ -1552,7 +1552,7 @@ achievement(
     trigger = roomId() == 0x7 && WasInWorld("Traverse Town") && IsInWorld("Castle Oblivion, Hall") && fireCardEntry() == 0 && IsInMainStory()
 )
 
-function axelFirstFloorHp() => word(0x03362c)
+function axelFirstFloorHp() => word(battlePointer() + 0x8f0c)
 achievement(
     title = "The Flurry of Dancing Flames", description = "Defeat Axel on the first floor.", points = 3,
     id = 15583, badge = "180412", published = "10/16/2014 6:07:43 AM", modified = "7/7/2020 2:12:51 AM",
@@ -1576,7 +1576,7 @@ jafarHpMap = {
 }
 
 jumpLimit = 45
-function mainJafarHp() => word(0x0338bc)
+function mainJafarHp() => word(battlePointer() + 0x903c)
 function IsPausedAgainstJafar() => byte(0x034970) == 1
 achievement(title = "Delicate Springs [m]", description = "Defeat Jafar in Sora's story without pressing B more than " + jumpLimit + " times.", points = 10,
     id = 160365, badge = "180224",
