@@ -1602,7 +1602,7 @@ oogieBoogieHpMap = {
     9: 0x37a,
     10: 0x3ab
 }
-function mainOogieBoogieHp() => word(0x0338ec)
+function mainOogieBoogieHp() => word(battlePointer() + 0x8dac)
 achievement(
     title = "Card Disadvantage [m]", points = 10, id = 160366, badge = "180225",
     description = "Defeat Oogie Boogie in Sora's story with a deck of only nine cards or less.",
@@ -1619,7 +1619,7 @@ achievement(
 )
 
 timeLimit = 180
-function parasiteCageHp() => word(0x039060)
+function parasiteCageHp() => word(battlePointer() + 0x9040)
 parasiteCageHpMap = {
     2: 0x25b,
     3: 0x291,
@@ -1629,7 +1629,7 @@ parasiteCageHpMap = {
 }
 
 achievement(title = "Rapid Digestion [m]", description = "Defeat the Parasite Cage in Sora's story within " + SecondsToFormat(timeLimit) + ".",
-    points = 5,
+    points = 5, id = 160367, badge = "180226",
     trigger = BossHPValueCheckpointIsSet(parasiteCageHp(), parasiteCageHpMap, "Monstro", 0x4)
         && never(repeated(SecondsToFrames(timeLimit), IsInBattle() && FrameHasAdvanced()))
         && EnemyWithSpecificAddressWasJustDefeated(parasiteCageHp(), TRUE)
@@ -1643,8 +1643,8 @@ achievement(
     trigger = WasBitflagSetInMainGame(monstroEntry()) && IsInMainStory()
 )
 
-function cloudHp() => word(0x03abcc)
-function cloudMaxHp() => word(0x03abce)
+function cloudHp() => word(battlePointer() + 0x8d2c)
+function cloudMaxHp() => word(battlePointer() + 0x8d2e)
 cloudHpMap = {
     2: 0x112,
     3: 0x12a,
@@ -1655,7 +1655,7 @@ cloudHpMap = {
 
 survivalLimit = 90
 function EnoughTimeHasAdvancedForWarOfAttrition() => repeated(SecondsToFrames(survivalLimit), FrameHasAdvanced())
-achievement(title = "War of Attrition [m]", points = 5,
+achievement(title = "War of Attrition [m]", points = 5, id = 160368, badge = "180227",
     description = "Survive for " + SecondsToFormat(survivalLimit) + " against Cloud without pressing A or stocking cards, and then defeat him.",
     trigger = BossHPValueIsExpected(cloudMaxHp(), cloudHpMap, "Olympus Coliseum", 0x1)
         && EnemyWithSpecificAddressWasJustDefeated(cloudHp(), TRUE)
@@ -1667,7 +1667,7 @@ achievement(title = "War of Attrition [m]", points = 5,
            )
 )
 
-function hadesHp() => word(0x03aaec)
+function hadesHp() => word(battlePointer() + 0x8d0c)
 
 hadesHpMap = {
     2: 0x1b7,
@@ -1681,7 +1681,7 @@ hadesHpMap = {
     10: 0x2ef
 }
 
-achievement(title = "Burning the Candle at Both Ends [m]", points = 10,
+achievement(title = "Burning the Candle at Both Ends [m]", points = 10, id = 160369, badge = "180228",
     description = "Defeat Hades in Sora's story before he has the chance to reload three times via his reload card.",
     trigger = BossHPValueCheckpointIsSet(hadesHp(), hadesHpMap, "Olympus Coliseum", 0x7)
         && EnemyWithSpecificAddressWasJustDefeated(hadesHp(), TRUE) && never(!IsInBattle())
@@ -1720,10 +1720,10 @@ trickmasterHpMap = {
     10: 0x3ab
 }
 
-function trickmasterHp() => word(0x03a978)
+function trickmasterHp() => word(battlePointer() + 0x94b8)
 
 hitLimit = 3
-achievement(title = "Double Jeopardy [m]", points = 5,
+achievement(title = "Double Jeopardy [m]", points = 5, id = 160370, badge = "180229",
     description = "Defeat the Trickmaster in Sora's story without getting hit more than twice.",
     trigger = BossHPValueCheckpointIsSet(trickmasterHp(), trickmasterHpMap, "Wonderland", 0x1)
         && EnemyWithSpecificAddressWasJustDefeated(trickmasterHp(), TRUE) && never(!IsInBattle())
@@ -1737,16 +1737,16 @@ achievement(
     trigger = WasBitflagSetInMainGame(wonderlandStoryEntry()) && IsInMainStory()
 )
 
-function larxeneHp() => word(0x03abac)
+function larxeneHp() => word(battlePointer() + 0x8eec)
 achievement(
     title = "The Savage Nymph", description = "Defeat Larxene on the sixth floor.", points = 3,
-    id = 15591, badge = "14925", published = "10/16/2014 6:10:01 AM", modified = "7/7/2020 2:13:41 AM",
+    id = 15591, badge = "180406", published = "10/16/2014 6:10:01 AM", modified = "7/7/2020 2:13:41 AM",
     trigger = never(!IsInWorld("Castle Oblivion, Hall")) && never(battlefieldId() != 0x0C) && BattleStartedCheckpoint() && IsOnFloor(6)
         && EnemyWithSpecificAddressWasJustDefeated(larxeneHp(), FALSE) && once(larxeneHp() == 0x460) && never(!IsInBattle()) && IsInMainStory()
 )
 
 maxStockedCards = 6
-achievement(title = "Senary Hand [m]", points = 5,
+achievement(title = "Senary Hand [m]", points = 5, id = 160371, badge = "180230",
     description = "Defeat Larxene on the sixth floor without stocking more than six cards.",
     trigger = never(!IsInWorld("Castle Oblivion, Hall")) && never(battlefieldId() != 0x0C) && BattleStartedCheckpoint() && IsOnFloor(6)
         && EnemyWithSpecificAddressWasJustDefeated(larxeneHp(), TRUE) && once(larxeneHp() == 0x460)
