@@ -1786,15 +1786,15 @@ GenerateCheevoFromConditions({
     "threshold": length(poohGiftConditions)
 }, poohGiftConditions, IsInWorld("the Hundred Acre Wood") && IsInMainStory())
 
-function rikuHp() => word(0x03a9cc) // I, II, and III
+function rikuHp() => word(battlePointer() + 0x8d0c) // I, II, and III
 achievement(
     title = "Driven to Seek", description = "Defeat Riku on the seventh floor in Sora's story.", points = 3,
-    id = 15594, badge = "14932", published = "10/16/2014 6:11:05 AM", modified = "7/7/2020 2:13:55 AM",
+    id = 15594, badge = "180404", published = "10/16/2014 6:11:05 AM", modified = "7/7/2020 2:13:55 AM",
     trigger = never(!IsInWorld("Castle Oblivion, Hall")) && never(battlefieldId() != 0x0C) && BattleStartedCheckpoint() && IsOnFloor(7)
         && EnemyWithSpecificAddressWasJustDefeated(rikuHp(), FALSE) && once(rikuHp() == 0x460) && IsInMainStory()
 )
 
-achievement(title = "Dark Leech [m]", points = 5,
+achievement(title = "Dark Leech [m]", points = 5, id = 160373, badge = "180232",
     description = "Defeat Riku on the seventh floor in Sora's story without healing.",
     trigger = never(!IsInWorld("Castle Oblivion, Hall")) && never(battlefieldId() != 0x0C) && BattleStartedCheckpoint() && IsOnFloor(7)
         && EnemyWithSpecificAddressWasJustDefeated(rikuHp(), TRUE) && once(rikuHp() == 0x460)
@@ -1811,13 +1811,12 @@ ursulaHpMap = {
 
 // todo: retest!
 theBendsTimeLimit = 45
-function ursulaHp() => word(0x03add0)
-achievement(title = "The Bends [m]", points = 25,
+function ursulaHp() => word(battlePointer() + 0x92d0)
+achievement(title = "The Bends [m]", points = 25, id = 160376, badge = "180235",
     description = "Defeat Ursula in Sora's story without going more than " + theBendsTimeLimit + " seconds at a time without healing.",
     trigger = BossHPValueCheckpointIsSet(ursulaHp(), ursulaHpMap, "Atlantica", 0xb)
         && EnemyWithSpecificAddressWasJustDefeated(ursulaHp(), TRUE) && never(!IsInBattle())
-        //&& never(repeated(SecondsToFrames(theBendsTimeLimit), FrameHasAdvanced() && never(playerHp() > Delta(playerHp()))))
-        && disable_when(repeated(SecondsToFrames(theBendsTimeLimit), FrameHasAdvanced()), playerHp() > Delta(playerHp()) || !IsInBattle())
+        && disable_when(repeated(SecondsToFrames(theBendsTimeLimit), FrameHasAdvanced() && !IsPaused()), playerHp() > Delta(playerHp()) || !IsInBattle())
         && unless(IsPaused()) && IsInMainStory()
 )
 
@@ -1828,12 +1827,13 @@ achievement(
     trigger = WasBitflagSetInMainGame(atlanticaStoryEntry()) && IsInMainStory()
 )
 
+function mainRikuIIHp() => word(battlePointer() + 0x8d4c)
 itemCards = GetCardsByProperty("type", "Item")
 magicCards = GetCardsByProperty("type", "Magic")
-achievement(title = "Nothing but Fisticuffs [m]", points = 10,
+achievement(title = "Nothing but Fisticuffs [m]", points = 10, id = 160374, badge = "180233",
     description = "Defeat Riku on the eighth floor in Sora's story without equipping any item or magic cards (Deck 2 only).",
     trigger = never(!IsInWorld("Castle Oblivion, Hall")) && never(battlefieldId() != 0x0C) && BattleStartedCheckpoint() && IsOnFloor(8)
-        && EnemyWithSpecificAddressWasJustDefeated(rikuHp(), TRUE) && once(rikuHp() == 0x460)
+        && EnemyWithSpecificAddressWasJustDefeated(mainRikuIIHp(), TRUE) && once(mainRikuIIHp() == 0x460)
         && never(AnyCardsAreEquippedInDeck(MergeArrays(itemCards, magicCards), deck2BaseAddr(), 98, 0)) && currentDeck() == 1
         && IsInMainStory()
 )
@@ -1841,7 +1841,7 @@ achievement(title = "Nothing but Fisticuffs [m]", points = 10,
 function warpinator() => bit7(0x0422D4)
 achievement(
     title = "Driven to Seize", description = "Defeat Riku on the eighth floor in Sora's story.", points = 3,
-    id = 15596, badge = "15005", published = "10/16/2014 6:11:18 AM", modified = "7/7/2020 2:16:42 AM",
+    id = 15596, badge = "180402", published = "10/16/2014 6:11:18 AM", modified = "7/7/2020 2:16:42 AM",
     trigger = WasBitflagSetInMainGame(warpinator()) && IsInMainStory()
 )
 
@@ -1852,9 +1852,9 @@ maleficentHpMap = {
     10: 0x467,
 }
 
-function maleficentHp() => word(0x03add4)
+function maleficentHp() => word(battlePointer() + 0x8f34)
 enemyCards = GetCardsByProperty("type", "Enemy")
-achievement(title = "Benevolence vs. Malevolence [m]", points = 10,
+achievement(title = "Benevolence vs. Malevolence [m]", points = 10, id = 160375, badge = "180234",
     description = "Defeat Maleficent in Sora's story without equipping any enemy cards (Deck 2 only).",
     trigger = BossHPValueCheckpointIsSet(maleficentHp(), maleficentHpMap, "Hollow Bastion", 0x7) && IsInMainStory()
         && EnemyWithSpecificAddressWasJustDefeated(maleficentHp(), TRUE)
@@ -1881,9 +1881,8 @@ hookHpMap = {
     10: 0x2ef,
 }
 
-function hookHp() => word(0x03abac)
-
-achievement(title = "Amputated Hand [m]", points = 25,
+function hookHp() => word(battlePointer() + 0x8d8c)
+achievement(title = "Amputated Hand [m]", points = 25, id = 160377, badge = "180236",
     description = "Defeat Hook in Sora's story using a deck with a CP cost of 350 or less.",
     trigger = BossHPValueCheckpointIsSet(hookHp(), hookHpMap, "Never Land", 0xe)
         && EnemyWithSpecificAddressWasJustDefeated(hookHp(), TRUE) && never(!IsInBattle())
@@ -1897,6 +1896,7 @@ achievement(
     trigger = WasBitflagSetInMainGame(neverLandStoryEntry()) && IsInMainStory()
 )
 
+function mainVexenIHp() => word(battlePointer() + 0x91ec)
 function vexenHp() => word(0x03ab4c)
 vexenIHpMap = {
     10: 0x460
@@ -1904,16 +1904,16 @@ vexenIHpMap = {
 
 achievement(
     title = "The Chilly Academic", description = "Defeat Vexen on the tenth floor.", points = 3,
-    id = 15611, badge = "15015", published = "10/16/2014 6:15:04 AM", modified = "7/7/2020 2:16:53 AM",
-    trigger = BossHPValueCheckpointIsSet(vexenHp(), vexenIHpMap, "Castle Oblivion, Hall", 0xf) && IsInMainStory()
-        && EnemyWithSpecificAddressWasJustDefeated(vexenHp(), FALSE) && never(!IsInBattle())
+    id = 15611, badge = "180399", published = "10/16/2014 6:15:04 AM", modified = "7/7/2020 2:16:53 AM",
+    trigger = BossHPValueCheckpointIsSet(mainVexenIHp(), vexenIHpMap, "Castle Oblivion, Hall", 0xf) && IsInMainStory()
+        && EnemyWithSpecificAddressWasJustDefeated(mainVexenIHp(), FALSE) && never(!IsInBattle())
 )
 
 fireCards = GetCardsByProperty("element", "Fire")
-achievement(title = "Broken Furnace [m]", points = 5,
+achievement(title = "Broken Furnace [m]", points = 5, id = 160378, badge = "180237",
     description = "Defeat Vexen on the tenth floor in Sora's story without equipping any cards that deal fire-based damage (Deck 2 only).",
-    trigger = BossHPValueCheckpointIsSet(vexenHp(), vexenIHpMap, "Castle Oblivion, Hall", 0xf)
-        && EnemyWithSpecificAddressWasJustDefeated(vexenHp(), TRUE) && never(!IsInBattle()) && IsInMainStory()
+    trigger = BossHPValueCheckpointIsSet(mainVexenIHp(), vexenIHpMap, "Castle Oblivion, Hall", 0xf)
+        && EnemyWithSpecificAddressWasJustDefeated(mainVexenIHp(), TRUE) && never(!IsInBattle()) && IsInMainStory()
         && never(AnyCardsAreEquippedInDeck(fireCards, deck2BaseAddr(), 98, FALSE))
 )
 
