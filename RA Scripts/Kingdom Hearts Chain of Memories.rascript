@@ -226,10 +226,14 @@ function WasInWorld(name)
 
 function encounterId() => word(0x00749c)
 
-function EnteredEncounterWithId(id) => once(Delta(encounterId()) != id && encounterId() == id)
-    // Clear the checkpoint if the player dies in battle.
-    && never(IsInMainStory() && Delta(playerHp()) > 0 && playerHp() == 0)
-    && never(IsInReverseRebirth() && Delta(rikuPlayerHp()) > 0 && rikuPlayerHp() == 0)
+function AlwaysInEncounterWithId(id) => never(encounterId() != id)
+
+function PassedBattleCheckpoint() => once(Delta(battlePointer()) == 0 && battlePointer() > 0)
+
+function PlayerIsAlwaysAliveInBattle() => never(IsInMainStory() && Delta(playerHp()) > 0 && playerHp() == 0 && battlePointer() > 0)
+    && never(IsInReverseRebirth() && Delta(rikuPlayerHp()) > 0 && rikuPlayerHp() == 0 && battlePointer() > 0)
+    
+function DefeatedCheckpointedEncounterWithId(id, useTrigger) => AlwaysInEncounterWithId(id) && PassedBattleCheckpoint() && PlayerIsAlwaysAliveInBattle() && FinishedEncounter(useTrigger)
 
 function FinishedEncounter(useTrigger)
 {
@@ -1554,7 +1558,7 @@ function UsedGimmickCard() => backgroundColorComponent() == 0x1f00 && Delta(back
 achievement(
     title = "No Scheming Allowed [m]", points = 5, id = 160363, badge = "180222",
     description = "Defeat the Guard Armor in Sora's story without using any Gimmick Cards.",
-    trigger = EnteredEncounterWithId(guardArmorEncounterId()) && FinishedEncounter(TRUE) && IsInMainStory()
+    trigger = DefeatedCheckpointedEncounterWithId(guardArmorEncounterId(), TRUE) && IsInMainStory()
         && never(UsedGimmickCard()) // Loss condition
 )
 
@@ -1569,11 +1573,11 @@ function axelFirstFloorEncounterId() => 0xa2
 achievement(
     title = "The Flurry of Dancing Flames", description = "Defeat Axel on the first floor.", points = 3,
     id = 15583, badge = "180412", published = "10/16/2014 6:07:43 AM", modified = "7/7/2020 2:12:51 AM",
-    trigger = EnteredEncounterWithId(axelFirstFloorEncounterId()) && FinishedEncounter(FALSE) && IsInMainStory()
+    trigger = DefeatedCheckpointedEncounterWithId(axelFirstFloorEncounterId(), FALSE) && IsInMainStory()
 )
 
 achievement(title = "Heat-Resistant Glue [m]", description = "Defeat Axel on the first floor without using the D-pad.", points = 5, id = 160364, badge = "180223",
-    trigger = EnteredEncounterWithId(axelFirstFloorEncounterId()) && FinishedEncounter(TRUE)
+    trigger = DefeatedCheckpointedEncounterWithId(axelFirstFloorEncounterId(), TRUE)
         && never(DpadIsPressed()) && IsInMainStory()
 )
 
@@ -1590,7 +1594,7 @@ function jafarEncounterId() => 0x95
 achievement(title = "Delicate Springs [m]", description = "Defeat Jafar in Sora's story without pressing B more than " + jumpLimit + " times.", points = 10,
     id = 160365, badge = "180224",
     trigger = never(repeated(jumpLimit + 1, Delta(bIsPressed()) != bIsPressed() && bIsPressed() == 1))
-        && EnteredEncounterWithId(jafarEncounterId()) && FinishedEncounter(TRUE) && IsInMainStory()
+        && DefeatedCheckpointedEncounterWithId(jafarEncounterId(), TRUE) && FinishedEncounter(TRUE) && IsInMainStory()
 )
 
 function agrabahStoryEntry() => bit7(0x0422f4)
@@ -1611,12 +1615,12 @@ oogieBoogieHpMap = {
     9: 0x37a,
     10: 0x3ab
 }
-function mainOogieBoogieHp() => word(battlePointer() + 0x8dac)
+
+function oogieBoogieEncounterId() => 0x9b
 achievement(
     title = "Card Disadvantage [m]", points = 10, id = 160366, badge = "180225",
     description = "Defeat Oogie Boogie in Sora's story with a deck of only nine cards or less.",
-    trigger = BossHPValueCheckpointIsSet(mainOogieBoogieHp(), oogieBoogieHpMap, "Halloween Town", 0x6)
-        && EnemyWithSpecificAddressWasJustDefeated(mainOogieBoogieHp(), TRUE) && never(!IsInBattle())
+    trigger = DefeatedCheckpointedEncounterWithId(oogieBoogieEncounterId(), TRUE)
         && CurrentDeckHasASizeOfAtMost(9) && IsInMainStory()
 )
 
