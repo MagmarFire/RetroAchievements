@@ -1565,18 +1565,16 @@ achievement(
     trigger = roomId() == 0x7 && WasInWorld("Traverse Town") && IsInWorld("Castle Oblivion, Hall") && fireCardEntry() == 0 && IsInMainStory()
 )
 
-function axelFirstFloorHp() => word(battlePointer() + 0x8f0c)
+function axelFirstFloorEncounterId() => 0xa2
 achievement(
     title = "The Flurry of Dancing Flames", description = "Defeat Axel on the first floor.", points = 3,
     id = 15583, badge = "180412", published = "10/16/2014 6:07:43 AM", modified = "7/7/2020 2:12:51 AM",
-    trigger = BossHPValueCheckpointIsSet(axelFirstFloorHp(), { 1: 0x140 }, "Castle Oblivion, Hall", 0x7) && BattleStartedCheckpoint()
-        && EnemyWithSpecificAddressWasJustDefeated(axelFirstFloorHp(), FALSE) && IsInMainStory()
+    trigger = EnteredEncounterWithId(axelFirstFloorEncounterId()) && FinishedEncounter(FALSE) && IsInMainStory()
 )
 
 achievement(title = "Heat-Resistant Glue [m]", description = "Defeat Axel on the first floor without using the D-pad.", points = 5, id = 160364, badge = "180223",
-    trigger = BossHPValueCheckpointIsSet(axelFirstFloorHp(), { 1: 0x140 }, "Castle Oblivion, Hall", 0x7) && BattleStartedCheckpoint()
-        && EnemyWithSpecificAddressWasJustDefeated(axelFirstFloorHp(), TRUE)
-        && never(DpadIsPressed()) && unless(IsPaused()) && IsInMainStory()
+    trigger = EnteredEncounterWithId(axelFirstFloorEncounterId()) && FinishedEncounter(TRUE)
+        && never(DpadIsPressed()) && IsInMainStory()
 )
 
 jafarHpMap = {
@@ -1588,12 +1586,11 @@ jafarHpMap = {
 }
 
 jumpLimit = 45
-function mainJafarHp() => word(battlePointer() + 0x903c)
-function IsPausedAgainstJafar() => byte(0x034970) == 1
+function jafarEncounterId() => 0x95
 achievement(title = "Delicate Springs [m]", description = "Defeat Jafar in Sora's story without pressing B more than " + jumpLimit + " times.", points = 10,
     id = 160365, badge = "180224",
-    trigger = never(repeated(jumpLimit + 1, !IsPausedAgainstJafar() && Delta(bIsPressed()) != bIsPressed() && bIsPressed() == 1))
-        && BossHPValueCheckpointIsSet(mainJafarHp(), jafarHpMap, "Agrabah", 0x1) && EnemyWithSpecificAddressWasJustDefeated(mainJafarHp(), TRUE) && IsInMainStory()
+    trigger = never(repeated(jumpLimit + 1, Delta(bIsPressed()) != bIsPressed() && bIsPressed() == 1))
+        && EnteredEncounterWithId(jafarEncounterId()) && FinishedEncounter(TRUE) && IsInMainStory()
 )
 
 function agrabahStoryEntry() => bit7(0x0422f4)
