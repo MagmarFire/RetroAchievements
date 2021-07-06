@@ -233,7 +233,9 @@ function PassedBattleCheckpoint() => once(Delta(battlePointer()) == 0 && battleP
 function PlayerIsAlwaysAliveInBattle() => never(IsInMainStory() && Delta(playerHp()) > 0 && playerHp() == 0 && battlePointer() > 0)
     && never(IsInReverseRebirth() && Delta(rikuPlayerHp()) > 0 && rikuPlayerHp() == 0 && battlePointer() > 0)
     
-function DefeatedCheckpointedEncounterWithId(id, useTrigger) => AlwaysInEncounterWithId(id) && PassedBattleCheckpoint() && PlayerIsAlwaysAliveInBattle() && FinishedEncounter(useTrigger)
+function PassedBattleCheckpointForEncounterId(id) => AlwaysInEncounterWithId(id) && PassedBattleCheckpoint()
+    
+function DefeatedCheckpointedEncounterWithId(id, useTrigger) => PassedBattleCheckpointForEncounterId(id) && PlayerIsAlwaysAliveInBattle() && FinishedEncounter(useTrigger)
 
 function FinishedEncounter(useTrigger)
 {
@@ -1632,7 +1634,7 @@ achievement(
 )
 
 timeLimit = 180
-function parasiteCageHp() => word(battlePointer() + 0x9040)
+function parasiteCageEncounterId() => 0x98
 parasiteCageHpMap = {
     2: 0x25b,
     3: 0x291,
@@ -1643,10 +1645,9 @@ parasiteCageHpMap = {
 
 achievement(title = "Rapid Digestion [m]", description = "Defeat the Parasite Cage in Sora's story within " + SecondsToFormat(timeLimit) + ".",
     points = 5, id = 160367, badge = "180226",
-    trigger = BossHPValueCheckpointIsSet(parasiteCageHp(), parasiteCageHpMap, "Monstro", 0x4)
-        && never(repeated(SecondsToFrames(timeLimit), IsInBattle() && FrameHasAdvanced()))
-        && EnemyWithSpecificAddressWasJustDefeated(parasiteCageHp(), TRUE)
-        && never(!IsInBattle()) && unless(IsPaused()) && IsInMainStory()
+    trigger = never(repeated(SecondsToFrames(timeLimit), IsInBattle() && FrameHasAdvanced()))
+        && DefeatedCheckpointedEncounterWithId(parasiteCageEncounterId(), TRUE)
+        && IsInMainStory()
 )
 
 function monstroEntry() => bit1(0x0422f5)
@@ -2551,10 +2552,10 @@ achievement(title = "Nullary Hand [m]", points = 10,
 
 leaderboard(title = "Time Attack - Parasite Cage (Sora's Story)",
     description = "Defeat the Parasite Cage in Sora's story as quickly as you can.",
-    start = BossHPValueCheckpointIsSet(parasiteCageHp(), parasiteCageHpMap, "Monstro", 0x4) && never(!IsInBattle()),
-    cancel = !IsInBattle(),
-    submit = EnemyWithSpecificAddressWasJustDefeated(parasiteCageHp(), FALSE),
-    value = measured(FrameHasAdvanced() && !IsPaused())
+    start = PassedBattleCheckpointForEncounterId(parasiteCageEncounterId()),
+    cancel = encounterId() != parasiteCageEncounterId(),
+    submit = FinishedEncounter(FALSE),
+    value = measured(FrameHasAdvanced())
 )
 
 leaderboard(title = "The Floor Is Poison, Best Times",
