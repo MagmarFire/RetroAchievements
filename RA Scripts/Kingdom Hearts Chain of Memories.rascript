@@ -1,9 +1,6 @@
 // Kingdom Hearts: Chain of Memories
 // #ID = 768
 
-// $005B30: Load Menu
-// $033190: Otra vida jefe
-// $03A9CC: Riku III
 // $03D0B2: Title screen index
 //
 //          0x0 = new game
@@ -177,8 +174,6 @@ function systemTimer() => dword(0x006c68)
 
 function FrameHasAdvanced() => Delta(systemTimer()) != systemTimer()
 
-function IsPaused() => byte(0x03be70) == 1
-
 LocationLookup = {
     0: "Castle Oblivion, Hall",
     1: "Agrabah",
@@ -229,6 +224,24 @@ function WasInWorld(name)
     }
 }
 
+function encounterId() => word(0x00749c)
+
+function EnteredEncounterWithId(id) => once(Delta(encounterId()) != id && encounterId() == id)
+    // Clear the checkpoint if the player dies in battle.
+    && never(IsInMainStory() && Delta(playerHp()) > 0 && playerHp() == 0)
+    && never(IsInReverseRebirth() && Delta(rikuPlayerHp()) > 0 && rikuPlayerHp() == 0)
+
+function FinishedEncounter(useTrigger)
+{
+    finishedEncounter = Delta(battlePointer()) > 0 && battlePointer() == 0
+    if (useTrigger == TRUE)
+    {
+        finishedEncounter = trigger_when(finishedEncounter)
+    }
+    
+    return finishedEncounter
+}
+
 // $0421CD: Battlefield ID (EU)
 function battlefieldId() => byte(0x0421CD)
 
@@ -251,8 +264,7 @@ function maxHp() => word(0x0422B8)
 // $0422BA: Max CP (16-bit)
 function maxCp() => word(0x0422BA)
 
-// $0422BE: Riku
-//          Puntos Ataque
+// $0422BE: Attack Points
 function attackPoints() => byte(0x0422BE)
 
 // $0422C8: Level
@@ -1155,6 +1167,7 @@ function playerReloadCounter() => word(battlePointer() + 0x80fc)
 function enemyReloadCounter() => word(battlePointer() + 0x80fe)
 function cardValueInPlay() => byte(battlePointer() + 0x80c2)
 function IsManuallyReloading() => byte(battlePointer() + 0x8888) == 1
+function IsPaused() => byte(battlePointer() + 0x8ab0) == 1
 
 // Data representing a card in combat is twelve bytes wide.
 // [Card ID (16-bit)][byte][byte][byte][byte][byte][0x1 = is stocked (8-bit)][0x1 = is consumed, such as by a reload (8-bit)][byte][0x1 = is used]
@@ -1533,16 +1546,16 @@ achievement(
     trigger = WasBitflagSetInMainGame(shadowJournalEntry()) && IsInMainStory()
 )
 
+function backgroundColorComponent() => dword(0x002d00)
+function backgroundColorTransitionFramesLeft() => dword(0x002d0c)
+function guardArmorEncounterId() => 0x94
 function guardArmorCardObtained() => bit3(0x04230c)
-function guardArmorState() => word(battlePointer() + 0x8ec0)
-function guardArmorHp() => word(battlePointer() + 0x8f0c)
-function UsedGimmickCardWhileFightingGuardArmor() => Delta(guardArmorState()) != 0xa && guardArmorState() == 0xa
+function UsedGimmickCard() => backgroundColorComponent() == 0x1f00 && Delta(backgroundColorTransitionFramesLeft()) == 0 && backgroundColorTransitionFramesLeft() == 8
 achievement(
     title = "No Scheming Allowed [m]", points = 5, id = 160363, badge = "180222",
     description = "Defeat the Guard Armor in Sora's story without using any Gimmick Cards.",
-    trigger = BossHPValueCheckpointIsSet(guardArmorHp(), { 1: 0xc8 }, "Traverse Town", 0x8) && IsInMainStory()
-        && EnemyWithSpecificAddressWasJustDefeated(guardArmorHp(), TRUE)
-        && never(UsedGimmickCardWhileFightingGuardArmor()) // Loss condition
+    trigger = EnteredEncounterWithId(guardArmorEncounterId()) && FinishedEncounter(TRUE) && IsInMainStory()
+        && never(UsedGimmickCard()) // Loss condition
 )
 
 function fireCardEntry() => bit0(0x042305)
@@ -1560,11 +1573,10 @@ achievement(
         && EnemyWithSpecificAddressWasJustDefeated(axelFirstFloorHp(), FALSE) && IsInMainStory()
 )
 
-function IsPausedAgainstAxel() => byte(0x033190) == 1
 achievement(title = "Heat-Resistant Glue [m]", description = "Defeat Axel on the first floor without using the D-pad.", points = 5, id = 160364, badge = "180223",
     trigger = BossHPValueCheckpointIsSet(axelFirstFloorHp(), { 1: 0x140 }, "Castle Oblivion, Hall", 0x7) && BattleStartedCheckpoint()
         && EnemyWithSpecificAddressWasJustDefeated(axelFirstFloorHp(), TRUE)
-        && never(DpadIsPressed()) && unless(IsPausedAgainstAxel()) && IsInMainStory()
+        && never(DpadIsPressed()) && unless(IsPaused()) && IsInMainStory()
 )
 
 jafarHpMap = {
