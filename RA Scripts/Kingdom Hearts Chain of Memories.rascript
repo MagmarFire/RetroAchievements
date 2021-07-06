@@ -1657,28 +1657,20 @@ achievement(
     trigger = WasBitflagSetInMainGame(monstroEntry()) && IsInMainStory()
 )
 
-function cloudHp() => word(battlePointer() + 0x8d2c)
-function cloudMaxHp() => word(battlePointer() + 0x8d2e)
-cloudHpMap = {
-    2: 0x112,
-    3: 0x12a,
-    4: 0x143,
-    5: 0x15b,
-    6: 0x174
-}
-
 survivalLimit = 90
-function EnoughTimeHasAdvancedForWarOfAttrition() => repeated(SecondsToFrames(survivalLimit), FrameHasAdvanced())
+function cloudEncounterId() => 0x9f
+function PlayerJustStockedACard() => Delta(numberOfStockedCardsForPlayer()) != numberOfStockedCardsForPlayer()
+
+// Prevent an A press or stocking of cards to reset the time a player has survived.
+function EnoughTimeHasAdvancedForWarOfAttrition() => repeated(SecondsToFrames(survivalLimit), FrameHasAdvanced() && never(PlayerJustStockedACard() || aIsPressed() == 1))
+
 achievement(title = "War of Attrition [m]", points = 5, id = 160368, badge = "180227",
-    description = "Survive for " + SecondsToFormat(survivalLimit) + " against Cloud without pressing A or stocking cards, and then defeat him.",
-    trigger = BossHPValueIsExpected(cloudMaxHp(), cloudHpMap, "Olympus Coliseum", 0x1)
-        && EnemyWithSpecificAddressWasJustDefeated(cloudHp(), TRUE)
-        && EnoughTimeHasAdvancedForWarOfAttrition() && unless(IsPaused()) && IsInMainStory()
-        && (
-            never(!IsInBattle()) // Reset the pauselock when not in battle.
-            // Prevent an A press or stocking of cards to reset the time a player has survived.
-            || never(aIsPressed() == 1) && never(Delta(numberOfStockedCardsForPlayer()) != numberOfStockedCardsForPlayer()) && unless(!IsPaused() && EnoughTimeHasAdvancedForWarOfAttrition())
-           )
+    description = "Without pressing Start or healing at any point, survive for " + SecondsToFormat(survivalLimit) + " against Cloud without pressing A or stocking cards, and then defeat him.",
+    trigger = DefeatedCheckpointedEncounterWithId(cloudEncounterId(), TRUE) && IsInMainStory()
+        && never(!IsInBattle()) // Reset the pauselock when not in battle.
+        && (always_false()
+            || EnoughTimeHasAdvancedForWarOfAttrition() && unless(once(startIsPressed() == 1))
+        )
 )
 
 function hadesHp() => word(battlePointer() + 0x8d0c)
