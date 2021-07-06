@@ -1733,14 +1733,13 @@ trickmasterHpMap = {
     10: 0x3ab
 }
 
-function trickmasterHp() => word(battlePointer() + 0x94b8)
-
+function trickmasterEncounterId() => 0x96
 hitLimit = 3
 achievement(title = "Double Jeopardy [m]", points = 5, id = 160370, badge = "180229",
     description = "Defeat the Trickmaster in Sora's story without getting hit more than twice.",
-    trigger = BossHPValueCheckpointIsSet(trickmasterHp(), trickmasterHpMap, "Wonderland", 0x1)
-        && EnemyWithSpecificAddressWasJustDefeated(trickmasterHp(), TRUE) && never(!IsInBattle())
-        && never(repeated(hitLimit, Delta(playerHp()) > playerHp())) && IsInMainStory()
+    trigger = DefeatedCheckpointedEncounterWithId(trickmasterEncounterId(), TRUE) && IsInMainStory()
+        // Check to make sure we didn't just enter battle, since the stale pointer may be pointing at a value that's higher than the player's HP, causing the cheevo to erroneously detect a "hit."
+        && never(repeated(hitLimit, Delta(playerHp()) > playerHp() && Delta(battlePointer()) != 0))
 )
 
 function wonderlandStoryEntry() => bit5(0x0422f4)
