@@ -1681,7 +1681,7 @@ achievement(title = "War of Attrition [m]", points = 5, id = 160368, badge = "18
            )
 )
 
-function hadesHp() => word(battlePointer() + 0x8d0c)
+function hadesEncounterId() => 0xa0
 
 hadesHpMap = {
     2: 0x1b7,
@@ -1697,9 +1697,8 @@ hadesHpMap = {
 
 achievement(title = "Burning the Candle at Both Ends [m]", points = 10, id = 160369, badge = "180228",
     description = "Defeat Hades in Sora's story before he has the chance to reload three times via his reload card.",
-    trigger = BossHPValueCheckpointIsSet(hadesHp(), hadesHpMap, "Olympus Coliseum", 0x7)
-        && EnemyWithSpecificAddressWasJustDefeated(hadesHp(), TRUE) && never(!IsInBattle())
-        && never(repeated(3, enemyReloadCounter() == 0xffff && Delta(enemyReloadCounter()) != 0xffff)) && IsInMainStory()
+    trigger = DefeatedCheckpointedEncounterWithId(hadesEncounterId(), TRUE) && IsInMainStory()
+        && never(repeated(3, enemyReloadCounter() == 0xffff && Delta(enemyReloadCounter()) != 0xffff))
 )
 
 // Without a way to count the number of cards a player has equipped in the first X slots of their deck
