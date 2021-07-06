@@ -1749,20 +1749,18 @@ achievement(
     trigger = WasBitflagSetInMainGame(wonderlandStoryEntry()) && IsInMainStory()
 )
 
-function larxeneHp() => word(battlePointer() + 0x8eec)
+function larxene6thFloorEncounterId() => 0xa3
 achievement(
     title = "The Savage Nymph", description = "Defeat Larxene on the sixth floor.", points = 3,
     id = 15591, badge = "180406", published = "10/16/2014 6:10:01 AM", modified = "7/7/2020 2:13:41 AM",
-    trigger = never(!IsInWorld("Castle Oblivion, Hall")) && never(battlefieldId() != 0x0C) && BattleStartedCheckpoint() && IsOnFloor(6)
-        && EnemyWithSpecificAddressWasJustDefeated(larxeneHp(), FALSE) && once(larxeneHp() == 0x460) && never(!IsInBattle()) && IsInMainStory()
+    trigger = DefeatedCheckpointedEncounterWithId(larxene6thFloorEncounterId(), FALSE) && IsInMainStory()
 )
 
 maxStockedCards = 6
 achievement(title = "Senary Hand [m]", points = 5, id = 160371, badge = "180230",
     description = "Defeat Larxene on the sixth floor without stocking more than six cards.",
-    trigger = never(!IsInWorld("Castle Oblivion, Hall")) && never(battlefieldId() != 0x0C) && BattleStartedCheckpoint() && IsOnFloor(6)
-        && EnemyWithSpecificAddressWasJustDefeated(larxeneHp(), TRUE) && once(larxeneHp() == 0x460)
-        && never(repeated(maxStockedCards + 1, Delta(numberOfStockedCardsForPlayer()) < numberOfStockedCardsForPlayer())) && never(!IsInBattle()) && IsInMainStory()
+    trigger = DefeatedCheckpointedEncounterWithId(larxene6thFloorEncounterId(), TRUE) && IsInMainStory()
+        && never(repeated(maxStockedCards + 1, Delta(numberOfStockedCardsForPlayer()) < numberOfStockedCardsForPlayer()))
 )
 
 function bambi() => bit1(0x042306)
