@@ -1795,19 +1795,17 @@ GenerateCheevoFromConditions({
     "threshold": length(poohGiftConditions)
 }, poohGiftConditions, IsInWorld("the Hundred Acre Wood") && IsInMainStory())
 
-function rikuHp() => word(battlePointer() + 0x8d0c) // I, II, and III
+function rikuIMainEncounterId() => 0xa1
 achievement(
     title = "Driven to Seek", description = "Defeat Riku on the seventh floor in Sora's story.", points = 3,
     id = 15594, badge = "180404", published = "10/16/2014 6:11:05 AM", modified = "7/7/2020 2:13:55 AM",
-    trigger = never(!IsInWorld("Castle Oblivion, Hall")) && never(battlefieldId() != 0x0C) && BattleStartedCheckpoint() && IsOnFloor(7)
-        && EnemyWithSpecificAddressWasJustDefeated(rikuHp(), FALSE) && once(rikuHp() == 0x460) && IsInMainStory()
+    trigger = DefeatedCheckpointedEncounterWithId(rikuIMainEncounterId(), FALSE) && IsInMainStory()
 )
 
 achievement(title = "Dark Leech [m]", points = 5, id = 160373, badge = "180232",
     description = "Defeat Riku on the seventh floor in Sora's story without healing.",
-    trigger = never(!IsInWorld("Castle Oblivion, Hall")) && never(battlefieldId() != 0x0C) && BattleStartedCheckpoint() && IsOnFloor(7)
-        && EnemyWithSpecificAddressWasJustDefeated(rikuHp(), TRUE) && once(rikuHp() == 0x460)
-        && never(playerHp() > Delta(playerHp())) && IsInMainStory()
+    trigger = DefeatedCheckpointedEncounterWithId(rikuIMainEncounterId(), TRUE) && IsInMainStory()
+        && never(playerHp() > Delta(playerHp()) && IsInBattle())
 )
 
 ursulaHpMap = {
