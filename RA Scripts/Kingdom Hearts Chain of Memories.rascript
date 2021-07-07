@@ -237,6 +237,8 @@ function PassedBattleCheckpointForEncounterId(id) => AlwaysInEncounterWithId(id)
     
 function DefeatedCheckpointedEncounterWithId(id, useTrigger) => PassedBattleCheckpointForEncounterId(id) && PlayerIsAlwaysAliveInBattle() && FinishedEncounter(useTrigger)
 
+function DefeatedNonCheckpointedEncounterWithId(id, useTrigger) => FinishedEncounter(useTrigger) && encounterId() == id
+
 function FinishedEncounter(useTrigger)
 {
     finishedEncounter = Delta(battlePointer()) > 0 && battlePointer() == 0
@@ -1657,28 +1659,25 @@ achievement(
     trigger = WasBitflagSetInMainGame(monstroEntry()) && IsInMainStory()
 )
 
-function cloudHp() => word(battlePointer() + 0x8d2c)
-function cloudMaxHp() => word(battlePointer() + 0x8d2e)
-cloudHpMap = {
-    2: 0x112,
-    3: 0x12a,
-    4: 0x143,
-    5: 0x15b,
-    6: 0x174
-}
-
 survivalLimit = 90
+hpLimit = 60
+function cloudEncounterId() => 0x9f
+function PlayerJustUsedStockedCards() => Delta(numberOfStockedCardsForPlayer()) > numberOfStockedCardsForPlayer()
+
 function EnoughTimeHasAdvancedForWarOfAttrition() => repeated(SecondsToFrames(survivalLimit), FrameHasAdvanced())
-achievement(title = "War of Attrition [m]", points = 5, id = 160368, badge = "180227",
-    description = "Survive for " + SecondsToFormat(survivalLimit) + " against Cloud without pressing A or stocking cards, and then defeat him.",
-    trigger = BossHPValueIsExpected(cloudMaxHp(), cloudHpMap, "Olympus Coliseum", 0x1)
-        && EnemyWithSpecificAddressWasJustDefeated(cloudHp(), TRUE)
-        && EnoughTimeHasAdvancedForWarOfAttrition() && unless(IsPaused()) && IsInMainStory()
-        && (
-            never(!IsInBattle()) // Reset the pauselock when not in battle.
-            // Prevent an A press or stocking of cards to reset the time a player has survived.
-            || never(aIsPressed() == 1) && never(Delta(numberOfStockedCardsForPlayer()) != numberOfStockedCardsForPlayer()) && unless(!IsPaused() && EnoughTimeHasAdvancedForWarOfAttrition())
-           )
+
+function PlayerPerformedWarOfAttritionTaboo() => once(Delta(playerHp()) < playerHp() && IsInBattle()) || once(startIsPressed() == 1)
+    || once(playerHp() > hpLimit && IsInBattle())
+
+achievement(title = "War of Attrition [m]", points = 10, id = 160368, badge = "180227",
+    description = "Without ever pressing Start, healing, or having more than " + hpLimit + " HP, survive for " + SecondsToFormat(survivalLimit)
+        + " against Cloud without pressing A or stocking cards, and then defeat him.",
+    trigger = DefeatedNonCheckpointedEncounterWithId(cloudEncounterId(), TRUE) && IsInMainStory()
+        && EnoughTimeHasAdvancedForWarOfAttrition() && unless(PlayerPerformedWarOfAttritionTaboo())
+        && (never(!IsInBattle() && encounterId() != cloudEncounterId()) // Reset any pauselock
+            || never(aIsPressed() == 1) && never(PlayerJustUsedStockedCards()) && unless(EnoughTimeHasAdvancedForWarOfAttrition())
+                && unless(PlayerPerformedWarOfAttritionTaboo())
+        )
 )
 
 function hadesEncounterId() => 0xa0
