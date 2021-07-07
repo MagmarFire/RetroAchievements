@@ -237,6 +237,8 @@ function PassedBattleCheckpointForEncounterId(id) => AlwaysInEncounterWithId(id)
     
 function DefeatedCheckpointedEncounterWithId(id, useTrigger) => PassedBattleCheckpointForEncounterId(id) && PlayerIsAlwaysAliveInBattle() && FinishedEncounter(useTrigger)
 
+function DefeatedNonCheckpointedEncounterWithId(id, useTrigger) => FinishedEncounter(useTrigger) && encounterId() == id
+
 function FinishedEncounter(useTrigger)
 {
     finishedEncounter = Delta(battlePointer()) > 0 && battlePointer() == 0
@@ -1658,18 +1660,23 @@ achievement(
 )
 
 survivalLimit = 90
+hpLimit = 60
 function cloudEncounterId() => 0x9f
-function PlayerJustStockedACard() => Delta(numberOfStockedCardsForPlayer()) != numberOfStockedCardsForPlayer()
+function PlayerJustUsedStockedCards() => Delta(numberOfStockedCardsForPlayer()) > numberOfStockedCardsForPlayer()
 
-// Prevent an A press or stocking of cards to reset the time a player has survived.
-function EnoughTimeHasAdvancedForWarOfAttrition() => repeated(SecondsToFrames(survivalLimit), FrameHasAdvanced() && never(PlayerJustStockedACard() || aIsPressed() == 1))
+function EnoughTimeHasAdvancedForWarOfAttrition() => repeated(SecondsToFrames(survivalLimit), FrameHasAdvanced())
 
-achievement(title = "War of Attrition [m]", points = 5, id = 160368, badge = "180227",
-    description = "Without pressing Start or healing at any point, survive for " + SecondsToFormat(survivalLimit) + " against Cloud without pressing A or stocking cards, and then defeat him.",
-    trigger = DefeatedCheckpointedEncounterWithId(cloudEncounterId(), TRUE) && IsInMainStory()
-        && never(!IsInBattle()) // Reset the pauselock when not in battle.
-        && (always_false()
-            || EnoughTimeHasAdvancedForWarOfAttrition() && unless(once(startIsPressed() == 1))
+function PlayerPerformedWarOfAttritionTaboo() => once(Delta(playerHp()) < playerHp() && IsInBattle()) || once(startIsPressed() == 1)
+    || once(playerHp() > hpLimit && IsInBattle())
+
+achievement(title = "War of Attrition [m]", points = 10, id = 160368, badge = "180227",
+    description = "Without ever pressing Start, healing, or having more than " + hpLimit + " HP, survive for " + SecondsToFormat(survivalLimit)
+        + " against Cloud without pressing A or stocking cards, and then defeat him.",
+    trigger = DefeatedNonCheckpointedEncounterWithId(cloudEncounterId(), TRUE) && IsInMainStory()
+        && EnoughTimeHasAdvancedForWarOfAttrition() && unless(PlayerPerformedWarOfAttritionTaboo())
+        && (never(!IsInBattle() && encounterId() != cloudEncounterId()) // Reset any pauselock
+            || never(aIsPressed() == 1) && never(PlayerJustUsedStockedCards()) && unless(EnoughTimeHasAdvancedForWarOfAttrition())
+                && unless(PlayerPerformedWarOfAttritionTaboo())
         )
 )
 
