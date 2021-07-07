@@ -1827,22 +1827,20 @@ achievement(
     trigger = WasBitflagSetInMainGame(atlanticaStoryEntry()) && IsInMainStory()
 )
 
-function mainRikuIIHp() => word(battlePointer() + 0x8d4c)
+function rikuIIMainEncounterId() => 0xa8
 itemCards = GetCardsByProperty("type", "Item")
 magicCards = GetCardsByProperty("type", "Magic")
 achievement(title = "Nothing but Fisticuffs [m]", points = 10, id = 160374, badge = "180233",
     description = "Defeat Riku on the eighth floor in Sora's story without equipping any item or magic cards (Deck 2 only).",
-    trigger = never(!IsInWorld("Castle Oblivion, Hall")) && never(battlefieldId() != 0x0C) && BattleStartedCheckpoint() && IsOnFloor(8)
-        && EnemyWithSpecificAddressWasJustDefeated(mainRikuIIHp(), TRUE) && once(mainRikuIIHp() == 0x460)
+    trigger = DefeatedCheckpointedEncounterWithId(rikuIIMainEncounterId(), TRUE) && IsInMainStory()
         && never(AnyCardsAreEquippedInDeck(MergeArrays(itemCards, magicCards), deck2BaseAddr(), 98, 0)) && currentDeck() == 1
-        && IsInMainStory()
 )
 
 function warpinator() => bit7(0x0422D4)
 achievement(
     title = "Driven to Seize", description = "Defeat Riku on the eighth floor in Sora's story.", points = 3,
     id = 15596, badge = "180402", published = "10/16/2014 6:11:18 AM", modified = "7/7/2020 2:16:42 AM",
-    trigger = WasBitflagSetInMainGame(warpinator()) && IsInMainStory()
+    trigger = DefeatedCheckpointedEncounterWithId(rikuIIMainEncounterId(), FALSE) && IsInMainStory()
 )
 
 maleficentHpMap = {
