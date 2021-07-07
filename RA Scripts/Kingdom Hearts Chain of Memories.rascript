@@ -1808,23 +1808,16 @@ achievement(title = "Dark Leech [m]", points = 5, id = 160373, badge = "180232",
         && never(playerHp() > Delta(playerHp()) && IsInBattle())
 )
 
-ursulaHpMap = {
-    6: 0x253,
-    7: 0x27a,
-    8: 0x2a1,
-    9: 0x2ca,
-    10: 0x2ef,
-}
-
-// todo: retest!
 theBendsTimeLimit = 45
-function ursulaHp() => word(battlePointer() + 0x92d0)
+function ursulaEncounterId() => 0x97
+function PlayerDrowned() => repeated(SecondsToFrames(theBendsTimeLimit), FrameHasAdvanced())
 achievement(title = "The Bends [m]", points = 25, id = 160376, badge = "180235",
     description = "Defeat Ursula in Sora's story without going more than " + theBendsTimeLimit + " seconds at a time without healing.",
-    trigger = BossHPValueCheckpointIsSet(ursulaHp(), ursulaHpMap, "Atlantica", 0xb)
-        && EnemyWithSpecificAddressWasJustDefeated(ursulaHp(), TRUE) && never(!IsInBattle())
-        && disable_when(repeated(SecondsToFrames(theBendsTimeLimit), FrameHasAdvanced() && !IsPaused()), playerHp() > Delta(playerHp()) || !IsInBattle())
-        && unless(IsPaused()) && IsInMainStory()
+    trigger = DefeatedNonCheckpointedEncounterWithId(ursulaEncounterId(), TRUE) && IsInMainStory()
+        && unless(PlayerDrowned()) && never(playerHp() > Delta(playerHp()))
+        && (
+            always_false() || never(!IsInBattle() && encounterId() != ursulaEncounterId()) // Reset the pauselock
+        )
 )
 
 function atlanticaStoryEntry() => bit2(0x0422f5)
