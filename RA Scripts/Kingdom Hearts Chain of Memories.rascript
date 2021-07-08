@@ -1892,24 +1892,17 @@ achievement(
     trigger = WasBitflagSetInMainGame(neverLandStoryEntry()) && IsInMainStory()
 )
 
-function mainVexenIHp() => word(battlePointer() + 0x91ec)
-function vexenHp() => word(0x03ab4c)
-vexenIHpMap = {
-    10: 0x460
-}
-
+function mainVexenIEncounterId() => 0xa4
 achievement(
     title = "The Chilly Academic", description = "Defeat Vexen on the tenth floor.", points = 3,
     id = 15611, badge = "180399", published = "10/16/2014 6:15:04 AM", modified = "7/7/2020 2:16:53 AM",
-    trigger = BossHPValueCheckpointIsSet(mainVexenIHp(), vexenIHpMap, "Castle Oblivion, Hall", 0xf) && IsInMainStory()
-        && EnemyWithSpecificAddressWasJustDefeated(mainVexenIHp(), FALSE) && never(!IsInBattle())
+    trigger = DefeatedCheckpointedEncounterWithId(mainVexenIEncounterId(), FALSE) && IsInMainStory()
 )
 
 fireCards = GetCardsByProperty("element", "Fire")
 achievement(title = "Broken Furnace [m]", points = 5, id = 160378, badge = "180237",
     description = "Defeat Vexen on the tenth floor in Sora's story without equipping any cards that deal fire-based damage (Deck 2 only).",
-    trigger = BossHPValueCheckpointIsSet(mainVexenIHp(), vexenIHpMap, "Castle Oblivion, Hall", 0xf)
-        && EnemyWithSpecificAddressWasJustDefeated(mainVexenIHp(), TRUE) && never(!IsInBattle()) && IsInMainStory()
+    trigger = DefeatedCheckpointedEncounterWithId(mainVexenIEncounterId(), TRUE) && IsInMainStory()
         && never(AnyCardsAreEquippedInDeck(fireCards, deck2BaseAddr(), 98, FALSE))
 )
 
