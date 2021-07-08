@@ -1991,18 +1991,16 @@ achievement(title = "A Weighty Decision [m]", points = 10, id = 160383, badge = 
         && CurrentDeckHasACPCostOfAtMost(450) && CurrentDeckHasASizeOfAtMost(20)
 )
 
-function axelHp() => word(0x03ab2c)
+function axelIIEncounterId() => 0xad
 achievement(
     title = "Got It Memorized?", description = "Defeat Axel on the thirteenth floor.", points = 3,
-    id = 15603, badge = "15026", published = "10/16/2014 6:12:19 AM", modified = "7/7/2020 2:17:25 AM",
-    trigger = never(!IsInWorld("Castle Oblivion")) && never(battlefieldId() != 0x0C) && BattleStartedCheckpoint() && IsOnFloor(13) && IsInMainStory()
-        && EnemyWithSpecificAddressWasJustDefeated(axelHp(), FALSE) && once(axelHp() == 0x690)
+    id = 15603, badge = "180393", published = "10/16/2014 6:12:19 AM", modified = "7/7/2020 2:17:25 AM",
+    trigger = DefeatedCheckpointedEncounterWithId(axelIIEncounterId(), FALSE) && IsInMainStory()
 )
 
-achievement(title = "Portfolio in Hand [m]", points = 10,
+achievement(title = "Portfolio in Hand [m]", points = 10, id = 160384, badge = "180243",
     description = "Defeat Axel on the thirteenth floor using a deck containing at least 50 cards.",
-    trigger = never(!IsInWorld("Castle Oblivion")) && never(battlefieldId() != 0x0C) && BattleStartedCheckpoint() && IsOnFloor(13) && IsInMainStory()
-        && EnemyWithSpecificAddressWasJustDefeated(axelHp(), TRUE) && once(axelHp() == 0x690)
+    trigger = DefeatedCheckpointedEncounterWithId(axelIIEncounterId(), TRUE) && IsInMainStory()
         && CurrentDeckHasASizeOfAtLeast(50)
 )
 
