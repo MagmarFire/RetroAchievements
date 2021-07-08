@@ -1850,12 +1850,11 @@ maleficentHpMap = {
     10: 0x467,
 }
 
-function maleficentHp() => word(battlePointer() + 0x8f34)
+function maleficentEncounterId() => 0x99
 enemyCards = GetCardsByProperty("type", "Enemy")
 achievement(title = "Benevolence vs. Malevolence [m]", points = 10, id = 160375, badge = "180234",
     description = "Defeat Maleficent in Sora's story without equipping any enemy cards (Deck 2 only).",
-    trigger = BossHPValueCheckpointIsSet(maleficentHp(), maleficentHpMap, "Hollow Bastion", 0x7) && IsInMainStory()
-        && EnemyWithSpecificAddressWasJustDefeated(maleficentHp(), TRUE)
+    trigger = DefeatedCheckpointedEncounterWithId(maleficentEncounterId(), TRUE) && IsInMainStory()
         && never(AnyCardsAreEquippedInDeck(enemyCards, deck2BaseAddr(), 98, 0)) && currentDeck() == 1
 )
 
