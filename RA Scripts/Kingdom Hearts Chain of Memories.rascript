@@ -1878,12 +1878,11 @@ hookHpMap = {
     10: 0x2ef,
 }
 
-function hookHp() => word(battlePointer() + 0x8d8c)
+function hookEncounterId() => 0x9e
 achievement(title = "Amputated Hand [m]", points = 25, id = 160377, badge = "180236",
     description = "Defeat Hook in Sora's story using a deck with a CP cost of 350 or less.",
-    trigger = BossHPValueCheckpointIsSet(hookHp(), hookHpMap, "Never Land", 0xe)
-        && EnemyWithSpecificAddressWasJustDefeated(hookHp(), TRUE) && never(!IsInBattle())
-        && CurrentDeckHasACPCostOfAtMost(350) && IsInMainStory()
+    trigger = DefeatedCheckpointedEncounterWithId(hookEncounterId(), TRUE) && IsInMainStory()
+        && CurrentDeckHasACPCostOfAtMost(350)
 )
 
 function neverLandStoryEntry() => bit3(0x0422f5)
