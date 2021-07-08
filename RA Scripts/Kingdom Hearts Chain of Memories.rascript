@@ -2142,23 +2142,16 @@ function mushu() => bit4(0x042306)
 maleficentDeckOffset = 0x74
 function reloadStateDuringRikuMaleficentBattle() => byte(0x03a628)
 function JustStartedReloadingDuringRikuMaleficentBattle() => Delta(reloadStateDuringRikuMaleficentBattle()) == 0 && reloadStateDuringRikuMaleficentBattle() == 1
-maleficentHpMapReverse = {
-    1: 0x12c
-}
-function maleficentHpReverse() => word(0x03ac14)
-
-achievement(title = "Double Dipping [m]", points = 10,
-    description = "Defeat Maleficent in Reverse/Rebirth without reloading more than once using your reload card.",
-    trigger = BossHPValueCheckpointIsSet(maleficentHpReverse(), maleficentHpMapReverse, "Hollow Bastion", 0x8) && IsInReverseRebirth()
-        && EnemyWithSpecificAddressWasJustDefeated(maleficentHpReverse(), TRUE) && never(!IsInBattle())
-        && never(repeated(2, JustStartedReloadingDuringRikuMaleficentBattle()))
-)
-
 achievement(
     title = "The Depths of Darkness", description = "Defeat Maleficent in Reverse/Rebirth.", points = 5,
-    id = 15651, badge = "15121", published = "10/16/2014 6:27:09 AM", modified = "7/7/2020 2:26:33 AM",
-    trigger = BossHPValueCheckpointIsSet(maleficentHpReverse(), maleficentHpMapReverse, "Hollow Bastion", 0x8) && IsInReverseRebirth()
-        && EnemyWithSpecificAddressWasJustDefeated(maleficentHpReverse(), FALSE) && never(!IsInBattle())
+    id = 15651, badge = "180388", published = "10/16/2014 6:27:09 AM", modified = "7/7/2020 2:26:33 AM",
+    trigger = DefeatedCheckpointedEncounterWithId(maleficentEncounterId(), FALSE) && IsInReverseRebirth()
+)
+
+achievement(title = "Double Dipping [m]", points = 10, id = 160387, badge = "180246",
+    description = "Defeat Maleficent in Reverse/Rebirth without reloading more than once using your reload card.",
+    trigger = DefeatedCheckpointedEncounterWithId(maleficentEncounterId(), TRUE) && IsInReverseRebirth()
+        && never(repeated(2, JustStartedReloadingDuringRikuMaleficentBattle()))
 )
 
 hpThreshold = 10
