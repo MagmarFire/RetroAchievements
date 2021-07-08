@@ -1978,17 +1978,16 @@ achievement(
     trigger = DefeatedCheckpointedEncounterWithId(rikuIVEncounterId(), FALSE) && IsInMainStory()
 )
 
+function larxeneIIEncounterId() => 0xae
 achievement(
     title = "Quelled Savagery", description = "Defeat Larxene on the twelfth floor.", points = 3,
-    id = 15601, badge = "15025", published = "10/16/2014 6:12:06 AM", modified = "7/7/2020 2:17:19 AM",
-    trigger = never(!IsInWorld("Castle Oblivion, Hall")) && never(battlefieldId() != 0x0C) && BattleStartedCheckpoint() && IsOnFloor(12) && IsInMainStory()
-        && EnemyWithSpecificAddressWasJustDefeated(larxeneHp(), FALSE) && once(larxeneHp() == 0x690)
+    id = 15601, badge = "180394", published = "10/16/2014 6:12:06 AM", modified = "7/7/2020 2:17:19 AM",
+    trigger = DefeatedCheckpointedEncounterWithId(larxeneIIEncounterId(), FALSE) && IsInMainStory()
 )
 
-achievement(title = "A Weighty Decision [m]", points = 10,
+achievement(title = "A Weighty Decision [m]", points = 10, id = 160383, badge = "180242",
     description = "Defeat Larxene on the twelfth floor using a deck with a size of at most 20 cards and a CP cost of 450 or less.",
-    trigger = never(!IsInWorld("Castle Oblivion, Hall")) && never(battlefieldId() != 0x0C) && BattleStartedCheckpoint() && IsOnFloor(12) && IsInMainStory()
-        && EnemyWithSpecificAddressWasJustDefeated(larxeneHp(), TRUE) && once(larxeneHp() == 0x690)
+    trigger = DefeatedCheckpointedEncounterWithId(larxeneIIEncounterId(), TRUE) && IsInMainStory()
         && CurrentDeckHasACPCostOfAtMost(450) && CurrentDeckHasASizeOfAtMost(20)
 )
 
