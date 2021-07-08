@@ -2004,19 +2004,17 @@ achievement(title = "Portfolio in Hand [m]", points = 10, id = 160384, badge = "
         && CurrentDeckHasASizeOfAtLeast(50)
 )
 
-function marluxiaHp() => word(0x03a9ac)
-achievement(title = "Critical Duelist [m]", points = 25,
+function marluxiaIEncounterId() => 0xa5
+achievement(title = "Critical Duelist [m]", points = 25, id = 160385, badge = "180244",
     description = "Defeat Marluxia's first phase using a deck with a CP cost of 275 or lower.",
-    trigger = never(!IsInWorld("Castle Oblivion, Hall")) && never(battlefieldId() != 0x0C) && BattleStartedCheckpoint() && IsOnFloor(13) && IsInMainStory()
-        && EnemyWithSpecificAddressWasJustDefeated(marluxiaHp(), TRUE) && once(marluxiaHp() == 0x8c0)
+    trigger = DefeatedCheckpointedEncounterWithId(marluxiaIEncounterId(), TRUE) && IsInMainStory()
         && CurrentDeckHasACPCostOfAtMost(275)
 )
 
 achievement(
     title = "The Graceful Assassin", description = "Defeat Marluxia's first phase.", points = 5,
-    id = 15604, badge = "15027", published = "10/16/2014 6:12:29 AM", modified = "7/7/2020 2:17:38 AM",
-    trigger = never(!IsInWorld("Castle Oblivion, Hall")) && never(battlefieldId() != 0x0C) && BattleStartedCheckpoint() && IsOnFloor(13) && IsInMainStory()
-        && EnemyWithSpecificAddressWasJustDefeated(marluxiaHp(), FALSE) && once(marluxiaHp() == 0x8c0)
+    id = 15604, badge = "180392", published = "10/16/2014 6:12:29 AM", modified = "7/7/2020 2:17:38 AM",
+    trigger = DefeatedCheckpointedEncounterWithId(marluxiaIEncounterId(), FALSE) && IsInMainStory()
 )
 
 marluxiaIIMaxHpValue = 0x8bd
