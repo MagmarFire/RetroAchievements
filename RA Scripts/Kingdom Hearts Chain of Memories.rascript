@@ -1913,10 +1913,7 @@ achievement(
     trigger = WasBitflagSetInMainGame(twilightTownStoryEntry()) && IsInMainStory()
 )
 
-vexenIIHpMap = {
-    11: 0x460
-}
-
+function vexenIIEncounterId() => 0xaf
 function vexenEnemyCardEffect() => dword(0x03bcf4)
 function VexenAutoLifeIsActive() => vexenEnemyCardEffect() == 0x1b
 
@@ -1924,10 +1921,8 @@ function PlayerSlipped() => Delta(soraBattleState()) != soraBattleState() && sor
 function PlayerIsFrozen() => Delta(soraBattleState()) != soraBattleState() && soraBattleState() == 0x53
 achievement(title = "Sturdy Footing [m]", points = 10,
     description = "Defeat Vexen in Twilight Town without slipping on ice or getting frozen more than once.",
-    trigger = BossHPValueCheckpointIsSet(vexenHp(), vexenIIHpMap, "Twilight Town", 0x7) && IsInMainStory()
-        && EnemyWithSpecificAddressWasJustDefeated(vexenHp(), TRUE) && never(!IsInBattle())
+    trigger = DefeatedCheckpointedEncounterWithId(vexenIIEncounterId(), TRUE) && IsInMainStory()
         && never(tally(2, [ PlayerSlipped(), PlayerIsFrozen() ]))
-        && trigger_when(!VexenAutoLifeIsActive()) // The cheevo will trigger prematurely if Vexen's HP goes to zero when he has Auto-Life active, so we need to check for it.
 )
 
 function PlayerIsPerformingNormalAttack() => soraBattleState() == 0x10
