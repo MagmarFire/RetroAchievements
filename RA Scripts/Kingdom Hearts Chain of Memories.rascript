@@ -1919,26 +1919,25 @@ function VexenAutoLifeIsActive() => vexenEnemyCardEffect() == 0x1b
 
 function PlayerSlipped() => Delta(soraBattleState()) != soraBattleState() && soraBattleState() == 0x24
 function PlayerIsFrozen() => Delta(soraBattleState()) != soraBattleState() && soraBattleState() == 0x53
-achievement(title = "Sturdy Footing [m]", points = 10,
+achievement(title = "Sturdy Footing [m]", points = 10, id = 160379, badge = "180238",
     description = "Defeat Vexen in Twilight Town without slipping on ice or getting frozen more than once.",
     trigger = DefeatedCheckpointedEncounterWithId(vexenIIEncounterId(), TRUE) && IsInMainStory()
         && never(tally(2, [ PlayerSlipped(), PlayerIsFrozen() ]))
 )
 
+function rikuIIIEncounterId() => 0xa9
 function PlayerIsPerformingNormalAttack() => soraBattleState() == 0x10
-achievement(title = "Prestidigitation [m]", points = 25,
+achievement(title = "Prestidigitation [m]", points = 25, id = 160380, badge = "180239",
     description = "Defeat Riku on the eleventh floor in Sora's story without using attack cards for anything but sleights, and without equipping magic cards (Deck 2 only).",
-    trigger = never(!IsInWorld("Castle Oblivion, Hall")) && never(battlefieldId() != 0x0C) && BattleStartedCheckpoint() && IsOnFloor(11)
-        && EnemyWithSpecificAddressWasJustDefeated(rikuHp(), TRUE) && once(rikuHp() == 0x460)
+    trigger = DefeatedCheckpointedEncounterWithId(rikuIIIEncounterId(), TRUE) && IsInMainStory()
         && never(AnyCardsAreEquippedInDeck(magicCards, deck2BaseAddr(), 98, FALSE)) && currentDeck() == 1
-        && never(PlayerIsPerformingNormalAttack()) && IsInMainStory()
+        && never(PlayerIsPerformingNormalAttack())
 )
 
 achievement(
     title = "Driven to Atone", description = "Defeat Riku on the eleventh floor in Sora's story.", points = 3,
-    id = 15619, badge = "15018", published = "10/16/2014 6:17:47 AM", modified = "7/7/2020 2:17:03 AM",
-    trigger = never(!IsInWorld("Castle Oblivion, Hall")) && never(battlefieldId() != 0x0C) && BattleStartedCheckpoint() && IsOnFloor(11)
-        && EnemyWithSpecificAddressWasJustDefeated(rikuHp(), FALSE) && once(rikuHp() == 0x460) && IsInMainStory()
+    id = 15619, badge = "180395", published = "10/16/2014 6:17:47 AM", modified = "7/7/2020 2:17:03 AM",
+    trigger = DefeatedCheckpointedEncounterWithId(rikuIIIEncounterId(), FALSE) && IsInMainStory()
 )
 
 darksideHpMap = {
