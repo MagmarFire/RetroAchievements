@@ -2017,9 +2017,7 @@ achievement(
     trigger = DefeatedCheckpointedEncounterWithId(marluxiaIEncounterId(), FALSE) && IsInMainStory()
 )
 
-marluxiaIIMaxHpValue = 0x8bd
-function marluxiaIIHp() => word(0x039f50)
-function marluxiaIIMaxHp() => word(0x039f52)
+function marluxiaIIEncounterId() => 0x9c
 function PlayerIsUsingSummon() => Delta(soraBattleState()) == 0x12 || Delta(soraBattleState()) >= 0x17 && Delta(soraBattleState()) <= 0x1b
 
 // Appears to affect which summon is used during Marluxia II (16-bit)
@@ -2034,22 +2032,12 @@ function PlayerIsUsingSummon() => Delta(soraBattleState()) == 0x12 || Delta(sora
 // 0x8d9c = Donald
 // 0x8db4 = Goofy
 function summonLastUsed() => word(0x03b26c)
-function DonaldOrGoofyIsActive() => summonLastUsed() == 0x8d9c || summonLastUsed() == 0x8db4
-    
-achievement(title = "Come Forth, Blue-Eyes White Dragon! [m]", points = 5,
+function DonaldOrGoofyIsActive() => summonLastUsed() == 0x8d9c || summonLastUsed() == 0x8db4 
+achievement(title = "Come Forth, Blue-Eyes White Dragon! [m]", points = 5, id = 160386, badge = "180245",
     description = "Finish off Marluxia's second phase with a summon.",
-    trigger = never(!IsInWorld("Castle Oblivion, Hall")) && never(battlefieldId() != 0x0C) && BattleStartedCheckpoint() && IsOnFloor(13) && IsInMainStory()
-        // We're not using EnemyWithSpecificAddressWasJustDefeated() because the battle pointer is set to NULL as soon as Marluxia's HP goes to zero.
-        // So we need to make sure that it has time to recognize his HP as zero.
-        && trigger_when(Delta(marluxiaIIHp()) > 0 && marluxiaIIHp() == 0)
-        && once(marluxiaIIHp() == marluxiaIIMaxHpValue)
+    trigger = DefeatedCheckpointedEncounterWithId(marluxiaIIEncounterId(), TRUE) && IsInMainStory()
         && trigger_when(PlayerIsUsingSummon())
         && trigger_when(!DonaldOrGoofyIsActive())
-        
-        // Different reset conditions, since we can't rely on just the battle pointer.
-        && never(playerHp() == 0)
-        && never(roomId() != 0xfd)
-        && never(!IsInBattle() && Delta(marluxiaIIMaxHp()) == marluxiaIIMaxHpValue && marluxiaIIMaxHp() != marluxiaIIMaxHpValue)
 )
 
 // Credits state (32-bit)
