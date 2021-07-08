@@ -1956,8 +1956,8 @@ achievement(
     trigger = WasBitflagSetInMainGame(destinyIslandsStoryEntry()) && IsInMainStory()
 )
 
+function rikuIVEncounterId() => 0xaa
 nonKingdomKeyAttackCards = []
-
 for card in attackCards
 {
     if (card["name"] != "Kingdom Key")
@@ -1966,18 +1966,16 @@ for card in attackCards
     }
 }
 
-achievement(title = "Humble Roots [m]", points = 50,
+achievement(title = "Humble Roots [m]", points = 50, id = 160382, badge = "180241",
     description = "Defeat Riku on the twelfth floor in Sora's story without equipping any attack cards that aren't the Kingdom Key (Deck 2 only).",
-    trigger = never(!IsInWorld("Castle Oblivion, Hall")) && never(battlefieldId() != 0x0C) && BattleStartedCheckpoint() && IsOnFloor(12) && IsInMainStory()
-        && EnemyWithSpecificAddressWasJustDefeated(rikuHp(), TRUE) && once(rikuHp() == 0x690)
+    trigger = DefeatedCheckpointedEncounterWithId(rikuIVEncounterId(), TRUE) && IsInMainStory()
         && never(AnyCardsAreEquippedInDeck(nonKingdomKeyAttackCards, deck2BaseAddr(), 98, FALSE)) && currentDeck() == 1
 )
 
 achievement(
     title = "Driven to Protect", description = "Defeat Riku on the twelfth floor in Sora's story.", points = 3,
-    id = 15602, badge = "15022", published = "10/16/2014 6:12:11 AM", modified = "7/7/2020 2:17:13 AM",
-    trigger = never(!IsInWorld("Castle Oblivion, Hall")) && never(battlefieldId() != 0x0C) && BattleStartedCheckpoint() && IsOnFloor(12) && IsInMainStory()
-        && EnemyWithSpecificAddressWasJustDefeated(rikuHp(), FALSE) && once(rikuHp() == 0x690)
+    id = 15602, badge = "180397", published = "10/16/2014 6:12:11 AM", modified = "7/7/2020 2:17:13 AM",
+    trigger = DefeatedCheckpointedEncounterWithId(rikuIVEncounterId(), FALSE) && IsInMainStory()
 )
 
 achievement(
