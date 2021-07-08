@@ -1940,18 +1940,11 @@ achievement(
     trigger = DefeatedCheckpointedEncounterWithId(rikuIIIEncounterId(), FALSE) && IsInMainStory()
 )
 
-darksideHpMap = {
-    12: 0x77a
-}
-
-function darksideHp() => word(0x03ac9c)
-
+function darksideEncounterId() => 0x9a
 attackCards = GetCardsByProperty("type", "Attack")
-
-achievement(title = "Limited Pools [m]", points = 25,
+achievement(title = "Limited Pools [m]", points = 25, id = 160381, badge = "180240",
     description = "Defeat Darkside in Sora's story without equipping any item cards and without manually reloading more than five times (Deck 2 only).",
-    trigger = BossHPValueCheckpointIsSet(darksideHp(), darksideHpMap, "Destiny Islands", 0x6) && IsInMainStory()
-        && EnemyWithSpecificAddressWasJustDefeated(darksideHp(), TRUE) && never(!IsInBattle())
+    trigger = DefeatedCheckpointedEncounterWithId(darksideEncounterId(), TRUE) && IsInMainStory()
         && never(AnyCardsAreEquippedInDeck(itemCards, deck2BaseAddr(), 98, FALSE))
         && never(repeated(6, Delta(playerReloadCounter()) != 0xffff && playerReloadCounter() == 0xffff))
 )
