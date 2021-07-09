@@ -2154,20 +2154,18 @@ achievement(title = "Double Dipping [m]", points = 10, id = 160387, badge = "180
         && never(repeated(2, JustStartedReloadingDuringRikuMaleficentBattle()))
 )
 
-hpThreshold = 10
-function ansemHp() => rikuHp()
-function DefeatedAnsemOnFloorB12(useTrigger) => never(!IsInWorld("Castle Oblivion, Hall")) && never(battlefieldId() != 0x0C) && BattleStartedCheckpoint() && IsOnFloor(1)
-        && EnemyWithSpecificAddressWasJustDefeated(ansemHp(), useTrigger) && once(ansemHp() == 0x190) && IsInReverseRebirth()
-achievement(title = "Fighting Hearty [m]", points = 5,
-    description = "Defeat Ansem on Floor B12 without your HP being at more than " + hpThreshold + " below its maximum.",
-    trigger = DefeatedAnsemOnFloorB12(TRUE)
-        && never(rikuPlayerHp() < maxHp() - hpThreshold)
-)
-
+hpThreshold = 5
+function ansemIEncounterId() => 0xa6
 achievement(
     title = "The Seeker of Darkness", description = "Defeat Ansem on Floor B12.", points = 3,
-    id = 15652, badge = "15104", published = "10/16/2014 6:27:15 AM", modified = "7/7/2020 2:26:27 AM",
-    trigger = DefeatedAnsemOnFloorB12(FALSE)
+    id = 15652, badge = "180387", published = "10/16/2014 6:27:15 AM", modified = "7/7/2020 2:26:27 AM",
+    trigger = DefeatedCheckpointedEncounterWithId(ansemIEncounterId(), FALSE) && IsInReverseRebirth()
+)
+
+achievement(title = "Fighting Hearty [m]", points = 5, id = 160388, badge = "180247",
+    description = "Defeat Ansem on Floor B12 without your HP ever being at more than " + hpThreshold + " below its maximum.",
+    trigger = DefeatedCheckpointedEncounterWithId(ansemIEncounterId(), TRUE) && IsInReverseRebirth()
+        && never(rikuPlayerHp() < maxHp() - hpThreshold)
 )
 
 function jafarHp() => word(0x03abfc)
