@@ -2179,17 +2179,10 @@ achievement(title = "Wishproof [m]", description = "Defeat Jafar in Reverse/Rebi
         && never(rikuPlayerHp() < Delta(rikuPlayerHp()))
 )
 
-function parasiteCageReverseRebirthHp() => word(0x038ea0)
-
-function EnteredBattleWithParasiteCageInReverseRebirth() => BossHPValueCheckpointIsSet(parasiteCageReverseRebirthHp(), parasiteCageHpMap, "Monstro", 0x2) && never(!IsInBattle())
-
-function DefeatedParasiteCageInReverseRebirth(useTrigger) => EnteredBattleWithParasiteCageInReverseRebirth()
-    && EnemyWithSpecificAddressWasJustDefeated(parasiteCageReverseRebirthHp(), useTrigger)
-
 achievement(
     title = "The Depths of a Wish", description = "Defeat the Parasite Cage in Reverse/Rebirth.", points = 5,
-    id = 15654, badge = "15130", published = "10/16/2014 6:27:28 AM", modified = "7/7/2020 2:26:13 AM",
-    trigger = IsInReverseRebirth() && DefeatedParasiteCageInReverseRebirth(FALSE)
+    id = 15654, badge = "180385", published = "10/16/2014 6:27:28 AM", modified = "7/7/2020 2:26:13 AM",
+    trigger = DefeatedCheckpointedEncounterWithId(parasiteCageEncounterId(), FALSE) && IsInReverseRebirth()
 )
 
 function verticalPosition() => dword(playerBattlePointer() + 0x7cb0)
@@ -2199,12 +2192,11 @@ function IsOnGroundDuringParasiteCageFight()
     return verticalPosition() >= 0xfffff800 || verticalPosition() == 0x0
 }
 
-timeLimit = 60
-achievement(title = "The Floor Is Poison [m]", points = 25,
+timeLimit = 45
+achievement(title = "The Floor Is Poison [m]", points = 25, id = 160390, badge = "180249",
     description = "Defeat the Parasite Cage in Reverse/Rebirth without touching the ground for longer than " + SecondsToFormat(timeLimit) + ".",
-    trigger = IsInReverseRebirth() && DefeatedParasiteCageInReverseRebirth(TRUE)
+    trigger = DefeatedCheckpointedEncounterWithId(parasiteCageEncounterId(), TRUE) && IsInReverseRebirth()
         && never(repeated(SecondsToFrames(timeLimit), IsOnGroundDuringParasiteCageFight()))
-        && unless(IsPaused())
 )
 
 function currentDarkPoints() => word(0x03bfc8)
@@ -2301,6 +2293,8 @@ achievement(title = "Technical Tightrope [m]", points = 10,
     description = "Defeat the Riku replica on Floor B8 without using any more than " + buttonLimit + " different buttons.",
     trigger = WasRikuReplicaDefeatedOnFloorB8(TRUE) && never(TotalButtonsUsed(buttonLimit + 1))
 )
+
+ursulaHpMap = { 1: byte(0)}
 
 function ursulaReverseRebirthHp() => word(0x03ac10)
 function WasUrsulaDefeatedInReverseRebirth(useTrigger) => BossHPValueCheckpointIsSet(ursulaReverseRebirthHp(), ursulaHpMap, "Atlantica", 0x7)
@@ -2450,7 +2444,7 @@ achievement(title = "Nullary Hand [m]", points = 10,
 
 leaderboard(title = "Time Attack - Parasite Cage (Sora's Story)",
     description = "Defeat the Parasite Cage in Sora's story as quickly as you can.",
-    start = PassedBattleCheckpointForEncounterId(parasiteCageEncounterId()),
+    start = PassedBattleCheckpointForEncounterId(parasiteCageEncounterId()) && IsInMainStory(),
     cancel = encounterId() != parasiteCageEncounterId(),
     submit = FinishedEncounter(FALSE),
     value = measured(FrameHasAdvanced())
@@ -2458,8 +2452,8 @@ leaderboard(title = "Time Attack - Parasite Cage (Sora's Story)",
 
 leaderboard(title = "The Floor Is Poison, Best Times",
     description = "Defeat the Parasite Cage in Reverse/Rebirth while touching the ground for as little time as possible.",
-	start = EnteredBattleWithParasiteCageInReverseRebirth(),
-	cancel = !IsInBattle(),
-	submit = EnemyWithSpecificAddressWasJustDefeated(parasiteCageReverseRebirthHp(), FALSE),
-	value = measured(IsOnGroundDuringParasiteCageFight() && unless(IsPaused()))
+	start = PassedBattleCheckpointForEncounterId(parasiteCageEncounterId()) && IsInReverseRebirth(),
+	cancel = encounterId() != parasiteCageEncounterId(),
+	submit = FinishedEncounter(FALSE),
+	value = measured(IsOnGroundDuringParasiteCageFight() && FrameHasAdvanced())
 )
