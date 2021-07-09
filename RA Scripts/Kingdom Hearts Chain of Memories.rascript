@@ -2168,51 +2168,15 @@ achievement(title = "Fighting Hearty [m]", points = 5, id = 160388, badge = "180
         && never(rikuPlayerHp() < maxHp() - hpThreshold)
 )
 
-function jafarHp() => word(0x03abfc)
-function jafarMaxHp() => word(0x03abfe)
-function AlternativeNotInBattleCheck(maxHpMem, hpMap)
-{
-    trigger = always_true()
-    
-    for floor in hpMap
-    {
-        maxHpValue = hpMap[floor]
-        trigger = trigger && never(!IsInBattle() && Delta(maxHpMem) == maxHpValue && maxHpMem != maxHpValue)
-    }
-    
-    return trigger
-}
-
-function WasJafarJustDefeated(useTriggerWhen)
-{
-    finalTrigger = Delta(jafarHp()) > 0 && jafarHp() == 0
-    
-    if (useTriggerWhen == TRUE)
-    {
-        finalTrigger = trigger_when(finalTrigger)
-    }
-    
-    return // We're not using EnemyWithSpecificAddressWasJustDefeated() because the battle pointer is set to NULL as soon as Jafar's HP goes to zero.
-        // So we need to make sure that it has time to recognize his HP as zero.
-        finalTrigger
-        && BossHPValueCheckpointIsSet(jafarHp(), jafarHpMap, "Agrabah", 0x2)
-        
-        // Different reset conditions, since we can't rely on just the battle pointer.
-        && never(rikuPlayerHp() == 0)
-        && AlternativeNotInBattleCheck(jafarMaxHp(), jafarHpMap)
-}
-
 achievement(
     title = "The Depths of Treasure", description = "Defeat Jafar in Reverse/Rebirth.", points = 5,
-    id = 15653, badge = "15126", published = "10/16/2014 6:27:21 AM", modified = "7/7/2020 2:26:20 AM",
-    trigger = IsInReverseRebirth()
-        && WasJafarJustDefeated(FALSE)
+    id = 15653, badge = "180386", published = "10/16/2014 6:27:21 AM", modified = "7/7/2020 2:26:20 AM",
+    trigger = DefeatedCheckpointedEncounterWithId(jafarEncounterId(), FALSE) && IsInReverseRebirth()
 )
 
-achievement(title = "Wishproof [m]", description = "Defeat Jafar in Reverse/Rebirth without getting hit.", points = 10,
-    trigger = IsInReverseRebirth()
+achievement(title = "Wishproof [m]", description = "Defeat Jafar in Reverse/Rebirth without getting hit.", points = 10, id = 160389, badge = "180248",
+    trigger = DefeatedCheckpointedEncounterWithId(jafarEncounterId(), TRUE) && IsInReverseRebirth()
         && never(rikuPlayerHp() < Delta(rikuPlayerHp()))
-        && WasJafarJustDefeated(TRUE)
 )
 
 function parasiteCageReverseRebirthHp() => word(0x038ea0)
