@@ -2213,22 +2213,17 @@ achievement(title = "Endless Seething [m]", points = 10, id = 160391, badge = "1
         && never(currentDarkPoints() == 0 && Delta(currentDarkPoints()) > 0)
 )
 
-function hookReverseRebirthHp() => word(0x03a9ec)
 function enemyCardsLeft() => byte(battlePointer() + 0x8856)
-
-function HookReverseRebirthBattleCheckpointReachedAndBattleWon(useTrigger) => BossHPValueCheckpointIsSet(hookReverseRebirthHp(), hookHpMap, "Never Land", 0x6)
-        && EnemyWithSpecificAddressWasJustDefeated(hookReverseRebirthHp(), useTrigger) && never(!IsInBattle())
-        && IsInReverseRebirth()
-
 achievement(
     title = "The Depths of Faith", description = "Defeat Hook in Reverse/Rebirth.", points = 5,
-    id = 15656, badge = "15145", published = "10/16/2014 6:27:38 AM", modified = "7/7/2020 2:26:03 AM",
-    trigger = HookReverseRebirthBattleCheckpointReachedAndBattleWon(FALSE)
+    id = 15656, badge = "180383", published = "10/16/2014 6:27:38 AM", modified = "7/7/2020 2:26:03 AM",
+    trigger = DefeatedCheckpointedEncounterWithId(hookEncounterId(), FALSE) && IsInReverseRebirth()
 )
 
-achievement(title = "Retired, Extremely Dangerous [m]", points = 10,
+achievement(title = "Retired, Extremely Dangerous [m]", points = 10, id = 160392, badge = "180251",
     description = "Defeat Hook in Reverse/Rebirth without using any enemy cards.",
-    trigger = HookReverseRebirthBattleCheckpointReachedAndBattleWon(TRUE) && never(enemyCardsLeft() < Delta(enemyCardsLeft()))
+    trigger = DefeatedCheckpointedEncounterWithId(hookEncounterId(), TRUE) && IsInReverseRebirth()
+        && never(enemyCardsLeft() < Delta(enemyCardsLeft()) && IsInBattle())
 )
 
 function guardArmorReverseRebirthHp() => word(0x03a32c)
