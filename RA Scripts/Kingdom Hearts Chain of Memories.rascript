@@ -2200,23 +2200,17 @@ achievement(title = "The Floor Is Poison [m]", points = 25, id = 160390, badge =
 )
 
 function currentDarkPoints() => word(0x03bfc8)
-function vexenReverseRebirthHp() => word(0x03a98c)
-
-function WasVexenDefeatedInReverseRebirth(useTrigger) => never(!IsInWorld("Castle Oblivion, Hall")) && never(battlefieldId() != 0x0C) && BattleStartedCheckpoint() && IsOnFloor(3)
-    && IsInReverseRebirth()
-        && EnemyWithSpecificAddressWasJustDefeated(vexenReverseRebirthHp(), useTrigger) && once(vexenReverseRebirthHp() == 0x460)
-
+function vexenReverseRebirthEncounterId() => 0xb0
 achievement(
     title = "In Search of Data", description = "Defeat Vexen in Reverse/Rebirth.", points = 3,
-    id = 15655, badge = "15144", published = "10/16/2014 6:27:34 AM", modified = "7/7/2020 2:26:08 AM",
-    trigger = WasVexenDefeatedInReverseRebirth(FALSE) && !VexenAutoLifeIsActive()
+    id = 15655, badge = "180384", published = "10/16/2014 6:27:34 AM", modified = "7/7/2020 2:26:08 AM",
+    trigger = DefeatedCheckpointedEncounterWithId(vexenReverseRebirthEncounterId(), FALSE) && IsInReverseRebirth()
 )
 
-achievement(title = "Endless Seething [m]", points = 10,
+achievement(title = "Endless Seething [m]", points = 10, id = 160391, badge = "180250",
     description = "Defeat Vexen in Reverse/Rebirth without ever leaving Dark Mode, if activated.",
-    trigger = WasVexenDefeatedInReverseRebirth(TRUE)
+    trigger = DefeatedCheckpointedEncounterWithId(vexenReverseRebirthEncounterId(), TRUE) && IsInReverseRebirth()
         && never(currentDarkPoints() == 0 && Delta(currentDarkPoints()) > 0)
-        && trigger_when(!VexenAutoLifeIsActive()) // The cheevo will trigger prematurely if Vexen's HP goes to zero when he has Auto-Life active, so we need to check for it.
 )
 
 function hookReverseRebirthHp() => word(0x03a9ec)
