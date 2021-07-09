@@ -2254,15 +2254,11 @@ achievement(title = "Purity [m]", points = 10, id = 160393, badge = "180252",
         && never(AccumulatedGivenNumberOfDarkPoints(dpLimit))
 )
 
-function rikuReplicaB8Hp() => word(0x03a80c)
-function WasRikuReplicaDefeatedOnFloorB8(useTrigger) => never(!IsInWorld("Castle Oblivion, Hall")) && never(battlefieldId() != 0x0C) && BattleStartedCheckpoint() && IsOnFloor(5)
-    && IsInReverseRebirth() && EnemyWithSpecificAddressWasJustDefeated(rikuReplicaB8Hp(), useTrigger) && once(rikuReplicaB8Hp() == 0x460)
-
-// todo: include this title change in a new revision proposal
+function rikuIReverseRebirthEncounterId() => 0xab
 achievement(
     title = "My Shadow", description = "Defeat the Riku replica on Floor B8.", points = 3,
-    id = 15658, badge = "15152", published = "10/16/2014 6:27:52 AM", modified = "7/7/2020 2:25:53 AM",
-    trigger = WasRikuReplicaDefeatedOnFloorB8(FALSE)
+    id = 15658, badge = "180381", published = "10/16/2014 6:27:52 AM", modified = "7/7/2020 2:25:53 AM",
+    trigger = DefeatedCheckpointedEncounterWithId(rikuIReverseRebirthEncounterId(), FALSE) && IsInReverseRebirth()
 )
 
 function TotalButtonsUsed(buttonThreshold)
@@ -2273,9 +2269,10 @@ function TotalButtonsUsed(buttonThreshold)
 }
 
 buttonLimit = 4
-achievement(title = "Technical Tightrope [m]", points = 10,
+achievement(title = "Technical Tightrope [m]", points = 25, id = 160394, badge = "180253",
     description = "Defeat the Riku replica on Floor B8 without using any more than " + buttonLimit + " different buttons.",
-    trigger = WasRikuReplicaDefeatedOnFloorB8(TRUE) && never(TotalButtonsUsed(buttonLimit + 1))
+    trigger = DefeatedCheckpointedEncounterWithId(rikuIReverseRebirthEncounterId(), TRUE) && IsInReverseRebirth()
+        && never(TotalButtonsUsed(buttonLimit + 1))
 )
 
 ursulaHpMap = { 1: byte(0)}
