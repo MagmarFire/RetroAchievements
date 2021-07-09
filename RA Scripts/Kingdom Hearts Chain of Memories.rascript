@@ -2275,22 +2275,16 @@ achievement(title = "Technical Tightrope [m]", points = 25, id = 160394, badge =
         && never(TotalButtonsUsed(buttonLimit + 1))
 )
 
-ursulaHpMap = { 1: byte(0)}
-
-function ursulaReverseRebirthHp() => word(0x03ac10)
-function WasUrsulaDefeatedInReverseRebirth(useTrigger) => BossHPValueCheckpointIsSet(ursulaReverseRebirthHp(), ursulaHpMap, "Atlantica", 0x7)
-        && EnemyWithSpecificAddressWasJustDefeated(ursulaReverseRebirthHp(), useTrigger) && never(!IsInBattle())
-        && IsInReverseRebirth()
-
 achievement(
     title = "The Depths of Melodies", description = "Defeat Ursula in Reverse/Rebirth.", points = 5,
-    id = 15659, badge = "15153", published = "10/16/2014 6:27:57 AM", modified = "7/7/2020 2:25:48 AM",
-    trigger = WasUrsulaDefeatedInReverseRebirth(FALSE)
+    id = 15659, badge = "180380", published = "10/16/2014 6:27:57 AM", modified = "7/7/2020 2:25:48 AM",
+    trigger = DefeatedCheckpointedEncounterWithId(ursulaEncounterId(), FALSE) && IsInReverseRebirth()
 )
 
-achievement(title = "Medical Negligence [m]", points = 5,
+achievement(title = "Medical Negligence [m]", points = 5, id = 160395, badge = "180254",
     description = "Defeat Ursula in Reverse/Rebirth without healing.",
-    trigger = WasUrsulaDefeatedInReverseRebirth(TRUE) && never(rikuPlayerHp() > Delta(rikuPlayerHp()))
+    trigger = DefeatedCheckpointedEncounterWithId(ursulaEncounterId(), TRUE) && IsInReverseRebirth()
+        && never(rikuPlayerHp() > Delta(rikuPlayerHp()) && IsInBattle())
 )
 
 function oogieBoogieReverseRebirthHp() => word(0x03ac2c)
