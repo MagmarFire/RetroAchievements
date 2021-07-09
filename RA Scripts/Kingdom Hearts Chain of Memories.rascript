@@ -2287,15 +2287,10 @@ achievement(title = "Medical Negligence [m]", points = 5, id = 160395, badge = "
         && never(rikuPlayerHp() > Delta(rikuPlayerHp()) && IsInBattle())
 )
 
-function oogieBoogieReverseRebirthHp() => word(0x03ac2c)
-function WasOogieBoogieDefeatedInReverseRebirth(useTrigger) => BossHPValueCheckpointIsSet(oogieBoogieReverseRebirthHp(), oogieBoogieHpMap, "Halloween Town", 0x4)
-        && EnemyWithSpecificAddressWasJustDefeated(oogieBoogieReverseRebirthHp(), useTrigger) && never(!IsInBattle())
-        && IsInReverseRebirth()
-
 achievement(
     title = "The Depths of Memory", description = "Defeat Oogie Boogie in Reverse/Rebirth.", points = 5,
-    id = 15660, badge = "15154", published = "10/16/2014 6:28:03 AM", modified = "7/7/2020 2:25:43 AM",
-    trigger = WasOogieBoogieDefeatedInReverseRebirth(FALSE)
+    id = 15660, badge = "180379", published = "10/16/2014 6:28:03 AM", modified = "7/7/2020 2:25:43 AM",
+    trigger = DefeatedCheckpointedEncounterWithId(oogieBoogieEncounterId(), FALSE) && IsInReverseRebirth()
 )
 
 function isReloadingDuringOogieBoogieReverseRebirthBattle() => byte(0x03a668) == 1 || IsUsingKingMickey() // King Mickey reloading, for some reason, counts as a card use, and we don't want that.
@@ -2304,10 +2299,10 @@ function oogieBoogieRegularCardsLeft() => word(0x03a650)
 function UsedCardInOogieBoogieBattle() => Delta(oogieBoogieRegularCardsLeft()) > oogieBoogieRegularCardsLeft()
     || Delta(oogieBoogieEnemyCardsLeft()) > oogieBoogieEnemyCardsLeft()
 cardLimit = 40
-achievement(title = "Underplay [m]", points = 10,
+achievement(title = "Underplay [m]", points = 10, id = 160396, badge = "180255",
     description = "Defeat Oogie Boogie in Reverse/Rebirth using only " + cardLimit + " cards or less.",
-    trigger = WasOogieBoogieDefeatedInReverseRebirth(TRUE)
-        && never(repeated(cardLimit + 1, UsedCardInOogieBoogieBattle()))
+    trigger = DefeatedCheckpointedEncounterWithId(oogieBoogieEncounterId(), TRUE) && IsInReverseRebirth()
+        && never(repeated(cardLimit + 1, UsedCardInOogieBoogieBattle() && Delta(battlePointer()) != 0))
         && unless(isReloadingDuringOogieBoogieReverseRebirthBattle())
 )
 
