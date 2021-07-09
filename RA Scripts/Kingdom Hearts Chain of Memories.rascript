@@ -2226,15 +2226,10 @@ achievement(title = "Retired, Extremely Dangerous [m]", points = 10, id = 160392
         && never(enemyCardsLeft() < Delta(enemyCardsLeft()) && IsInBattle())
 )
 
-function guardArmorReverseRebirthHp() => word(0x03a32c)
-function GuardArmorWasDefeatedInReverseRebirth(useTrigger) => once(BossHPValueCheckpointIsSetForAnyFloor(guardArmorReverseRebirthHp(), 0xc8, "Traverse Town", 0x7))
-        && IsInReverseRebirth()
-        && EnemyWithSpecificAddressWasJustDefeated(guardArmorReverseRebirthHp(), useTrigger) && never(!IsInBattle())
-
 achievement(
     title = "The Depths of Worlds Lost", description = "Defeat the Guard Armor in Reverse/Rebirth.", points = 5,
-    id = 15657, badge = "15149", published = "10/16/2014 6:27:45 AM", modified = "7/7/2020 2:25:58 AM",
-    trigger = GuardArmorWasDefeatedInReverseRebirth(FALSE)
+    id = 15657, badge = "180382", published = "10/16/2014 6:27:45 AM", modified = "7/7/2020 2:25:58 AM",
+    trigger = DefeatedCheckpointedEncounterWithId(guardArmorEncounterId(), FALSE) && IsInReverseRebirth()
 )
 
 function AccumulatedGivenNumberOfDarkPoints(dpThreshold)
@@ -2252,10 +2247,10 @@ function AccumulatedGivenNumberOfDarkPoints(dpThreshold)
     return tally(dpThreshold, conditions)
 }
 
-dpLimit = 18
-achievement(title = "Purity [m]", points = 10,
+dpLimit = 16
+achievement(title = "Purity [m]", points = 10, id = 160393, badge = "180252",
     description = "Defeat the Guard Armor in Reverse/Rebirth without accumulating a total of " + dpLimit + " Dark Points over the course of the battle.",
-    trigger = GuardArmorWasDefeatedInReverseRebirth(TRUE)
+    trigger = DefeatedCheckpointedEncounterWithId(guardArmorEncounterId(), TRUE) && IsInReverseRebirth()
         && never(AccumulatedGivenNumberOfDarkPoints(dpLimit))
 )
 
