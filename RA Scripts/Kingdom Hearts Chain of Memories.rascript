@@ -1200,7 +1200,7 @@ function DynamicCardInSlotWasJustReloaded(slotIndex, deckOffset)
 {
     headOfCardAddr = headOfDynamicCardAddrInSlot(slotIndex, deckOffset)
     usedByte = byte(headOfCardAddr + 8)
-    return Delta(usedByte) == 1 && usedByte == 0
+    return Delta(usedByte) == 1 && usedByte == 0 && IsInBattle()
 }
 
 function ReloadedNumberOfCards(cardsReloaded, deckOffset, numberOfCardsInDeck)
@@ -2318,93 +2318,75 @@ achievement(title = "Without Sin [m]", points = 25, id = 160397, badge = "180256
         && never(IsActivatingDarkMode())
 )
 
-function trickmasterReverseRebirthHp() => word(0x03a7b8)
-function WasTrickmasterDefeatedInReverseRebirth(useTrigger) => BossHPValueCheckpointIsSet(trickmasterReverseRebirthHp(), trickmasterHpMap, "Wonderland", 0x6)
-        && EnemyWithSpecificAddressWasJustDefeated(trickmasterReverseRebirthHp(), useTrigger) && never(!IsInBattle())
-        && IsInReverseRebirth()
-
 achievement(
     title = "The Depths of the Rabbit Hole", description = "Defeat the Trickmaster in Reverse/Rebirth.", points = 5,
-    id = 15662, badge = "15164", published = "10/16/2014 6:28:12 AM", modified = "7/7/2020 2:25:35 AM",
-    trigger = WasTrickmasterDefeatedInReverseRebirth(FALSE)
+    id = 15662, badge = "180377", published = "10/16/2014 6:28:12 AM", modified = "7/7/2020 2:25:35 AM",
+    trigger = DefeatedCheckpointedEncounterWithId(trickmasterEncounterId(), FALSE) && IsInReverseRebirth()
 )
 
-cardLimit = 32
+function graveyardCardLimit() => 32
 function isManuallyReloadingDuringTrickmasterBattleInReverseRebirth() => byte(0x039ba8)
-achievement(title = "From the Graveyard [m]", points = 10,
-    description = "Defeat the Trickmaster in Reverse/Rebirth without reloading more than " + cardLimit + " cards, except via Dark Mode or MM Miracle.",
-    trigger = WasTrickmasterDefeatedInReverseRebirth(TRUE)
-        && never(ReloadedNumberOfCards(cardLimit + 1, 0x81e0, 12))
+achievement(title = "From the Graveyard [m]", points = 10, id = 160398, badge = "180257",
+    description = "Defeat the Trickmaster in Reverse/Rebirth without reloading more than " + graveyardCardLimit() + " cards, except via Dark Mode or MM Miracle.",
+    trigger = DefeatedCheckpointedEncounterWithId(trickmasterEncounterId(), TRUE) && IsInReverseRebirth()
+        && never(ReloadedNumberOfCards(graveyardCardLimit() + 1, 0x81e0, 12))
         && unless(IsActivatingDarkMode() || IsUsingKingMickey())
 )
 
-function lexaeusHp() => vexenReverseRebirthHp()
-function WasLexaeusDefeated(useTrigger) => never(!IsInWorld("Castle Oblivion, Hall")) && never(battlefieldId() != 0x0C) && BattleStartedCheckpoint() && IsOnFloor(9)
-    && IsInReverseRebirth()
-    && EnemyWithSpecificAddressWasJustDefeated(lexaeusHp(), useTrigger) && once(lexaeusHp() == 0x690)
-
+function lexaeusEncounterId() => 0xa7
 achievement(
     title = "The Silent Hero", description = "Defeat Lexaeus.", points = 3,
-    id = 15663, badge = "15166", published = "10/16/2014 6:28:17 AM", modified = "7/7/2020 2:25:27 AM",
-    trigger = WasLexaeusDefeated(FALSE)
+    id = 15663, badge = "180376", published = "10/16/2014 6:28:17 AM", modified = "7/7/2020 2:25:27 AM",
+    trigger = DefeatedCheckpointedEncounterWithId(lexaeusEncounterId(), FALSE) && IsInReverseRebirth()
 )
 
 halfwayPoint = 0x11100 // This is technically further right than the center of the battlefield, but I figure the extra buffer space will feel better and be more intuitive.
-achievement(title = "Half the Floor Is Lava [m]", points = 10,
+achievement(title = "Half the Floor Is Lava [m]", points = 10, id = 160399, badge = "180258",
     description = "Defeat Lexaeus without crossing into the right half of the battlefield.",
-    trigger = WasLexaeusDefeated(TRUE) && never(rikuXCoord() >= halfwayPoint)
+    trigger = DefeatedCheckpointedEncounterWithId(lexaeusEncounterId(), TRUE) && IsInReverseRebirth()
+        && never(rikuXCoord() >= halfwayPoint)
 )
-
-function darksideReverseRebirthHp() => word(0x03aadc)
-function WasDarksideDefeatedInReverseRebirth(useTrigger) => never(!IsInWorld("Destiny Islands")) && never(battlefieldId() != 0x9) && BattleStartedCheckpoint() && IsOnFloor(10)
-    && IsInReverseRebirth()
-    && EnemyWithSpecificAddressWasJustDefeated(darksideReverseRebirthHp(), useTrigger) && once(darksideReverseRebirthHp() == 0x467)
 
 achievement(
     title = "The Depths of Paradise", description = "Defeat the Darkside in Reverse/Rebirth.", points = 5,
-    id = 15664, badge = "15174", published = "10/16/2014 6:28:24 AM", modified = "7/7/2020 2:25:23 AM",
-    trigger = WasDarksideDefeatedInReverseRebirth(FALSE)
+    id = 15664, badge = "180375", published = "10/16/2014 6:28:24 AM", modified = "7/7/2020 2:25:23 AM",
+    trigger = DefeatedCheckpointedEncounterWithId(darksideEncounterId(), FALSE) && IsInReverseRebirth()
 )
 
 darksideDeckSize = 19
-cardLimit = 70
-achievement(title = "Decked Out [m]", points = 25,
-    description = "Defeat the Darkside in Reverse/Rebirth without reloading more than " + cardLimit + " cards.",
-    trigger = WasDarksideDefeatedInReverseRebirth(TRUE)
-        && never(ReloadedNumberOfCards(cardLimit + 1, 0x81e0, darksideDeckSize))
+function deckedOutcardLimit() => 70
+achievement(title = "Decked Out [m]", points = 25, id = 160400, badge = "180259",
+    description = "Defeat the Darkside in Reverse/Rebirth without reloading more than " + deckedOutcardLimit() + " cards.",
+    trigger = DefeatedCheckpointedEncounterWithId(darksideEncounterId(), TRUE) && IsInReverseRebirth()
+        && never(ReloadedNumberOfCards(deckedOutcardLimit() + 1, 0x81e0, darksideDeckSize))
 )
 
-function rikuIIReverseRebirthHp() => rikuReplicaB8Hp()
-function WasRikuReplicaDefeatedOnFloorB2(useTrigger) => never(!IsInWorld("Twilight Town")) && roomId() == 0x2 && BattleStartedCheckpoint() && IsOnFloor(11)
-    && IsInReverseRebirth() && EnemyWithSpecificAddressWasJustDefeated(rikuIIReverseRebirthHp(), useTrigger) && once(rikuIIReverseRebirthHp() == 0x690)
-
+function rikuIIReverseRebirthEncounterId() => 0xac
 achievement(
     title = "The Depths of Dusk", description = "Defeat the Riku replica on Floor B2.", points = 5,
-    id = 15665, badge = "15178", published = "10/16/2014 6:28:32 AM", modified = "7/7/2020 2:25:18 AM",
-    trigger = WasRikuReplicaDefeatedOnFloorB2(FALSE)
+    id = 15665, badge = "180374", published = "10/16/2014 6:28:32 AM", modified = "7/7/2020 2:25:18 AM",
+    trigger = DefeatedCheckpointedEncounterWithId(rikuIIReverseRebirthEncounterId(), FALSE) && IsInReverseRebirth()
 )
 
-// todo: retest!
 function IsInDarkMode() => rikuBattleState() == 0x20
-achievement(title = "To the Shadow Realm with You! [m]", points = 5,
+achievement(title = "To the Shadow Realm with You! [m]", points = 5, id = 160401, badge = "180260",
     description = "Finish off the Riku replica on Floor B2 in Dark Mode.",
-    trigger = WasRikuReplicaDefeatedOnFloorB2(TRUE) && trigger_when(once(IsInDarkMode()))
+    trigger = DefeatedCheckpointedEncounterWithId(rikuIIReverseRebirthEncounterId(), TRUE) && IsInReverseRebirth()
+        && trigger_when(once(IsInDarkMode()))
         && disable_when(rikuBattleState() == 0x22, IsInDarkMode())
 )
 
-function ansemB1Hp() => word(0x03a9cc)
-function WasAnsemDefeatedOnFloorB1(useTrigger) => never(!IsInWorld("Castle Oblivion")) && roomId() == 0x2 && BattleStartedCheckpoint() && IsOnFloor(12)
-    && IsInReverseRebirth() && EnemyWithSpecificAddressWasJustDefeated(ansemB1Hp(), useTrigger) && once(ansemB1Hp() == 0x8c0)
+function ansemIIEncounterId() => 0xb1
+achievement(title = "Nullary Hand [m]", points = 10, id = 160402, badge = "180261",
+    description = "Defeat Ansem on Floor B1 without stocking cards.",
+    trigger = DefeatedCheckpointedEncounterWithId(ansemIIEncounterId(), TRUE) && IsInReverseRebirth()
+        && never(numberOfStockedCardsForPlayer() > 0)
+)
 
 achievement(
     title = "The Road to Dawn", description = "Escape Castle Oblivion in Reverse/Rebirth.", points = 25,
-    id = 15666, badge = "15179", published = "10/16/2014 6:28:40 AM", modified = "7/7/2020 2:25:14 AM",
+    id = 15666, badge = "180373", published = "10/16/2014 6:28:40 AM", modified = "7/7/2020 2:25:14 AM",
     trigger = never(!IsInWorld("Castle Oblivion")) && never(battlefieldId() != 0x0C) && IsOnFloor(12) && CreditsStarted() && IsInReverseRebirth()
-)
-
-achievement(title = "Nullary Hand [m]", points = 10,
-    description = "Defeat Ansem on Floor B1 without stocking cards.",
-    trigger = WasAnsemDefeatedOnFloorB1(TRUE) && never(numberOfStockedCardsForPlayer() > 0)
 )
 
 leaderboard(title = "Time Attack - Parasite Cage (Sora's Story)",
