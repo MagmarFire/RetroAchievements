@@ -2306,20 +2306,15 @@ achievement(title = "Underplay [m]", points = 10, id = 160396, badge = "180255",
         && unless(isReloadingDuringOogieBoogieReverseRebirthBattle())
 )
 
-function hadesReverseRebirthHp() => word(0x03a92c)
-function WasHadesDefeatedInReverseRebirth(useTrigger) => BossHPValueCheckpointIsSet(hadesReverseRebirthHp(), hadesHpMap, "Olympus Coliseum", 0x8)
-        && EnemyWithSpecificAddressWasJustDefeated(hadesReverseRebirthHp(), useTrigger) && never(!IsInBattle())
-        && IsInReverseRebirth()
-
 achievement(
     title = "The Depths of Heroism", description = "Defeat Hades in Reverse/Rebirth.", points = 5,
-    id = 15661, badge = "15159", published = "10/16/2014 6:28:08 AM", modified = "7/7/2020 2:25:39 AM",
-    trigger = WasHadesDefeatedInReverseRebirth(FALSE)
+    id = 15661, badge = "180378", published = "10/16/2014 6:28:08 AM", modified = "7/7/2020 2:25:39 AM",
+    trigger = DefeatedCheckpointedEncounterWithId(hadesEncounterId(), FALSE) && IsInReverseRebirth()
 )
 
-achievement(title = "Without Sin [m]", points = 25,
+achievement(title = "Without Sin [m]", points = 25, id = 160397, badge = "180256",
     description = "Defeat Hades in Reverse/Rebirth without activating Dark Mode.",
-    trigger = WasHadesDefeatedInReverseRebirth(TRUE)
+    trigger = DefeatedCheckpointedEncounterWithId(hadesEncounterId(), TRUE) && IsInReverseRebirth()
         && never(IsActivatingDarkMode())
 )
 
