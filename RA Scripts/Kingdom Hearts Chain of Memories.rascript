@@ -1,9 +1,6 @@
 // Kingdom Hearts: Chain of Memories
 // #ID = 768
 
-// $005B30: Load Menu
-// $033190: Otra vida jefe
-// $03A9CC: Riku III
 // $03D0B2: Title screen index
 //
 //          0x0 = new game
@@ -177,8 +174,6 @@ function systemTimer() => dword(0x006c68)
 
 function FrameHasAdvanced() => Delta(systemTimer()) != systemTimer()
 
-function IsPaused() => byte(0x03be70) == 1
-
 LocationLookup = {
     0: "Castle Oblivion, Hall",
     1: "Agrabah",
@@ -229,6 +224,32 @@ function WasInWorld(name)
     }
 }
 
+function encounterId() => word(0x00749c)
+
+function AlwaysInEncounterWithId(id) => never(encounterId() != id)
+
+function PassedBattleCheckpoint() => once(Delta(battlePointer()) == 0 && battlePointer() > 0)
+
+function PlayerIsAlwaysAliveInBattle() => never(IsInMainStory() && Delta(playerHp()) > 0 && playerHp() == 0 && battlePointer() > 0)
+    && never(IsInReverseRebirth() && Delta(rikuPlayerHp()) > 0 && rikuPlayerHp() == 0 && battlePointer() > 0)
+    
+function PassedBattleCheckpointForEncounterId(id) => AlwaysInEncounterWithId(id) && PassedBattleCheckpoint()
+    
+function DefeatedCheckpointedEncounterWithId(id, useTrigger) => PassedBattleCheckpointForEncounterId(id) && PlayerIsAlwaysAliveInBattle() && FinishedEncounter(useTrigger)
+
+function DefeatedNonCheckpointedEncounterWithId(id, useTrigger) => FinishedEncounter(useTrigger) && encounterId() == id
+
+function FinishedEncounter(useTrigger)
+{
+    finishedEncounter = Delta(battlePointer()) > 0 && battlePointer() == 0
+    if (useTrigger == TRUE)
+    {
+        finishedEncounter = trigger_when(finishedEncounter)
+    }
+    
+    return finishedEncounter
+}
+
 // $0421CD: Battlefield ID (EU)
 function battlefieldId() => byte(0x0421CD)
 
@@ -251,8 +272,7 @@ function maxHp() => word(0x0422B8)
 // $0422BA: Max CP (16-bit)
 function maxCp() => word(0x0422BA)
 
-// $0422BE: Riku
-//          Puntos Ataque
+// $0422BE: Attack Points
 function attackPoints() => byte(0x0422BE)
 
 // $0422C8: Level
@@ -1155,6 +1175,7 @@ function playerReloadCounter() => word(battlePointer() + 0x80fc)
 function enemyReloadCounter() => word(battlePointer() + 0x80fe)
 function cardValueInPlay() => byte(battlePointer() + 0x80c2)
 function IsManuallyReloading() => byte(battlePointer() + 0x8888) == 1
+function IsPaused() => byte(battlePointer() + 0x8ab0) == 1
 
 // Data representing a card in combat is twelve bytes wide.
 // [Card ID (16-bit)][byte][byte][byte][byte][byte][0x1 = is stocked (8-bit)][0x1 = is consumed, such as by a reload (8-bit)][byte][0x1 = is used]
@@ -1179,7 +1200,7 @@ function DynamicCardInSlotWasJustReloaded(slotIndex, deckOffset)
 {
     headOfCardAddr = headOfDynamicCardAddrInSlot(slotIndex, deckOffset)
     usedByte = byte(headOfCardAddr + 8)
-    return Delta(usedByte) == 1 && usedByte == 0
+    return Delta(usedByte) == 1 && usedByte == 0 && IsInBattle()
 }
 
 function ReloadedNumberOfCards(cardsReloaded, deckOffset, numberOfCardsInDeck)
@@ -1533,16 +1554,16 @@ achievement(
     trigger = WasBitflagSetInMainGame(shadowJournalEntry()) && IsInMainStory()
 )
 
+function backgroundColorComponent() => dword(0x002d00)
+function backgroundColorTransitionFramesLeft() => dword(0x002d0c)
+function guardArmorEncounterId() => 0x94
 function guardArmorCardObtained() => bit3(0x04230c)
-function guardArmorState() => byte(0x03a4a0)
-function UsedGimmickCardWhileFightingGuardArmor() => Delta(guardArmorState()) != 0xa && guardArmorState() == 0xa
-function guardArmorHp() => word(0x03a4ec)
+function UsedGimmickCard() => backgroundColorComponent() == 0x1f00 && Delta(backgroundColorTransitionFramesLeft()) == 0 && backgroundColorTransitionFramesLeft() == 8
 achievement(
     title = "No Scheming Allowed [m]", points = 5, id = 160363, badge = "180222",
     description = "Defeat the Guard Armor in Sora's story without using any Gimmick Cards.",
-    trigger = BossHPValueCheckpointIsSet(guardArmorHp(), { 1: 0xc8 }, "Traverse Town", 0x8) && IsInMainStory()
-        && EnemyWithSpecificAddressWasJustDefeated(guardArmorHp(), TRUE)
-        && never(UsedGimmickCardWhileFightingGuardArmor()) // Loss condition
+    trigger = DefeatedCheckpointedEncounterWithId(guardArmorEncounterId(), TRUE) && IsInMainStory()
+        && never(UsedGimmickCard()) // Loss condition
 )
 
 function fireCardEntry() => bit0(0x042305)
@@ -1552,19 +1573,16 @@ achievement(
     trigger = roomId() == 0x7 && WasInWorld("Traverse Town") && IsInWorld("Castle Oblivion, Hall") && fireCardEntry() == 0 && IsInMainStory()
 )
 
-function axelFirstFloorHp() => word(0x03362c)
+function axelFirstFloorEncounterId() => 0xa2
 achievement(
     title = "The Flurry of Dancing Flames", description = "Defeat Axel on the first floor.", points = 3,
     id = 15583, badge = "180412", published = "10/16/2014 6:07:43 AM", modified = "7/7/2020 2:12:51 AM",
-    trigger = BossHPValueCheckpointIsSet(axelFirstFloorHp(), { 1: 0x140 }, "Castle Oblivion, Hall", 0x7) && BattleStartedCheckpoint()
-        && EnemyWithSpecificAddressWasJustDefeated(axelFirstFloorHp(), FALSE) && IsInMainStory()
+    trigger = DefeatedCheckpointedEncounterWithId(axelFirstFloorEncounterId(), FALSE) && IsInMainStory()
 )
 
-function IsPausedAgainstAxel() => byte(0x033190) == 1
 achievement(title = "Heat-Resistant Glue [m]", description = "Defeat Axel on the first floor without using the D-pad.", points = 5, id = 160364, badge = "180223",
-    trigger = BossHPValueCheckpointIsSet(axelFirstFloorHp(), { 1: 0x140 }, "Castle Oblivion, Hall", 0x7) && BattleStartedCheckpoint()
-        && EnemyWithSpecificAddressWasJustDefeated(axelFirstFloorHp(), TRUE)
-        && never(DpadIsPressed()) && unless(IsPausedAgainstAxel()) && IsInMainStory()
+    trigger = DefeatedCheckpointedEncounterWithId(axelFirstFloorEncounterId(), TRUE)
+        && never(DpadIsPressed()) && IsInMainStory()
 )
 
 jafarHpMap = {
@@ -1576,12 +1594,11 @@ jafarHpMap = {
 }
 
 jumpLimit = 45
-function mainJafarHp() => word(0x0338bc)
-function IsPausedAgainstJafar() => byte(0x034970) == 1
+function jafarEncounterId() => 0x95
 achievement(title = "Delicate Springs [m]", description = "Defeat Jafar in Sora's story without pressing B more than " + jumpLimit + " times.", points = 10,
     id = 160365, badge = "180224",
-    trigger = never(repeated(jumpLimit + 1, !IsPausedAgainstJafar() && Delta(bIsPressed()) != bIsPressed() && bIsPressed() == 1))
-        && BossHPValueCheckpointIsSet(mainJafarHp(), jafarHpMap, "Agrabah", 0x1) && EnemyWithSpecificAddressWasJustDefeated(mainJafarHp(), TRUE) && IsInMainStory()
+    trigger = never(repeated(jumpLimit + 1, Delta(bIsPressed()) != bIsPressed() && bIsPressed() == 1))
+        && DefeatedCheckpointedEncounterWithId(jafarEncounterId(), TRUE) && FinishedEncounter(TRUE) && IsInMainStory()
 )
 
 function agrabahStoryEntry() => bit7(0x0422f4)
@@ -1602,12 +1619,12 @@ oogieBoogieHpMap = {
     9: 0x37a,
     10: 0x3ab
 }
-function mainOogieBoogieHp() => word(0x0338ec)
+
+function oogieBoogieEncounterId() => 0x9b
 achievement(
     title = "Card Disadvantage [m]", points = 10, id = 160366, badge = "180225",
     description = "Defeat Oogie Boogie in Sora's story with a deck of only nine cards or less.",
-    trigger = BossHPValueCheckpointIsSet(mainOogieBoogieHp(), oogieBoogieHpMap, "Halloween Town", 0x6)
-        && EnemyWithSpecificAddressWasJustDefeated(mainOogieBoogieHp(), TRUE) && never(!IsInBattle())
+    trigger = DefeatedCheckpointedEncounterWithId(oogieBoogieEncounterId(), TRUE)
         && CurrentDeckHasASizeOfAtMost(9) && IsInMainStory()
 )
 
@@ -1619,7 +1636,7 @@ achievement(
 )
 
 timeLimit = 180
-function parasiteCageHp() => word(0x039060)
+function parasiteCageEncounterId() => 0x98
 parasiteCageHpMap = {
     2: 0x25b,
     3: 0x291,
@@ -1629,11 +1646,10 @@ parasiteCageHpMap = {
 }
 
 achievement(title = "Rapid Digestion [m]", description = "Defeat the Parasite Cage in Sora's story within " + SecondsToFormat(timeLimit) + ".",
-    points = 5,
-    trigger = BossHPValueCheckpointIsSet(parasiteCageHp(), parasiteCageHpMap, "Monstro", 0x4)
-        && never(repeated(SecondsToFrames(timeLimit), IsInBattle() && FrameHasAdvanced()))
-        && EnemyWithSpecificAddressWasJustDefeated(parasiteCageHp(), TRUE)
-        && never(!IsInBattle()) && unless(IsPaused()) && IsInMainStory()
+    points = 5, id = 160367, badge = "180226",
+    trigger = never(repeated(SecondsToFrames(timeLimit), IsInBattle() && FrameHasAdvanced()))
+        && DefeatedCheckpointedEncounterWithId(parasiteCageEncounterId(), TRUE)
+        && IsInMainStory()
 )
 
 function monstroEntry() => bit1(0x0422f5)
@@ -1643,31 +1659,28 @@ achievement(
     trigger = WasBitflagSetInMainGame(monstroEntry()) && IsInMainStory()
 )
 
-function cloudHp() => word(0x03abcc)
-function cloudMaxHp() => word(0x03abce)
-cloudHpMap = {
-    2: 0x112,
-    3: 0x12a,
-    4: 0x143,
-    5: 0x15b,
-    6: 0x174
-}
-
 survivalLimit = 90
+hpLimit = 60
+function cloudEncounterId() => 0x9f
+function PlayerJustUsedStockedCards() => Delta(numberOfStockedCardsForPlayer()) > numberOfStockedCardsForPlayer()
+
 function EnoughTimeHasAdvancedForWarOfAttrition() => repeated(SecondsToFrames(survivalLimit), FrameHasAdvanced())
-achievement(title = "War of Attrition [m]", points = 5,
-    description = "Survive for " + SecondsToFormat(survivalLimit) + " against Cloud without pressing A or stocking cards, and then defeat him.",
-    trigger = BossHPValueIsExpected(cloudMaxHp(), cloudHpMap, "Olympus Coliseum", 0x1)
-        && EnemyWithSpecificAddressWasJustDefeated(cloudHp(), TRUE)
-        && EnoughTimeHasAdvancedForWarOfAttrition() && unless(IsPaused()) && IsInMainStory()
-        && (
-            never(!IsInBattle()) // Reset the pauselock when not in battle.
-            // Prevent an A press or stocking of cards to reset the time a player has survived.
-            || never(aIsPressed() == 1) && never(Delta(numberOfStockedCardsForPlayer()) != numberOfStockedCardsForPlayer()) && unless(!IsPaused() && EnoughTimeHasAdvancedForWarOfAttrition())
-           )
+
+function PlayerPerformedWarOfAttritionTaboo() => once(Delta(playerHp()) < playerHp() && IsInBattle()) || once(startIsPressed() == 1)
+    || once(playerHp() > hpLimit && IsInBattle())
+
+achievement(title = "War of Attrition [m]", points = 10, id = 160368, badge = "180227",
+    description = "Without ever pressing Start, healing, or having more than " + hpLimit + " HP, survive for " + SecondsToFormat(survivalLimit)
+        + " against Cloud without pressing A or stocking cards, and then defeat him.",
+    trigger = DefeatedNonCheckpointedEncounterWithId(cloudEncounterId(), TRUE) && IsInMainStory()
+        && EnoughTimeHasAdvancedForWarOfAttrition() && unless(PlayerPerformedWarOfAttritionTaboo())
+        && (never(!IsInBattle() && encounterId() != cloudEncounterId()) // Reset any pauselock
+            || never(aIsPressed() == 1) && never(PlayerJustUsedStockedCards()) && unless(EnoughTimeHasAdvancedForWarOfAttrition())
+                && unless(PlayerPerformedWarOfAttritionTaboo())
+        )
 )
 
-function hadesHp() => word(0x03aaec)
+function hadesEncounterId() => 0xa0
 
 hadesHpMap = {
     2: 0x1b7,
@@ -1681,11 +1694,10 @@ hadesHpMap = {
     10: 0x2ef
 }
 
-achievement(title = "Burning the Candle at Both Ends [m]", points = 10,
+achievement(title = "Burning the Candle at Both Ends [m]", points = 10, id = 160369, badge = "180228",
     description = "Defeat Hades in Sora's story before he has the chance to reload three times via his reload card.",
-    trigger = BossHPValueCheckpointIsSet(hadesHp(), hadesHpMap, "Olympus Coliseum", 0x7)
-        && EnemyWithSpecificAddressWasJustDefeated(hadesHp(), TRUE) && never(!IsInBattle())
-        && never(repeated(3, enemyReloadCounter() == 0xffff && Delta(enemyReloadCounter()) != 0xffff)) && IsInMainStory()
+    trigger = DefeatedCheckpointedEncounterWithId(hadesEncounterId(), TRUE) && IsInMainStory()
+        && never(repeated(3, enemyReloadCounter() == 0xffff && Delta(enemyReloadCounter()) != 0xffff))
 )
 
 // Without a way to count the number of cards a player has equipped in the first X slots of their deck
@@ -1720,14 +1732,13 @@ trickmasterHpMap = {
     10: 0x3ab
 }
 
-function trickmasterHp() => word(0x03a978)
-
+function trickmasterEncounterId() => 0x96
 hitLimit = 3
-achievement(title = "Double Jeopardy [m]", points = 5,
+achievement(title = "Double Jeopardy [m]", points = 5, id = 160370, badge = "180229",
     description = "Defeat the Trickmaster in Sora's story without getting hit more than twice.",
-    trigger = BossHPValueCheckpointIsSet(trickmasterHp(), trickmasterHpMap, "Wonderland", 0x1)
-        && EnemyWithSpecificAddressWasJustDefeated(trickmasterHp(), TRUE) && never(!IsInBattle())
-        && never(repeated(hitLimit, Delta(playerHp()) > playerHp())) && IsInMainStory()
+    trigger = DefeatedCheckpointedEncounterWithId(trickmasterEncounterId(), TRUE) && IsInMainStory()
+        // Check to make sure we didn't just enter battle, since the stale pointer may be pointing at a value that's higher than the player's HP, causing the cheevo to erroneously detect a "hit."
+        && never(repeated(hitLimit, Delta(playerHp()) > playerHp() && Delta(battlePointer()) != 0))
 )
 
 function wonderlandStoryEntry() => bit5(0x0422f4)
@@ -1737,20 +1748,18 @@ achievement(
     trigger = WasBitflagSetInMainGame(wonderlandStoryEntry()) && IsInMainStory()
 )
 
-function larxeneHp() => word(0x03abac)
+function larxene6thFloorEncounterId() => 0xa3
 achievement(
     title = "The Savage Nymph", description = "Defeat Larxene on the sixth floor.", points = 3,
-    id = 15591, badge = "14925", published = "10/16/2014 6:10:01 AM", modified = "7/7/2020 2:13:41 AM",
-    trigger = never(!IsInWorld("Castle Oblivion, Hall")) && never(battlefieldId() != 0x0C) && BattleStartedCheckpoint() && IsOnFloor(6)
-        && EnemyWithSpecificAddressWasJustDefeated(larxeneHp(), FALSE) && once(larxeneHp() == 0x460) && never(!IsInBattle()) && IsInMainStory()
+    id = 15591, badge = "180406", published = "10/16/2014 6:10:01 AM", modified = "7/7/2020 2:13:41 AM",
+    trigger = DefeatedCheckpointedEncounterWithId(larxene6thFloorEncounterId(), FALSE) && IsInMainStory()
 )
 
 maxStockedCards = 6
-achievement(title = "Senary Hand [m]", points = 5,
+achievement(title = "Senary Hand [m]", points = 5, id = 160371, badge = "180230",
     description = "Defeat Larxene on the sixth floor without stocking more than six cards.",
-    trigger = never(!IsInWorld("Castle Oblivion, Hall")) && never(battlefieldId() != 0x0C) && BattleStartedCheckpoint() && IsOnFloor(6)
-        && EnemyWithSpecificAddressWasJustDefeated(larxeneHp(), TRUE) && once(larxeneHp() == 0x460)
-        && never(repeated(maxStockedCards + 1, Delta(numberOfStockedCardsForPlayer()) < numberOfStockedCardsForPlayer())) && never(!IsInBattle()) && IsInMainStory()
+    trigger = DefeatedCheckpointedEncounterWithId(larxene6thFloorEncounterId(), TRUE) && IsInMainStory()
+        && never(repeated(maxStockedCards + 1, Delta(numberOfStockedCardsForPlayer()) < numberOfStockedCardsForPlayer()))
 )
 
 function bambi() => bit1(0x042306)
@@ -1786,39 +1795,29 @@ GenerateCheevoFromConditions({
     "threshold": length(poohGiftConditions)
 }, poohGiftConditions, IsInWorld("the Hundred Acre Wood") && IsInMainStory())
 
-function rikuHp() => word(0x03a9cc) // I, II, and III
+function rikuIMainEncounterId() => 0xa1
 achievement(
     title = "Driven to Seek", description = "Defeat Riku on the seventh floor in Sora's story.", points = 3,
-    id = 15594, badge = "14932", published = "10/16/2014 6:11:05 AM", modified = "7/7/2020 2:13:55 AM",
-    trigger = never(!IsInWorld("Castle Oblivion, Hall")) && never(battlefieldId() != 0x0C) && BattleStartedCheckpoint() && IsOnFloor(7)
-        && EnemyWithSpecificAddressWasJustDefeated(rikuHp(), FALSE) && once(rikuHp() == 0x460) && IsInMainStory()
+    id = 15594, badge = "180404", published = "10/16/2014 6:11:05 AM", modified = "7/7/2020 2:13:55 AM",
+    trigger = DefeatedCheckpointedEncounterWithId(rikuIMainEncounterId(), FALSE) && IsInMainStory()
 )
 
-achievement(title = "Dark Leech [m]", points = 5,
+achievement(title = "Dark Leech [m]", points = 5, id = 160373, badge = "180232",
     description = "Defeat Riku on the seventh floor in Sora's story without healing.",
-    trigger = never(!IsInWorld("Castle Oblivion, Hall")) && never(battlefieldId() != 0x0C) && BattleStartedCheckpoint() && IsOnFloor(7)
-        && EnemyWithSpecificAddressWasJustDefeated(rikuHp(), TRUE) && once(rikuHp() == 0x460)
-        && never(playerHp() > Delta(playerHp())) && IsInMainStory()
+    trigger = DefeatedCheckpointedEncounterWithId(rikuIMainEncounterId(), TRUE) && IsInMainStory()
+        && never(playerHp() > Delta(playerHp()) && IsInBattle())
 )
 
-ursulaHpMap = {
-    6: 0x253,
-    7: 0x27a,
-    8: 0x2a1,
-    9: 0x2ca,
-    10: 0x2ef,
-}
-
-// todo: retest!
 theBendsTimeLimit = 45
-function ursulaHp() => word(0x03add0)
-achievement(title = "The Bends [m]", points = 25,
+function ursulaEncounterId() => 0x97
+function PlayerDrowned() => repeated(SecondsToFrames(theBendsTimeLimit), FrameHasAdvanced())
+achievement(title = "The Bends [m]", points = 25, id = 160376, badge = "180235",
     description = "Defeat Ursula in Sora's story without going more than " + theBendsTimeLimit + " seconds at a time without healing.",
-    trigger = BossHPValueCheckpointIsSet(ursulaHp(), ursulaHpMap, "Atlantica", 0xb)
-        && EnemyWithSpecificAddressWasJustDefeated(ursulaHp(), TRUE) && never(!IsInBattle())
-        //&& never(repeated(SecondsToFrames(theBendsTimeLimit), FrameHasAdvanced() && never(playerHp() > Delta(playerHp()))))
-        && disable_when(repeated(SecondsToFrames(theBendsTimeLimit), FrameHasAdvanced()), playerHp() > Delta(playerHp()) || !IsInBattle())
-        && unless(IsPaused()) && IsInMainStory()
+    trigger = DefeatedNonCheckpointedEncounterWithId(ursulaEncounterId(), TRUE) && IsInMainStory()
+        && unless(PlayerDrowned()) && never(playerHp() > Delta(playerHp()))
+        && (
+            always_false() || never(!IsInBattle() && encounterId() != ursulaEncounterId()) // Reset the pauselock
+        )
 )
 
 function atlanticaStoryEntry() => bit2(0x0422f5)
@@ -1828,21 +1827,20 @@ achievement(
     trigger = WasBitflagSetInMainGame(atlanticaStoryEntry()) && IsInMainStory()
 )
 
+function rikuIIMainEncounterId() => 0xa8
 itemCards = GetCardsByProperty("type", "Item")
 magicCards = GetCardsByProperty("type", "Magic")
-achievement(title = "Nothing but Fisticuffs [m]", points = 10,
+achievement(title = "Nothing but Fisticuffs [m]", points = 10, id = 160374, badge = "180233",
     description = "Defeat Riku on the eighth floor in Sora's story without equipping any item or magic cards (Deck 2 only).",
-    trigger = never(!IsInWorld("Castle Oblivion, Hall")) && never(battlefieldId() != 0x0C) && BattleStartedCheckpoint() && IsOnFloor(8)
-        && EnemyWithSpecificAddressWasJustDefeated(rikuHp(), TRUE) && once(rikuHp() == 0x460)
+    trigger = DefeatedCheckpointedEncounterWithId(rikuIIMainEncounterId(), TRUE) && IsInMainStory()
         && never(AnyCardsAreEquippedInDeck(MergeArrays(itemCards, magicCards), deck2BaseAddr(), 98, 0)) && currentDeck() == 1
-        && IsInMainStory()
 )
 
 function warpinator() => bit7(0x0422D4)
 achievement(
     title = "Driven to Seize", description = "Defeat Riku on the eighth floor in Sora's story.", points = 3,
-    id = 15596, badge = "15005", published = "10/16/2014 6:11:18 AM", modified = "7/7/2020 2:16:42 AM",
-    trigger = WasBitflagSetInMainGame(warpinator()) && IsInMainStory()
+    id = 15596, badge = "180402", published = "10/16/2014 6:11:18 AM", modified = "7/7/2020 2:16:42 AM",
+    trigger = DefeatedCheckpointedEncounterWithId(rikuIIMainEncounterId(), FALSE) && IsInMainStory()
 )
 
 maleficentHpMap = {
@@ -1852,12 +1850,11 @@ maleficentHpMap = {
     10: 0x467,
 }
 
-function maleficentHp() => word(0x03add4)
+function maleficentEncounterId() => 0x99
 enemyCards = GetCardsByProperty("type", "Enemy")
-achievement(title = "Benevolence vs. Malevolence [m]", points = 10,
+achievement(title = "Benevolence vs. Malevolence [m]", points = 10, id = 160375, badge = "180234",
     description = "Defeat Maleficent in Sora's story without equipping any enemy cards (Deck 2 only).",
-    trigger = BossHPValueCheckpointIsSet(maleficentHp(), maleficentHpMap, "Hollow Bastion", 0x7) && IsInMainStory()
-        && EnemyWithSpecificAddressWasJustDefeated(maleficentHp(), TRUE)
+    trigger = DefeatedCheckpointedEncounterWithId(maleficentEncounterId(), TRUE) && IsInMainStory()
         && never(AnyCardsAreEquippedInDeck(enemyCards, deck2BaseAddr(), 98, 0)) && currentDeck() == 1
 )
 
@@ -1881,13 +1878,11 @@ hookHpMap = {
     10: 0x2ef,
 }
 
-function hookHp() => word(0x03abac)
-
-achievement(title = "Amputated Hand [m]", points = 25,
+function hookEncounterId() => 0x9e
+achievement(title = "Amputated Hand [m]", points = 25, id = 160377, badge = "180236",
     description = "Defeat Hook in Sora's story using a deck with a CP cost of 350 or less.",
-    trigger = BossHPValueCheckpointIsSet(hookHp(), hookHpMap, "Never Land", 0xe)
-        && EnemyWithSpecificAddressWasJustDefeated(hookHp(), TRUE) && never(!IsInBattle())
-        && CurrentDeckHasACPCostOfAtMost(350) && IsInMainStory()
+    trigger = DefeatedCheckpointedEncounterWithId(hookEncounterId(), TRUE) && IsInMainStory()
+        && CurrentDeckHasACPCostOfAtMost(350)
 )
 
 function neverLandStoryEntry() => bit3(0x0422f5)
@@ -1897,23 +1892,17 @@ achievement(
     trigger = WasBitflagSetInMainGame(neverLandStoryEntry()) && IsInMainStory()
 )
 
-function vexenHp() => word(0x03ab4c)
-vexenIHpMap = {
-    10: 0x460
-}
-
+function mainVexenIEncounterId() => 0xa4
 achievement(
     title = "The Chilly Academic", description = "Defeat Vexen on the tenth floor.", points = 3,
-    id = 15611, badge = "15015", published = "10/16/2014 6:15:04 AM", modified = "7/7/2020 2:16:53 AM",
-    trigger = BossHPValueCheckpointIsSet(vexenHp(), vexenIHpMap, "Castle Oblivion, Hall", 0xf) && IsInMainStory()
-        && EnemyWithSpecificAddressWasJustDefeated(vexenHp(), FALSE) && never(!IsInBattle())
+    id = 15611, badge = "180399", published = "10/16/2014 6:15:04 AM", modified = "7/7/2020 2:16:53 AM",
+    trigger = DefeatedCheckpointedEncounterWithId(mainVexenIEncounterId(), FALSE) && IsInMainStory()
 )
 
 fireCards = GetCardsByProperty("element", "Fire")
-achievement(title = "Broken Furnace [m]", points = 5,
+achievement(title = "Broken Furnace [m]", points = 5, id = 160378, badge = "180237",
     description = "Defeat Vexen on the tenth floor in Sora's story without equipping any cards that deal fire-based damage (Deck 2 only).",
-    trigger = BossHPValueCheckpointIsSet(vexenHp(), vexenIHpMap, "Castle Oblivion, Hall", 0xf)
-        && EnemyWithSpecificAddressWasJustDefeated(vexenHp(), TRUE) && never(!IsInBattle()) && IsInMainStory()
+    trigger = DefeatedCheckpointedEncounterWithId(mainVexenIEncounterId(), TRUE) && IsInMainStory()
         && never(AnyCardsAreEquippedInDeck(fireCards, deck2BaseAddr(), 98, FALSE))
 )
 
@@ -1924,51 +1913,38 @@ achievement(
     trigger = WasBitflagSetInMainGame(twilightTownStoryEntry()) && IsInMainStory()
 )
 
-vexenIIHpMap = {
-    11: 0x460
-}
-
+function vexenIIEncounterId() => 0xaf
 function vexenEnemyCardEffect() => dword(0x03bcf4)
 function VexenAutoLifeIsActive() => vexenEnemyCardEffect() == 0x1b
 
 function PlayerSlipped() => Delta(soraBattleState()) != soraBattleState() && soraBattleState() == 0x24
 function PlayerIsFrozen() => Delta(soraBattleState()) != soraBattleState() && soraBattleState() == 0x53
-achievement(title = "Sturdy Footing [m]", points = 10,
+achievement(title = "Sturdy Footing [m]", points = 10, id = 160379, badge = "180238",
     description = "Defeat Vexen in Twilight Town without slipping on ice or getting frozen more than once.",
-    trigger = BossHPValueCheckpointIsSet(vexenHp(), vexenIIHpMap, "Twilight Town", 0x7) && IsInMainStory()
-        && EnemyWithSpecificAddressWasJustDefeated(vexenHp(), TRUE) && never(!IsInBattle())
+    trigger = DefeatedCheckpointedEncounterWithId(vexenIIEncounterId(), TRUE) && IsInMainStory()
         && never(tally(2, [ PlayerSlipped(), PlayerIsFrozen() ]))
-        && trigger_when(!VexenAutoLifeIsActive()) // The cheevo will trigger prematurely if Vexen's HP goes to zero when he has Auto-Life active, so we need to check for it.
 )
 
+function rikuIIIEncounterId() => 0xa9
 function PlayerIsPerformingNormalAttack() => soraBattleState() == 0x10
-achievement(title = "Prestidigitation [m]", points = 25,
+achievement(title = "Prestidigitation [m]", points = 25, id = 160380, badge = "180239",
     description = "Defeat Riku on the eleventh floor in Sora's story without using attack cards for anything but sleights, and without equipping magic cards (Deck 2 only).",
-    trigger = never(!IsInWorld("Castle Oblivion, Hall")) && never(battlefieldId() != 0x0C) && BattleStartedCheckpoint() && IsOnFloor(11)
-        && EnemyWithSpecificAddressWasJustDefeated(rikuHp(), TRUE) && once(rikuHp() == 0x460)
+    trigger = DefeatedCheckpointedEncounterWithId(rikuIIIEncounterId(), TRUE) && IsInMainStory()
         && never(AnyCardsAreEquippedInDeck(magicCards, deck2BaseAddr(), 98, FALSE)) && currentDeck() == 1
-        && never(PlayerIsPerformingNormalAttack()) && IsInMainStory()
+        && never(PlayerIsPerformingNormalAttack())
 )
 
 achievement(
     title = "Driven to Atone", description = "Defeat Riku on the eleventh floor in Sora's story.", points = 3,
-    id = 15619, badge = "15018", published = "10/16/2014 6:17:47 AM", modified = "7/7/2020 2:17:03 AM",
-    trigger = never(!IsInWorld("Castle Oblivion, Hall")) && never(battlefieldId() != 0x0C) && BattleStartedCheckpoint() && IsOnFloor(11)
-        && EnemyWithSpecificAddressWasJustDefeated(rikuHp(), FALSE) && once(rikuHp() == 0x460) && IsInMainStory()
+    id = 15619, badge = "180395", published = "10/16/2014 6:17:47 AM", modified = "7/7/2020 2:17:03 AM",
+    trigger = DefeatedCheckpointedEncounterWithId(rikuIIIEncounterId(), FALSE) && IsInMainStory()
 )
 
-darksideHpMap = {
-    12: 0x77a
-}
-
-function darksideHp() => word(0x03ac9c)
-
+function darksideEncounterId() => 0x9a
 attackCards = GetCardsByProperty("type", "Attack")
-
-achievement(title = "Limited Pools [m]", points = 25,
+achievement(title = "Limited Pools [m]", points = 25, id = 160381, badge = "180240",
     description = "Defeat Darkside in Sora's story without equipping any item cards and without manually reloading more than five times (Deck 2 only).",
-    trigger = BossHPValueCheckpointIsSet(darksideHp(), darksideHpMap, "Destiny Islands", 0x6) && IsInMainStory()
-        && EnemyWithSpecificAddressWasJustDefeated(darksideHp(), TRUE) && never(!IsInBattle())
+    trigger = DefeatedCheckpointedEncounterWithId(darksideEncounterId(), TRUE) && IsInMainStory()
         && never(AnyCardsAreEquippedInDeck(itemCards, deck2BaseAddr(), 98, FALSE))
         && never(repeated(6, Delta(playerReloadCounter()) != 0xffff && playerReloadCounter() == 0xffff))
 )
@@ -1980,8 +1956,8 @@ achievement(
     trigger = WasBitflagSetInMainGame(destinyIslandsStoryEntry()) && IsInMainStory()
 )
 
+function rikuIVEncounterId() => 0xaa
 nonKingdomKeyAttackCards = []
-
 for card in attackCards
 {
     if (card["name"] != "Kingdom Key")
@@ -1990,67 +1966,58 @@ for card in attackCards
     }
 }
 
-achievement(title = "Humble Roots [m]", points = 50,
+achievement(title = "Humble Roots [m]", points = 50, id = 160382, badge = "180241",
     description = "Defeat Riku on the twelfth floor in Sora's story without equipping any attack cards that aren't the Kingdom Key (Deck 2 only).",
-    trigger = never(!IsInWorld("Castle Oblivion, Hall")) && never(battlefieldId() != 0x0C) && BattleStartedCheckpoint() && IsOnFloor(12) && IsInMainStory()
-        && EnemyWithSpecificAddressWasJustDefeated(rikuHp(), TRUE) && once(rikuHp() == 0x690)
+    trigger = DefeatedCheckpointedEncounterWithId(rikuIVEncounterId(), TRUE) && IsInMainStory()
         && never(AnyCardsAreEquippedInDeck(nonKingdomKeyAttackCards, deck2BaseAddr(), 98, FALSE)) && currentDeck() == 1
 )
 
 achievement(
     title = "Driven to Protect", description = "Defeat Riku on the twelfth floor in Sora's story.", points = 3,
-    id = 15602, badge = "15022", published = "10/16/2014 6:12:11 AM", modified = "7/7/2020 2:17:13 AM",
-    trigger = never(!IsInWorld("Castle Oblivion, Hall")) && never(battlefieldId() != 0x0C) && BattleStartedCheckpoint() && IsOnFloor(12) && IsInMainStory()
-        && EnemyWithSpecificAddressWasJustDefeated(rikuHp(), FALSE) && once(rikuHp() == 0x690)
+    id = 15602, badge = "180397", published = "10/16/2014 6:12:11 AM", modified = "7/7/2020 2:17:13 AM",
+    trigger = DefeatedCheckpointedEncounterWithId(rikuIVEncounterId(), FALSE) && IsInMainStory()
 )
 
+function larxeneIIEncounterId() => 0xae
 achievement(
     title = "Quelled Savagery", description = "Defeat Larxene on the twelfth floor.", points = 3,
-    id = 15601, badge = "15025", published = "10/16/2014 6:12:06 AM", modified = "7/7/2020 2:17:19 AM",
-    trigger = never(!IsInWorld("Castle Oblivion, Hall")) && never(battlefieldId() != 0x0C) && BattleStartedCheckpoint() && IsOnFloor(12) && IsInMainStory()
-        && EnemyWithSpecificAddressWasJustDefeated(larxeneHp(), FALSE) && once(larxeneHp() == 0x690)
+    id = 15601, badge = "180394", published = "10/16/2014 6:12:06 AM", modified = "7/7/2020 2:17:19 AM",
+    trigger = DefeatedCheckpointedEncounterWithId(larxeneIIEncounterId(), FALSE) && IsInMainStory()
 )
 
-achievement(title = "A Weighty Decision [m]", points = 10,
+achievement(title = "A Weighty Decision [m]", points = 10, id = 160383, badge = "180242",
     description = "Defeat Larxene on the twelfth floor using a deck with a size of at most 20 cards and a CP cost of 450 or less.",
-    trigger = never(!IsInWorld("Castle Oblivion, Hall")) && never(battlefieldId() != 0x0C) && BattleStartedCheckpoint() && IsOnFloor(12) && IsInMainStory()
-        && EnemyWithSpecificAddressWasJustDefeated(larxeneHp(), TRUE) && once(larxeneHp() == 0x690)
+    trigger = DefeatedCheckpointedEncounterWithId(larxeneIIEncounterId(), TRUE) && IsInMainStory()
         && CurrentDeckHasACPCostOfAtMost(450) && CurrentDeckHasASizeOfAtMost(20)
 )
 
-function axelHp() => word(0x03ab2c)
+function axelIIEncounterId() => 0xad
 achievement(
     title = "Got It Memorized?", description = "Defeat Axel on the thirteenth floor.", points = 3,
-    id = 15603, badge = "15026", published = "10/16/2014 6:12:19 AM", modified = "7/7/2020 2:17:25 AM",
-    trigger = never(!IsInWorld("Castle Oblivion")) && never(battlefieldId() != 0x0C) && BattleStartedCheckpoint() && IsOnFloor(13) && IsInMainStory()
-        && EnemyWithSpecificAddressWasJustDefeated(axelHp(), FALSE) && once(axelHp() == 0x690)
+    id = 15603, badge = "180393", published = "10/16/2014 6:12:19 AM", modified = "7/7/2020 2:17:25 AM",
+    trigger = DefeatedCheckpointedEncounterWithId(axelIIEncounterId(), FALSE) && IsInMainStory()
 )
 
-achievement(title = "Portfolio in Hand [m]", points = 10,
+achievement(title = "Portfolio in Hand [m]", points = 10, id = 160384, badge = "180243",
     description = "Defeat Axel on the thirteenth floor using a deck containing at least 50 cards.",
-    trigger = never(!IsInWorld("Castle Oblivion")) && never(battlefieldId() != 0x0C) && BattleStartedCheckpoint() && IsOnFloor(13) && IsInMainStory()
-        && EnemyWithSpecificAddressWasJustDefeated(axelHp(), TRUE) && once(axelHp() == 0x690)
+    trigger = DefeatedCheckpointedEncounterWithId(axelIIEncounterId(), TRUE) && IsInMainStory()
         && CurrentDeckHasASizeOfAtLeast(50)
 )
 
-function marluxiaHp() => word(0x03a9ac)
-achievement(title = "Critical Duelist [m]", points = 25,
+function marluxiaIEncounterId() => 0xa5
+achievement(title = "Critical Duelist [m]", points = 25, id = 160385, badge = "180244",
     description = "Defeat Marluxia's first phase using a deck with a CP cost of 275 or lower.",
-    trigger = never(!IsInWorld("Castle Oblivion, Hall")) && never(battlefieldId() != 0x0C) && BattleStartedCheckpoint() && IsOnFloor(13) && IsInMainStory()
-        && EnemyWithSpecificAddressWasJustDefeated(marluxiaHp(), TRUE) && once(marluxiaHp() == 0x8c0)
+    trigger = DefeatedCheckpointedEncounterWithId(marluxiaIEncounterId(), TRUE) && IsInMainStory()
         && CurrentDeckHasACPCostOfAtMost(275)
 )
 
 achievement(
     title = "The Graceful Assassin", description = "Defeat Marluxia's first phase.", points = 5,
-    id = 15604, badge = "15027", published = "10/16/2014 6:12:29 AM", modified = "7/7/2020 2:17:38 AM",
-    trigger = never(!IsInWorld("Castle Oblivion, Hall")) && never(battlefieldId() != 0x0C) && BattleStartedCheckpoint() && IsOnFloor(13) && IsInMainStory()
-        && EnemyWithSpecificAddressWasJustDefeated(marluxiaHp(), FALSE) && once(marluxiaHp() == 0x8c0)
+    id = 15604, badge = "180392", published = "10/16/2014 6:12:29 AM", modified = "7/7/2020 2:17:38 AM",
+    trigger = DefeatedCheckpointedEncounterWithId(marluxiaIEncounterId(), FALSE) && IsInMainStory()
 )
 
-marluxiaIIMaxHpValue = 0x8bd
-function marluxiaIIHp() => word(0x039f50)
-function marluxiaIIMaxHp() => word(0x039f52)
+function marluxiaIIEncounterId() => 0x9c
 function PlayerIsUsingSummon() => Delta(soraBattleState()) == 0x12 || Delta(soraBattleState()) >= 0x17 && Delta(soraBattleState()) <= 0x1b
 
 // Appears to affect which summon is used during Marluxia II (16-bit)
@@ -2065,22 +2032,12 @@ function PlayerIsUsingSummon() => Delta(soraBattleState()) == 0x12 || Delta(sora
 // 0x8d9c = Donald
 // 0x8db4 = Goofy
 function summonLastUsed() => word(0x03b26c)
-function DonaldOrGoofyIsActive() => summonLastUsed() == 0x8d9c || summonLastUsed() == 0x8db4
-    
-achievement(title = "Come Forth, Blue-Eyes White Dragon! [m]", points = 5,
+function DonaldOrGoofyIsActive() => summonLastUsed() == 0x8d9c || summonLastUsed() == 0x8db4 
+achievement(title = "Come Forth, Blue-Eyes White Dragon! [m]", points = 5, id = 160386, badge = "180245",
     description = "Finish off Marluxia's second phase with a summon.",
-    trigger = never(!IsInWorld("Castle Oblivion, Hall")) && never(battlefieldId() != 0x0C) && BattleStartedCheckpoint() && IsOnFloor(13) && IsInMainStory()
-        // We're not using EnemyWithSpecificAddressWasJustDefeated() because the battle pointer is set to NULL as soon as Marluxia's HP goes to zero.
-        // So we need to make sure that it has time to recognize his HP as zero.
-        && trigger_when(Delta(marluxiaIIHp()) > 0 && marluxiaIIHp() == 0)
-        && once(marluxiaIIHp() == marluxiaIIMaxHpValue)
+    trigger = DefeatedCheckpointedEncounterWithId(marluxiaIIEncounterId(), TRUE) && IsInMainStory()
         && trigger_when(PlayerIsUsingSummon())
         && trigger_when(!DonaldOrGoofyIsActive())
-        
-        // Different reset conditions, since we can't rely on just the battle pointer.
-        && never(playerHp() == 0)
-        && never(roomId() != 0xfd)
-        && never(!IsInBattle() && Delta(marluxiaIIMaxHp()) == marluxiaIIMaxHpValue && marluxiaIIMaxHp() != marluxiaIIMaxHpValue)
 )
 
 // Credits state (32-bit)
@@ -2185,99 +2142,47 @@ function mushu() => bit4(0x042306)
 maleficentDeckOffset = 0x74
 function reloadStateDuringRikuMaleficentBattle() => byte(0x03a628)
 function JustStartedReloadingDuringRikuMaleficentBattle() => Delta(reloadStateDuringRikuMaleficentBattle()) == 0 && reloadStateDuringRikuMaleficentBattle() == 1
-maleficentHpMapReverse = {
-    1: 0x12c
-}
-function maleficentHpReverse() => word(0x03ac14)
+achievement(
+    title = "The Depths of Darkness", description = "Defeat Maleficent in Reverse/Rebirth.", points = 5,
+    id = 15651, badge = "180388", published = "10/16/2014 6:27:09 AM", modified = "7/7/2020 2:26:33 AM",
+    trigger = DefeatedCheckpointedEncounterWithId(maleficentEncounterId(), FALSE) && IsInReverseRebirth()
+)
 
-achievement(title = "Double Dipping [m]", points = 10,
+achievement(title = "Double Dipping [m]", points = 10, id = 160387, badge = "180246",
     description = "Defeat Maleficent in Reverse/Rebirth without reloading more than once using your reload card.",
-    trigger = BossHPValueCheckpointIsSet(maleficentHpReverse(), maleficentHpMapReverse, "Hollow Bastion", 0x8) && IsInReverseRebirth()
-        && EnemyWithSpecificAddressWasJustDefeated(maleficentHpReverse(), TRUE) && never(!IsInBattle())
+    trigger = DefeatedCheckpointedEncounterWithId(maleficentEncounterId(), TRUE) && IsInReverseRebirth()
         && never(repeated(2, JustStartedReloadingDuringRikuMaleficentBattle()))
 )
 
+hpThreshold = 5
+function ansemIEncounterId() => 0xa6
 achievement(
-    title = "The Depths of Darkness", description = "Defeat Maleficent in Reverse/Rebirth.", points = 5,
-    id = 15651, badge = "15121", published = "10/16/2014 6:27:09 AM", modified = "7/7/2020 2:26:33 AM",
-    trigger = BossHPValueCheckpointIsSet(maleficentHpReverse(), maleficentHpMapReverse, "Hollow Bastion", 0x8) && IsInReverseRebirth()
-        && EnemyWithSpecificAddressWasJustDefeated(maleficentHpReverse(), FALSE) && never(!IsInBattle())
+    title = "The Seeker of Darkness", description = "Defeat Ansem on Floor B12.", points = 3,
+    id = 15652, badge = "180387", published = "10/16/2014 6:27:15 AM", modified = "7/7/2020 2:26:27 AM",
+    trigger = DefeatedCheckpointedEncounterWithId(ansemIEncounterId(), FALSE) && IsInReverseRebirth()
 )
 
-hpThreshold = 10
-function ansemHp() => rikuHp()
-function DefeatedAnsemOnFloorB12(useTrigger) => never(!IsInWorld("Castle Oblivion, Hall")) && never(battlefieldId() != 0x0C) && BattleStartedCheckpoint() && IsOnFloor(1)
-        && EnemyWithSpecificAddressWasJustDefeated(ansemHp(), useTrigger) && once(ansemHp() == 0x190) && IsInReverseRebirth()
-achievement(title = "Fighting Hearty [m]", points = 5,
-    description = "Defeat Ansem on Floor B12 without your HP being at more than " + hpThreshold + " below its maximum.",
-    trigger = DefeatedAnsemOnFloorB12(TRUE)
+achievement(title = "Fighting Hearty [m]", points = 5, id = 160388, badge = "180247",
+    description = "Defeat Ansem on Floor B12 without your HP ever being at more than " + hpThreshold + " below its maximum.",
+    trigger = DefeatedCheckpointedEncounterWithId(ansemIEncounterId(), TRUE) && IsInReverseRebirth()
         && never(rikuPlayerHp() < maxHp() - hpThreshold)
 )
 
 achievement(
-    title = "The Seeker of Darkness", description = "Defeat Ansem on Floor B12.", points = 3,
-    id = 15652, badge = "15104", published = "10/16/2014 6:27:15 AM", modified = "7/7/2020 2:26:27 AM",
-    trigger = DefeatedAnsemOnFloorB12(FALSE)
-)
-
-function jafarHp() => word(0x03abfc)
-function jafarMaxHp() => word(0x03abfe)
-function AlternativeNotInBattleCheck(maxHpMem, hpMap)
-{
-    trigger = always_true()
-    
-    for floor in hpMap
-    {
-        maxHpValue = hpMap[floor]
-        trigger = trigger && never(!IsInBattle() && Delta(maxHpMem) == maxHpValue && maxHpMem != maxHpValue)
-    }
-    
-    return trigger
-}
-
-function WasJafarJustDefeated(useTriggerWhen)
-{
-    finalTrigger = Delta(jafarHp()) > 0 && jafarHp() == 0
-    
-    if (useTriggerWhen == TRUE)
-    {
-        finalTrigger = trigger_when(finalTrigger)
-    }
-    
-    return // We're not using EnemyWithSpecificAddressWasJustDefeated() because the battle pointer is set to NULL as soon as Jafar's HP goes to zero.
-        // So we need to make sure that it has time to recognize his HP as zero.
-        finalTrigger
-        && BossHPValueCheckpointIsSet(jafarHp(), jafarHpMap, "Agrabah", 0x2)
-        
-        // Different reset conditions, since we can't rely on just the battle pointer.
-        && never(rikuPlayerHp() == 0)
-        && AlternativeNotInBattleCheck(jafarMaxHp(), jafarHpMap)
-}
-
-achievement(
     title = "The Depths of Treasure", description = "Defeat Jafar in Reverse/Rebirth.", points = 5,
-    id = 15653, badge = "15126", published = "10/16/2014 6:27:21 AM", modified = "7/7/2020 2:26:20 AM",
-    trigger = IsInReverseRebirth()
-        && WasJafarJustDefeated(FALSE)
+    id = 15653, badge = "180386", published = "10/16/2014 6:27:21 AM", modified = "7/7/2020 2:26:20 AM",
+    trigger = DefeatedCheckpointedEncounterWithId(jafarEncounterId(), FALSE) && IsInReverseRebirth()
 )
 
-achievement(title = "Wishproof [m]", description = "Defeat Jafar in Reverse/Rebirth without getting hit.", points = 10,
-    trigger = IsInReverseRebirth()
+achievement(title = "Wishproof [m]", description = "Defeat Jafar in Reverse/Rebirth without getting hit.", points = 10, id = 160389, badge = "180248",
+    trigger = DefeatedCheckpointedEncounterWithId(jafarEncounterId(), TRUE) && IsInReverseRebirth()
         && never(rikuPlayerHp() < Delta(rikuPlayerHp()))
-        && WasJafarJustDefeated(TRUE)
 )
-
-function parasiteCageReverseRebirthHp() => word(0x038ea0)
-
-function EnteredBattleWithParasiteCageInReverseRebirth() => BossHPValueCheckpointIsSet(parasiteCageReverseRebirthHp(), parasiteCageHpMap, "Monstro", 0x2) && never(!IsInBattle())
-
-function DefeatedParasiteCageInReverseRebirth(useTrigger) => EnteredBattleWithParasiteCageInReverseRebirth()
-    && EnemyWithSpecificAddressWasJustDefeated(parasiteCageReverseRebirthHp(), useTrigger)
 
 achievement(
     title = "The Depths of a Wish", description = "Defeat the Parasite Cage in Reverse/Rebirth.", points = 5,
-    id = 15654, badge = "15130", published = "10/16/2014 6:27:28 AM", modified = "7/7/2020 2:26:13 AM",
-    trigger = IsInReverseRebirth() && DefeatedParasiteCageInReverseRebirth(FALSE)
+    id = 15654, badge = "180385", published = "10/16/2014 6:27:28 AM", modified = "7/7/2020 2:26:13 AM",
+    trigger = DefeatedCheckpointedEncounterWithId(parasiteCageEncounterId(), FALSE) && IsInReverseRebirth()
 )
 
 function verticalPosition() => dword(playerBattlePointer() + 0x7cb0)
@@ -2287,61 +2192,44 @@ function IsOnGroundDuringParasiteCageFight()
     return verticalPosition() >= 0xfffff800 || verticalPosition() == 0x0
 }
 
-timeLimit = 60
-achievement(title = "The Floor Is Poison [m]", points = 25,
+timeLimit = 45
+achievement(title = "The Floor Is Poison [m]", points = 25, id = 160390, badge = "180249",
     description = "Defeat the Parasite Cage in Reverse/Rebirth without touching the ground for longer than " + SecondsToFormat(timeLimit) + ".",
-    trigger = IsInReverseRebirth() && DefeatedParasiteCageInReverseRebirth(TRUE)
+    trigger = DefeatedCheckpointedEncounterWithId(parasiteCageEncounterId(), TRUE) && IsInReverseRebirth()
         && never(repeated(SecondsToFrames(timeLimit), IsOnGroundDuringParasiteCageFight()))
-        && unless(IsPaused())
 )
 
 function currentDarkPoints() => word(0x03bfc8)
-function vexenReverseRebirthHp() => word(0x03a98c)
-
-function WasVexenDefeatedInReverseRebirth(useTrigger) => never(!IsInWorld("Castle Oblivion, Hall")) && never(battlefieldId() != 0x0C) && BattleStartedCheckpoint() && IsOnFloor(3)
-    && IsInReverseRebirth()
-        && EnemyWithSpecificAddressWasJustDefeated(vexenReverseRebirthHp(), useTrigger) && once(vexenReverseRebirthHp() == 0x460)
-
+function vexenReverseRebirthEncounterId() => 0xb0
 achievement(
     title = "In Search of Data", description = "Defeat Vexen in Reverse/Rebirth.", points = 3,
-    id = 15655, badge = "15144", published = "10/16/2014 6:27:34 AM", modified = "7/7/2020 2:26:08 AM",
-    trigger = WasVexenDefeatedInReverseRebirth(FALSE) && !VexenAutoLifeIsActive()
+    id = 15655, badge = "180384", published = "10/16/2014 6:27:34 AM", modified = "7/7/2020 2:26:08 AM",
+    trigger = DefeatedCheckpointedEncounterWithId(vexenReverseRebirthEncounterId(), FALSE) && IsInReverseRebirth()
 )
 
-achievement(title = "Endless Seething [m]", points = 10,
+achievement(title = "Endless Seething [m]", points = 10, id = 160391, badge = "180250",
     description = "Defeat Vexen in Reverse/Rebirth without ever leaving Dark Mode, if activated.",
-    trigger = WasVexenDefeatedInReverseRebirth(TRUE)
+    trigger = DefeatedCheckpointedEncounterWithId(vexenReverseRebirthEncounterId(), TRUE) && IsInReverseRebirth()
         && never(currentDarkPoints() == 0 && Delta(currentDarkPoints()) > 0)
-        && trigger_when(!VexenAutoLifeIsActive()) // The cheevo will trigger prematurely if Vexen's HP goes to zero when he has Auto-Life active, so we need to check for it.
 )
 
-function hookReverseRebirthHp() => word(0x03a9ec)
 function enemyCardsLeft() => byte(battlePointer() + 0x8856)
-
-function HookReverseRebirthBattleCheckpointReachedAndBattleWon(useTrigger) => BossHPValueCheckpointIsSet(hookReverseRebirthHp(), hookHpMap, "Never Land", 0x6)
-        && EnemyWithSpecificAddressWasJustDefeated(hookReverseRebirthHp(), useTrigger) && never(!IsInBattle())
-        && IsInReverseRebirth()
-
 achievement(
     title = "The Depths of Faith", description = "Defeat Hook in Reverse/Rebirth.", points = 5,
-    id = 15656, badge = "15145", published = "10/16/2014 6:27:38 AM", modified = "7/7/2020 2:26:03 AM",
-    trigger = HookReverseRebirthBattleCheckpointReachedAndBattleWon(FALSE)
+    id = 15656, badge = "180383", published = "10/16/2014 6:27:38 AM", modified = "7/7/2020 2:26:03 AM",
+    trigger = DefeatedCheckpointedEncounterWithId(hookEncounterId(), FALSE) && IsInReverseRebirth()
 )
 
-achievement(title = "Retired, Extremely Dangerous [m]", points = 10,
+achievement(title = "Retired, Extremely Dangerous [m]", points = 10, id = 160392, badge = "180251",
     description = "Defeat Hook in Reverse/Rebirth without using any enemy cards.",
-    trigger = HookReverseRebirthBattleCheckpointReachedAndBattleWon(TRUE) && never(enemyCardsLeft() < Delta(enemyCardsLeft()))
+    trigger = DefeatedCheckpointedEncounterWithId(hookEncounterId(), TRUE) && IsInReverseRebirth()
+        && never(enemyCardsLeft() < Delta(enemyCardsLeft()) && IsInBattle())
 )
-
-function guardArmorReverseRebirthHp() => word(0x03a32c)
-function GuardArmorWasDefeatedInReverseRebirth(useTrigger) => once(BossHPValueCheckpointIsSetForAnyFloor(guardArmorReverseRebirthHp(), 0xc8, "Traverse Town", 0x7))
-        && IsInReverseRebirth()
-        && EnemyWithSpecificAddressWasJustDefeated(guardArmorReverseRebirthHp(), useTrigger) && never(!IsInBattle())
 
 achievement(
     title = "The Depths of Worlds Lost", description = "Defeat the Guard Armor in Reverse/Rebirth.", points = 5,
-    id = 15657, badge = "15149", published = "10/16/2014 6:27:45 AM", modified = "7/7/2020 2:25:58 AM",
-    trigger = GuardArmorWasDefeatedInReverseRebirth(FALSE)
+    id = 15657, badge = "180382", published = "10/16/2014 6:27:45 AM", modified = "7/7/2020 2:25:58 AM",
+    trigger = DefeatedCheckpointedEncounterWithId(guardArmorEncounterId(), FALSE) && IsInReverseRebirth()
 )
 
 function AccumulatedGivenNumberOfDarkPoints(dpThreshold)
@@ -2359,22 +2247,18 @@ function AccumulatedGivenNumberOfDarkPoints(dpThreshold)
     return tally(dpThreshold, conditions)
 }
 
-dpLimit = 18
-achievement(title = "Purity [m]", points = 10,
+dpLimit = 16
+achievement(title = "Purity [m]", points = 10, id = 160393, badge = "180252",
     description = "Defeat the Guard Armor in Reverse/Rebirth without accumulating a total of " + dpLimit + " Dark Points over the course of the battle.",
-    trigger = GuardArmorWasDefeatedInReverseRebirth(TRUE)
+    trigger = DefeatedCheckpointedEncounterWithId(guardArmorEncounterId(), TRUE) && IsInReverseRebirth()
         && never(AccumulatedGivenNumberOfDarkPoints(dpLimit))
 )
 
-function rikuReplicaB8Hp() => word(0x03a80c)
-function WasRikuReplicaDefeatedOnFloorB8(useTrigger) => never(!IsInWorld("Castle Oblivion, Hall")) && never(battlefieldId() != 0x0C) && BattleStartedCheckpoint() && IsOnFloor(5)
-    && IsInReverseRebirth() && EnemyWithSpecificAddressWasJustDefeated(rikuReplicaB8Hp(), useTrigger) && once(rikuReplicaB8Hp() == 0x460)
-
-// todo: include this title change in a new revision proposal
+function rikuIReverseRebirthEncounterId() => 0xab
 achievement(
     title = "My Shadow", description = "Defeat the Riku replica on Floor B8.", points = 3,
-    id = 15658, badge = "15152", published = "10/16/2014 6:27:52 AM", modified = "7/7/2020 2:25:53 AM",
-    trigger = WasRikuReplicaDefeatedOnFloorB8(FALSE)
+    id = 15658, badge = "180381", published = "10/16/2014 6:27:52 AM", modified = "7/7/2020 2:25:53 AM",
+    trigger = DefeatedCheckpointedEncounterWithId(rikuIReverseRebirthEncounterId(), FALSE) && IsInReverseRebirth()
 )
 
 function TotalButtonsUsed(buttonThreshold)
@@ -2385,36 +2269,28 @@ function TotalButtonsUsed(buttonThreshold)
 }
 
 buttonLimit = 4
-achievement(title = "Technical Tightrope [m]", points = 10,
+achievement(title = "Technical Tightrope [m]", points = 25, id = 160394, badge = "180253",
     description = "Defeat the Riku replica on Floor B8 without using any more than " + buttonLimit + " different buttons.",
-    trigger = WasRikuReplicaDefeatedOnFloorB8(TRUE) && never(TotalButtonsUsed(buttonLimit + 1))
+    trigger = DefeatedCheckpointedEncounterWithId(rikuIReverseRebirthEncounterId(), TRUE) && IsInReverseRebirth()
+        && never(TotalButtonsUsed(buttonLimit + 1))
 )
-
-function ursulaReverseRebirthHp() => word(0x03ac10)
-function WasUrsulaDefeatedInReverseRebirth(useTrigger) => BossHPValueCheckpointIsSet(ursulaReverseRebirthHp(), ursulaHpMap, "Atlantica", 0x7)
-        && EnemyWithSpecificAddressWasJustDefeated(ursulaReverseRebirthHp(), useTrigger) && never(!IsInBattle())
-        && IsInReverseRebirth()
 
 achievement(
     title = "The Depths of Melodies", description = "Defeat Ursula in Reverse/Rebirth.", points = 5,
-    id = 15659, badge = "15153", published = "10/16/2014 6:27:57 AM", modified = "7/7/2020 2:25:48 AM",
-    trigger = WasUrsulaDefeatedInReverseRebirth(FALSE)
+    id = 15659, badge = "180380", published = "10/16/2014 6:27:57 AM", modified = "7/7/2020 2:25:48 AM",
+    trigger = DefeatedCheckpointedEncounterWithId(ursulaEncounterId(), FALSE) && IsInReverseRebirth()
 )
 
-achievement(title = "Medical Negligence [m]", points = 5,
+achievement(title = "Medical Negligence [m]", points = 5, id = 160395, badge = "180254",
     description = "Defeat Ursula in Reverse/Rebirth without healing.",
-    trigger = WasUrsulaDefeatedInReverseRebirth(TRUE) && never(rikuPlayerHp() > Delta(rikuPlayerHp()))
+    trigger = DefeatedCheckpointedEncounterWithId(ursulaEncounterId(), TRUE) && IsInReverseRebirth()
+        && never(rikuPlayerHp() > Delta(rikuPlayerHp()) && IsInBattle())
 )
-
-function oogieBoogieReverseRebirthHp() => word(0x03ac2c)
-function WasOogieBoogieDefeatedInReverseRebirth(useTrigger) => BossHPValueCheckpointIsSet(oogieBoogieReverseRebirthHp(), oogieBoogieHpMap, "Halloween Town", 0x4)
-        && EnemyWithSpecificAddressWasJustDefeated(oogieBoogieReverseRebirthHp(), useTrigger) && never(!IsInBattle())
-        && IsInReverseRebirth()
 
 achievement(
     title = "The Depths of Memory", description = "Defeat Oogie Boogie in Reverse/Rebirth.", points = 5,
-    id = 15660, badge = "15154", published = "10/16/2014 6:28:03 AM", modified = "7/7/2020 2:25:43 AM",
-    trigger = WasOogieBoogieDefeatedInReverseRebirth(FALSE)
+    id = 15660, badge = "180379", published = "10/16/2014 6:28:03 AM", modified = "7/7/2020 2:25:43 AM",
+    trigger = DefeatedCheckpointedEncounterWithId(oogieBoogieEncounterId(), FALSE) && IsInReverseRebirth()
 )
 
 function isReloadingDuringOogieBoogieReverseRebirthBattle() => byte(0x03a668) == 1 || IsUsingKingMickey() // King Mickey reloading, for some reason, counts as a card use, and we don't want that.
@@ -2423,131 +2299,108 @@ function oogieBoogieRegularCardsLeft() => word(0x03a650)
 function UsedCardInOogieBoogieBattle() => Delta(oogieBoogieRegularCardsLeft()) > oogieBoogieRegularCardsLeft()
     || Delta(oogieBoogieEnemyCardsLeft()) > oogieBoogieEnemyCardsLeft()
 cardLimit = 40
-achievement(title = "Underplay [m]", points = 10,
+achievement(title = "Underplay [m]", points = 10, id = 160396, badge = "180255",
     description = "Defeat Oogie Boogie in Reverse/Rebirth using only " + cardLimit + " cards or less.",
-    trigger = WasOogieBoogieDefeatedInReverseRebirth(TRUE)
-        && never(repeated(cardLimit + 1, UsedCardInOogieBoogieBattle()))
+    trigger = DefeatedCheckpointedEncounterWithId(oogieBoogieEncounterId(), TRUE) && IsInReverseRebirth()
+        && never(repeated(cardLimit + 1, UsedCardInOogieBoogieBattle() && Delta(battlePointer()) != 0))
         && unless(isReloadingDuringOogieBoogieReverseRebirthBattle())
 )
 
-function hadesReverseRebirthHp() => word(0x03a92c)
-function WasHadesDefeatedInReverseRebirth(useTrigger) => BossHPValueCheckpointIsSet(hadesReverseRebirthHp(), hadesHpMap, "Olympus Coliseum", 0x8)
-        && EnemyWithSpecificAddressWasJustDefeated(hadesReverseRebirthHp(), useTrigger) && never(!IsInBattle())
-        && IsInReverseRebirth()
-
 achievement(
     title = "The Depths of Heroism", description = "Defeat Hades in Reverse/Rebirth.", points = 5,
-    id = 15661, badge = "15159", published = "10/16/2014 6:28:08 AM", modified = "7/7/2020 2:25:39 AM",
-    trigger = WasHadesDefeatedInReverseRebirth(FALSE)
+    id = 15661, badge = "180378", published = "10/16/2014 6:28:08 AM", modified = "7/7/2020 2:25:39 AM",
+    trigger = DefeatedCheckpointedEncounterWithId(hadesEncounterId(), FALSE) && IsInReverseRebirth()
 )
 
-achievement(title = "Without Sin [m]", points = 25,
+achievement(title = "Without Sin [m]", points = 25, id = 160397, badge = "180256",
     description = "Defeat Hades in Reverse/Rebirth without activating Dark Mode.",
-    trigger = WasHadesDefeatedInReverseRebirth(TRUE)
+    trigger = DefeatedCheckpointedEncounterWithId(hadesEncounterId(), TRUE) && IsInReverseRebirth()
         && never(IsActivatingDarkMode())
 )
 
-function trickmasterReverseRebirthHp() => word(0x03a7b8)
-function WasTrickmasterDefeatedInReverseRebirth(useTrigger) => BossHPValueCheckpointIsSet(trickmasterReverseRebirthHp(), trickmasterHpMap, "Wonderland", 0x6)
-        && EnemyWithSpecificAddressWasJustDefeated(trickmasterReverseRebirthHp(), useTrigger) && never(!IsInBattle())
-        && IsInReverseRebirth()
-
 achievement(
     title = "The Depths of the Rabbit Hole", description = "Defeat the Trickmaster in Reverse/Rebirth.", points = 5,
-    id = 15662, badge = "15164", published = "10/16/2014 6:28:12 AM", modified = "7/7/2020 2:25:35 AM",
-    trigger = WasTrickmasterDefeatedInReverseRebirth(FALSE)
+    id = 15662, badge = "180377", published = "10/16/2014 6:28:12 AM", modified = "7/7/2020 2:25:35 AM",
+    trigger = DefeatedCheckpointedEncounterWithId(trickmasterEncounterId(), FALSE) && IsInReverseRebirth()
 )
 
-cardLimit = 32
+function graveyardCardLimit() => 32
 function isManuallyReloadingDuringTrickmasterBattleInReverseRebirth() => byte(0x039ba8)
-achievement(title = "From the Graveyard [m]", points = 10,
-    description = "Defeat the Trickmaster in Reverse/Rebirth without reloading more than " + cardLimit + " cards, except via Dark Mode or MM Miracle.",
-    trigger = WasTrickmasterDefeatedInReverseRebirth(TRUE)
-        && never(ReloadedNumberOfCards(cardLimit + 1, 0x81e0, 12))
+achievement(title = "From the Graveyard [m]", points = 10, id = 160398, badge = "180257",
+    description = "Defeat the Trickmaster in Reverse/Rebirth without reloading more than " + graveyardCardLimit() + " cards, except via Dark Mode or MM Miracle.",
+    trigger = DefeatedCheckpointedEncounterWithId(trickmasterEncounterId(), TRUE) && IsInReverseRebirth()
+        && never(ReloadedNumberOfCards(graveyardCardLimit() + 1, 0x81e0, 12))
         && unless(IsActivatingDarkMode() || IsUsingKingMickey())
 )
 
-function lexaeusHp() => vexenReverseRebirthHp()
-function WasLexaeusDefeated(useTrigger) => never(!IsInWorld("Castle Oblivion, Hall")) && never(battlefieldId() != 0x0C) && BattleStartedCheckpoint() && IsOnFloor(9)
-    && IsInReverseRebirth()
-    && EnemyWithSpecificAddressWasJustDefeated(lexaeusHp(), useTrigger) && once(lexaeusHp() == 0x690)
-
+function lexaeusEncounterId() => 0xa7
 achievement(
     title = "The Silent Hero", description = "Defeat Lexaeus.", points = 3,
-    id = 15663, badge = "15166", published = "10/16/2014 6:28:17 AM", modified = "7/7/2020 2:25:27 AM",
-    trigger = WasLexaeusDefeated(FALSE)
+    id = 15663, badge = "180376", published = "10/16/2014 6:28:17 AM", modified = "7/7/2020 2:25:27 AM",
+    trigger = DefeatedCheckpointedEncounterWithId(lexaeusEncounterId(), FALSE) && IsInReverseRebirth()
 )
 
 halfwayPoint = 0x11100 // This is technically further right than the center of the battlefield, but I figure the extra buffer space will feel better and be more intuitive.
-achievement(title = "Half the Floor Is Lava [m]", points = 10,
+achievement(title = "Half the Floor Is Lava [m]", points = 10, id = 160399, badge = "180258",
     description = "Defeat Lexaeus without crossing into the right half of the battlefield.",
-    trigger = WasLexaeusDefeated(TRUE) && never(rikuXCoord() >= halfwayPoint)
+    trigger = DefeatedCheckpointedEncounterWithId(lexaeusEncounterId(), TRUE) && IsInReverseRebirth()
+        && never(rikuXCoord() >= halfwayPoint)
 )
-
-function darksideReverseRebirthHp() => word(0x03aadc)
-function WasDarksideDefeatedInReverseRebirth(useTrigger) => never(!IsInWorld("Destiny Islands")) && never(battlefieldId() != 0x9) && BattleStartedCheckpoint() && IsOnFloor(10)
-    && IsInReverseRebirth()
-    && EnemyWithSpecificAddressWasJustDefeated(darksideReverseRebirthHp(), useTrigger) && once(darksideReverseRebirthHp() == 0x467)
 
 achievement(
     title = "The Depths of Paradise", description = "Defeat the Darkside in Reverse/Rebirth.", points = 5,
-    id = 15664, badge = "15174", published = "10/16/2014 6:28:24 AM", modified = "7/7/2020 2:25:23 AM",
-    trigger = WasDarksideDefeatedInReverseRebirth(FALSE)
+    id = 15664, badge = "180375", published = "10/16/2014 6:28:24 AM", modified = "7/7/2020 2:25:23 AM",
+    trigger = DefeatedCheckpointedEncounterWithId(darksideEncounterId(), FALSE) && IsInReverseRebirth()
 )
 
 darksideDeckSize = 19
-cardLimit = 70
-achievement(title = "Decked Out [m]", points = 25,
-    description = "Defeat the Darkside in Reverse/Rebirth without reloading more than " + cardLimit + " cards.",
-    trigger = WasDarksideDefeatedInReverseRebirth(TRUE)
-        && never(ReloadedNumberOfCards(cardLimit + 1, 0x81e0, darksideDeckSize))
+function deckedOutcardLimit() => 70
+achievement(title = "Decked Out [m]", points = 25, id = 160400, badge = "180259",
+    description = "Defeat the Darkside in Reverse/Rebirth without reloading more than " + deckedOutcardLimit() + " cards.",
+    trigger = DefeatedCheckpointedEncounterWithId(darksideEncounterId(), TRUE) && IsInReverseRebirth()
+        && never(ReloadedNumberOfCards(deckedOutcardLimit() + 1, 0x81e0, darksideDeckSize))
 )
 
-function rikuIIReverseRebirthHp() => rikuReplicaB8Hp()
-function WasRikuReplicaDefeatedOnFloorB2(useTrigger) => never(!IsInWorld("Twilight Town")) && roomId() == 0x2 && BattleStartedCheckpoint() && IsOnFloor(11)
-    && IsInReverseRebirth() && EnemyWithSpecificAddressWasJustDefeated(rikuIIReverseRebirthHp(), useTrigger) && once(rikuIIReverseRebirthHp() == 0x690)
-
+function rikuIIReverseRebirthEncounterId() => 0xac
 achievement(
     title = "The Depths of Dusk", description = "Defeat the Riku replica on Floor B2.", points = 5,
-    id = 15665, badge = "15178", published = "10/16/2014 6:28:32 AM", modified = "7/7/2020 2:25:18 AM",
-    trigger = WasRikuReplicaDefeatedOnFloorB2(FALSE)
+    id = 15665, badge = "180374", published = "10/16/2014 6:28:32 AM", modified = "7/7/2020 2:25:18 AM",
+    trigger = DefeatedCheckpointedEncounterWithId(rikuIIReverseRebirthEncounterId(), FALSE) && IsInReverseRebirth()
 )
 
-// todo: retest!
 function IsInDarkMode() => rikuBattleState() == 0x20
-achievement(title = "To the Shadow Realm with You! [m]", points = 5,
+achievement(title = "To the Shadow Realm with You! [m]", points = 5, id = 160401, badge = "180260",
     description = "Finish off the Riku replica on Floor B2 in Dark Mode.",
-    trigger = WasRikuReplicaDefeatedOnFloorB2(TRUE) && trigger_when(once(IsInDarkMode()))
+    trigger = DefeatedCheckpointedEncounterWithId(rikuIIReverseRebirthEncounterId(), TRUE) && IsInReverseRebirth()
+        && trigger_when(once(IsInDarkMode()))
         && disable_when(rikuBattleState() == 0x22, IsInDarkMode())
 )
 
-function ansemB1Hp() => word(0x03a9cc)
-function WasAnsemDefeatedOnFloorB1(useTrigger) => never(!IsInWorld("Castle Oblivion")) && roomId() == 0x2 && BattleStartedCheckpoint() && IsOnFloor(12)
-    && IsInReverseRebirth() && EnemyWithSpecificAddressWasJustDefeated(ansemB1Hp(), useTrigger) && once(ansemB1Hp() == 0x8c0)
+function ansemIIEncounterId() => 0xb1
+achievement(title = "Nullary Hand [m]", points = 10, id = 160402, badge = "180261",
+    description = "Defeat Ansem on Floor B1 without stocking cards.",
+    trigger = DefeatedCheckpointedEncounterWithId(ansemIIEncounterId(), TRUE) && IsInReverseRebirth()
+        && never(numberOfStockedCardsForPlayer() > 0)
+)
 
 achievement(
     title = "The Road to Dawn", description = "Escape Castle Oblivion in Reverse/Rebirth.", points = 25,
-    id = 15666, badge = "15179", published = "10/16/2014 6:28:40 AM", modified = "7/7/2020 2:25:14 AM",
+    id = 15666, badge = "180373", published = "10/16/2014 6:28:40 AM", modified = "7/7/2020 2:25:14 AM",
     trigger = never(!IsInWorld("Castle Oblivion")) && never(battlefieldId() != 0x0C) && IsOnFloor(12) && CreditsStarted() && IsInReverseRebirth()
-)
-
-achievement(title = "Nullary Hand [m]", points = 10,
-    description = "Defeat Ansem on Floor B1 without stocking cards.",
-    trigger = WasAnsemDefeatedOnFloorB1(TRUE) && never(numberOfStockedCardsForPlayer() > 0)
 )
 
 leaderboard(title = "Time Attack - Parasite Cage (Sora's Story)",
     description = "Defeat the Parasite Cage in Sora's story as quickly as you can.",
-    start = BossHPValueCheckpointIsSet(parasiteCageHp(), parasiteCageHpMap, "Monstro", 0x4) && never(!IsInBattle()),
-    cancel = !IsInBattle(),
-    submit = EnemyWithSpecificAddressWasJustDefeated(parasiteCageHp(), FALSE),
-    value = measured(FrameHasAdvanced() && !IsPaused())
+    start = PassedBattleCheckpointForEncounterId(parasiteCageEncounterId()) && IsInMainStory(),
+    cancel = encounterId() != parasiteCageEncounterId(),
+    submit = FinishedEncounter(FALSE),
+    value = measured(FrameHasAdvanced())
 )
 
 leaderboard(title = "The Floor Is Poison, Best Times",
     description = "Defeat the Parasite Cage in Reverse/Rebirth while touching the ground for as little time as possible.",
-	start = EnteredBattleWithParasiteCageInReverseRebirth(),
-	cancel = !IsInBattle(),
-	submit = EnemyWithSpecificAddressWasJustDefeated(parasiteCageReverseRebirthHp(), FALSE),
-	value = measured(IsOnGroundDuringParasiteCageFight() && unless(IsPaused()))
+	start = PassedBattleCheckpointForEncounterId(parasiteCageEncounterId()) && IsInReverseRebirth(),
+	cancel = encounterId() != parasiteCageEncounterId(),
+	submit = FinishedEncounter(FALSE),
+	value = measured(IsOnGroundDuringParasiteCageFight() && FrameHasAdvanced())
 )
