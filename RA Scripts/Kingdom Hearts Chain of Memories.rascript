@@ -2340,11 +2340,13 @@ achievement(
     trigger = DefeatedCheckpointedEncounterWithId(lexaeusEncounterId(), FALSE) && IsInReverseRebirth()
 )
 
+function IsSummoningKingMickey() => rikuBattleState() <= 0x1b && rikuBattleState() >= 0x18
 halfwayPoint = 0x11100 // This is technically further right than the center of the battlefield, but I figure the extra buffer space will feel better and be more intuitive.
 achievement(title = "Half the Floor Is Lava [m]", points = 10, id = 160399, badge = "180258",
     description = "Defeat Lexaeus without crossing into the right half of the battlefield.",
     trigger = DefeatedCheckpointedEncounterWithId(lexaeusEncounterId(), TRUE) && IsInReverseRebirth()
-        && never(rikuXCoord() >= halfwayPoint)
+        // Ignore Riku's coords if King Mickey is being summoned, as his summoning animation moves him over to the right.
+        && (always_false() || never(!IsSummoningKingMickey() && rikuXCoord() >= halfwayPoint))
 )
 
 achievement(
