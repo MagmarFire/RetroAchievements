@@ -6,13 +6,15 @@ function Delta(mem) => prev(mem)
 // $0C6DF9: Area ID (24-bit)
 function areaId() => tbyte(0x0C6DF8)
 
+function IsPaused() => byte(0x0e6911) == 1
+
 function loadedSaveSlot() => byte(0x0ea27c)
 
-function IsLoadingSaveFile() => Delta(loadedSaveSlot()) != loadedSaveSlot()
+function IsOnMainOrPauseMenu() => IsPaused() || IsInLocation("Menu")
 
 function IsInGame() => loadedSaveSlot() > 0 && loadedSaveSlot() < 4
 
-function IsAlwaysInGame() => never(loadedSaveSlot() == 0 || loadedSaveSlot() > 3 || IsLoadingSaveFile())
+function IsAlwaysInGame() => never(!IsInGame() || ChangedFile())
 
 function WasValueSet(mem, oldValue, newValue)
 {
@@ -136,6 +138,8 @@ function WasBitflagSetInGame(mem)
 // $7A325E: lums vert ancien 2
 // $7A325F: lums vert ancient suite
 
+function ChangedFile() => Delta(loadedSaveSlot()) != loadedSaveSlot()
+
 // This function allows the creation of achievements with built-in save protection that deal with a collection of values being set
 // throughout the game. The schemas for both parameters are as follows:
 //
@@ -162,7 +166,7 @@ function GenerateCheevoFromConditions(name, description, points, threshold, cond
         // This is the score when the game is loaded. If the loaded score is greater than or equal to the threshold--that is,
         // if the save file would satisfy enough conditions to trigger the achievement on load--this should trigger a
         // permanant pauselock to serve as save protection.
-        array_push(loadedCounts, once(condition["countsWhen"] && IsLoadingSaveFile()))
+        array_push(loadedCounts, once(condition["countsWhen"] && IsOnMainOrPauseMenu()))
 
         // We want both loaded and session counts here (that is, we don't care if we're loading a save file when these are tallied).
         // This way, loading a save doesn't invalidate the achievement outright if a player hasn't actually earned it yet.
@@ -174,7 +178,7 @@ function GenerateCheevoFromConditions(name, description, points, threshold, cond
     achievement(title = name, description = description, points = points, badge = badge, id = id,
         trigger = IsInGame() &&
             measured(tally(threshold, totalCounts)) && unless(tally(threshold, loadedCounts))
-            && never(resetAlt) && onlyAvailableWhen && (always_false() || IsAlwaysInGame())
+            && never(resetAlt) && onlyAvailableWhen && (always_false() || never(ChangedFile()))
     )
 }
 
