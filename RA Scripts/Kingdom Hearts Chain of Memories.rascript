@@ -230,8 +230,8 @@ function AlwaysInEncounterWithId(id) => never(encounterId() != id)
 
 function PassedBattleCheckpoint() => once(Delta(battlePointer()) == 0 && battlePointer() > 0)
 
-function PlayerIsAlwaysAliveInBattle() => never(IsInMainStory() && Delta(playerHp()) > 0 && playerHp() == 0 && battlePointer() > 0)
-    && never(IsInReverseRebirth() && Delta(rikuPlayerHp()) > 0 && rikuPlayerHp() == 0 && battlePointer() > 0)
+function PlayerIsAlwaysAliveInBattle() => never(IsInMainStory() && Delta(playerHp()) > 0 && playerHp() == 0 && battlePointer() > 0 && !AutoLifeIsActive())
+    && never(IsInReverseRebirth() && Delta(rikuPlayerHp()) > 0 && rikuPlayerHp() == 0 && battlePointer() > 0 && !AutoLifeIsActive())
     
 function PassedBattleCheckpointForEncounterId(id) => AlwaysInEncounterWithId(id) && PassedBattleCheckpoint()
     
@@ -1170,12 +1170,14 @@ function BossHPValueIsExpected(bossHp, bossHpMap, worldName, roomId)
 //
 //           +0x8f0c for enemy HP(?)
 function battlePointer() => tbyte(0x0423e4)
+function enemyCardAbilityActive() => word(battlePointer() + 0x80cc)
 function numberOfStockedCardsForPlayer() => byte(battlePointer() + 0x80de)
 function playerReloadCounter() => word(battlePointer() + 0x80fc)
 function enemyReloadCounter() => word(battlePointer() + 0x80fe)
 function cardValueInPlay() => byte(battlePointer() + 0x80c2)
 function IsManuallyReloading() => byte(battlePointer() + 0x8888) == 1
 function IsPaused() => byte(battlePointer() + 0x8ab0) == 1
+function AutoLifeIsActive() => enemyCardAbilityActive() == 0x1b
 
 // Data representing a card in combat is twelve bytes wide.
 // [Card ID (16-bit)][byte][byte][byte][byte][byte][0x1 = is stocked (8-bit)][0x1 = is consumed, such as by a reload (8-bit)][byte][0x1 = is used]
@@ -1791,7 +1793,7 @@ GenerateCheevoFromConditions({
     "description": "Acquire all card and sleight rewards from Pooh and his friends.",
     "points": 10,
     "id": 15592,
-    "badge": "14926",
+    "badge": "180405",
     "threshold": length(poohGiftConditions)
 }, poohGiftConditions, IsInWorld("the Hundred Acre Wood") && IsInMainStory())
 
