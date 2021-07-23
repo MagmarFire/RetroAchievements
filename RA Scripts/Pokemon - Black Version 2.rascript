@@ -346,33 +346,22 @@ function GymLeaderBattleStarted() => CreateHitTargetedAndNextChain([ Delta(music
 // This function assumes a zero-based index.
 function GetPokemonInBattleSlot(slotId)
 {
-    slotBaseAddr = pokemonBattleSlot1BaseAddr() + slotId * pokemonSlotOffset()
+    slotBaseAddr = tbyte(PlayerPokemonSlotAddress(slotId))
     return {
-        "id": word(slotBaseAddr),
-        "level": byte(slotBaseAddr + 12)
+        "id": word(slotBaseAddr + 0xc),
+        "level": byte(slotBaseAddr + 0x18)
     }
 }
 
-function AveragePartyLevelIsAtMostWhenGymLeaderBattleStarts(level, maxPartySize = 6)
+function PlayerPokemonSlotAddress(slotId) => playerSlot1PokemonPointerBaseAddr() + slotId * 4
+
+function PlayerPokemonSlotJustLoadedInGymBattle(slotId)
 {
-    trigger = always_false()
-    
-    for i in range(0, maxPartySize - 1)
-    {
-        totalLevel = 0
-        for j in range(0, i)
-        {
-            mon = GetPokemonInBattleSlot(j)
-            totalLevel = totalLevel + mon["level"]
-        }
-        
-        trigger = trigger || once(numberOfPokemonInPlayerParty() == i + 1 && totalLevel <= level * (i + 1) && GymLeaderBattleStarted())
-    }
-    
-    return trigger
+    slot = dword(PlayerPokemonSlotAddress(slotId))
+    return Delta(slot) == 0 && slot > 0x02000000 && slot < 0x02ffffff
 }
 
-function MaxPartyLevelIsAtMostWhenGymLeaderBattleStarts(level, GymLeaderBattleStartedCallback, maxPartySize = 6)
+function VictoriousWhenMaxPartyLevelIsAtMostWhenGymLeaderBattleStarts(level, maxPartySize)
 {
     trigger = always_false()
     
@@ -385,40 +374,45 @@ function MaxPartyLevelIsAtMostWhenGymLeaderBattleStarts(level, GymLeaderBattleSt
             subtrigger = subtrigger && mon["level"] <= level
         }
         
-        trigger = trigger || once(numberOfPokemonInPlayerParty() == i + 1 && subtrigger && GymLeaderBattleStartedCallback())
+        trigger = trigger || once(numberOfPokemonInPlayerParty() == i + 1 && subtrigger && PlayerPokemonSlotJustLoadedInGymBattle(i))
     }
     
-    return trigger
+    return trigger && trigger_when(GymLeaderVictoryMusicIsPlaying())
 }
 
-function HasAtLeastOneGivenPokemonInParty(allowedPokemon, BattleStartedCallback)
+function HasAtLeastOneGivenPokemonInParty(allowedPokemon, maxPartySize)
 {
     trigger = always_false()
     
-    for i in range(0, 5)
+    for i in range(0, maxPartySize - 1)
     {
-        subtrigger = always_false()
+        allowedPokemonWasFoundInSlot = always_false()
         for j in range(0, i)
         {
             mon = GetPokemonInBattleSlot(j)
             for allowedMon in allowedPokemon
             {
-                subtrigger = subtrigger || mon["id"] == allowedMon["number"]
+                allowedPokemonWasFoundInSlot = allowedPokemonWasFoundInSlot || mon["id"] == allowedMon["number"]
             }
         }
         
-        trigger = trigger || once(numberOfPokemonInPlayerParty() == i + 1 && subtrigger && BattleStartedCallback())
+        trigger = trigger || once(numberOfPokemonInPlayerParty() == i + 1 && allowedPokemonWasFoundInSlot && PlayerPokemonSlotJustLoadedInGymBattle(i))
     }
     
     return trigger
 }
 
+function playerSlot1PokemonPointerBaseAddr() => 0x2573ec
+function playerSlot1PokemonPointer() => dword(playerSlot1PokemonPointerBaseAddr())
+function GymLeaderBattleMusicIsPlaying() => musicId() == 0x46c
+function PlayerSlot1PokemonJustLoaded() => Delta(playerSlot1PokemonPointer()) == 0 && playerSlot1PokemonPointer() > 0x02000000 && playerSlot1PokemonPointer() < 0x02ffffff
+function PlayerSlot1PokemonJustLoadedInGymBattle() => PlayerSlot1PokemonJustLoaded() && GymLeaderBattleMusicIsPlaying()
+
 AnEvenFightBattleStartedCallback = GymLeaderBattleStarted
 achievement(title = "An Even Fight [m]", points = 10, badge = "00000",
     description = "Defeat Cheren with a party of at most two Pokemon with a max level of 10.",
-    trigger = MaxPartyLevelIsAtMostWhenGymLeaderBattleStarts(10, AnEvenFightBattleStartedCallback, 2) && once(AnEvenFightBattleStartedCallback() && numberOfPokemonInPlayerParty() <= 2)
-        && never(!IsInLocation("AspertiaGym")) && never(GymMusicIsPlaying())
-        && trigger_when(GymLeaderVictoryMusicIsPlaying())
+    trigger = VictoriousWhenMaxPartyLevelIsAtMostWhenGymLeaderBattleStarts(10, 2)
+        && never(!IsInLocation("AspertiaGym")) && never(GymMusicIsPlaying()) // Must be battling the Gym Leader while in the Aspertia Gym
 )
 
 function basicBadge() => bit0(0x2266e8)
@@ -442,16 +436,19 @@ achievement(title = "Hardcore Parkour", points = 5, badge = "00000",
         && never(!BButtonIsPressed()) && never(!DirectionIsPressed()) // Must always be sprinting and holding a direction
 )
 
-function playerSlot1PokemonPointer() => dword(0x2573ec)
-function PlayerSlot1PokemonJustLoaded() => Delta(playerSlot1PokemonPointer()) == 0 && playerSlot1PokemonPointer() > 0x02000000 && playerSlot1PokemonPointer() < 0x02ffffff
-function GymLeaderBattleMusicIsPlaying() => musicId() == 0x46c
 steelPokemon = GetPokemonByType("Steel")
+firePokemon = GetPokemonByType("Fire")
 function RoxieGymMusicIsPlaying() => musicId() == 0x44c
-function RoxieBattleStartedCallback() => CreateHitTargetedAndNextChain([ Delta(musicId()) == 0x44c, musicId() == 0, musicId() == 0x46c ])
 achievement(title = "Abandon the Forge [m]", points = 10, badge = "00000",
-    description = "Defeat Roxie with a party containing no Steel- or Fire-type Pokemon (max Level 16).",
-    trigger = MaxPartyLevelIsAtMostWhenGymLeaderBattleStarts(16, PlayerSlot1PokemonJustLoaded) && once(RoxieBattleStartedCallback())
-        && never(!IsInLocation("VirbankGym")) && never(RoxieGymMusicIsPlaying())
-        && trigger_when(GymLeaderVictoryMusicIsPlaying())
-        && never(HasAtLeastOneGivenPokemonInParty(steelPokemon, GymLeaderBattleMusicIsPlaying))
+    description = "Defeat Roxie with a party containing no Steel- or Fire-type Pokemon (max Level 15, max party of 3).",
+    trigger = VictoriousWhenMaxPartyLevelIsAtMostWhenGymLeaderBattleStarts(15, 3)
+        && never(!IsInLocation("VirbankGym")) && never(RoxieGymMusicIsPlaying()) // Must be battling the Gym Leader while in the Virbank Gym
+        && never(HasAtLeastOneGivenPokemonInParty(steelPokemon, 3))
+        && never(HasAtLeastOneGivenPokemonInParty(firePokemon, 3))
+)
+
+function toxicBadge() => bit1(0x2266e8)
+achievement(title = "Poison Everlasting", points = 5, badge = "00000",
+    description = "Obtain the Toxic Badge.",
+    trigger = WasBitflagSetInGame(toxicBadge())
 )
