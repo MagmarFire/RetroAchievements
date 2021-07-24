@@ -1595,11 +1595,11 @@ jafarHpMap = {
     6: 0x2e8
 }
 
-jumpLimit = 45
+function delicateSpringsJumpLimit() => 30
 function jafarEncounterId() => 0x95
-achievement(title = "Delicate Springs [m]", description = "Defeat Jafar in Sora's story without pressing B more than " + jumpLimit + " times.", points = 10,
+achievement(title = "Delicate Springs [m]", description = "Defeat Jafar in Sora's story without pressing B more than " + delicateSpringsJumpLimit() + " times.", points = 10,
     id = 160365, badge = "180224",
-    trigger = never(repeated(jumpLimit + 1, Delta(bIsPressed()) != bIsPressed() && bIsPressed() == 1))
+    trigger = never(repeated(delicateSpringsJumpLimit() + 1, Delta(bIsPressed()) != bIsPressed() && bIsPressed() == 1))
         && DefeatedCheckpointedEncounterWithId(jafarEncounterId(), TRUE) && FinishedEncounter(TRUE) && IsInMainStory()
 )
 
@@ -1624,7 +1624,7 @@ oogieBoogieHpMap = {
 
 function oogieBoogieEncounterId() => 0x9b
 achievement(
-    title = "Card Disadvantage [m]", points = 10, id = 160366, badge = "180225",
+    title = "Card Disadvantage [m]", points = 5, id = 160366, badge = "180225",
     description = "Defeat Oogie Boogie in Sora's story with a deck of only nine cards or less.",
     trigger = DefeatedCheckpointedEncounterWithId(oogieBoogieEncounterId(), TRUE)
         && CurrentDeckHasASizeOfAtMost(9) && IsInMainStory()
@@ -1810,11 +1810,11 @@ achievement(title = "Dark Leech [m]", points = 5, id = 160373, badge = "180232",
         && never(playerHp() > Delta(playerHp()) && IsInBattle())
 )
 
-theBendsTimeLimit = 45
+function theBendsTimeLimit() => 45
 function ursulaEncounterId() => 0x97
-function PlayerDrowned() => repeated(SecondsToFrames(theBendsTimeLimit), FrameHasAdvanced())
+function PlayerDrowned() => repeated(SecondsToFrames(theBendsTimeLimit()), FrameHasAdvanced())
 achievement(title = "The Bends [m]", points = 25, id = 160376, badge = "180235",
-    description = "Defeat Ursula in Sora's story without going more than " + theBendsTimeLimit + " seconds at a time without healing.",
+    description = "Defeat Ursula in Sora's story without going more than " + theBendsTimeLimit() + " seconds at a time without healing.",
     trigger = DefeatedNonCheckpointedEncounterWithId(ursulaEncounterId(), TRUE) && IsInMainStory()
         && unless(PlayerDrowned()) && never(playerHp() > Delta(playerHp()))
         && (
@@ -1845,13 +1845,6 @@ achievement(
     trigger = DefeatedCheckpointedEncounterWithId(rikuIIMainEncounterId(), FALSE) && IsInMainStory()
 )
 
-maleficentHpMap = {
-    7: 0x3b7,
-    8: 0x3f2,
-    9: 0x42c,
-    10: 0x467,
-}
-
 function maleficentEncounterId() => 0x99
 enemyCards = GetCardsByProperty("type", "Enemy")
 achievement(title = "Benevolence vs. Malevolence [m]", points = 10, id = 160375, badge = "180234",
@@ -1867,24 +1860,12 @@ achievement(
     trigger = WasBitflagSetInMainGame(hollowBastionStoryEntry()) && IsInMainStory()
 )
 
-hookHpMap = {
-    1: 0x190,
-    2: 0x1b7,
-    3: 0x1d3,
-    4: 0x205,
-    5: 0x22c,
-    6: 0x253,
-    7: 0x27a,
-    8: 0x2a1,
-    9: 0x2c8,
-    10: 0x2ef,
-}
-
 function hookEncounterId() => 0x9e
-achievement(title = "Amputated Hand [m]", points = 25, id = 160377, badge = "180236",
-    description = "Defeat Hook in Sora's story using a deck with a CP cost of 350 or less.",
+function amputatedHandCPLimit() => 400
+achievement(title = "Amputated Hand [m]", points = 50, id = 160377, badge = "180236",
+    description = "Defeat Hook in Sora's story using a deck with a CP cost of " + amputatedHandCPLimit() + " or less.",
     trigger = DefeatedCheckpointedEncounterWithId(hookEncounterId(), TRUE) && IsInMainStory()
-        && CurrentDeckHasACPCostOfAtMost(350)
+        && CurrentDeckHasACPCostOfAtMost(amputatedHandCPLimit())
 )
 
 function neverLandStoryEntry() => bit3(0x0422f5)
@@ -1922,9 +1903,10 @@ function VexenAutoLifeIsActive() => vexenEnemyCardEffect() == 0x1b
 function PlayerSlipped() => Delta(soraBattleState()) != soraBattleState() && soraBattleState() == 0x24
 function PlayerIsFrozen() => Delta(soraBattleState()) != soraBattleState() && soraBattleState() == 0x53
 achievement(title = "Sturdy Footing [m]", points = 10, id = 160379, badge = "180238",
-    description = "Defeat Vexen in Twilight Town without slipping on ice or getting frozen more than once.",
+    description = "Without any fire-based cards in your deck, defeat Vexen in Twilight Town without slipping on ice or getting frozen more than once (Deck 2 only).",
     trigger = DefeatedCheckpointedEncounterWithId(vexenIIEncounterId(), TRUE) && IsInMainStory()
-        && never(tally(2, [ PlayerSlipped(), PlayerIsFrozen() ]))
+        && never(tally(2, [ PlayerSlipped(), PlayerIsFrozen() ])) && currentDeck() == 1
+        && never(AnyCardsAreEquippedInDeck(fireCards, deck2BaseAddr(), 98, FALSE))
 )
 
 function rikuIIIEncounterId() => 0xa9
@@ -1946,7 +1928,7 @@ function darksideEncounterId() => 0x9a
 attackCards = GetCardsByProperty("type", "Attack")
 achievement(title = "Limited Pools [m]", points = 25, id = 160381, badge = "180240",
     description = "Defeat Darkside in Sora's story without equipping any item cards and without manually reloading more than five times (Deck 2 only).",
-    trigger = DefeatedCheckpointedEncounterWithId(darksideEncounterId(), TRUE) && IsInMainStory()
+    trigger = DefeatedCheckpointedEncounterWithId(darksideEncounterId(), TRUE) && IsInMainStory() && currentDeck() == 1
         && never(AnyCardsAreEquippedInDeck(itemCards, deck2BaseAddr(), 98, FALSE))
         && never(repeated(6, Delta(playerReloadCounter()) != 0xffff && playerReloadCounter() == 0xffff))
 )
