@@ -1595,11 +1595,11 @@ jafarHpMap = {
     6: 0x2e8
 }
 
-jumpLimit = 45
+function delicateSpringsJumpLimit() => 30
 function jafarEncounterId() => 0x95
-achievement(title = "Delicate Springs [m]", description = "Defeat Jafar in Sora's story without pressing B more than " + jumpLimit + " times.", points = 10,
+achievement(title = "Delicate Springs [m]", description = "Defeat Jafar in Sora's story without pressing B more than " + delicateSpringsJumpLimit() + " times.", points = 10,
     id = 160365, badge = "180224",
-    trigger = never(repeated(jumpLimit + 1, Delta(bIsPressed()) != bIsPressed() && bIsPressed() == 1))
+    trigger = never(repeated(delicateSpringsJumpLimit() + 1, Delta(bIsPressed()) != bIsPressed() && bIsPressed() == 1))
         && DefeatedCheckpointedEncounterWithId(jafarEncounterId(), TRUE) && FinishedEncounter(TRUE) && IsInMainStory()
 )
 
@@ -1624,7 +1624,7 @@ oogieBoogieHpMap = {
 
 function oogieBoogieEncounterId() => 0x9b
 achievement(
-    title = "Card Disadvantage [m]", points = 10, id = 160366, badge = "180225",
+    title = "Card Disadvantage [m]", points = 5, id = 160366, badge = "180225",
     description = "Defeat Oogie Boogie in Sora's story with a deck of only nine cards or less.",
     trigger = DefeatedCheckpointedEncounterWithId(oogieBoogieEncounterId(), TRUE)
         && CurrentDeckHasASizeOfAtMost(9) && IsInMainStory()
@@ -1810,11 +1810,11 @@ achievement(title = "Dark Leech [m]", points = 5, id = 160373, badge = "180232",
         && never(playerHp() > Delta(playerHp()) && IsInBattle())
 )
 
-theBendsTimeLimit = 45
+function theBendsTimeLimit() => 45
 function ursulaEncounterId() => 0x97
-function PlayerDrowned() => repeated(SecondsToFrames(theBendsTimeLimit), FrameHasAdvanced())
+function PlayerDrowned() => repeated(SecondsToFrames(theBendsTimeLimit()), FrameHasAdvanced())
 achievement(title = "The Bends [m]", points = 25, id = 160376, badge = "180235",
-    description = "Defeat Ursula in Sora's story without going more than " + theBendsTimeLimit + " seconds at a time without healing.",
+    description = "Defeat Ursula in Sora's story without going more than " + theBendsTimeLimit() + " seconds at a time without healing.",
     trigger = DefeatedNonCheckpointedEncounterWithId(ursulaEncounterId(), TRUE) && IsInMainStory()
         && unless(PlayerDrowned()) && never(playerHp() > Delta(playerHp()))
         && (
@@ -1845,13 +1845,6 @@ achievement(
     trigger = DefeatedCheckpointedEncounterWithId(rikuIIMainEncounterId(), FALSE) && IsInMainStory()
 )
 
-maleficentHpMap = {
-    7: 0x3b7,
-    8: 0x3f2,
-    9: 0x42c,
-    10: 0x467,
-}
-
 function maleficentEncounterId() => 0x99
 enemyCards = GetCardsByProperty("type", "Enemy")
 achievement(title = "Benevolence vs. Malevolence [m]", points = 10, id = 160375, badge = "180234",
@@ -1867,24 +1860,12 @@ achievement(
     trigger = WasBitflagSetInMainGame(hollowBastionStoryEntry()) && IsInMainStory()
 )
 
-hookHpMap = {
-    1: 0x190,
-    2: 0x1b7,
-    3: 0x1d3,
-    4: 0x205,
-    5: 0x22c,
-    6: 0x253,
-    7: 0x27a,
-    8: 0x2a1,
-    9: 0x2c8,
-    10: 0x2ef,
-}
-
 function hookEncounterId() => 0x9e
-achievement(title = "Amputated Hand [m]", points = 25, id = 160377, badge = "180236",
-    description = "Defeat Hook in Sora's story using a deck with a CP cost of 350 or less.",
+function amputatedHandCPLimit() => 400
+achievement(title = "Amputated Hand [m]", points = 50, id = 160377, badge = "180236",
+    description = "Defeat Hook in Sora's story using a deck with a CP cost of " + amputatedHandCPLimit() + " or less.",
     trigger = DefeatedCheckpointedEncounterWithId(hookEncounterId(), TRUE) && IsInMainStory()
-        && CurrentDeckHasACPCostOfAtMost(350)
+        && CurrentDeckHasACPCostOfAtMost(amputatedHandCPLimit())
 )
 
 function neverLandStoryEntry() => bit3(0x0422f5)
@@ -1904,7 +1885,7 @@ achievement(
 fireCards = GetCardsByProperty("element", "Fire")
 achievement(title = "Broken Furnace [m]", points = 5, id = 160378, badge = "180237",
     description = "Defeat Vexen on the tenth floor in Sora's story without equipping any cards that deal fire-based damage (Deck 2 only).",
-    trigger = DefeatedCheckpointedEncounterWithId(mainVexenIEncounterId(), TRUE) && IsInMainStory()
+    trigger = DefeatedCheckpointedEncounterWithId(mainVexenIEncounterId(), TRUE) && IsInMainStory() && currentDeck() == 1
         && never(AnyCardsAreEquippedInDeck(fireCards, deck2BaseAddr(), 98, FALSE))
 )
 
@@ -1922,9 +1903,10 @@ function VexenAutoLifeIsActive() => vexenEnemyCardEffect() == 0x1b
 function PlayerSlipped() => Delta(soraBattleState()) != soraBattleState() && soraBattleState() == 0x24
 function PlayerIsFrozen() => Delta(soraBattleState()) != soraBattleState() && soraBattleState() == 0x53
 achievement(title = "Sturdy Footing [m]", points = 10, id = 160379, badge = "180238",
-    description = "Defeat Vexen in Twilight Town without slipping on ice or getting frozen more than once.",
+    description = "Without any fire-based cards in your deck, defeat Vexen in Twilight Town without slipping on ice or getting frozen more than once (Deck 2 only).",
     trigger = DefeatedCheckpointedEncounterWithId(vexenIIEncounterId(), TRUE) && IsInMainStory()
-        && never(tally(2, [ PlayerSlipped(), PlayerIsFrozen() ]))
+        && never(tally(2, [ PlayerSlipped(), PlayerIsFrozen() ])) && currentDeck() == 1
+        && never(AnyCardsAreEquippedInDeck(fireCards, deck2BaseAddr(), 98, FALSE))
 )
 
 function rikuIIIEncounterId() => 0xa9
@@ -1946,7 +1928,7 @@ function darksideEncounterId() => 0x9a
 attackCards = GetCardsByProperty("type", "Attack")
 achievement(title = "Limited Pools [m]", points = 25, id = 160381, badge = "180240",
     description = "Defeat Darkside in Sora's story without equipping any item cards and without manually reloading more than five times (Deck 2 only).",
-    trigger = DefeatedCheckpointedEncounterWithId(darksideEncounterId(), TRUE) && IsInMainStory()
+    trigger = DefeatedCheckpointedEncounterWithId(darksideEncounterId(), TRUE) && IsInMainStory() && currentDeck() == 1
         && never(AnyCardsAreEquippedInDeck(itemCards, deck2BaseAddr(), 98, FALSE))
         && never(repeated(6, Delta(playerReloadCounter()) != 0xffff && playerReloadCounter() == 0xffff))
 )
@@ -1968,7 +1950,7 @@ for card in attackCards
     }
 }
 
-achievement(title = "Humble Roots [m]", points = 50, id = 160382, badge = "180241",
+achievement(title = "Humble Roots [m]", points = 10, id = 160382, badge = "180241",
     description = "Defeat Riku on the twelfth floor in Sora's story without equipping any attack cards that aren't the Kingdom Key (Deck 2 only).",
     trigger = DefeatedCheckpointedEncounterWithId(rikuIVEncounterId(), TRUE) && IsInMainStory()
         && never(AnyCardsAreEquippedInDeck(nonKingdomKeyAttackCards, deck2BaseAddr(), 98, FALSE)) && currentDeck() == 1
@@ -1987,10 +1969,10 @@ achievement(
     trigger = DefeatedCheckpointedEncounterWithId(larxeneIIEncounterId(), FALSE) && IsInMainStory()
 )
 
-achievement(title = "A Weighty Decision [m]", points = 10, id = 160383, badge = "180242",
-    description = "Defeat Larxene on the twelfth floor using a deck with a size of at most 20 cards and a CP cost of 450 or less.",
+achievement(title = "A Weighty Decision [m]", points = 50, id = 160383, badge = "180242",
+    description = "Defeat Larxene on the twelfth floor using a deck with a size of at most 22 cards and a CP cost of 495 or less.",
     trigger = DefeatedCheckpointedEncounterWithId(larxeneIIEncounterId(), TRUE) && IsInMainStory()
-        && CurrentDeckHasACPCostOfAtMost(450) && CurrentDeckHasASizeOfAtMost(20)
+        && CurrentDeckHasACPCostOfAtMost(495) && CurrentDeckHasASizeOfAtMost(22)
 )
 
 function axelIIEncounterId() => 0xad
@@ -2000,14 +1982,14 @@ achievement(
     trigger = DefeatedCheckpointedEncounterWithId(axelIIEncounterId(), FALSE) && IsInMainStory()
 )
 
-achievement(title = "Portfolio in Hand [m]", points = 10, id = 160384, badge = "180243",
+achievement(title = "Portfolio in Hand [m]", points = 5, id = 160384, badge = "180243",
     description = "Defeat Axel on the thirteenth floor using a deck containing at least 50 cards.",
     trigger = DefeatedCheckpointedEncounterWithId(axelIIEncounterId(), TRUE) && IsInMainStory()
         && CurrentDeckHasASizeOfAtLeast(50)
 )
 
 function marluxiaIEncounterId() => 0xa5
-achievement(title = "Critical Duelist [m]", points = 25, id = 160385, badge = "180244",
+achievement(title = "Critical Duelist [m]", points = 50, id = 160385, badge = "180244",
     description = "Defeat Marluxia's first phase using a deck with a CP cost of 275 or lower.",
     trigger = DefeatedCheckpointedEncounterWithId(marluxiaIEncounterId(), TRUE) && IsInMainStory()
         && CurrentDeckHasACPCostOfAtMost(275)
@@ -2151,9 +2133,9 @@ achievement(
 )
 
 achievement(title = "Double Dipping [m]", points = 10, id = 160387, badge = "180246",
-    description = "Defeat Maleficent in Reverse/Rebirth without reloading more than once using your reload card.",
+    description = "Defeat Maleficent in Reverse/Rebirth without reloading more than once using your reload card (10 AP max).",
     trigger = DefeatedCheckpointedEncounterWithId(maleficentEncounterId(), TRUE) && IsInReverseRebirth()
-        && never(repeated(2, JustStartedReloadingDuringRikuMaleficentBattle()))
+        && never(repeated(2, JustStartedReloadingDuringRikuMaleficentBattle())) && attackPoints() <= 10
 )
 
 hpThreshold = 5
@@ -2165,8 +2147,8 @@ achievement(
 )
 
 achievement(title = "Fighting Hearty [m]", points = 5, id = 160388, badge = "180247",
-    description = "Defeat Ansem on Floor B12 without your HP ever being at more than " + hpThreshold + " below its maximum.",
-    trigger = DefeatedCheckpointedEncounterWithId(ansemIEncounterId(), TRUE) && IsInReverseRebirth()
+    description = "Defeat Ansem on Floor B12 without your HP ever being at more than " + hpThreshold + " below its maximum (10 AP max).",
+    trigger = DefeatedCheckpointedEncounterWithId(ansemIEncounterId(), TRUE) && IsInReverseRebirth() && attackPoints() <= 10
         && never(rikuPlayerHp() < maxHp() - hpThreshold)
 )
 
@@ -2176,8 +2158,8 @@ achievement(
     trigger = DefeatedCheckpointedEncounterWithId(jafarEncounterId(), FALSE) && IsInReverseRebirth()
 )
 
-achievement(title = "Wishproof [m]", description = "Defeat Jafar in Reverse/Rebirth without getting hit.", points = 10, id = 160389, badge = "180248",
-    trigger = DefeatedCheckpointedEncounterWithId(jafarEncounterId(), TRUE) && IsInReverseRebirth()
+achievement(title = "Wishproof [m]", description = "Defeat Jafar in Reverse/Rebirth without getting hit (12 AP max).", points = 10, id = 160389, badge = "180248",
+    trigger = DefeatedCheckpointedEncounterWithId(jafarEncounterId(), TRUE) && IsInReverseRebirth() && attackPoints() <= 12
         && never(rikuPlayerHp() < Delta(rikuPlayerHp()))
 )
 
@@ -2196,8 +2178,8 @@ function IsOnGroundDuringParasiteCageFight()
 
 timeLimit = 45
 achievement(title = "The Floor Is Poison [m]", points = 25, id = 160390, badge = "180249",
-    description = "Defeat the Parasite Cage in Reverse/Rebirth without touching the ground for longer than " + SecondsToFormat(timeLimit) + ".",
-    trigger = DefeatedCheckpointedEncounterWithId(parasiteCageEncounterId(), TRUE) && IsInReverseRebirth()
+    description = "Defeat the Parasite Cage in Reverse/Rebirth without touching the ground for longer than " + SecondsToFormat(timeLimit) + " (12 AP max).",
+    trigger = DefeatedCheckpointedEncounterWithId(parasiteCageEncounterId(), TRUE) && IsInReverseRebirth() && attackPoints() <= 12
         && never(repeated(SecondsToFrames(timeLimit), IsOnGroundDuringParasiteCageFight()))
 )
 
@@ -2210,8 +2192,8 @@ achievement(
 )
 
 achievement(title = "Endless Seething [m]", points = 10, id = 160391, badge = "180250",
-    description = "Defeat Vexen in Reverse/Rebirth without ever leaving Dark Mode, if activated.",
-    trigger = DefeatedCheckpointedEncounterWithId(vexenReverseRebirthEncounterId(), TRUE) && IsInReverseRebirth()
+    description = "Defeat Vexen in Reverse/Rebirth without ever leaving Dark Mode, if activated (12 AP max).",
+    trigger = DefeatedCheckpointedEncounterWithId(vexenReverseRebirthEncounterId(), TRUE) && IsInReverseRebirth() && attackPoints() <= 12
         && never(currentDarkPoints() == 0 && Delta(currentDarkPoints()) > 0)
 )
 
@@ -2223,8 +2205,8 @@ achievement(
 )
 
 achievement(title = "Retired, Extremely Dangerous [m]", points = 10, id = 160392, badge = "180251",
-    description = "Defeat Hook in Reverse/Rebirth without using any enemy cards.",
-    trigger = DefeatedCheckpointedEncounterWithId(hookEncounterId(), TRUE) && IsInReverseRebirth()
+    description = "Defeat Hook in Reverse/Rebirth without using any enemy cards (12 AP max).",
+    trigger = DefeatedCheckpointedEncounterWithId(hookEncounterId(), TRUE) && IsInReverseRebirth() && attackPoints() <= 12
         && never(enemyCardsLeft() < Delta(enemyCardsLeft()) && IsInBattle())
 )
 
@@ -2251,8 +2233,8 @@ function AccumulatedGivenNumberOfDarkPoints(dpThreshold)
 
 dpLimit = 16
 achievement(title = "Purity [m]", points = 10, id = 160393, badge = "180252",
-    description = "Defeat the Guard Armor in Reverse/Rebirth without accumulating a total of " + dpLimit + " Dark Points over the course of the battle.",
-    trigger = DefeatedCheckpointedEncounterWithId(guardArmorEncounterId(), TRUE) && IsInReverseRebirth()
+    description = "Defeat the Guard Armor in Reverse/Rebirth without accumulating a total of " + dpLimit + " Dark Points over the course of the battle (12 AP max).",
+    trigger = DefeatedCheckpointedEncounterWithId(guardArmorEncounterId(), TRUE) && IsInReverseRebirth() && attackPoints() <= 12
         && never(AccumulatedGivenNumberOfDarkPoints(dpLimit))
 )
 
@@ -2272,8 +2254,8 @@ function TotalButtonsUsed(buttonThreshold)
 
 buttonLimit = 4
 achievement(title = "Technical Tightrope [m]", points = 25, id = 160394, badge = "180253",
-    description = "Defeat the Riku replica on Floor B8 without using any more than " + buttonLimit + " different buttons.",
-    trigger = DefeatedCheckpointedEncounterWithId(rikuIReverseRebirthEncounterId(), TRUE) && IsInReverseRebirth()
+    description = "Defeat the Riku replica on Floor B8 without using any more than " + buttonLimit + " different buttons (12 AP max).",
+    trigger = DefeatedCheckpointedEncounterWithId(rikuIReverseRebirthEncounterId(), TRUE) && IsInReverseRebirth() && attackPoints() <= 12
         && never(TotalButtonsUsed(buttonLimit + 1))
 )
 
@@ -2284,8 +2266,8 @@ achievement(
 )
 
 achievement(title = "Medical Negligence [m]", points = 5, id = 160395, badge = "180254",
-    description = "Defeat Ursula in Reverse/Rebirth without healing.",
-    trigger = DefeatedCheckpointedEncounterWithId(ursulaEncounterId(), TRUE) && IsInReverseRebirth()
+    description = "Defeat Ursula in Reverse/Rebirth without healing (12 AP max).",
+    trigger = DefeatedCheckpointedEncounterWithId(ursulaEncounterId(), TRUE) && IsInReverseRebirth() && attackPoints() <= 12
         && never(rikuPlayerHp() > Delta(rikuPlayerHp()) && IsInBattle())
 )
 
@@ -2302,8 +2284,8 @@ function UsedCardInOogieBoogieBattle() => Delta(oogieBoogieRegularCardsLeft()) >
     || Delta(oogieBoogieEnemyCardsLeft()) > oogieBoogieEnemyCardsLeft()
 cardLimit = 40
 achievement(title = "Underplay [m]", points = 10, id = 160396, badge = "180255",
-    description = "Defeat Oogie Boogie in Reverse/Rebirth using only " + cardLimit + " cards or less.",
-    trigger = DefeatedCheckpointedEncounterWithId(oogieBoogieEncounterId(), TRUE) && IsInReverseRebirth()
+    description = "Defeat Oogie Boogie in Reverse/Rebirth using only " + cardLimit + " cards or less (12 AP max).",
+    trigger = DefeatedCheckpointedEncounterWithId(oogieBoogieEncounterId(), TRUE) && IsInReverseRebirth() && attackPoints() <= 12
         && never(repeated(cardLimit + 1, UsedCardInOogieBoogieBattle() && Delta(battlePointer()) != 0))
         && unless(isReloadingDuringOogieBoogieReverseRebirthBattle())
 )
@@ -2315,8 +2297,8 @@ achievement(
 )
 
 achievement(title = "Without Sin [m]", points = 25, id = 160397, badge = "180256",
-    description = "Defeat Hades in Reverse/Rebirth without activating Dark Mode.",
-    trigger = DefeatedCheckpointedEncounterWithId(hadesEncounterId(), TRUE) && IsInReverseRebirth()
+    description = "Defeat Hades in Reverse/Rebirth without activating Dark Mode (12 AP max).",
+    trigger = DefeatedCheckpointedEncounterWithId(hadesEncounterId(), TRUE) && IsInReverseRebirth() && attackPoints() <= 12
         && never(IsActivatingDarkMode())
 )
 
@@ -2329,8 +2311,8 @@ achievement(
 function graveyardCardLimit() => 32
 function isManuallyReloadingDuringTrickmasterBattleInReverseRebirth() => byte(0x039ba8)
 achievement(title = "From the Graveyard [m]", points = 10, id = 160398, badge = "180257",
-    description = "Defeat the Trickmaster in Reverse/Rebirth without reloading more than " + graveyardCardLimit() + " cards, except via Dark Mode or MM Miracle.",
-    trigger = DefeatedCheckpointedEncounterWithId(trickmasterEncounterId(), TRUE) && IsInReverseRebirth()
+    description = "Defeat the Trickmaster in Reverse/Rebirth without reloading more than " + graveyardCardLimit() + " cards, except via Dark Mode or MM Miracle (12 AP max).",
+    trigger = DefeatedCheckpointedEncounterWithId(trickmasterEncounterId(), TRUE) && IsInReverseRebirth() && attackPoints() <= 12
         && never(ReloadedNumberOfCards(graveyardCardLimit() + 1, 0x81e0, 12))
         && unless(IsActivatingDarkMode() || IsUsingKingMickey())
 )
@@ -2345,8 +2327,8 @@ achievement(
 function IsSummoningKingMickey() => rikuBattleState() <= 0x1b && rikuBattleState() >= 0x18
 halfwayPoint = 0x11100 // This is technically further right than the center of the battlefield, but I figure the extra buffer space will feel better and be more intuitive.
 achievement(title = "Half the Floor Is Lava [m]", points = 10, id = 160399, badge = "180258",
-    description = "Defeat Lexaeus without crossing into the right half of the battlefield.",
-    trigger = DefeatedCheckpointedEncounterWithId(lexaeusEncounterId(), TRUE) && IsInReverseRebirth()
+    description = "Defeat Lexaeus without crossing into the right half of the battlefield (13 AP max).",
+    trigger = DefeatedCheckpointedEncounterWithId(lexaeusEncounterId(), TRUE) && IsInReverseRebirth() && attackPoints() <= 13
         // Ignore Riku's coords if King Mickey is being summoned, as his summoning animation moves him over to the right.
         && (always_false() || never(!IsSummoningKingMickey() && rikuXCoord() >= halfwayPoint))
 )
@@ -2360,8 +2342,8 @@ achievement(
 darksideDeckSize = 19
 function deckedOutcardLimit() => 70
 achievement(title = "Decked Out [m]", points = 25, id = 160400, badge = "180259",
-    description = "Defeat the Darkside in Reverse/Rebirth without reloading more than " + deckedOutcardLimit() + " cards.",
-    trigger = DefeatedCheckpointedEncounterWithId(darksideEncounterId(), TRUE) && IsInReverseRebirth()
+    description = "Defeat the Darkside in Reverse/Rebirth without reloading more than " + deckedOutcardLimit() + " cards (13 AP max).",
+    trigger = DefeatedCheckpointedEncounterWithId(darksideEncounterId(), TRUE) && IsInReverseRebirth() && attackPoints() <= 13
         && never(ReloadedNumberOfCards(deckedOutcardLimit() + 1, 0x81e0, darksideDeckSize))
 )
 
@@ -2374,16 +2356,16 @@ achievement(
 
 function IsInDarkMode() => rikuBattleState() == 0x20
 achievement(title = "To the Shadow Realm with You! [m]", points = 5, id = 160401, badge = "180260",
-    description = "Finish off the Riku replica on Floor B2 in Dark Mode.",
-    trigger = DefeatedCheckpointedEncounterWithId(rikuIIReverseRebirthEncounterId(), TRUE) && IsInReverseRebirth()
+    description = "Finish off the Riku replica on Floor B2 in Dark Mode (13 AP max).",
+    trigger = DefeatedCheckpointedEncounterWithId(rikuIIReverseRebirthEncounterId(), TRUE) && IsInReverseRebirth() && attackPoints() <= 13
         && trigger_when(once(IsInDarkMode()))
         && disable_when(rikuBattleState() == 0x22, IsInDarkMode())
 )
 
 function ansemIIEncounterId() => 0xb1
 achievement(title = "Nullary Hand [m]", points = 10, id = 160402, badge = "180261",
-    description = "Defeat Ansem on Floor B1 without stocking cards.",
-    trigger = DefeatedCheckpointedEncounterWithId(ansemIIEncounterId(), TRUE) && IsInReverseRebirth()
+    description = "Defeat Ansem on Floor B1 without stocking cards (15 AP max).",
+    trigger = DefeatedCheckpointedEncounterWithId(ansemIIEncounterId(), TRUE) && IsInReverseRebirth() && attackPoints() <= 15
         && never(numberOfStockedCardsForPlayer() > 0)
 )
 
