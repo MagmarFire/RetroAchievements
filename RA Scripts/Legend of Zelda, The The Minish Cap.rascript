@@ -645,7 +645,7 @@ achievement(
     title = "Bested Big Green Chuchu", description = "Defeat the Big Green Chuchu without taking damage", points = 10,
     id = 2078, badge = "02540", published = "8/5/2013 5:15:22 AM", modified = "8/5/2013 5:31:38 AM",
     trigger = once(byte(0x000BF4) == 0x48) && once(byte(0x000BF5) == 0x17) && never(byte(0x000BF5) == 0x0B) && 
-              word(0x000BF4) == 0x0049 && never(byte(0x00AAEA) < prev(byte(0x00AAEA))) && once(byte(0x00188D) == 0xFF) && byte(0x00188D) == 0x00 && 
+              word(0x000BF4) == 0x0049 && never(byte(0x00AAEA) < prev(byte(0x00AAEA))) && once(byte(0x00188D) == 0xFF) && trigger_when(byte(0x00188D) == 0x00) && 
               never(bit0(0x00AB42) < prev(bit0(0x00AB42))) && bit0(0x00AB42) == 0x1
 )
 
