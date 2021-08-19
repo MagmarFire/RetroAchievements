@@ -564,10 +564,16 @@ monsWeakToBug = MergeArrays(monsWeakToBug, GetPokemonByDualType("Dark", "", TRUE
 
 function BurghGymMusicIsPlaying() => musicId() == 0x44a
 function burghMaxParty() => 3
-function burghMaxLevel() => 19
+function burghMaxLevel() => 20
 achievement(title = "Bee Allergy [m]", points = 10, badge = "00000",
     description = "Defeat Burgh with a party consisting only of obtainable Pokemon that are weak to Bug-type moves (max Level " + burghMaxLevel() + ", max party of " + burghMaxParty() + ").",
     trigger = VictoriousWhenMaxPartyLevelIsAtMostWhenGymLeaderBattleStarts(burghMaxLevel(), burghMaxParty())
         && never(!IsInLocation("CasteliaGymLeader")) && never(BurghGymMusicIsPlaying()) // Must be battling the Gym Leader while in the Castelia Gym Leader's room
         && HasOnlyGivenPokemonInParty(monsWeakToBug, burghMaxParty())
+)
+
+function insectBadge() => bit2(0x2266e8)
+achievement(title = "Colorful Wings", points = 5, badge = "00000",
+    description = "Obtain the Insect Badge.",
+    trigger = WasBitflagSetInGame(insectBadge())
 )
