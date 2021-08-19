@@ -25,6 +25,9 @@
 
 function Delta(mem) => prev(mem)
 
+TRUE = 1
+FALSE = 0
+
 function Debug(string)
 {
     achievement(title = string + "", description = "", points = 0, trigger = always_false())
@@ -70,16 +73,7 @@ pokemon = {
 
 function GetPokemonByProperty(key, value)
 {
-    ret = []
-    for num in pokemon
-    {
-        mon = pokemon[num]
-        if (mon[key] == value)
-        {
-            array_push(ret, mon)
-        }
-    }
-    return ret
+    return GetPokemonByProperties([ { "key": key, "value": value }])
 }
 
 function GetPokemonByProperties(keyValues)
@@ -88,16 +82,24 @@ function GetPokemonByProperties(keyValues)
     for num in pokemon
     {
         mon = pokemon[num]
+        keyValuesMatched = 0
         for keyValue in keyValues
         {
             key = keyValue["key"]
             value = keyValue["value"]
             if (mon[key] == value)
             {
-                array_push(ret, mon)
+                keyValuesMatched = keyValuesMatched + 1
             }
         }
+        
+        if (keyValuesMatched == length(keyValues))
+        {
+            array_push(ret, mon)
+        }
     }
+    
+    return ret
 }
 
 function GetObtainablePokemon()
@@ -113,10 +115,22 @@ function GetPokemonByType(type)
     return ret
 }
 
-function GetPokemonByDualType(type1, type2)
+function GetPokemonByDualType(type1, type2, obtainableOnly = 0)
 {
     ret = []
-    ret = MergeArrays(ret, GetPokemonByProperty("type1", type1))
+    obtainable = { "key": "obtainable", "value": 1 }
+    if (obtainableOnly == TRUE)
+    {
+        ret = MergeArrays(ret, GetPokemonByProperties([ { "key": "type1", "value": type1 }, { "key": "type2", "value": type2 }, obtainable ]))
+        ret = MergeArrays(ret, GetPokemonByProperties([ { "key": "type1", "value": type2 }, { "key": "type2", "value": type1 }, obtainable ]))
+    }
+    else
+    {
+        ret = MergeArrays(ret, GetPokemonByProperties([ { "key": "type1", "value": type1 }, { "key": "type2", "value": type2 } ]))
+        ret = MergeArrays(ret, GetPokemonByProperties([ { "key": "type1", "value": type2 }, { "key": "type2", "value": type1 } ]))
+    }
+
+    return ret
 }
 
 function NumberOfPokemonCaught()
@@ -137,7 +151,7 @@ function TotalNumberOfObtainablePokemonInASingleSaveFile() => length(GetObtainab
 function areaId() => word(0x23b444)
 
 locations = {
-0x117: {  "id": 0x117, "key": "Entralink", "display": "the Entralink", "prep": "in", },0x118: {  "id": 0x118, "key": "EntreeForestEntrance", "display": "the Entree Forest", "prep": "in", },0x119: {  "id": 0x119, "key": "EntreeForestT2", "display": "the Entree Forest", "prep": "in", },0x11a: {  "id": 0x11a, "key": "EntreeForestTL", "display": "the Entree Forest", "prep": "in", },0x11b: {  "id": 0x11b, "key": "EntreeForestTR", "display": "the Entree Forest", "prep": "in", },0x11d: {  "id": 0x11d, "key": "EntreeForestT1", "display": "the Entree Forest", "prep": "in", },0x11f: {  "id": 0x11f, "key": "EntreeForestBL", "display": "the Entree Forest", "prep": "in", },0x120: {  "id": 0x120, "key": "EntreeForestBR", "display": "the Entree Forest", "prep": "in", },0x1ab: {  "id": 0x1ab, "key": "Aspertia", "display": "Aspertia City", "prep": "in", },0x1ac: {  "id": 0x1ac, "key": "PlayerHouse", "display": "home", "prep": "", },0x1ad: {  "id": 0x1ad, "key": "AspertiaHouseCL1F", "display": "Aspertia City", "prep": "in", },0x1ae: {  "id": 0x1ae, "key": "AspertiaHouseCL2F", "display": "Aspertia City", "prep": "in", },0x1af: {  "id": 0x1af, "key": "AspertiaHouseBL1F", "display": "Aspertia City", "prep": "in", },0x1b0: {  "id": 0x1b0, "key": "AspertiaHouseBL2F", "display": "Aspertia City", "prep": "in", },0x1b1: {  "id": 0x1b1, "key": "AspertiaHouseTR1F", "display": "Aspertia City", "prep": "in", },0x1b2: {  "id": 0x1b2, "key": "AspertiaHouseTR2F", "display": "Aspertia City", "prep": "in", },0x1b3: {  "id": 0x1b3, "key": "AspertiaPokemonCenter", "display": "the Aspertia City Pokemon Center", "prep": "at", },0x1b4: {  "id": 0x1b4, "key": "TrainerSchool", "display": "the Trainer School", "prep": "at", },0x1b5: {  "id": 0x1b5, "key": "Route19", "display": "Route 19", "prep": "on", },0x1b6: {  "id": 0x1b6, "key": "AspertiaGate", "display": "the Aspertia gate", "prep": "at", },0x1b7: {  "id": 0x1b7, "key": "Floccesy", "display": "Floccesy Town", "prep": "in", },0x1b8: {  "id": 0x1b8, "key": "FloccesyDojo", "display": "Floccesy Town", "prep": "in", },0x1b9: {  "id": 0x1b9, "key": "FloccesyHouseBC", "display": "Floccesy Town", "prep": "in", },0x1ba: {  "id": 0x1ba, "key": "FloccesyHouseBR", "display": "Floccesy Town", "prep": "in", },0x1bb: {  "id": 0x1bb, "key": "FloccesyPokemonCenter", "display": "the Floccesy Town Pokemon Center", "prep": "at", },0x1bc: {  "id": 0x1bc, "key": "Route20Ranch", "display": "Floccesy Ranch", "prep": "at", },0x1bd: {  "id": 0x1bd, "key": "FloccesyRanch", "display": "Floccesy Ranch", "prep": "at", },0x1be: {  "id": 0x1be, "key": "Route20", "display": "Route 20", "prep": "on", },0x1bf: {  "id": 0x1bf, "key": "Route20Gate", "display": "the Route 20 gate", "prep": "in", },0x1c0: {  "id": 0x1c0, "key": "Virbank", "display": "Virbank City", "prep": "in", },0x1c1: {  "id": 0x1c1, "key": "VirbankHouseTR", "display": "Virbank City", "prep": "in", },0x1c2: {  "id": 0x1c2, "key": "VirbankBusiness", "display": "the Virbank City port", "prep": "at", },0x1c6: {  "id": 0x1c6, "key": "VirbankPokemonCenter", "display": "the Virbank City Pokemon Center", "prep": "in", },0x1c8: {  "id": 0x1c8, "key": "VirbankComplex", "display": "the Virbank Complex", "prep": "in", },0x1e9: {  "id": 0x1e9, "key": "AspertiaGym", "display": "the Aspertia City Gym", "prep": "at", },0x1C7: {  "id": 0x1C7, "key": "VirbankGymEntrance", "display": "the Virbank City Gym", "prep": "at", },0x1f6: {  "id": 0x1f6, "key": "VirbankGym", "display": "the Virbank City Gym", "prep": "at", },0x1c9: {  "id": 0x1c9, "key": "VirbankComplexArea2", "display": "the Virbank Complex", "prep": "in", },0x1c5: {  "id": 0x1c5, "key": "VirbankGate", "display": "the Virbank gate", "prep": "at", },0x238: {  "id": 0x238, "key": "PokestarShoot", "display": "Pokestar Studios", "prep": "at", },0x237: {  "id": 0x237, "key": "PokestarStage", "display": "Pokestar Studios", "prep": "at", },0x236: {  "id": 0x236, "key": "PokestarHub", "display": "Pokestar Studios", "prep": "at", },0x23e: {  "id": 0x23e, "key": "PokestarTheatre", "display": "Pokestar Studios", "prep": "at", },0x1c4: {  "id": 0x1c4, "key": "SailingToCastelia", "display": "sailing to Castelia City", "prep": "", },0x26: {  "id": 0x26, "key": "LibertyPier", "display": "Castelia City", "prep": "in", },0x1c: {  "id": 0x1c, "key": "Castelia", "display": "Castelia City", "prep": "in", },0x2c: {  "id": 0x2c, "key": "BattleCompany1F", "display": "Castelia City", "prep": "in", },0x2d: {  "id": 0x2d, "key": "BattleCompany47F", "display": "Castelia City", "prep": "in", },0x2e: {  "id": 0x2e, "key": "BattleCompany55F", "display": "Castelia City", "prep": "in", },0x29: {  "id": 0x29, "key": "CasteliaPokemonCenter", "display": "the Castelia City Pokemon Center", "prep": "at", },0x28: {  "id": 0x28, "key": "CasteliaEasternDock", "display": "Castelia City", "prep": "in", },0x22: {  "id": 0x22, "key": "CasteliaStreet", "display": "Castelia City", "prep": "in", },0x2f: {  "id": 0x2f, "key": "GameFreakHQ1F", "display": "Game Freak HQ", "prep": "at", },0x30: {  "id": 0x30, "key": "GameFreakHQ22F", "display": "Game Freak HQ", "prep": "at", },0x36: {  "id": 0x36, "key": "CasteliaStreetLeftBuilding1F", "display": "Castelia City", "prep": "in", },0x37: {  "id": 0x37, "key": "CasteliaStreetLeftBuilding11F", "display": "Castelia City", "prep": "in", },0x21: {  "id": 0x21, "key": "ModeStreet", "display": "Castelia City", "prep": "in", },0x2b: {  "id": 0x2b, "key": "StudioCastelia", "display": "Castelia City", "prep": "in", },0x23: {  "id": 0x23, "key": "NarrowStreet", "display": "Castelia City", "prep": "in", },0x35: {  "id": 0x35, "key": "CafeSonata", "display": "Castelia City", "prep": "in", },0x2a: {  "id": 0x2a, "key": "PasserbyAnalytics", "display": "Castelia City", "prep": "in", },0x1f: {  "id": 0x1f, "key": "CasteliaWestStreet", "display": "Castelia City", "prep": "in", },0x38: {  "id": 0x38, "key": "NameRaterBuilding1F", "display": "Castelia City", "prep": "in", },0x39: {  "id": 0x39, "key": "MedalOffice", "display": "Castelia City", "prep": "in", },0x1ee: {  "id": 0x1ee, "key": "AmanitaOffice", "display": "Castelia City", "prep": "in", },0x1e: {  "id": 0x1e, "key": "CasteliaCentralPlaza", "display": "Castelia City", "prep": "in", },0x20: {  "id": 0x20, "key": "ModeStreet2", "display": "Castelia City", "prep": "in", },0x3c: {  "id": 0x3c, "key": "ModeStreetRightBuilding1F", "display": "Castelia City", "prep": "in", },0x3d: {  "id": 0x3d, "key": "ModeStreetRightBuilding47F", "display": "Castelia City", "prep": "in", },0x31: {  "id": 0x31, "key": "ModeStreetLeftBuilding1F", "display": "Castelia City", "prep": "in", },0x32: {  "id": 0x32, "key": "ModeStreetLeftBuilding11F", "display": "Castelia City", "prep": "in", },0x33: {  "id": 0x33, "key": "CasteliaGate", "display": "the Castelia Gate", "prep": "at", },0x1ef: {  "id": 0x1ef, "key": "CasteliaSewers1", "display": "the Castelia sewers", "prep": "in", }, 0x1f1: {  "id": 0x1f1, "key": "CasteliaSewers2", "display": "the Castelia sewers", "prep": "in", }, 0x1f3: {  "id": 0x1f3, "key": "CasteliaSewers3", "display": "the Castelia sewers", "prep": "in", }, 0x1f7: {  "id": 0x1f7, "key": "RelicPassage", "display": "Relic Passage", "prep": "going through", }, 
+0x117: {  "id": 0x117, "key": "Entralink", "display": "the Entralink", "prep": "in", },0x118: {  "id": 0x118, "key": "EntreeForestEntrance", "display": "the Entree Forest", "prep": "in", },0x119: {  "id": 0x119, "key": "EntreeForestT2", "display": "the Entree Forest", "prep": "in", },0x11a: {  "id": 0x11a, "key": "EntreeForestTL", "display": "the Entree Forest", "prep": "in", },0x11b: {  "id": 0x11b, "key": "EntreeForestTR", "display": "the Entree Forest", "prep": "in", },0x11d: {  "id": 0x11d, "key": "EntreeForestT1", "display": "the Entree Forest", "prep": "in", },0x11f: {  "id": 0x11f, "key": "EntreeForestBL", "display": "the Entree Forest", "prep": "in", },0x120: {  "id": 0x120, "key": "EntreeForestBR", "display": "the Entree Forest", "prep": "in", },0x1ab: {  "id": 0x1ab, "key": "Aspertia", "display": "Aspertia City", "prep": "in", },0x1ac: {  "id": 0x1ac, "key": "PlayerHouse", "display": "home", "prep": "", },0x1ad: {  "id": 0x1ad, "key": "AspertiaHouseCL1F", "display": "Aspertia City", "prep": "in", },0x1ae: {  "id": 0x1ae, "key": "AspertiaHouseCL2F", "display": "Aspertia City", "prep": "in", },0x1af: {  "id": 0x1af, "key": "AspertiaHouseBL1F", "display": "Aspertia City", "prep": "in", },0x1b0: {  "id": 0x1b0, "key": "AspertiaHouseBL2F", "display": "Aspertia City", "prep": "in", },0x1b1: {  "id": 0x1b1, "key": "AspertiaHouseTR1F", "display": "Aspertia City", "prep": "in", },0x1b2: {  "id": 0x1b2, "key": "AspertiaHouseTR2F", "display": "Aspertia City", "prep": "in", },0x1b3: {  "id": 0x1b3, "key": "AspertiaPokemonCenter", "display": "the Aspertia City Pokemon Center", "prep": "at", },0x1b4: {  "id": 0x1b4, "key": "TrainerSchool", "display": "the Trainer School", "prep": "at", },0x1b5: {  "id": 0x1b5, "key": "Route19", "display": "Route 19", "prep": "on", },0x1b6: {  "id": 0x1b6, "key": "AspertiaGate", "display": "the Aspertia gate", "prep": "at", },0x1b7: {  "id": 0x1b7, "key": "Floccesy", "display": "Floccesy Town", "prep": "in", },0x1b8: {  "id": 0x1b8, "key": "FloccesyDojo", "display": "Floccesy Town", "prep": "in", },0x1b9: {  "id": 0x1b9, "key": "FloccesyHouseBC", "display": "Floccesy Town", "prep": "in", },0x1ba: {  "id": 0x1ba, "key": "FloccesyHouseBR", "display": "Floccesy Town", "prep": "in", },0x1bb: {  "id": 0x1bb, "key": "FloccesyPokemonCenter", "display": "the Floccesy Town Pokemon Center", "prep": "at", },0x1bc: {  "id": 0x1bc, "key": "Route20Ranch", "display": "Floccesy Ranch", "prep": "at", },0x1bd: {  "id": 0x1bd, "key": "FloccesyRanch", "display": "Floccesy Ranch", "prep": "at", },0x1be: {  "id": 0x1be, "key": "Route20", "display": "Route 20", "prep": "on", },0x1bf: {  "id": 0x1bf, "key": "Route20Gate", "display": "the Route 20 gate", "prep": "in", },0x1c0: {  "id": 0x1c0, "key": "Virbank", "display": "Virbank City", "prep": "in", },0x1c1: {  "id": 0x1c1, "key": "VirbankHouseTR", "display": "Virbank City", "prep": "in", },0x1c2: {  "id": 0x1c2, "key": "VirbankBusiness", "display": "the Virbank City port", "prep": "at", },0x1c6: {  "id": 0x1c6, "key": "VirbankPokemonCenter", "display": "the Virbank City Pokemon Center", "prep": "in", },0x1c8: {  "id": 0x1c8, "key": "VirbankComplex", "display": "the Virbank Complex", "prep": "in", },0x1e9: {  "id": 0x1e9, "key": "AspertiaGym", "display": "the Aspertia City Gym", "prep": "at", },0x1C7: {  "id": 0x1C7, "key": "VirbankGymEntrance", "display": "the Virbank City Gym", "prep": "at", },0x1f6: {  "id": 0x1f6, "key": "VirbankGym", "display": "the Virbank City Gym", "prep": "at", },0x1c9: {  "id": 0x1c9, "key": "VirbankComplexArea2", "display": "the Virbank Complex", "prep": "in", },0x1c5: {  "id": 0x1c5, "key": "VirbankGate", "display": "the Virbank gate", "prep": "at", },0x238: {  "id": 0x238, "key": "PokestarShoot", "display": "Pokestar Studios", "prep": "at", },0x237: {  "id": 0x237, "key": "PokestarStage", "display": "Pokestar Studios", "prep": "at", },0x236: {  "id": 0x236, "key": "PokestarHub", "display": "Pokestar Studios", "prep": "at", },0x23e: {  "id": 0x23e, "key": "PokestarTheatre", "display": "Pokestar Studios", "prep": "at", },0x1c4: {  "id": 0x1c4, "key": "SailingToCastelia", "display": "sailing to Castelia City", "prep": "", },0x26: {  "id": 0x26, "key": "LibertyPier", "display": "Castelia City", "prep": "in", },0x1c: {  "id": 0x1c, "key": "Castelia", "display": "Castelia City", "prep": "in", },0x2c: {  "id": 0x2c, "key": "BattleCompany1F", "display": "Castelia City", "prep": "in", },0x2d: {  "id": 0x2d, "key": "BattleCompany47F", "display": "Castelia City", "prep": "in", },0x2e: {  "id": 0x2e, "key": "BattleCompany55F", "display": "Castelia City", "prep": "in", },0x29: {  "id": 0x29, "key": "CasteliaPokemonCenter", "display": "the Castelia City Pokemon Center", "prep": "at", },0x28: {  "id": 0x28, "key": "CasteliaEasternDock", "display": "Castelia City", "prep": "in", },0x22: {  "id": 0x22, "key": "CasteliaStreet", "display": "Castelia City", "prep": "in", },0x2f: {  "id": 0x2f, "key": "GameFreakHQ1F", "display": "Game Freak HQ", "prep": "at", },0x30: {  "id": 0x30, "key": "GameFreakHQ22F", "display": "Game Freak HQ", "prep": "at", },0x36: {  "id": 0x36, "key": "CasteliaStreetLeftBuilding1F", "display": "Castelia City", "prep": "in", },0x37: {  "id": 0x37, "key": "CasteliaStreetLeftBuilding11F", "display": "Castelia City", "prep": "in", },0x21: {  "id": 0x21, "key": "ModeStreet", "display": "Castelia City", "prep": "in", },0x2b: {  "id": 0x2b, "key": "StudioCastelia", "display": "Castelia City", "prep": "in", },0x23: {  "id": 0x23, "key": "NarrowStreet", "display": "Castelia City", "prep": "in", },0x35: {  "id": 0x35, "key": "CafeSonata", "display": "Castelia City", "prep": "in", },0x2a: {  "id": 0x2a, "key": "PasserbyAnalytics", "display": "Castelia City", "prep": "in", },0x1f: {  "id": 0x1f, "key": "CasteliaWestStreet", "display": "Castelia City", "prep": "in", },0x38: {  "id": 0x38, "key": "NameRaterBuilding1F", "display": "Castelia City", "prep": "in", },0x39: {  "id": 0x39, "key": "MedalOffice", "display": "Castelia City", "prep": "in", },0x1ee: {  "id": 0x1ee, "key": "AmanitaOffice", "display": "Castelia City", "prep": "in", },0x1e: {  "id": 0x1e, "key": "CasteliaCentralPlaza", "display": "Castelia City", "prep": "in", },0x20: {  "id": 0x20, "key": "ModeStreet2", "display": "Castelia City", "prep": "in", },0x3c: {  "id": 0x3c, "key": "ModeStreetRightBuilding1F", "display": "Castelia City", "prep": "in", },0x3d: {  "id": 0x3d, "key": "ModeStreetRightBuilding47F", "display": "Castelia City", "prep": "in", },0x31: {  "id": 0x31, "key": "ModeStreetLeftBuilding1F", "display": "Castelia City", "prep": "in", },0x32: {  "id": 0x32, "key": "ModeStreetLeftBuilding11F", "display": "Castelia City", "prep": "in", },0x33: {  "id": 0x33, "key": "CasteliaGate", "display": "the Castelia Gate", "prep": "at", },0x1ef: {  "id": 0x1ef, "key": "CasteliaSewers1", "display": "the Castelia sewers", "prep": "in", }, 0x1f1: {  "id": 0x1f1, "key": "CasteliaSewers2", "display": "the Castelia sewers", "prep": "in", }, 0x1f3: {  "id": 0x1f3, "key": "CasteliaSewers3", "display": "the Castelia sewers", "prep": "in", }, 0x1f7: {  "id": 0x1f7, "key": "RelicPassage", "display": "Relic Passage", "prep": "going through", }, 0x1d: {  "id": 0x1d, "key": "CasteliaGym", "display": "the Castelia City Gym", "prep": "in", }, 0x1e8: {  "id": 0x1e8, "key": "CasteliaGymLeader", "display": "the Castelia City Gym", "prep": "in", },
 }
 
 function GetLocationByKey(key)
@@ -440,6 +454,28 @@ function HasAtLeastOneGivenPokemonInParty(allowedPokemon, maxPartySize)
     return trigger
 }
 
+function HasOnlyGivenPokemonInParty(allowedPokemon, maxPartySize)
+{
+    trigger = always_false()
+    
+    for i in range(0, maxPartySize - 1)
+    {
+        allowedPokemonWasFoundInSlot = always_false()
+        for j in range(0, i)
+        {
+            mon = GetPokemonInBattleSlot(j)
+            for allowedMon in allowedPokemon
+            {
+                allowedPokemonWasFoundInSlot = allowedPokemonWasFoundInSlot || mon["id"] == allowedMon["number"]
+            }
+        }
+        
+        trigger = trigger || once(numberOfPokemonInPlayerParty() == i + 1 && allowedPokemonWasFoundInSlot && PlayerPokemonSlotJustLoadedInGymBattle(i))
+    }
+    
+    return trigger
+}
+
 function playerSlot1PokemonPointerBaseAddr() => 0x2573ec
 function playerSlot1PokemonPointer() => dword(playerSlot1PokemonPointerBaseAddr())
 function GymLeaderBattleMusicIsPlaying() => musicId() == 0x46c
@@ -503,11 +539,35 @@ achievement(title = "The Hunt Is Afoot", points = 1, badge = "00000",
 )
 
 
-groundRockPokemon = GetPokemonByType("Rock", "Ground")
+monsWeakToBug = []
+monsWeakToBug = MergeArrays(monsWeakToBug, GetPokemonByDualType("Bug", "Grass", TRUE))
+monsWeakToBug = MergeArrays(monsWeakToBug, GetPokemonByDualType("Rock", "Dark", TRUE))
+monsWeakToBug = MergeArrays(monsWeakToBug, GetPokemonByDualType("Grass", "Psychic", TRUE))
+monsWeakToBug = MergeArrays(monsWeakToBug, GetPokemonByDualType("Grass", "Ice", TRUE))
+monsWeakToBug = MergeArrays(monsWeakToBug, GetPokemonByDualType("Grass", "Dark", TRUE))
+monsWeakToBug = MergeArrays(monsWeakToBug, GetPokemonByDualType("Ice", "Dark", TRUE))
+monsWeakToBug = MergeArrays(monsWeakToBug, GetPokemonByDualType("Dragon", "Dark", TRUE))
+monsWeakToBug = MergeArrays(monsWeakToBug, GetPokemonByDualType("Ground", "Grass", TRUE))
+monsWeakToBug = MergeArrays(monsWeakToBug, GetPokemonByDualType("Rock", "Psychic", TRUE))
+monsWeakToBug = MergeArrays(monsWeakToBug, GetPokemonByDualType("Normal", "Grass", TRUE))
+monsWeakToBug = MergeArrays(monsWeakToBug, GetPokemonByDualType("Ground", "Psychic", TRUE))
+monsWeakToBug = MergeArrays(monsWeakToBug, GetPokemonByDualType("Ground", "Dark", TRUE))
+monsWeakToBug = MergeArrays(monsWeakToBug, GetPokemonByDualType("Psychic", "Ice", TRUE))
+monsWeakToBug = MergeArrays(monsWeakToBug, GetPokemonByDualType("Water", "Psychic", TRUE))
+monsWeakToBug = MergeArrays(monsWeakToBug, GetPokemonByDualType("Water", "Dark", TRUE))
+monsWeakToBug = MergeArrays(monsWeakToBug, GetPokemonByDualType("Rock", "Grass", TRUE))
+monsWeakToBug = MergeArrays(monsWeakToBug, GetPokemonByDualType("Water", "Grass", TRUE))
+monsWeakToBug = MergeArrays(monsWeakToBug, GetPokemonByDualType("Normal", "Psychic", TRUE))
+monsWeakToBug = MergeArrays(monsWeakToBug, GetPokemonByDualType("Grass", "", TRUE))
+monsWeakToBug = MergeArrays(monsWeakToBug, GetPokemonByDualType("Psychic", "", TRUE))
+monsWeakToBug = MergeArrays(monsWeakToBug, GetPokemonByDualType("Dark", "", TRUE))
+
+function BurghGymMusicIsPlaying() => musicId() == 0x44a
+function burghMaxParty() => 3
+function burghMaxLevel() => 19
 achievement(title = "Bee Allergy [m]", points = 10, badge = "00000",
-    description = "Defeat Burgh with a party consisting of only Pokemon that are weak to Bug- or Grass-type moves (max Level 19, max party of 4).",
-    trigger = VictoriousWhenMaxPartyLevelIsAtMostWhenGymLeaderBattleStarts(19, 4)
+    description = "Defeat Burgh with a party consisting only of obtainable Pokemon that are weak to Bug-type moves (max Level " + burghMaxLevel() + ", max party of " + burghMaxParty() + ").",
+    trigger = VictoriousWhenMaxPartyLevelIsAtMostWhenGymLeaderBattleStarts(burghMaxLevel(), burghMaxParty())
         && never(!IsInLocation("CasteliaGymLeader")) && never(BurghGymMusicIsPlaying()) // Must be battling the Gym Leader while in the Castelia Gym Leader's room
-        && never(HasAtLeastOneGivenPokemonInParty(steelPokemon, 4))
-        && never(HasAtLeastOneGivenPokemonInParty(firePokemon, 4))
+        && HasOnlyGivenPokemonInParty(monsWeakToBug, burghMaxParty())
 )
