@@ -76,3 +76,8 @@ function CreateHitTargetedAndNextChain(permutation)
     
     return trigger
 }
+
+function Debug(string)
+{
+	achievement(title = string, description = "", points = 0, trigger = always_false())
+}
