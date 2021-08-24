@@ -1123,7 +1123,7 @@ achievement(
 )
 
 achievement(
-    title = "Bested Vaati", description = "Defeat Vaati without taking damage", points = 50,
+    title = "Bested Vaati", description = "Defeat Vaati without taking damage", points = 100,
     id = 2313, badge = "155853", published = "8/19/2013 11:38:00 PM", modified = "1/30/2021 2:31:20 PM",
     trigger = once(word(0x000BF4) == 1672) && once(byte(0x00ADC3) == 96) && once(byte(0x00ADC3) == 97) && 
               once(byte(0x00ADC3) == 105) && once(byte(0x00ADC3) == 107) && once(byte(0x00ADC3) == 111) && byte(0x00ADC3) == 239 && 
