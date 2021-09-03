@@ -1,7 +1,22 @@
 // Kingdom Hearts Birth by Sleep
 // #ID = 3556
 
+function True() => 1
+function False() => 0
+
 function Delta(mem) => prev(mem)
+
+function SecondsToFormat(value)
+{
+    leadingZero = ""
+    if (value % 60 < 10)
+    {
+        leadingZero = "0"
+    }
+    return value / 60 + ":" + leadingZero + value % 60
+}
+
+function SecondsToFrames(seconds) => seconds * 60
 
 // $B47AC0: World ID
 function worldId() => byte(0xB47AC0)
@@ -49,7 +64,9 @@ function slot4CommandIndex() => word(0x1F2B92E)
 // $1F2B934: Index of the command equipped in Slot 5 (16-bit)
 function slot5CommandIndex() => word(0x1F2B934)
 
-function Level() => 0
+function level() => byte(0x1f19b11)
+
+function currentCharacter() => byte(0xb5a4bc)
 
 // $1F35F80: Floods defeated (16-bit)
 // $1F35F82: Scrappers defeated (16-bit)
@@ -186,6 +203,19 @@ function WasInLocation(name)
     return Delta(areaId()) == area["areaId"] && Delta(worldId()) == area["worldId"]
 }
 
+function Terra() => 3
+function Ventus() => 1
+function Aqua() => 2
+
+function CharacterIdToNames()
+{
+    return {
+        Terra(): "Terra",
+        Aqua(): "Aqua",
+        Ventus(): "Ventus"
+    }
+}
+
 function GetAreaRPLookup(worldId)
 {
     ret = {}
@@ -200,11 +230,15 @@ function GetAreaRPLookup(worldId)
     return ret
 }
 
+function playTime() => dword(0x1f19880)
+
 for world in worlds
 {
-    rich_presence_conditional_display(worldId() == world, worlds[world] + ": {0} | Level -1",
-        rich_presence_lookup("Areas" + world, areaId(), GetAreaRPLookup(world))//,
-        //rich_presence_value("Level", Level(), "VALUE")
+    rich_presence_conditional_display(worldId() == world, "{0}, Level {1} | " + worlds[world] + ": {2} | Play time: {3}",
+        rich_presence_lookup("Characters", currentCharacter(), CharacterIdToNames()),
+        rich_presence_value("Level", level(), "VALUE"),
+        rich_presence_lookup("Areas" + world, areaId(), GetAreaRPLookup(world)),
+        rich_presence_value("Play Time", playTime(), "SECS")
     )
 }
 
@@ -213,4 +247,66 @@ rich_presence_display("Somewhere in the World...")
 achievement(title = "The Final Stargaze", points = 1,
     description = "Complete the prologue.",
     trigger = WasInLocation("DepartureSummitNight") && IsInLocation("MysteriousChamber")
+)
+
+function characterFieldPointer() => tbyte(0xb5a4b0)
+function hp() => word(characterFieldPointer() + 0xdc0 + 0x1000000)
+
+function CheckpointPassedForCharacters(checkpointLogic, allowedCharacters, deferFor = 0)
+{
+    returnedLogic = checkpointLogic
+    characterIsAllowed = always_false()
+    
+    for character in allowedCharacters
+    {
+        characterIsAllowed = characterIsAllowed || currentCharacter() == character
+    }
+
+    return repeated(deferFor, once(returnedLogic && characterIsAllowed))
+}
+
+// charactersToTrigger: a dictionary of character IDs to trigger logic; each logical statement will only apply if the player is controlling a specific character
+function TriggerConditionsMetForCharacters(charactersToTriggerLogic, useTrigger = 0)
+{
+    triggerMet = always_false()
+    for id in charactersToTriggerLogic
+    {
+        characterLogicIsMet = charactersToTriggerLogic[id]
+        
+        if (useTrigger == True())
+        {
+            characterLogicIsMet = trigger_when(characterLogicIsMet)
+        }
+        
+        triggerMet = triggerMet || characterLogicIsMet && currentCharacter() == id
+    }
+    
+    return triggerMet
+}
+
+function IsInBattle() => byte(0xb5a4b4) == 1
+function HUDAndAttacksDisabled() => bit5(0xb5a4b5) == 1
+function GameOverTriggered() => IsInBattle() && HUDAndAttacksDisabled() && hp() == 0 && characterFieldPointer() != 0
+function IsPausing() => always_false()
+function metronome() => byte(0xbb7b0c)
+function FrameAdvanced() => Delta(metronome()) != metronome()
+
+function informationBarState() => byte(0x1f3d760)
+function InformationBarPoppedUpOnce() => once(Delta(informationBarState()) == 0 && informationBarState() == 1)
+function criticalImpactState() => byte(0x1f2accc)
+function LearnedCriticalImpact() => criticalImpactState() == 5 && Delta(criticalImpactState()) == 0
+
+function HitBallToPassTestDeferment() => 491
+function HitBallToPassTestTimeLimit() => 60
+function HitBallToPassTestTotalTime() => HitBallToPassTestDeferment() + SecondsToFrames(HitBallToPassTestTimeLimit())
+function HitBallToPassTestCheckpointReached() => CheckpointPassedForCharacters(InformationBarPoppedUpOnce()
+    && IsInLocation("DepartureGreatHall"), [ Terra(), Ventus(), Aqua() ], HitBallToPassTestDeferment())
+
+achievement(title = "Hit Ball to Pass Test [m]", points = 5,
+    description = "Complete the first phase of the Mark of Mastery exam within " + SecondsToFormat(HitBallToPassTestTimeLimit()) + ".",
+    trigger = HitBallToPassTestCheckpointReached() && never(repeated(HitBallToPassTestTotalTime(), HitBallToPassTestCheckpointReached()))
+        && TriggerConditionsMetForCharacters({
+            Terra(): LearnedCriticalImpact()
+        }, True())
+        && unless(IsPausing()) && never(GameOverTriggered())
 )

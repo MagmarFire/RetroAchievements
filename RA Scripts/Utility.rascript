@@ -241,3 +241,13 @@ function GenerateCheevoFromBits(name, description, points, threshold, addresses,
 }
 
 // END OF BITFLAG AGGREGATION REGION
+
+function SecondsToFormat(value)
+{
+    leadingZero = ""
+    if (value % 60 < 10)
+    {
+        leadingZero = "0"
+    }
+    return value / 60 + ":" + leadingZero + value % 60
+}
