@@ -253,6 +253,9 @@ achievement(title = "The Final Stargaze", points = 1,
 
 function characterFieldPointer() => tbyte(0xb5a4b0)
 function hp() => word(characterFieldPointer() + 0xdc0 + 0x1000000)
+function characterState() => word(characterFieldPointer() + 0xc50 + 0x1000000)
+
+function EnteredAttackState() => Delta(characterState()) != 0x10 && characterState() == 0x10
 
 function CheckpointPassedForCharacters(checkpointLogic, allowedCharacters, deferFor = 0)
 {
@@ -297,12 +300,8 @@ function InformationBarPoppedUpOnce() => once(Delta(informationBarState()) == 0 
 function criticalImpactState() => byte(0x1f2accc)
 function LearnedCriticalImpact() => criticalImpactState() == 5 && Delta(criticalImpactState()) == 0
 
-function MarkOfMasteryDeferment() => 491
-function MarkOfMasteryTimeLimit() => 60
-function MarkOfMasteryTotalTime() => MarkOfMasteryDeferment() + SecondsToFrames(MarkOfMasteryTimeLimit())
 function MarkOfMasteryCheckpointReached() => CheckpointPassedForCharacters(InformationBarPoppedUpOnce()
-    && IsInLocation("DepartureGreatHall"), [ Terra(), Ventus(), Aqua() ],
-    MarkOfMasteryDeferment()
+    && IsInLocation("DepartureGreatHall"), [ Terra(), Ventus(), Aqua() ]
 )
     
 function TriggerConditionsMetForMarkOfMastery() =>
@@ -310,9 +309,9 @@ function TriggerConditionsMetForMarkOfMastery() =>
         Terra(): LearnedCriticalImpact()
     }, True())
 
-achievement(title = "Hit Ball to Pass Test [m]", points = 5,
-    description = "Complete the first phase of the Mark of Mastery exam within " + SecondsToFormat(MarkOfMasteryTimeLimit()) + ".",
-    trigger = MarkOfMasteryCheckpointReached() && never(repeated(MarkOfMasteryTotalTime(), MarkOfMasteryCheckpointReached()))
+achievement(title = "Hit Ball to Pass Test [m]", points = 3,
+    description = "Complete the first phase of the Mark of Mastery using only one attack or fewer.",
+    trigger = MarkOfMasteryCheckpointReached() && never(repeated(2, EnteredAttackState()))
         && TriggerConditionsMetForMarkOfMastery()
         && unless(IsPausing()) && never(GameOverTriggered())
 )
