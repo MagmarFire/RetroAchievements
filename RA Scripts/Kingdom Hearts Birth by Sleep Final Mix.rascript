@@ -24,6 +24,8 @@ function worldId() => byte(0xB47AC0)
 // $B47AC1: Room ID
 function areaId() => byte(0xB47AC1)
 
+function systemTimer() => dword(0x1f25ee0)
+
 // $1F2914A: First slot of the key item inventory (16-bit)
 //           
 //           Each value contains a key item ID. 0x0 when no item is in the slot.
@@ -288,25 +290,36 @@ function IsInBattle() => byte(0xb5a4b4) == 1
 function HUDAndAttacksDisabled() => bit5(0xb5a4b5) == 1
 function GameOverTriggered() => IsInBattle() && HUDAndAttacksDisabled() && hp() == 0 && characterFieldPointer() != 0
 function IsPausing() => always_false()
-function metronome() => byte(0xbb7b0c)
-function FrameAdvanced() => Delta(metronome()) != metronome()
+function FrameAdvanced() => Delta(systemTimer()) != systemTimer()
 
 function informationBarState() => byte(0x1f3d760)
 function InformationBarPoppedUpOnce() => once(Delta(informationBarState()) == 0 && informationBarState() == 1)
 function criticalImpactState() => byte(0x1f2accc)
 function LearnedCriticalImpact() => criticalImpactState() == 5 && Delta(criticalImpactState()) == 0
 
-function HitBallToPassTestDeferment() => 491
-function HitBallToPassTestTimeLimit() => 60
-function HitBallToPassTestTotalTime() => HitBallToPassTestDeferment() + SecondsToFrames(HitBallToPassTestTimeLimit())
-function HitBallToPassTestCheckpointReached() => CheckpointPassedForCharacters(InformationBarPoppedUpOnce()
-    && IsInLocation("DepartureGreatHall"), [ Terra(), Ventus(), Aqua() ], HitBallToPassTestDeferment())
+function MarkOfMasteryDeferment() => 491
+function MarkOfMasteryTimeLimit() => 60
+function MarkOfMasteryTotalTime() => MarkOfMasteryDeferment() + SecondsToFrames(MarkOfMasteryTimeLimit())
+function MarkOfMasteryCheckpointReached() => CheckpointPassedForCharacters(InformationBarPoppedUpOnce()
+    && IsInLocation("DepartureGreatHall"), [ Terra(), Ventus(), Aqua() ],
+    MarkOfMasteryDeferment()
+)
+    
+function TriggerConditionsMetForMarkOfMastery() =>
+    TriggerConditionsMetForCharacters({
+        Terra(): LearnedCriticalImpact()
+    }, True())
 
 achievement(title = "Hit Ball to Pass Test [m]", points = 5,
-    description = "Complete the first phase of the Mark of Mastery exam within " + SecondsToFormat(HitBallToPassTestTimeLimit()) + ".",
-    trigger = HitBallToPassTestCheckpointReached() && never(repeated(HitBallToPassTestTotalTime(), HitBallToPassTestCheckpointReached()))
-        && TriggerConditionsMetForCharacters({
-            Terra(): LearnedCriticalImpact()
-        }, True())
+    description = "Complete the first phase of the Mark of Mastery exam within " + SecondsToFormat(MarkOfMasteryTimeLimit()) + ".",
+    trigger = MarkOfMasteryCheckpointReached() && never(repeated(MarkOfMasteryTotalTime(), MarkOfMasteryCheckpointReached()))
+        && TriggerConditionsMetForMarkOfMastery()
         && unless(IsPausing()) && never(GameOverTriggered())
+)
+
+leaderboard(title = "Mark of Mastery Exam", description = "Destroy the orbs of light as quickly as you can.",
+    start = MarkOfMasteryCheckpointReached(),
+    cancel = GameOverTriggered(),
+    submit = TriggerConditionsMetForMarkOfMastery(),
+    value = measured(FrameAdvanced()) * 2
 )
