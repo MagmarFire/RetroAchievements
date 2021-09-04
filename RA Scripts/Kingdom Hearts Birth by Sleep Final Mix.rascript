@@ -26,6 +26,28 @@ function areaId() => byte(0xB47AC1)
 
 function systemTimer() => dword(0x1f25ee0)
 
+function IsAlwaysInGame() => never(IsInLocation("Title"))
+
+function WasValueSet(mem, oldValue, newValue)
+{
+    return once(IsValueJustSet(mem, oldValue, newValue))
+}
+
+function IsValueJustSet(mem, oldValue, newValue)
+{
+    return Delta(mem) == oldValue && mem == newValue
+}
+
+function WasValueSetInGame(mem, oldValue, newValue)
+{
+    return IsAlwaysInGame() && WasValueSet(mem, oldValue, newValue)
+}
+
+function WasBitflagSetInGame(mem)
+{
+    return WasValueSetInGame(mem, 0, 1)
+}
+
 // $1F2914A: First slot of the key item inventory (16-bit)
 //           
 //           Each value contains a key item ID. 0x0 when no item is in the slot.
@@ -69,6 +91,28 @@ function slot5CommandIndex() => word(0x1F2B934)
 function level() => byte(0x1f19b11)
 
 function currentCharacter() => byte(0xb5a4bc)
+
+function difficulty() => byte(0x1f25f01)
+
+function IsAtLeastOnDifficulty(value)
+{
+    if (value == "Beginner")
+    {
+        return IsOnBeginnerMode()
+    }
+    else if (value == "Standard")
+    {
+        return difficulty() >= 0x1
+    }
+    else if (value == "Proud")
+    {
+        return difficulty() >= 0x2
+    }
+    else if (value == "Critical")
+    {
+        return difficulty() >= 0x3
+    }
+}
 
 // $1F35F80: Floods defeated (16-bit)
 // $1F35F82: Scrappers defeated (16-bit)
@@ -209,6 +253,10 @@ function Terra() => 3
 function Ventus() => 1
 function Aqua() => 2
 
+function TerraOnly() => [ Terra() ]
+function VentusOnly() => [ Ventus() ]
+function AquaOnly() => [ Aqua() ]
+
 function CharacterIdToNames()
 {
     return {
@@ -256,6 +304,7 @@ function hp() => word(characterFieldPointer() + 0xdc0 + 0x1000000)
 function characterState() => word(characterFieldPointer() + 0xc50 + 0x1000000)
 
 function EnteredAttackState() => Delta(characterState()) != 0x10 && characterState() == 0x10
+function IsUsingFinisher() => characterState() == 0x14
 
 function CheckpointPassedForCharacters(checkpointLogic, allowedCharacters, deferFor = 0)
 {
@@ -267,7 +316,7 @@ function CheckpointPassedForCharacters(checkpointLogic, allowedCharacters, defer
         characterIsAllowed = characterIsAllowed || currentCharacter() == character
     }
 
-    return repeated(deferFor, once(returnedLogic && characterIsAllowed))
+    return repeated(deferFor, once(returnedLogic && characterIsAllowed)) && never(GameOverTriggered())
 }
 
 // charactersToTrigger: a dictionary of character IDs to trigger logic; each logical statement will only apply if the player is controlling a specific character
@@ -286,7 +335,7 @@ function TriggerConditionsMetForCharacters(charactersToTriggerLogic, useTrigger 
         triggerMet = triggerMet || characterLogicIsMet && currentCharacter() == id
     }
     
-    return triggerMet
+    return triggerMet 
 }
 
 function IsInBattle() => byte(0xb5a4b4) == 1
@@ -313,7 +362,26 @@ achievement(title = "Hit Ball to Pass Test [m]", points = 3,
     description = "Complete the first phase of the Mark of Mastery using only one attack or fewer.",
     trigger = MarkOfMasteryCheckpointReached() && never(repeated(2, EnteredAttackState()))
         && TriggerConditionsMetForMarkOfMastery()
-        && unless(IsPausing()) && never(GameOverTriggered())
+)
+
+function diamondDustState() => byte(0x1f2acd0)
+function LearnedDiamondDust() => diamondDustState() == 5 && Delta(diamondDustState()) == 0
+
+achievement(title = "Snap the Spindle [m]", points = 10,
+    description = "Finish off the Wheel Master with a finisher (Proud Mode or higher; Level 1).",
+    trigger = CheckpointPassedForCharacters(InformationBarPoppedUpOnce()
+        && IsInLocation("EnchantedAudience2"), TerraOnly()
+    ) && TriggerConditionsMetForCharacters({
+        Terra(): LearnedDiamondDust()
+    }, True()) && trigger_when(IsUsingFinisher())
+    && IsAtLeastOnDifficulty("Proud") && level() == 1
+    && never(!IsInLocation("EnchantedAudience2"))
+)
+
+function enchantedDominionStoryEntry() => bit0(0x1f28485)
+achievement(title = "The First of Seven", points = 3,
+    description = "Complete Enchanted Dominion as Terra.",
+    trigger = WasBitflagSetInGame(enchantedDominionStoryEntry()) && IsInLocation("WorldMap")
 )
 
 leaderboard(title = "Mark of Mastery Exam", description = "Destroy the orbs of light as quickly as you can.",
