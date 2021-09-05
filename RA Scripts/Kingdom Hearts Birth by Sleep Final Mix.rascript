@@ -305,8 +305,9 @@ function characterState() => word(characterFieldPointer() + 0xc50 + 0x1000000)
 
 function EnteredAttackState() => Delta(characterState()) != 0x10 && characterState() == 0x10
 function IsUsingFinisher() => characterState() == 0x14
+function IsGuarding() => characterState() == 0x16
 
-function CheckpointPassedForCharacters(checkpointLogic, allowedCharacters, deferFor = 0)
+function CheckpointPassedForCharacters(checkpointLogic, allowedCharacters)
 {
     returnedLogic = checkpointLogic
     characterIsAllowed = always_false()
@@ -316,7 +317,7 @@ function CheckpointPassedForCharacters(checkpointLogic, allowedCharacters, defer
         characterIsAllowed = characterIsAllowed || currentCharacter() == character
     }
 
-    return repeated(deferFor, once(returnedLogic && characterIsAllowed)) && never(GameOverTriggered())
+    return once(returnedLogic && characterIsAllowed) && never(GameOverTriggered())
 }
 
 // charactersToTrigger: a dictionary of character IDs to trigger logic; each logical statement will only apply if the player is controlling a specific character
@@ -344,8 +345,30 @@ function GameOverTriggered() => IsInBattle() && HUDAndAttacksDisabled() && hp() 
 function IsPausing() => always_false()
 function FrameAdvanced() => Delta(systemTimer()) != systemTimer()
 
+function firstCommandSlotAddr() => 0x1f29388
+function lastCommandSlotAddr() => 0x1f2a9b8
+function JustObtainedCommandWithId(id, useTrigger = 0)
+{
+    trigger = always_false()
+    for addr in range(firstCommandSlotAddr(), lastCommandSlotAddr(), 10)
+    {
+        slotI = word(addr)
+        condition = repeated(0, Delta(slotI) == 0 && slotI == id)
+        
+        if (useTrigger == True())
+        {
+            condition = trigger_when(condition)
+        }
+        
+        trigger = trigger || condition
+    }
+    
+    return trigger
+}
+
 function informationBarState() => byte(0x1f3d760)
-function InformationBarPoppedUpOnce() => once(Delta(informationBarState()) == 0 && informationBarState() == 1)
+function InformationBarJustPoppedUp() => Delta(informationBarState()) == 0 && informationBarState() == 1
+function InformationBarPoppedUpOnce() => once(InformationBarJustPoppedUp())
 function criticalImpactState() => byte(0x1f2accc)
 function LearnedCriticalImpact() => criticalImpactState() == 5 && Delta(criticalImpactState()) == 0
 
@@ -368,7 +391,7 @@ function diamondDustState() => byte(0x1f2acd0)
 function LearnedDiamondDust() => diamondDustState() == 5 && Delta(diamondDustState()) == 0
 
 achievement(title = "Snap the Spindle [m]", points = 10,
-    description = "Finish off the Wheel Master with a finisher (Proud Mode or higher; Level 1).",
+    description = "Finish off the Wheel Master with a Finish command (Proud Mode or higher; Level 1).",
     trigger = CheckpointPassedForCharacters(InformationBarPoppedUpOnce()
         && IsInLocation("EnchantedAudience2"), TerraOnly()
     ) && TriggerConditionsMetForCharacters({
@@ -382,6 +405,18 @@ function enchantedDominionStoryEntry() => bit0(0x1f28485)
 achievement(title = "The First of Seven", points = 3,
     description = "Complete Enchanted Dominion as Terra.",
     trigger = WasBitflagSetInGame(enchantedDominionStoryEntry()) && IsInLocation("WorldMap")
+)
+
+function counterHammerId() => 0x114
+achievement(title = "Chipped Shield [m]", points = 10,
+    description = "Escort Cinderella to the ball without guarding.",
+    trigger = IsAlwaysInGame()
+        && CheckpointPassedForCharacters(once(InformationBarJustPoppedUp() && IsInLocation("CastleCorridor")), TerraOnly())
+        && TriggerConditionsMetForCharacters({
+            Terra(): (JustObtainedCommandWithId(counterHammerId(), True()) && trigger_when(IsInLocation("CastleFoyer")))
+        }, False())
+        && unless(characterFieldPointer() == 0) // Prevent resets when transitioning to the foyer.
+        && never(IsGuarding())
 )
 
 leaderboard(title = "Mark of Mastery Exam", description = "Destroy the orbs of light as quickly as you can.",
