@@ -307,17 +307,23 @@ function EnteredAttackState() => Delta(characterState()) != 0x10 && characterSta
 function IsUsingFinisher() => characterState() == 0x14
 function IsGuarding() => characterState() == 0x16
 
-function CheckpointPassedForCharacters(checkpointLogic, allowedCharacters)
+function CheckpointPassedForCharacters(checkpointLogic, allowedCharacters, resetOnDeath = 0)
 {
-    returnedLogic = checkpointLogic
     characterIsAllowed = always_false()
     
     for character in allowedCharacters
     {
         characterIsAllowed = characterIsAllowed || currentCharacter() == character
     }
+    
+    returnedLogic = once(checkpointLogic && characterIsAllowed)
+    
+    if (resetOnDeath == True())
+    {
+        returnedLogic = returnedLogic && never(GameOverTriggered())
+    }
 
-    return once(returnedLogic && characterIsAllowed) && never(GameOverTriggered())
+    return returnedLogic
 }
 
 // charactersToTrigger: a dictionary of character IDs to trigger logic; each logical statement will only apply if the player is controlling a specific character
@@ -373,7 +379,7 @@ function criticalImpactState() => byte(0x1f2accc)
 function LearnedCriticalImpact() => criticalImpactState() == 5 && Delta(criticalImpactState()) == 0
 
 function MarkOfMasteryCheckpointReached() => CheckpointPassedForCharacters(InformationBarPoppedUpOnce()
-    && IsInLocation("DepartureGreatHall"), [ Terra(), Ventus(), Aqua() ]
+    && IsInLocation("DepartureGreatHall"), [ Terra(), Ventus(), Aqua() ], True()
 )
     
 function TriggerConditionsMetForMarkOfMastery() =>
@@ -390,10 +396,10 @@ achievement(title = "Hit Ball to Pass Test [m]", points = 3,
 function diamondDustState() => byte(0x1f2acd0)
 function LearnedDiamondDust() => diamondDustState() == 5 && Delta(diamondDustState()) == 0
 
-achievement(title = "Snap the Spindle [m]", points = 10,
+achievement(title = "Snap the Spindle [m]", points = 25,
     description = "Finish off the Wheel Master with a Finish command (Proud Mode or higher; Level 1).",
     trigger = CheckpointPassedForCharacters(InformationBarPoppedUpOnce()
-        && IsInLocation("EnchantedAudience2"), TerraOnly()
+        && IsInLocation("EnchantedAudience2"), TerraOnly(), True()
     ) && TriggerConditionsMetForCharacters({
         Terra(): LearnedDiamondDust()
     }, True()) && trigger_when(IsUsingFinisher())
@@ -409,9 +415,9 @@ achievement(title = "The First of Seven", points = 3,
 
 function counterHammerId() => 0x114
 achievement(title = "Chipped Shield [m]", points = 10,
-    description = "Escort Cinderella to the ball without guarding.",
+    description = "Escort Cinderella to the ball without guarding (Critical Mode; Level 3 or below).",
     trigger = IsAlwaysInGame()
-        && CheckpointPassedForCharacters(once(InformationBarJustPoppedUp() && IsInLocation("CastleCorridor")), TerraOnly())
+        && CheckpointPassedForCharacters(once(InformationBarJustPoppedUp() && IsInLocation("CastleCorridor")) && IsAtLeastOnDifficulty("Critical") && level() <= 3, TerraOnly(), False())
         && TriggerConditionsMetForCharacters({
             Terra(): (JustObtainedCommandWithId(counterHammerId(), True()) && trigger_when(IsInLocation("CastleFoyer")))
         }, False())
