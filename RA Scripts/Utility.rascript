@@ -54,6 +54,16 @@ function ArrayToString(array)
     return ret + " ]"
 }
 
+function MergeArrays(arr1, arr2)
+{
+    newArr = arr1
+    for i in arr2
+    {
+        array_push(newArr, i)
+    }
+    return newArr
+}
+
 testData = [ 1, 2, 3, 4, 6, 7, 8, 10, 12, 15, 16, 17 ]
 clusters = GenerateClustersFromList(testData) // [ [ 1, 2, 3, 4], [ 6, 7, 8 ], [10], [12], [15, 16, 17] ]
 ranges = ConvertClustersToRanges(clusters) // [ { "min": 1, "max": 4}, { "min": 6, "max": 8 }, { "min": 10, "max": 10 } ... ]
