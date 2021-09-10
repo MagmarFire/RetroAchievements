@@ -614,7 +614,8 @@ function HasOnlyTheGivenCommandsEquipped(commands)
         deckSubtrigger = always_true()
         for i in range(0, maxNumberOfCommandSlots() - 1)
         {
-            inventoryOffset = word(slotBaseAddrs[deck]) * commandInventoryWidth()
+			slotIndex = word(slotBaseAddrs[deck])
+            inventoryOffset = slotIndex * commandInventoryWidth()
             inventoryCommandId = word(commandInventorySlot1BaseAddr() + inventoryOffset + i * commandIndexWidth())
             clusterSubtrigger = always_false()
             
@@ -630,7 +631,7 @@ function HasOnlyTheGivenCommandsEquipped(commands)
                     idCheck = inventoryCommandId >= cluster["min"] && inventoryCommandId <= cluster["max"]
                 }
 				
-				clusterSubtrigger = clusterSubtrigger || idCheck
+				clusterSubtrigger = clusterSubtrigger || idCheck && slotIndex != 0xffff
             }
             
             deckSubtrigger = deckSubtrigger && clusterSubtrigger
