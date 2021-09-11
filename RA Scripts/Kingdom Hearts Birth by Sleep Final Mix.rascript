@@ -643,6 +643,7 @@ function HasOnlyTheGivenCommandsEquipped(commands)
     return trigger
 }
 
+// todo: implement after RATools issues are fixed
 emptyCommand = GetCommandsByProperties({ "name": "N/A"})
 statusCommands = MergeArrays(emptyCommand, GetCommandsByProperties({ "type": "Status Effect" }))
 achievement(title = "Sleeping Death [m]", points = 10,
@@ -653,6 +654,28 @@ achievement(title = "Sleeping Death [m]", points = 10,
 achievement(title = "A Grave Riddle", points = 3,
     description = "Complete the Dwarf Woodlands as Terra.",
     trigger = WasBitflagSetInGame(dwarfWoodlandsTerraStoryEntry()) && IsInLocation("WorldMap")
+)
+
+function IsAbilityTurnedOn(addr)
+{
+    return bit0(addr) + bit1(addr) * 2 + bit2(addr) * 4 > 0
+}
+
+function trinityArmorsDefeated() => word(0x1f35fd6)
+function TrinityArmorWasJustDefeated() => Delta(trinityArmorsDefeated()) < trinityArmorsDefeated()
+function secondChanceActiveAddr() => 0x1f2acbc
+function onceMoreActiveAddr() => 0x1f2acc0
+achievement(title = "Face, Meet Cannon [m]", points = 10,
+    description = "Defeat the Trinity Armor without Second Chance or Once More equipped (Critical Mode; Level 6 or below).",
+    trigger = IsAlwaysInGame()
+        && CheckpointPassedForCharacters(once(InformationBarJustPoppedUp() && IsInLocation("RadiantReactor")) && IsAtLeastOnDifficulty("Critical") && level() <= 6, [ Terra(), Ventus(), Aqua() ], True())
+        && TriggerConditionsMetForCharacters({
+            Terra(): TrinityArmorWasJustDefeated(),
+            Ventus(): TrinityArmorWasJustDefeated(),
+            Aqua(): TrinityArmorWasJustDefeated()
+        }, True())
+        && never(IsAbilityTurnedOn(secondChanceActiveAddr()))
+        && never(IsAbilityTurnedOn(onceMoreActiveAddr()))
 )
 
 leaderboard(title = "Mark of Mastery Exam", description = "Destroy the orbs of light as quickly as you can.",
