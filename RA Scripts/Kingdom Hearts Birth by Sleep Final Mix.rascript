@@ -111,9 +111,19 @@ function IsValueJustSet(mem, oldValue, newValue)
     return Delta(mem) == oldValue && mem == newValue
 }
 
+function WasValueIncreasedByAmount(mem, delta)
+{
+    return Delta(mem) + delta == mem
+}
+
 function WasValueSetInGame(mem, oldValue, newValue)
 {
     return IsAlwaysInGame() && WasValueSet(mem, oldValue, newValue)
+}
+
+function WasValueIncreasedByAmountInGame(mem, delta)
+{
+    return IsAlwaysInGame() && WasValueIncreasedByAmount(mem, delta)
 }
 
 function WasBitflagSetInGame(mem)
@@ -409,10 +419,14 @@ achievement(title = "The Final Stargaze", points = 1,
 function characterFieldPointer() => tbyte(0xb5a4b0)
 function hp() => word(characterFieldPointer() + 0xdc0 + 0x1000000)
 function characterState() => word(characterFieldPointer() + 0xc50 + 0x1000000)
+function currentAttackInCombo() => word(characterFieldPointer() + 0xeb8 + 0x1000000)
+function nextAttackInCombo() => word(characterFieldPointer() + 0xeba + 0x1000000)
 
 function EnteredAttackState() => Delta(characterState()) != 0x10 && characterState() == 0x10
 function IsUsingFinisher() => characterState() == 0x14
 function IsGuarding() => characterState() == 0x16
+function IsUsingAPhysicalAttack() => characterState() == 0x10
+function IsUsingAStandardAttack() => currentAttackInCombo() != 0 && nextAttackInCombo() != 0
 
 function CheckpointPassedForCharacters(checkpointLogic, allowedCharacters, resetOnDeath = 0)
 {
@@ -666,7 +680,7 @@ function TrinityArmorWasJustDefeated() => Delta(trinityArmorsDefeated()) < trini
 function secondChanceActiveAddr() => 0x1f2acbc
 function onceMoreActiveAddr() => 0x1f2acc0
 achievement(title = "Face, Meet Cannon [m]", points = 10,
-    description = "Defeat the Trinity Armor without Second Chance or Once More equipped (Critical Mode; Level 6 or below).",
+    description = "Defeat the Trinity Armor without Second Chance or Once More equipped (Critical Mode, Level 6 or below).",
     trigger = IsAlwaysInGame()
         && CheckpointPassedForCharacters(once(InformationBarJustPoppedUp() && IsInLocation("RadiantReactor")) && IsAtLeastOnDifficulty("Critical") && level() <= 6, [ Terra(), Ventus(), Aqua() ], True())
         && TriggerConditionsMetForCharacters({
@@ -676,6 +690,25 @@ achievement(title = "Face, Meet Cannon [m]", points = 10,
         }, True())
         && never(IsAbilityTurnedOn(secondChanceActiveAddr()))
         && never(IsAbilityTurnedOn(onceMoreActiveAddr()))
+)
+
+function deckCapacity() => byte(0x1f19b16)
+achievement(title = "He Who Liveth by the Sword... [m]", points = 10,
+    description = "Defeat Braig in Radiant Garden without using any standard attacks (Proud Mode or higher, Level 6 or below).",
+    trigger = CheckpointPassedForCharacters(InformationBarPoppedUpOnce()
+        && IsInLocation("RadiantPurification"), TerraOnly(), True()
+    ) && TriggerConditionsMetForCharacters({
+        Terra(): WasValueIncreasedByAmountInGame(deckCapacity(), 1)
+    }, True())
+    && IsAtLeastOnDifficulty("Proud") && level() <= 6
+    && never(!IsInLocation("RadiantPurification"))
+    && never(IsUsingAStandardAttack())
+)
+
+function radiantGardenTerraStoryEntry() => bit5(0x1f284c5)
+achievement(title = "The Shame of Sin", points = 3,
+    description = "Complete Radiant Garden as Terra.",
+    trigger = WasBitflagSetInGame(radiantGardenTerraStoryEntry()) && IsInLocation("WorldMap")
 )
 
 leaderboard(title = "Mark of Mastery Exam", description = "Destroy the orbs of light as quickly as you can.",

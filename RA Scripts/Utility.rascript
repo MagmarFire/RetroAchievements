@@ -261,3 +261,8 @@ function SecondsToFormat(value)
     }
     return value / 60 + ":" + leadingZero + value % 60
 }
+
+function Debug(text)
+{
+    achievement(title = text + "", description = "", points = 0, trigger = always_false())
+}
