@@ -108,8 +108,8 @@ function GenerateSaveProtectedAchievementFromConditions(cheevo, conditions)
         // permanant pauselock to serve as save protection.
         array_push(loadedCounts, once(condition["countsWhen"] && IsLoadingSaveFile()))
         
-        // We want both loaded and session counts here (that is, we don't care if we're loading a save file when these are tallied).
-        // This way, loading a save doesn't invalidate the achievement outright if a player hasn't actually earned it yet.
+        // We want both loaded and session counts here (that is, we don't care if we're loading a save file when these are tallied, though we do care if the player is in game,
+        // hence the check for nonzero max HP). This way, loading a save doesn't invalidate the achievement outright if a player hasn't actually earned it yet.
         array_push(totalCounts, once(condition["countsWhen"] && maxHp() > 0))
         
         resetAlt = resetAlt || condition["recalculateWhen"]
