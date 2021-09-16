@@ -61,7 +61,7 @@ function SecondsToFormat(value)
 
 function IsLoadingSaveFile() => Delta(maxHp()) == 0 && maxHp() > 0
 
-function IsInGame() => !IsInLocation("File") && !WasInLocation("File")
+function IsInGame() => maxHp() > 0 && !IsInLocation("File")
     && !IsInLocation("WFC") && !IsInLocation("Title")
     && !IsInLocation("Battle") && !IsInLocation("Download")
 
