@@ -734,7 +734,9 @@ function rumbleRacingElapsedMinutes() => dword(rumbleRacingPointer() - 0x16c)
 function rumbleRacingElapsedSeconds() => dword(rumbleRacingPointer() - 0x168)
 function rumbleRacingElapsedCentiseconds() => dword(rumbleRacingPointer() - 0x164)
 function rumbleRacingTotalLaps() => dword(rumbleRacingPointer() - 0x148)
-function RumbleRacingRecordableTimeElapsed() => Delta(rumbleRacingElapsedMinutes()) * 60000 + Delta(rumbleRacingElapsedSeconds()) * 1000 + Delta(rumbleRacingElapsedCentiseconds()) * 10
+
+// The final time will still always be off by a couple centiseconds here, but this is probably the best we can do right now unless there's a hidden time address that gets set that I don't know about.
+function RumbleRacingRecordableTimeElapsed() => Delta(rumbleRacingElapsedMinutes()) * 6000 + Delta(rumbleRacingElapsedSeconds()) * 100 + Delta(rumbleRacingElapsedCentiseconds())
 function RumbleRacingJustFinished() => RumbleRacingWasJustInProgress() && RumbleRacingFinished()
 function IsInCountryChase() => AddressIsPointer(rumbleRacingPointerAddr()) && IsInLocation("DisneyCountryChase")
 function CountryChaseCheckpointReached() => once(RumbleRacingIntroWasJustPlaying() && RumbleRacingCountingDown() && IsInLocation("DisneyCountryChase") && rumbleRacingTotalLaps() == 5)
@@ -749,5 +751,5 @@ leaderboard(title = "Rumble Racing - Country Chase (5 Laps)", description = "Rac
     start = CountryChaseCheckpointReached(),
     cancel = !IsInCountryChase(),
     submit = RumbleRacingJustFinished(),
-    value = RumbleRacingRecordableTimeElapsed())
+    value = RumbleRacingRecordableTimeElapsed()
 )
