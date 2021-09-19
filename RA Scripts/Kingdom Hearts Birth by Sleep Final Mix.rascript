@@ -496,7 +496,7 @@ function JustObtainedCommandWithId(id, useTrigger = 0)
 }
 
 function informationBarState() => byte(0x1f3d760)
-function InformationBarJustPoppedUp() => Delta(informationBarState()) == 0 && informationBarState() == 1
+function InformationBarJustPoppedUp() => Delta(informationBarState()) == 1 && informationBarState() == 2
 function InformationBarPoppedUpOnce() => once(InformationBarJustPoppedUp())
 function criticalImpactState() => byte(0x1f2accc)
 function LearnedCriticalImpact() => criticalImpactState() == 5 && Delta(criticalImpactState()) == 0
@@ -618,6 +618,11 @@ function HasAnyOfTheGivenCommandsEquipped(commands)
     return trigger
 }
 
+function Debug(text)
+{
+    achievement(title = text + "", description = "", points = 0, trigger = always_false())
+}
+
 function HasOnlyTheGivenCommandsEquipped(commands)
 {
     commandIds = GetIdsFromObjects(commands)
@@ -627,13 +632,13 @@ function HasOnlyTheGivenCommandsEquipped(commands)
     
     for deck in range(0, 2)
     {
-        deckSubtrigger = always_true()
+        validCommandFoundInDeck = always_true()
         for i in range(0, maxNumberOfCommandSlots() - 1)
         {
-			slotIndex = word(slotBaseAddrs[deck])
-            inventoryOffset = slotIndex * commandInventoryWidth()
-            inventoryCommandId = word(commandInventorySlot1BaseAddr() + inventoryOffset + i * commandIndexWidth())
-            clusterSubtrigger = always_false()
+            inventoryIndex = word(slotBaseAddrs[deck] + i * commandIndexWidth()) // 0xffff when no command is equipped
+            inventoryOffset = inventoryIndex * commandInventoryWidth() // The memory offset from the beginning of the inventory where the command lies
+            inventoryCommandId = word(commandInventorySlot1BaseAddr() + inventoryOffset) // The accessor containing the actual command ID
+            idLiesInClusters = []
             
             for cluster in clusters
             {
@@ -646,25 +651,39 @@ function HasOnlyTheGivenCommandsEquipped(commands)
                 {
                     idCheck = inventoryCommandId >= cluster["min"] && inventoryCommandId <= cluster["max"]
                 }
-				
-				clusterSubtrigger = clusterSubtrigger || idCheck && slotIndex != 0xffff
+
+				array_push(idLiesInClusters, idCheck && inventoryIndex != 0xffff)
             }
             
-            deckSubtrigger = deckSubtrigger && clusterSubtrigger
+			// bug: any_of(), or OR operations in general, drastically inflates the number of operations needed to generate the code.
+			// Changing to all_of(), while incorrect, does not do this. This leads me to believe
+			// that the RATools issue lies with how ORs are normalized.
+            validCommandFoundInDeck = validCommandFoundInDeck && any_of(idLiesInClusters, element => element)
         }
         
-        trigger = trigger || deckSubtrigger && currentDeck() == deck
+        trigger = trigger || validCommandFoundInDeck && currentDeck() == deck
     }
     
     return trigger
 }
 
-// todo: implement after RATools issues are fixed
+function deckCapacity() => byte(0x1f19b16)
+function DeckCapacityIncreased() => WasValueIncreasedByAmountInGame(deckCapacity(), 1)
+function firestormState() => byte(0x1f2accf)
+function FirestormLearned() => firestormState() == 5 && Delta(firestormState()) == 0
 emptyCommand = GetCommandsByProperties({ "name": "N/A"})
 statusCommands = MergeArrays(emptyCommand, GetCommandsByProperties({ "type": "Status Effect" }))
 achievement(title = "Sleeping Death [m]", points = 10,
     description = "Defeat the Spirit of the Magic Mirror equipping battle commands that only inflict status effects (Proud Mode or higher, Level 4 or below).",
-    trigger = always_false()//HasOnlyTheGivenCommandsEquipped(statusCommands)
+    trigger = //HasOnlyTheGivenCommandsEquipped(statusCommands)
+        && CheckpointPassedForCharacters(InformationBarPoppedUpOnce()
+            && IsInLocation("DwarfMirror"), [Terra(), Aqua() ], True()
+        ) && TriggerConditionsMetForCharacters({
+            Terra(): FirestormLearned(),
+            Aqua(): DeckCapacityIncreased()
+        }, True()) && trigger_when(Delta(numberOfActiveEnemies()) >= 1 && numberOfActiveEnemies() == 0)
+        && IsAtLeastOnDifficulty("Proud") && level() <= 4
+        && never(!IsInLocation("DwarfMirror"))
 )
 
 achievement(title = "A Grave Riddle", points = 3,
@@ -694,13 +713,12 @@ achievement(title = "Face, Meet Cannon [m]", points = 10,
         && never(IsAbilityTurnedOn(onceMoreActiveAddr()))
 )
 
-function deckCapacity() => byte(0x1f19b16)
 achievement(title = "He Who Liveth by the Sword... [m]", points = 10,
     description = "Defeat Braig in Radiant Garden without using any standard attacks (Proud Mode or higher, Level 6 or below).",
     trigger = CheckpointPassedForCharacters(InformationBarPoppedUpOnce()
         && IsInLocation("RadiantPurification"), TerraOnly(), True()
     ) && TriggerConditionsMetForCharacters({
-        Terra(): WasValueIncreasedByAmountInGame(deckCapacity(), 1)
+        Terra(): DeckCapacityIncreased()
     }, True())
     && IsAtLeastOnDifficulty("Proud") && level() <= 6
     && never(!IsInLocation("RadiantPurification"))
