@@ -430,6 +430,10 @@ function IsGuarding() => characterState() == 0x16
 function IsUsingAPhysicalAttack() => characterState() == 0x10
 function IsUsingAStandardAttack() => currentAttackInCombo() != 0 && nextAttackInCombo() != 0
 
+function dLinkPointer() => tbyte(0xb59ce8)
+function dLinkCharge() => dword(dLinkPointer() + 0x1000000 + 0x3c) // todo: actually a float; change when supported
+function IsUsingDLink() => Delta(dLinkCharge()) > dLinkCharge() && dLinkPointer() != 0
+
 function CheckpointPassedForCharacters(checkpointLogic, allowedCharacters, resetOnDeath = 0)
 {
     characterIsAllowed = always_false()
@@ -595,22 +599,23 @@ function HasAnyOfTheGivenCommandsEquipped(commands)
     {
         for i in range(0, maxNumberOfCommandSlots() - 1)
         {
-            inventoryOffset = word(slotBaseAddrs[deck]) * commandInventoryWidth()
-            inventoryCommandId = word(commandInventorySlot1BaseAddr() + inventoryOffset + i * commandIndexWidth())
+            inventoryIndex = word(slotBaseAddrs[deck] + i * commandIndexWidth()) // 0xffff when no command is equipped
+            inventoryOffset = inventoryIndex * commandInventoryWidth() // The memory offset from the beginning of the inventory where the command lies
+            inventoryCommandId = word(commandInventorySlot1BaseAddr() + inventoryOffset) // The accessor containing the actual command ID
             
             for cluster in clusters
             {
-                idCheck = always_false()
+                idLiesInCluster = always_false()
                 if (cluster["min"] == cluster["max"]) // Just for a little optimization
                 {
-                    idCheck = inventoryCommandId == cluster["min"]
+                    idLiesInCluster = inventoryCommandId == cluster["min"]
                 }
                 else
                 {
-                    idCheck = inventoryCommandId >= cluster["min"] && inventoryCommandId <= cluster["max"]
+                    idLiesInCluster = inventoryCommandId >= cluster["min"] && inventoryCommandId <= cluster["max"]
                 }
                 
-                trigger = trigger || idCheck && currentDeck() == deck
+                trigger = trigger || idLiesInCluster && currentDeck() == deck && inventoryIndex != 0xffff
             }
         }
     }
@@ -623,59 +628,47 @@ function Debug(text)
     achievement(title = text + "", description = "", points = 0, trigger = always_false())
 }
 
-function HasOnlyTheGivenCommandsEquipped(commands)
+function CreateCommandDenylistFromAllowlist(allowlist)
 {
-    commandIds = GetIdsFromObjects(commands)
-    clusters = GetClustersFromList(commandIds)
-    trigger = always_false()
-    slotBaseAddrs = [ deck1Slot1BaseAddr(), deck2Slot1BaseAddr(), deck3Slot1BaseAddr() ]
+    denylist = []
     
-    for deck in range(0, 2)
+    for i in commands
     {
-        validCommandFoundInDeck = always_true()
-        for i in range(0, maxNumberOfCommandSlots() - 1)
+        command = commands[i]
+        commandFound = False()
+        
+        for allowed in allowlist
         {
-            inventoryIndex = word(slotBaseAddrs[deck] + i * commandIndexWidth()) // 0xffff when no command is equipped
-            inventoryOffset = inventoryIndex * commandInventoryWidth() // The memory offset from the beginning of the inventory where the command lies
-            inventoryCommandId = word(commandInventorySlot1BaseAddr() + inventoryOffset) // The accessor containing the actual command ID
-            idLiesInClusters = []
-            
-            for cluster in clusters
+            if (allowed["id"] == command["id"])
             {
-                idCheck = always_false()
-                if (cluster["min"] == cluster["max"]) // Just for a little optimization
-                {
-                    idCheck = inventoryCommandId == cluster["min"]
-                }
-                else
-                {
-                    idCheck = inventoryCommandId >= cluster["min"] && inventoryCommandId <= cluster["max"]
-                }
-
-				array_push(idLiesInClusters, idCheck && inventoryIndex != 0xffff)
+                commandFound = True()
             }
-            
-			// bug: any_of(), or OR operations in general, drastically inflates the number of operations needed to generate the code.
-			// Changing to all_of(), while incorrect, does not do this. This leads me to believe
-			// that the RATools issue lies with how ORs are normalized.
-            validCommandFoundInDeck = validCommandFoundInDeck && any_of(idLiesInClusters, element => element)
         }
         
-        trigger = trigger || validCommandFoundInDeck && currentDeck() == deck
+        if (commandFound == False())
+        {
+            array_push(denylist, command)
+        }
     }
     
-    return trigger
+    return denylist
+}
+
+function HasOnlyTheGivenCommandsEquipped(commands)
+{
+    denylistedCommands = CreateCommandDenylistFromAllowlist(commands)
+    return never(HasAnyOfTheGivenCommandsEquipped(denylistedCommands))
 }
 
 function deckCapacity() => byte(0x1f19b16)
 function DeckCapacityIncreased() => WasValueIncreasedByAmountInGame(deckCapacity(), 1)
 function firestormState() => byte(0x1f2accf)
 function FirestormLearned() => firestormState() == 5 && Delta(firestormState()) == 0
-emptyCommand = GetCommandsByProperties({ "name": "N/A"})
-statusCommands = MergeArrays(emptyCommand, GetCommandsByProperties({ "type": "Status Effect" }))
+statusCommands = GetCommandsByProperties({ "type": "Status Effect" })
+cureCommands = GetCommandsByProperties({ "type": "Cure" })
 achievement(title = "Sleeping Death [m]", points = 10,
-    description = "Defeat the Spirit of the Magic Mirror equipping battle commands that only inflict status effects (Proud Mode or higher, Level 4 or below).",
-    trigger = //HasOnlyTheGivenCommandsEquipped(statusCommands)
+    description = "Defeat the Spirit of the Magic Mirror equipping battle commands that only inflict status effects (Proud Mode or higher, Level 4 or below, no D-Links).",
+    trigger = HasOnlyTheGivenCommandsEquipped(statusCommands)
         && CheckpointPassedForCharacters(InformationBarPoppedUpOnce()
             && IsInLocation("DwarfMirror"), [Terra(), Aqua() ], True()
         ) && TriggerConditionsMetForCharacters({
@@ -684,6 +677,7 @@ achievement(title = "Sleeping Death [m]", points = 10,
         }, True()) && trigger_when(Delta(numberOfActiveEnemies()) >= 1 && numberOfActiveEnemies() == 0)
         && IsAtLeastOnDifficulty("Proud") && level() <= 4
         && never(!IsInLocation("DwarfMirror"))
+        && never(IsUsingDLink())
 )
 
 achievement(title = "A Grave Riddle", points = 3,
