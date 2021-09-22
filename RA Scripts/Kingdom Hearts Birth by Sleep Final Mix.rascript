@@ -91,6 +91,138 @@ function GetIdsFromObjects(objects)
     return ret
 }
 
+function DictionaryKeyExists(dict, key)
+{
+    for i in dict
+    {
+        if (i == key)
+        {
+            return True()
+        }
+    }
+    
+    return False()
+}
+
+// Dictionary elements must have "addr" and "bit" fields.
+// Returns a result like the following:
+// {
+//    <address>: [ <bit indices> ]
+// }
+function AggregateBitsFromAddressBits(dict)
+{
+    ret = {}
+    for i in dict
+    {
+        element = dict[i]
+        
+        if (element["addr"] != -1)
+        {
+            if (DictionaryKeyExists(ret, element["addr"]) == True())
+            {
+                arr = ret[element["addr"]]
+                array_push(arr, element["bit"])
+                ret[element["addr"]] = arr
+            }
+            else
+            {
+                ret[element["addr"]] = [ element["bit"] ]
+            }
+        }
+    }
+    
+    return ret
+}
+
+// Converts an aggregate dictionary to an array of objects like the following:
+// {
+//    "type": "bitX"/"byte"
+//    "mem": <memory accessor>
+//    "address": <memory address>
+// }
+function ConvertBitAggregatesToBitCountableMemoryAccessors(aggregates)
+{
+    accessors = []
+    for address in aggregates
+    {
+        agg = aggregates[address]
+        if (length(agg) == 8)
+        {
+            array_push(accessors, { "type": "byte", "mem": byte(address), "address": address })
+        }
+        else
+        {
+            // Simply return each bit instead, since we can't use bitcount() on anything but bytes.
+            for bit in agg
+            {
+                if (bit != -1 && address != -1)
+                {
+                    array_push(accessors, { "type": "bit", "mem": bit(bit, address), "address": address })
+                }
+            }
+        }
+    }
+    
+    return accessors
+}
+
+function GetCountableAccessorArrayFromAddressBits(dict)
+{
+    return ConvertBitAggregatesToBitCountableMemoryAccessors(AggregateBitsFromAddressBits(dict))
+}
+
+// This function allows the creation of achievements with built-in save protection that deal with a collection of values being set
+// throughout the game. The schemas for both parameters are as follows:
+//
+// name: title
+// description: self-explanatory
+// points: self-explanatory
+// threshold: how many values in the "conditions" dictionary must be set before this achievement is triggered
+// addresses: a list of address accessors that need to have their bits summed (each address must have an "addr" and "bit" value in order to be properly aggregated)
+// onlyAvailableWhen: a condition that must be true in all conditions for the achievement to trigger.
+// id: self-explanatory
+// badge: self-explanatory
+function GenerateCheevoFromBits(name, description, points, threshold, addresses, onlyAvailableWhen = always_true(), id = 0, badge = "00000")
+{
+    bitcounts = GenerateBitcountFromCountableObjects(GetCountableAccessorArrayFromAddressBits(addresses))
+
+    // This is the score when the game is loaded. If the loaded score is greater than or equal to the threshold--that is,
+    // if the save file would satisfy enough conditions to trigger the achievement on load--this should trigger a
+    // permanant pauselock to serve as save protection.
+    shouldTriggerPauselock = once(bitcounts >= threshold && GameJustLoaded())
+    
+    // We want both loaded and session counts here (that is, we don't care if we're loading a save file when these are tallied).
+    // This way, loading a save doesn't invalidate the achievement outright if a player hasn't actually earned it yet.
+    trigger = bitcounts >= threshold
+
+    achievement(title = name, description = description, points = points, badge = badge, id = id,
+        trigger = IsInGame() && measured(trigger) && unless(shouldTriggerPauselock) && onlyAvailableWhen
+            && (always_false() || IsAlwaysInGame()) // Reset any potential pauselock when changing save files.
+    )
+}
+
+function GenerateBitcountFromCountableObjects(addresses)
+{
+    finalBitcount = 0
+    for address in addresses
+    {
+        if (address["type"] == "byte")
+        {
+            finalBitcount = finalBitcount + bitcount(address["address"])
+        }
+        else
+        {
+            finalBitcount = finalBitcount + address["mem"]
+        }
+    }
+    return finalBitcount
+}
+
+function GenerateConditionFromBitflag(bit)
+{
+    return { "countsWhen": (bit == 1), "recalculateWhen": (Delta(bit) != bit) }
+}
+
 // $B47AC0: World ID
 function worldId() => byte(0xB47AC0)
 
@@ -100,6 +232,10 @@ function areaId() => byte(0xB47AC1)
 function systemTimer() => dword(0x1f25ee0)
 
 function IsAlwaysInGame() => never(IsInLocation("Title"))
+
+function IsInGame() => !IsInLocation("Title")
+
+function GameJustLoaded() => WasInLocation("Title") && IsInGame()
 
 function WasValueSet(mem, oldValue, newValue)
 {
@@ -778,3 +914,56 @@ CreateRumbleRacingAchievementAndLeaderboard("Disney Town Dragster", GetLocationB
 CreateRumbleRacingAchievementAndLeaderboard("Prix Spree", GetLocationByName("DisneySpree"), 294, 25)
 
 CreateRumbleRacingAchievementAndLeaderboard("Castle Crasher", GetLocationByName("DisneyCastle"), 236, 50)
+
+GenerateCheevoFromBits(name = "Career Rumbler", description = "Complete all Rumble Racing Arena Missions for any character.", points = 5,
+    threshold = 4,
+    addresses = {
+        1: { "addr": 0x1f35d7e, "bit": 2 },
+        2: { "addr": 0x1f35d7e, "bit": 3 },
+        3: { "addr": 0x1f35d7e, "bit": 4 },
+        4: { "addr": 0x1f35d7e, "bit": 5 },
+    }
+)
+
+GenerateCheevoFromBits(name = "Medal Detector", description = "Complete all medal Arena Missions for any character.", points = 10,
+    threshold = 6,
+    addresses = {
+        1: { "addr": 0x1f35d7c, "bit": 0 },
+        2: { "addr": 0x1f35d7c, "bit": 1 },
+        3: { "addr": 0x1f35d7c, "bit": 2 },
+        4: { "addr": 0x1f35d7c, "bit": 3 },
+        5: { "addr": 0x1f35d7c, "bit": 4 },
+        6: { "addr": 0x1f35d7c, "bit": 5 },
+    }
+)
+
+GenerateCheevoFromBits(name = "Command Street", description = "Complete all Command Board Arena Missions for any character.", points = 5,
+    threshold = 4,
+    addresses = {
+        1: { "addr": 0x1f35d7f, "bit": 1 },
+        2: { "addr": 0x1f35d7f, "bit": 2 },
+        3: { "addr": 0x1f35d7f, "bit": 3 },
+        4: { "addr": 0x1f35d7f, "bit": 4 },
+    }
+)
+
+GenerateCheevoFromBits(name = "Savage Slayer", description = "Complete all Arena Mode Arena Missions for any character.", points = 25,
+    threshold = 15,
+    addresses = {
+        1: { "addr": 0x1f35d7c, "bit": 6 }, // Day of Reckoning
+        2: { "addr": 0x1f35d7c, "bit": 7 }, // Wheels of Misfortune
+        3: { "addr": 0x1f35d7d, "bit": 0 }, // Risky Riches
+        4: { "addr": 0x1f35d7d, "bit": 1 }, // Weaver Fever
+        5: { "addr": 0x1f35d7d, "bit": 2 }, // Sinister Sentinel
+        6: { "addr": 0x1f35d7d, "bit": 3 }, // Dead Ringer
+        7: { "addr": 0x1f35d7d, "bit": 4 }, // Combined Threat
+        8: { "addr": 0x1f35d7d, "bit": 5 }, // Treasure Tussle
+        9: { "addr": 0x1f35d7d, "bit": 6 }, // Harsh Punishment
+        10: { "addr": 0x1f35d7d, "bit": 7 }, // A Time to Chill
+        11: { "addr": 0x1f35d7e, "bit": 0 }, // Copycat Crisis
+        12: { "addr": 0x1f35d7e, "bit": 1 }, // Keepers of the Arena
+        13: { "addr": 0x1f35d7e, "bit": 6 }, // Monster of the Sea
+        14: { "addr": 0x1f35d7e, "bit": 7 }, // Villains' Vendetta
+        15: { "addr": 0x1f35d7f, "bit": 0 }, // Light's Lessons
+    }
+)
