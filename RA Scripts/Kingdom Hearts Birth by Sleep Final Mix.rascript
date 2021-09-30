@@ -979,6 +979,89 @@ achievement(title = "First-Class Soldier", points = 3,
     trigger = WasBitflagSetInGame(olympusColiseumTerraStoryEntry()) && IsInLocation("WorldMap")
 )
 
+fireCommands = GetCommandsByProperties({ "element": "Fire" })
+function thunderboltState() => byte(0x1f2acd1)
+function ThunderboltLearned() => Delta(thunderboltState()) == 0 && thunderboltState() == 5
+achievement(title = "Hypoxic Cabin [m]", points = 5,
+    description = "Defeat Experiment 221 without using any fire-elemental commands (Proud Mode or higher, Level 11 or below).",
+    trigger = CheckpointPassedForCharacters(InformationBarPoppedUpOnce()
+            && IsInLocation("SpacePod"), TerraOnly(), True())
+            && TriggerConditionsMetForCharacters({
+                Terra(): ThunderboltLearned()
+            }, True())
+        && IsAtLeastOnDifficulty("Proud") && level() <= 11
+        && never(!IsInLocation("SpacePod"))
+        && never(JustUsedAnyGivenCommand(fireCommands))
+)
+
+function deepSpaceTerraStoryEntry() => bit7(0x1f28524)
+achievement(title = "For but a Moment", points = 3,
+    description = "Complete Deep Space as Terra.",
+    trigger = WasBitflagSetInGame(deepSpaceTerraStoryEntry()) && IsInLocation("WorldMap")
+)
+
+function UsedAnyfUniqueCommandsGivenNumberOfTimes(usableCommands, usages)
+{
+    trigger = []
+    
+    for command in usableCommands
+    {
+        array_push(trigger, once(Delta(commandBeingUsed()) == 0 && commandBeingUsed() == command["id"]))
+    }
+    
+    return tally(usages, trigger)
+}
+
+function BattleCommandsCallback(command)
+{
+    if (command["supercategory"] == "Attack" || command["supercategory"] == "Magic" || command["supercategory"] == "Item" || command["supercategory"] == "Friendship"
+        || command["supercategory"] == "D-Link")
+    {
+        return True()
+    }
+    else
+    {
+        return False()
+    }
+}
+
+function JumpCommandsCallback(command)
+{
+    if (command["name"] == "Jump" || command["name"] == "High Jump")
+    {
+        return True()
+    }
+    else
+    {
+        return False()
+    }
+}
+
+jumpCommands = GetCommandsByCallback(JumpCommandsCallback)
+battleCommands = GetCommandsByCallback(BattleCommandsCallback)
+function bladechargeState() => byte(0x1f2acd3)
+function BladechargeLearned() => Delta(bladechargeState()) == 0 && bladechargeState() == 5
+function DefeatedPeterPan() => bit5(0x1f28564) == 1
+achievement(title = "Minesweeper [m]", points = 5,
+    description = "Defeat Peter Pan using only one type of battle command and without taking damage (Proud Mode or higher, Level 15 or below).",
+    trigger = CheckpointPassedForCharacters(InformationBarPoppedUpOnce()
+        && IsInLocation("NeverlandSkullCavern"), TerraOnly(), True())
+        && TriggerConditionsMetForCharacters({
+            Terra(): BladechargeLearned()
+        }, True())
+        && IsAtLeastOnDifficulty("Proud") && level() <= 15
+        && never(!IsInLocation("NeverlandSkullCavern"))
+        && never(UsedAnyfUniqueCommandsGivenNumberOfTimes(battleCommands, 2))
+        && never(Delta(hp()) > hp())
+        && never(DefeatedPeterPan())
+)
+
+function neverlandTerraStoryEntry() => bit1(0x1f28565)
+achievement(title = "One Man's Treasure", points = 3,
+    description = "Complete Neverland as Terra.",
+    trigger = WasBitflagSetInGame(neverlandTerraStoryEntry()) && IsInLocation("LanesBetween")
+)
+
 // We're checking for a pointer-esque format rather than checking for NULL here because this address flickers between values before finally settling onto the final pointer address
 // when the race begins.
 function AddressIsPointer(addr) => byte(addr + 3) == 0x8 || byte(addr + 3) == 0x9
