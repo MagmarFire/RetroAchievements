@@ -595,7 +595,9 @@ function IsUsingAStandardAttack() => currentAttackInCombo() != 0 && nextAttackIn
 
 function dLinkPointer() => tbyte(0xb59ce8)
 function dLinkCharge() => dword(dLinkPointer() + 0x1000000 + 0x3c) // todo: actually a float; change when supported
+function commandGaugeCharge() => dword(dLinkPointer() + 0x1000000 + 0x1d30) // todo: also a float
 function IsUsingDLink() => Delta(dLinkCharge()) > dLinkCharge() && dLinkPointer() != 0
+function CommandGaugeEmptied() => Delta(commandGaugeCharge()) != commandGaugeCharge() && commandGaugeCharge() == 0
 
 function JustUsedAnyGivenCommand(haystack)
 {
@@ -668,7 +670,7 @@ function battleFlagsAddr() => 0xb5a4b4
 function IsInBattle() => bit0(battleFlagsAddr()) == 1
 function HUDAndAttacksDisabled() => bit5(0xb5a4b5) == 1
 function GameOverTriggered() => IsInBattle() && HUDAndAttacksDisabled() && hp() == 0 && characterFieldPointer() != 0
-function BossDefeatTriggered() => IsInBattle() && HUDAndAttacksDisabled() && bit3(battleFlagsAddr()) == 1 && bit5(battleFlagsAddr()) == 1 && hp() > 0 && characterFieldPointer() != 0
+function BossDefeatTriggered() => IsInBattle() && bit3(battleFlagsAddr()) == 1 && bit5(battleFlagsAddr()) == 1 && hp() > 0 && characterFieldPointer() != 0
 function IsPausing() => always_false()
 function FrameAdvanced() => Delta(systemTimer()) != systemTimer()
 
@@ -1060,6 +1062,65 @@ function neverlandTerraStoryEntry() => bit1(0x1f28565)
 achievement(title = "One Man's Treasure", points = 3,
     description = "Complete Neverland as Terra.",
     trigger = WasBitflagSetInGame(neverlandTerraStoryEntry()) && IsInLocation("LanesBetween")
+)
+
+achievement(title = "Claimed by the Abyss [m]", points = 25,
+    description = "Defeat Eraqus without ever leaving the Dark Impulse Command Style (Proud Mode or higher, Level 16 or below).",
+    trigger = CheckpointPassedForCharacters(InformationBarPoppedUpOnce()
+        && IsInLocation("DepartureForecourtDay"), TerraOnly(), True())
+        && TriggerConditionsMetForCharacters({
+            Terra(): MaxHPIncreased()
+        }, True())
+        && IsAtLeastOnDifficulty("Proud") && level() <= 16
+        && never(!IsInLocation("DepartureForecourtDay"))
+        && never(CommandGaugeEmptied())
+)
+
+function landOfDepartureIITerraStoryEntry() => bit0(0x1f28425)
+achievement(title = "Patricide", points = 3,
+    description = "Complete Terra's second visit to the Land of Departure.",
+    trigger = WasBitflagSetInGame(landOfDepartureIITerraStoryEntry()) && IsInLocation("WorldMap")
+)
+
+function DefeatedXehanortI() => bit0(0x1f285a5) == 1
+achievement(title = "Give Me Strength [m]", points = 10,
+    description = "Defeat Xehanort solo using only battle commands while a D-Link is active (Proud Mode or higher, Level 20 or below).",
+    trigger = CheckpointPassedForCharacters(InformationBarPoppedUpOnce()
+        && IsInLocation("Graveyard3"), TerraOnly(), True())
+        && TriggerConditionsMetForCharacters({
+            Terra(): MaxHPIncreased()
+        }, True())
+        && IsAtLeastOnDifficulty("Proud") && level() <= 20
+        && never(!IsInLocation("Graveyard3"))
+        && never(!DefeatedXehanortI())
+        && (always_true() || never(JustUsedAnyGivenCommand(battleCommands)) && unless(IsUsingDLink()))
+)
+
+function CureFamilyCommandsCallback(command)
+{
+    if (command["name"] == "Cure" || command["name"] == "Cura" || command["name"] == "Curaga")
+    {
+        return True()
+    }
+    else
+    {
+        return False()
+    }
+}
+
+function DefeatedXehanortII() => bit1(0x1f285a5) == 1
+cureFamilyCommands = GetCommandsByCallback(CureFamilyCommandsCallback)
+achievement(title = "Terminal Corruption [m]", points = 50,
+    description = "Defeat Terra-Xehanort in the Keyblade Graveyard without using any commands in the Cure family (Proud Mode or higher, Level 20 or below).",
+    trigger = CheckpointPassedForCharacters(InformationBarPoppedUpOnce()
+        && IsInLocation("GraveyardCage"), [ TerraArmored() ], True())
+        && TriggerConditionsMetForCharacters({
+            // The final boss, of course, yields no rewards.
+            TerraArmored(): BossDefeatTriggered()
+        }, True())
+        && IsAtLeastOnDifficulty("Proud") && level() <= 20
+        && never(!IsInLocation("GraveyardCage"))
+        && never(JustUsedAnyGivenCommand(cureFamilyCommands))
 )
 
 // We're checking for a pointer-esque format rather than checking for NULL here because this address flickers between values before finally settling onto the final pointer address
