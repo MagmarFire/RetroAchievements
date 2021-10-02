@@ -1123,6 +1123,31 @@ achievement(title = "Terminal Corruption [m]", points = 50,
         && never(JustUsedAnyGivenCommand(cureFamilyCommands))
 )
 
+function gameStateDeterminer() => byte(0xb47ade)
+function xehanortReport11() => bit0(0x1f2932d)
+function ViewedBattleReportLongEnough() => once(Delta(gameStateDeterminer()) == 0xd && gameStateDeterminer() == 0x81) && repeated(60, gameStateDeterminer() == 0x81)
+function TerraStoryCompleted() => WasBitflagSetInGame(xehanortReport11()) && ViewedBattleReportLongEnough() && currentCharacter() == TerraArmored()
+achievement(title = "The Vessel", points = 10, // todo: name subject to change
+    description = "Complete Terra's story.",
+    trigger = TerraStoryCompleted()
+)
+
+achievement(title = "Proud Warrior [m]", points = 10,
+    description = "Complete Terra's Story on Proud Mode or higher.",
+    trigger = TerraStoryCompleted() && IsAtLeastOnDifficulty("Proud")
+)
+
+achievement(title = "Critical Warrior [m]", points = 25,
+    description = "Complete Terra's story on Critical Mode.",
+    trigger = TerraStoryCompleted() && IsAtLeastOnDifficulty("Critical")
+)
+
+achievement(title = "Apotheosis [m]", points = 100,
+    description = "Complete any character's story at Level 1 on Critical Mode.",
+    trigger = level() == 1 && IsAtLeastOnDifficulty("Critical")
+        && TerraStoryCompleted() // todo: add more characters' stories later
+)
+
 // We're checking for a pointer-esque format rather than checking for NULL here because this address flickers between values before finally settling onto the final pointer address
 // when the race begins.
 function AddressIsPointer(addr) => byte(addr + 3) == 0x8 || byte(addr + 3) == 0x9
