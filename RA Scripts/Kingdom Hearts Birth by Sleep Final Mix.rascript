@@ -231,7 +231,9 @@ function areaId() => byte(0xB47AC1)
 
 function systemTimer() => dword(0x1f25ee0)
 
-function IsAlwaysInGame() => never(IsInLocation("Title"))
+function saveState() => word(0xb5c1a0)
+
+function IsAlwaysInGame() => never(IsInLocation("Title")) && never(saveState() == 0xff00)
 
 function IsInGame() => !IsInLocation("Title")
 
