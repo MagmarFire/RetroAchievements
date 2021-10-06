@@ -233,11 +233,11 @@ function systemTimer() => dword(0x1f25ee0)
 
 function saveState() => word(0xb5c1a0)
 
-function IsAlwaysInGame() => never(IsInLocation("Title")) && never(saveState() == 0xff00)
+function IsAlwaysInGame() => never(IsInLocation("Title")) && never(saveState() != 0x0101)
 
 function IsInGame() => !IsInLocation("Title")
 
-function GameJustLoaded() => WasInLocation("Title") && IsInGame()
+function GameJustLoaded() => Delta(saveState()) != 0x0101 && saveState() == 0x0101
 
 function WasValueSet(mem, oldValue, newValue)
 {
@@ -585,9 +585,9 @@ function mirageArenaCurrentRound() => byte(characterFieldPointer() + 0xb58 + 0x1
 function mirageArenaRoundsCompleted() => byte(characterFieldPointer() + 0xb5a + 0x1000000)
 function commandBeingUsed() => word(characterFieldPointer() + 0xc98 + 0x1000000)
 
-function characterArenaPointer() => tbyte(0xb5bea8)
-function arenaHp() => word(characterArenaPointer() - 0x23270 + 0x1000000)
-function commandBeingUsedInArena() => word(characterArenaPointer() - 0x23398 + 0x1000000)
+function characterArenaPointer() => tbyte(0xb59ce8)
+function arenaHp() => word(characterArenaPointer() - 0x14880 + 0x1000000)
+function commandBeingUsedInArena() => word(characterArenaPointer() - 0x149a8 + 0x1000000)
 
 function EnteredAttackState() => Delta(characterState()) != 0x10 && characterState() == 0x10
 function IsUsingFinisher() => characterState() == 0x14
@@ -787,6 +787,7 @@ function maxNumberOfInventorySlots() => 569
 function currentDeck() => byte(0x1f2bb78)
 function CurrentDeckIs(deckId) => currentDeck() == deckId - 1
 function maxNumberOfCommandSlots() => 8
+
 function HasAnyOfTheGivenCommandsEquipped(commands)
 {
     commandIds = GetIdsFromObjects(commands)
@@ -1199,6 +1200,56 @@ CreateRumbleRacingAchievementAndLeaderboard("Prix Spree", GetLocationByName("Dis
 
 CreateRumbleRacingAchievementAndLeaderboard("Castle Crasher", GetLocationByName("DisneyCastle"), 236, 50)
 
+GenerateCheevoFromBits(name = "Sticker Warrior", description = "Collect every sticker in Terra's story.", points = 5,
+    threshold = 20,
+    addresses = {
+        1: { "addr": 0x1f2929c, "bit": 1 },
+        2: { "addr": 0x1f2929c, "bit": 2 },
+        3: { "addr": 0x1f2929c, "bit": 3 },
+        4: { "addr": 0x1f2929c, "bit": 4 },
+        5: { "addr": 0x1f2929c, "bit": 5 },
+        6: { "addr": 0x1f2929c, "bit": 6 },
+        7: { "addr": 0x1f2929c, "bit": 7 },
+        8: { "addr": 0x1f2929d, "bit": 0 },
+        9: { "addr": 0x1f2929d, "bit": 1 },
+        10: { "addr": 0x1f2929d, "bit": 2 },
+        11: { "addr": 0x1f2929d, "bit": 3 },
+        12: { "addr": 0x1f2929e, "bit": 2 },
+        13: { "addr": 0x1f2929e, "bit": 3 },
+        14: { "addr": 0x1f2929d, "bit": 4 },
+        15: { "addr": 0x1f2929d, "bit": 5 },
+        16: { "addr": 0x1f2929d, "bit": 6 },
+        17: { "addr": 0x1f2929e, "bit": 1 },
+        18: { "addr": 0x1f2929d, "bit": 7 },
+        19: { "addr": 0x1f2929e, "bit": 0 },
+        20: { "addr": 0x1f2929e, "bit": 4 },
+    }
+)
+
+function finishCommandWidth() => 8
+function finishCommandArraySize() => 15
+
+function UnlockedFinishCommand(id)
+{
+    trigger = always_false()
+    
+    for i in range(0, finishCommandArraySize() - 1)
+    {
+        finishCommandBaseAddr = 0x1f2b534
+        commandStatus = byte(finishCommandBaseAddr + i * finishCommandWidth() + 2)
+        commandId = word(finishCommandBaseAddr + i * finishCommandWidth())
+        
+        trigger = trigger || commandId == id && Delta(commandStatus) == 1 && commandStatus == 2
+    }
+    
+    return trigger
+}
+
+achievement(title = "Apex of War", points = 5,
+    description = "Unlock Terra's ultimate Finish command.",
+    trigger = UnlockedFinishCommand(0x5a) && (currentCharacter() == Terra() || currentCharacter() == TerraArmored() || currentCharacter() == TerraArmoredGlider())
+)
+
 GenerateCheevoFromBits(name = "Career Rumbler", description = "Complete all Rumble Racing Arena Missions for any character.", points = 5,
     threshold = 4,
     addresses = {
@@ -1332,4 +1383,35 @@ achievement(title = "Rainbow Loom [m]", points = 10,
     trigger = never(HasDuplicateCommandInDeckOfSize(equippableBattleCommands, 1, 8))
         && never(DeckLoadoutChanged()) && CurrentDeckIs(1)
         && MirageArenaCheckpointReachedForCharacters(0x301, "MirageChamber", [ TerraArmored() ], 4) // todo: insert other characters
+)
+
+function CommandDeckSlotsFilledIsAtLeast(slotsFilled)
+{
+    trigger = always_false()
+    slotBaseAddrs = [ deck1Slot1BaseAddr(), deck2Slot1BaseAddr(), deck3Slot1BaseAddr() ]
+    
+    for deck in range(0, 2)
+    {
+        slotsUsedInDeck = []
+        for i in range(0, maxNumberOfCommandSlots() - 1)
+        {
+            inventoryIndex = word(slotBaseAddrs[deck] + i * commandIndexWidth()) // 0xffff when no command is equipped
+            array_push(slotsUsedInDeck, once(inventoryIndex != 0xffff))
+        }
+        
+        trigger = trigger || CurrentDeckIs(deck + 1) && tally(slotsFilled, slotsUsedInDeck)
+    }
+    
+    return trigger
+}
+
+shotlocks = GetCommandsByProperties({ "supercategory": "Shotlock" })
+
+// todo: rebalance, since Level 20 is probably too high
+achievement(title = "Weapon Confiscation [m]", points = 5,
+    description = "Complete \"Sinister Sentinel\" in the Mirage Arena with only three slots filled in your Command Deck and without using Shotlocks (Critical Mode, Level 20 or below).",
+    trigger = never(JustUsedAnyGivenCommandInArena(shotlocks))
+        && MirageArenaCheckpointReachedForCharacters(0x401, "MirageArena1", [ TerraArmored() ], 5) // todo: insert other characters
+        && IsAtLeastOnDifficulty("Critical") && level() <= 20
+        && never(CommandDeckSlotsFilledIsAtLeast(4))
 )
