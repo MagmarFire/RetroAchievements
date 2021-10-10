@@ -895,7 +895,7 @@ function TrinityArmorWasJustDefeated() => Delta(trinityArmorsDefeated()) < trini
 function secondChanceActiveAddr() => 0x1f2acbc
 function onceMoreActiveAddr() => 0x1f2acc0
 achievement(title = "Face, Meet Cannon [m]", points = 10,
-    description = "Defeat the Trinity Armor without Second Chance or Once More equipped (Critical Mode, Level 6 or below).",
+    description = "Defeat the Trinity Armor in Radiant Garden without Second Chance or Once More equipped (Critical Mode, Level 6 or below).",
     trigger = IsAlwaysInGame()
         && CheckpointPassedForCharacters(once(InformationBarJustPoppedUp() && IsInLocation("RadiantReactor")) && IsAtLeastOnDifficulty("Critical") && level() <= 6, [ Terra(), Ventus(), Aqua() ], True())
         && TriggerConditionsMetForCharacters({
@@ -1447,4 +1447,73 @@ achievement(title = "Minor Duplication [m]", points = 5,
         && IsAtLeastOnDifficulty("Critical") && level() <= 20
         && never(UsedAnyUniqueCommandsGivenNumberOfTimesInArena(battleCommands, 3))
         && never(JustUsedAnyGivenCommandInArena(surgeBattleCommands))
+)
+
+function GetAbilityByAddress(addr)
+{
+    return {
+        "numberEquipped": (bit0(addr) + bit1(addr) * 2 + bit2(addr) * 4)
+    }
+}
+
+function NumberOfStatAbilitiesEquipped(max)
+{
+    statAbilityAddrs = [
+        0x1f2ac64, // HP Boost
+        0x1f2ac6c, // Fire Boost
+        0x1f2ac70, // Blizzard Boost
+        0x1f2ac74, // Thunder Boost
+        0x1f2ac78, // Cure Boost
+        0x1f2ac7c, // Item Boost
+        0x1f2ac80, // Attack Haste
+        0x1f2ac84, // Magic Haste
+        0x1f2ac88, // Combo F Boost
+        0x1f2ac8c, // Finish Boost
+        0x1f2ac98, // Fire Screen
+        0x1f2ac9c, // Blizzard Screen
+        0x1f2aca0, // Thunder Screen
+        0x1f2aca4, // Dark Screen
+        0x1f2aca8, // Reload Boost
+        0x1f2acac // Defender
+    ]
+    
+    return NumberOfGivenAbilitiesEquippedByAddrGreaterThanOrEqualTo(statAbilityAddrs, max)
+}
+
+function NumberOfBeneficialSupportAbilitiesEquippedGreaterThanOrEqualTo(max)
+{
+    supportAbilityAddrs = [
+        //0x1f2ac68, // Zero EXP
+        0x1f2ac90, // Combo Plus
+        0x1f2ac94, // Air Combo Plus
+        0x1f2acb0, // EXP Chance
+        0x1f2acb4, // EXP Walker
+        0x1f2acb8, // Damage Syphon
+        0x1f2acbc, // Second Chance
+        0x1f2acc0, // Once More
+        0x1f2acc4, // Scan
+        0x1f2acc8, // Leaf Bracer
+    ]
+    
+    return NumberOfGivenAbilitiesEquippedByAddrGreaterThanOrEqualTo(supportAbilityAddrs, max)
+}
+
+function NumberOfGivenAbilitiesEquippedByAddrGreaterThanOrEqualTo(addrs, max)
+{
+    ret = []
+    for addr in addrs
+    {
+        ability = GetAbilityByAddress(addr)
+        array_push(ret, once(ability["numberEquipped"] > 0))
+    }
+    
+    return tally(max, ret)
+}
+
+achievement(title = "Combined Boon [m]", points = 10,
+    description = "Complete \"Combined Threat\" in the Mirage Arena with only two Stat and beneficial Support Abilities each turned on (Critical Mode, Level 20 or below).",
+    trigger = MirageArenaCheckpointReachedForCharacters(0x601, "MirageExterior", [ TerraArmored() ], 6) // todo: insert other characters
+        && IsAtLeastOnDifficulty("Critical") && level() <= 20
+        && never(NumberOfStatAbilitiesEquipped(3))
+        && never(NumberOfBeneficialSupportAbilitiesEquippedGreaterThanOrEqualTo(3))
 )
