@@ -586,8 +586,9 @@ function mirageArenaRoundsCompleted() => byte(characterFieldPointer() + 0xb5a + 
 function commandBeingUsed() => word(characterFieldPointer() + 0xc98 + 0x1000000)
 
 function characterArenaPointer() => tbyte(0xb59ce8)
-function arenaHp() => word(characterArenaPointer() - 0x14880 + 0x1000000)
+function arenaHp() => word(characterArenaPointer() + 0x7c + 0x1000000)
 function commandBeingUsedInArena() => word(characterArenaPointer() - 0x149a8 + 0x1000000)
+function TookDamageInTheMirageArena() => Delta(arenaHp()) > arenaHp() && characterArenaPointer() != 0
 
 function EnteredAttackState() => Delta(characterState()) != 0x10 && characterState() == 0x10
 function IsUsingFinisher() => characterState() == 0x14
@@ -1511,9 +1512,30 @@ function NumberOfGivenAbilitiesEquippedByAddrGreaterThanOrEqualTo(addrs, max)
 }
 
 achievement(title = "Combined Boon [m]", points = 10,
-    description = "Complete \"Combined Threat\" in the Mirage Arena with only two Stat and beneficial Support Abilities each turned on (Critical Mode, Level 20 or below).",
+    description = "Complete \"Combined Threat\" in the Mirage Arena with only two beneficial Stat and Support Abilities each turned on (Critical Mode, Level 20 or below).",
     trigger = MirageArenaCheckpointReachedForCharacters(0x601, "MirageExterior", [ TerraArmored() ], 6) // todo: insert other characters
         && IsAtLeastOnDifficulty("Critical") && level() <= 20
         && never(NumberOfStatAbilitiesEquipped(3))
         && never(NumberOfBeneficialSupportAbilitiesEquippedGreaterThanOrEqualTo(3))
+)
+
+function MultiSlotCommandCallback(command)
+{
+    if (command["slots"] > 1)
+    {
+        return True()
+    }
+    else
+    {
+        return False()
+    }
+}
+
+battleCommandsThatUseMoreThanOneSlot = GetCommandsByCallback(MultiSlotCommandCallback)
+achievement(title = "Healthcare Budgeting [m]", points = 10,
+    description = "Complete \"Risky Riches\" in the Mirage Arena using only commands that take up a single slot and without taking damage more than three times (Critical Mode, Level 20 or below).",
+    trigger = MirageArenaCheckpointReachedForCharacters(0x201, "MirageSkull", [ TerraArmored() ], 3) // todo: insert other characters
+        && IsAtLeastOnDifficulty("Critical") && level() <= 20
+        && never(repeated(4, TookDamageInTheMirageArena()))
+        && never(JustUsedAnyGivenCommandInArena(battleCommandsThatUseMoreThanOneSlot))
 )
