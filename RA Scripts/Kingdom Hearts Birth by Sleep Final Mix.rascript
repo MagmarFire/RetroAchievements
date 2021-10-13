@@ -1565,3 +1565,11 @@ achievement(title = "The Madness of Man [m]", points = 25,
         && IsAtLeastOnDifficulty("Critical")
         && level() <= 20
 )
+
+directHealingCommands = GetCommandsByProperties({ "healsHp": True() })
+achievement(title = "Scrounging to Survive [m]", points = 10,
+    description = "Complete \"Treasure Tussle\" in the Mirage Arena without using commands that directly heal you (Critical Mode, Level 20 or below).",
+    trigger = MirageArenaCheckpointReachedForCharacters(0x701, "MiragePinball", [ TerraArmored() ], 3) // todo: insert other characters
+        && IsAtLeastOnDifficulty("Critical") && level() <= 20
+        && never(JustUsedAnyGivenCommandInArena(directHealingCommands))
+)
