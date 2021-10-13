@@ -1263,6 +1263,16 @@ achievement(title = "Apex of War", points = 5,
     trigger = UnlockedFinishCommand(0x5a) && (currentCharacter() == Terra() || currentCharacter() == TerraArmored() || currentCharacter() == TerraArmoredGlider())
 )
 
+GenerateCheevoFromBits(name = "Peer Reviewer - Terra", description = "Obtain all secret reports in Terra's story.", points = 5,
+    threshold = 4,
+    addresses = {
+        1: { "addr": 0x1f2932b, "bit": 7 },
+        2: { "addr": 0x1f2932c, "bit": 2 },
+        3: { "addr": 0x1f2932c, "bit": 5 },
+        4: { "addr": 0x1f2932d, "bit": 0 },
+    }
+)
+
 GenerateCheevoFromBits(name = "Career Rumbler", description = "Complete all Rumble Racing Arena Missions for any character.", points = 5,
     threshold = 4,
     addresses = {
