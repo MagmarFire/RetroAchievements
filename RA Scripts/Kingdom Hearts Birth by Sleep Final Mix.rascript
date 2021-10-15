@@ -611,11 +611,11 @@ function JustUsedAnyGivenCommand(haystack)
     {
         if (needle["min"] == needle["max"])
         {
-            trigger = trigger || Delta(commandBeingUsed()) == 0 && commandBeingUsed() == needle["min"]
+            trigger = trigger || Delta(commandBeingUsed()) != commandBeingUsed() && commandBeingUsed() == needle["min"]
         }
         else
         {
-            trigger = trigger || Delta(commandBeingUsed()) == 0 && commandBeingUsed() >= needle["min"] && commandBeingUsed() <= needle["max"]
+            trigger = trigger || Delta(commandBeingUsed()) != commandBeingUsed() && commandBeingUsed() >= needle["min"] && commandBeingUsed() <= needle["max"]
         }
     }
     return trigger
@@ -626,7 +626,7 @@ function JustUsedAnyGivenCommandInArena(haystack)
     trigger = always_false()
     for needle in haystack
     {
-        trigger = trigger || Delta(commandBeingUsedInArena()) == 0 && commandBeingUsedInArena() == needle["id"]
+        trigger = trigger || Delta(commandBeingUsedInArena()) != commandBeingUsedInArena() && commandBeingUsedInArena() == needle["id"]
     }
     return trigger
 }
@@ -1582,4 +1582,15 @@ achievement(title = "Scrounging to Survive [m]", points = 10,
     trigger = MirageArenaCheckpointReachedForCharacters(0x701, "MiragePinball", [ TerraArmored() ], 3) // todo: insert other characters
         && IsAtLeastOnDifficulty("Critical") && level() <= 20
         && never(JustUsedAnyGivenCommandInArena(directHealingCommands))
+)
+
+achievement(title = "Rolling Blackout [m]", points = 50,
+    description = "Complete \"Copycat Crisis\" in the Mirage Arena using battle commands only on even-numbered rounds (Critical Mode, Level 25 or below).",
+    trigger = MirageArenaCheckpointReachedForCharacters(0xa01, "MirageSummit", [ TerraArmored() ], 8) // todo: insert other characters
+        && IsAtLeastOnDifficulty("Critical") && level() <= 25
+        // We need to check oddness for each round individually because the (1) the modulo operator isn't supported and (2) the logic would be too complex otherwise.
+        && never(JustUsedAnyGivenCommandInArena(battleCommands) && mirageArenaCurrentRound() == 1)
+        && never(JustUsedAnyGivenCommandInArena(battleCommands) && mirageArenaCurrentRound() == 3)
+        && never(JustUsedAnyGivenCommandInArena(battleCommands) && mirageArenaCurrentRound() == 5)
+        && never(JustUsedAnyGivenCommandInArena(battleCommands) && mirageArenaCurrentRound() == 7)
 )
