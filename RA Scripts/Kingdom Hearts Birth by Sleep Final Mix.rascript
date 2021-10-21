@@ -1639,3 +1639,26 @@ achievement(title = "The Spice of Life [m]", points = 50,
             once(GivenCommandStyleWasActivated(timesFrozenFortuneWasActivated())),
         ]))
 )
+
+achievement(title = "Style Specialist [m]", points = 50,
+    description = "Complete \"Villains' Vendetta\" in the Mirage Arena while activating at most one type of Command Style (Critical Mode, Level 45 or below).",
+    trigger = MirageArenaCheckpointReachedForCharacters(0xd01, "MirageArena1", [ TerraArmored() ], 8) // todo: insert other characters
+        && IsAtLeastOnDifficulty("Critical") && level() <= 45
+        && never(tally(2, [
+            once(GivenCommandStyleWasActivated(timesCritialImpactWasActivated())),
+            once(GivenCommandStyleWasActivated(timesSpellweaverWasActivated())),
+            once(GivenCommandStyleWasActivated(timesFeverPitchWasActivated())),
+            once(GivenCommandStyleWasActivated(timesFirestormWasActivated())),
+            once(GivenCommandStyleWasActivated(timesDiamondDustWasActivated())),
+            once(GivenCommandStyleWasActivated(timesThunderboltWasActivated())),
+            once(GivenCommandStyleWasActivated(timesCycloneWasActivated())),
+            once(GivenCommandStyleWasActivated(timesBladechargeWasActivated())),
+            once(GivenCommandStyleWasActivated(timesSkyClimberWasActivated())),
+            once(GivenCommandStyleWasActivated(timesRockbreakerWasActivated())),
+            once(GivenCommandStyleWasActivated(timesGhostDriveWasActivated())),
+            once(GivenCommandStyleWasActivated(timesRhythmMixerWasActivated())),
+            once(GivenCommandStyleWasActivated(timesDarkImpulseWasActivated())),
+            once(GivenCommandStyleWasActivated(timesWingbladeWasActivated())),
+            once(GivenCommandStyleWasActivated(timesFrozenFortuneWasActivated())),
+        ]))
+)
