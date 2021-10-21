@@ -244,6 +244,16 @@ function WasValueSet(mem, oldValue, newValue)
     return once(IsValueJustSet(mem, oldValue, newValue))
 }
 
+function IsValueJustSetGreaterThanOrEqualToValue(mem, value)
+{
+    return Delta(mem) < value && mem >= value
+}
+
+function IsValueJustSetGreaterThanOrEqualToValueInGame(mem, value)
+{
+    return IsValueJustSetGreaterThanOrEqualToValue(mem, value) && IsAlwaysInGame()
+}
+
 function IsValueJustSet(mem, oldValue, newValue)
 {
     return Delta(mem) == oldValue && mem == newValue
@@ -1272,6 +1282,14 @@ GenerateCheevoFromBits(name = "Peer Reviewer - Terra", description = "Obtain all
         4: { "addr": 0x1f2932d, "bit": 0 },
     }
 )
+
+function enchantedDominionUnversedMissionHighScore() => dword(0x1f35d38)
+function enchantedDominionUnversedMissionScoreTarget() => 65
+achievement(title = "Orbital Defender", points = 10,
+    description = "Get a score of " + enchantedDominionUnversedMissionScoreTarget() + " or more in the Unversed Mission in Enchanted Dominion.",
+    trigger = IsValueJustSetGreaterThanOrEqualToValueInGame(enchantedDominionUnversedMissionHighScore(), enchantedDominionUnversedMissionScoreTarget())
+)
+
 
 GenerateCheevoFromBits(name = "Career Rumbler", description = "Complete all Rumble Racing Arena Missions for any character.", points = 5,
     threshold = 4,
