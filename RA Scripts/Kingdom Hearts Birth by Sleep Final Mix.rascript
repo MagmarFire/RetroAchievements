@@ -1561,7 +1561,7 @@ achievement(title = "Escalation of Force [m]", points = 10,
 )
 
 function MonstroMirageArenaCheckpointReachedForCharacters()
-{    
+{
     return CheckpointPassedForCharacters(MirageArenaCheckpointPassedCallback(0xc01, "MirageMonstro"), [ TerraArmored() ], False()) // todo: insert other characters
         && never(!WasInLocation("MirageMonstro") && IsInLocation("MirageHub"))
         && mirageArenaCurrentRound() < 7
@@ -1588,9 +1588,54 @@ achievement(title = "Rolling Blackout [m]", points = 50,
     description = "Complete \"Copycat Crisis\" in the Mirage Arena using battle commands only on even-numbered rounds (Critical Mode, Level 25 or below).",
     trigger = MirageArenaCheckpointReachedForCharacters(0xa01, "MirageSummit", [ TerraArmored() ], 8) // todo: insert other characters
         && IsAtLeastOnDifficulty("Critical") && level() <= 25
-        // We need to check oddness for each round individually because the (1) the modulo operator isn't supported and (2) the logic would be too complex otherwise.
+        // We need to check oddness for each round individually because (1) the modulo operator isn't supported in the editor and (2) the logic would be too complex otherwise.
         && never(JustUsedAnyGivenCommandInArena(battleCommands) && mirageArenaCurrentRound() == 1)
         && never(JustUsedAnyGivenCommandInArena(battleCommands) && mirageArenaCurrentRound() == 3)
         && never(JustUsedAnyGivenCommandInArena(battleCommands) && mirageArenaCurrentRound() == 5)
         && never(JustUsedAnyGivenCommandInArena(battleCommands) && mirageArenaCurrentRound() == 7)
+)
+
+
+function timesCritialImpactWasActivated() => word(0x1f35ebc)
+function timesSpellweaverWasActivated() => word(0x1f35ebe)
+function timesFeverPitchWasActivated() => word(0x1f35ec0)
+function timesFirestormWasActivated() => word(0x1f35ec2)
+function timesDiamondDustWasActivated() => word(0x1f35ec4)
+function timesThunderboltWasActivated() => word(0x1f35ec6)
+function timesCycloneWasActivated() => word(0x1f35ec8)
+function timesBladechargeWasActivated() => word(0x1f35eca)
+function timesSkyClimberWasActivated() => word(0x1f35ecc)
+function timesRockbreakerWasActivated() => word(0x1f35ece)
+function timesGhostDriveWasActivated() => word(0x1f35ed0)
+function timesRhythmMixerWasActivated() => word(0x1f35ed2)
+function timesDarkImpulseWasActivated() => word(0x1f35ed4)
+function timesWingbladeWasActivated() => word(0x1f35ed6)
+function timesFrozenFortuneWasActivated() => word(0x1f35ed8)
+
+function GivenCommandStyleWasActivated(activatedMem)
+{
+    return activatedMem == Delta(activatedMem) + 1
+}
+
+achievement(title = "The Spice of Life [m]", points = 50,
+    description = "Activate seven different Command Styles in a single attempt of the \"Keepers of the Arena\" event in the Mirage Arena, and then complete it (Critical Mode, Level 42 or below).",
+    trigger = MirageArenaCheckpointReachedForCharacters(0xb01, "MirageArena1", [ TerraArmored() ], 9) // todo: insert other characters
+        && IsAtLeastOnDifficulty("Critical") && level() <= 42
+        && trigger_when(tally(7, [
+            once(GivenCommandStyleWasActivated(timesCritialImpactWasActivated())),
+            once(GivenCommandStyleWasActivated(timesSpellweaverWasActivated())),
+            once(GivenCommandStyleWasActivated(timesFeverPitchWasActivated())),
+            once(GivenCommandStyleWasActivated(timesFirestormWasActivated())),
+            once(GivenCommandStyleWasActivated(timesDiamondDustWasActivated())),
+            once(GivenCommandStyleWasActivated(timesThunderboltWasActivated())),
+            once(GivenCommandStyleWasActivated(timesCycloneWasActivated())),
+            once(GivenCommandStyleWasActivated(timesBladechargeWasActivated())),
+            once(GivenCommandStyleWasActivated(timesSkyClimberWasActivated())),
+            once(GivenCommandStyleWasActivated(timesRockbreakerWasActivated())),
+            once(GivenCommandStyleWasActivated(timesGhostDriveWasActivated())),
+            once(GivenCommandStyleWasActivated(timesRhythmMixerWasActivated())),
+            once(GivenCommandStyleWasActivated(timesDarkImpulseWasActivated())),
+            once(GivenCommandStyleWasActivated(timesWingbladeWasActivated())),
+            once(GivenCommandStyleWasActivated(timesFrozenFortuneWasActivated())),
+        ]))
 )
