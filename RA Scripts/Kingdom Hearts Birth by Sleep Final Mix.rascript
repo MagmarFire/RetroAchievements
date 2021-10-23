@@ -1,9 +1,6 @@
 // Kingdom Hearts Birth by Sleep
 // #ID = 3556
 
-function True() => 1
-function False() => 0
-
 function Delta(mem) => prev(mem)
 
 function SecondsToFormat(value)
@@ -97,11 +94,11 @@ function DictionaryKeyExists(dict, key)
     {
         if (i == key)
         {
-            return True()
+            return true
         }
     }
     
-    return False()
+    return false
 }
 
 // Dictionary elements must have "addr" and "bit" fields.
@@ -118,7 +115,7 @@ function AggregateBitsFromAddressBits(dict)
         
         if (element["addr"] != -1)
         {
-            if (DictionaryKeyExists(ret, element["addr"]) == True())
+            if (DictionaryKeyExists(ret, element["addr"]) == true)
             {
                 arr = ret[element["addr"]]
                 array_push(arr, element["bit"])
@@ -482,17 +479,17 @@ function GetCommandsByProperties(properties)
     for id in commands
     {
         command = commands[id]
-        mismatchFound = False()
+        mismatchFound = false
         
         for key in properties
         {
             if (command[key] != properties[key])
             {
-                mismatchFound = True()
+                mismatchFound = true
             }
         }
         
-        if (mismatchFound == False())
+        if (mismatchFound == false)
         {
             array_push(ret, command)
         }
@@ -511,7 +508,7 @@ function GetCommandsByCallback(callback)
     {
         command = commands[id]
         
-        if (callback(command) == True())
+        if (callback(command) == true)
         {
             array_push(ret, command)
         }
@@ -671,7 +668,7 @@ function JustUsedAnyGivenCommandInArena(haystack)
     return trigger
 }
 
-function CheckpointPassedForCharacters(checkpointLogic, allowedCharacters, resetOnDeath = 0)
+function CheckpointPassedForCharacters(checkpointLogic, allowedCharacters, resetOnDeath = false)
 {
     characterIsAllowed = always_false()
     
@@ -682,7 +679,7 @@ function CheckpointPassedForCharacters(checkpointLogic, allowedCharacters, reset
     
     returnedLogic = once(checkpointLogic && characterIsAllowed)
     
-    if (resetOnDeath == True())
+    if (resetOnDeath == true)
     {
         returnedLogic = returnedLogic && never(GameOverTriggered())
     }
@@ -691,14 +688,14 @@ function CheckpointPassedForCharacters(checkpointLogic, allowedCharacters, reset
 }
 
 // charactersToTrigger: a dictionary of character IDs to trigger logic; each logical statement will only apply if the player is controlling a specific character
-function TriggerConditionsMetForCharacters(charactersToTriggerLogic, useTrigger = 0)
+function TriggerConditionsMetForCharacters(charactersToTriggerLogic, useTrigger = false)
 {
     triggerMet = always_false()
     for id in charactersToTriggerLogic
     {
         characterLogicIsMet = charactersToTriggerLogic[id]
         
-        if (useTrigger == True())
+        if (useTrigger == true)
         {
             characterLogicIsMet = trigger_when(characterLogicIsMet)
         }
@@ -719,7 +716,7 @@ function FrameAdvanced() => Delta(systemTimer()) != systemTimer()
 
 function firstCommandSlotAddr() => 0x1f29388
 function lastCommandSlotAddr() => 0x1f2a9b8
-function JustObtainedCommandWithId(id, useTrigger = 0)
+function JustObtainedCommandWithId(id, useTrigger = false)
 {
     trigger = always_false()
     for addr in range(firstCommandSlotAddr(), lastCommandSlotAddr(), 10)
@@ -727,7 +724,7 @@ function JustObtainedCommandWithId(id, useTrigger = 0)
         slotI = word(addr)
         condition = Delta(slotI) == 0 && slotI == id
         
-        if (useTrigger == True())
+        if (useTrigger == true)
         {
             condition = trigger_when(condition)
         }
@@ -750,14 +747,14 @@ function LearnedCriticalImpact() => LearnedCommandStyle(criticalImpactState())
 function LearnedFeverPitch() => LearnedCommandStyle(feverPitchState())
 
 function MarkOfMasteryCheckpointReached() => CheckpointPassedForCharacters(InformationBarPoppedUpOnce()
-    && IsInLocation("DepartureGreatHall"), [ Terra(), Ventus(), Aqua() ], True()
+    && IsInLocation("DepartureGreatHall"), [ Terra(), Ventus(), Aqua() ], true
 )
     
 function TriggerConditionsMetForMarkOfMastery() =>
     TriggerConditionsMetForCharacters({
         Terra(): LearnedCriticalImpact(),
         Ventus(): LearnedFeverPitch()
-    }, True())
+    }, true)
 
 achievement(title = "Hit Ball to Pass Test [m]", points = 3,
     description = "Complete the first phase of the Mark of Mastery exam using only one attack or fewer.",
@@ -771,10 +768,10 @@ function LearnedDiamondDust() => diamondDustState() == 5 && Delta(diamondDustSta
 achievement(title = "Snap the Spindle [m]", points = 25,
     description = "Finish off the Wheel Master in Enchanted Dominion with a Finish command (Proud Mode or higher, Level 1).",
     trigger = CheckpointPassedForCharacters(InformationBarPoppedUpOnce()
-        && IsInLocation("EnchantedAudience2"), TerraOnly(), True()
+        && IsInLocation("EnchantedAudience2"), TerraOnly(), true
     ) && TriggerConditionsMetForCharacters({
         Terra(): LearnedDiamondDust()
-    }, True()) && trigger_when(IsUsingFinisher())
+    }, true) && trigger_when(IsUsingFinisher())
     && IsAtLeastOnDifficulty("Proud") && level() == 1
     && never(!IsInLocation("EnchantedAudience2"))
 )
@@ -789,10 +786,10 @@ function counterHammerId() => 0x114
 achievement(title = "Chipped Shield [m]", points = 10,
     description = "Escort Cinderella to the ball without guarding (Critical Mode, Level 3 or below).",
     trigger = IsAlwaysInGame()
-        && CheckpointPassedForCharacters(once(InformationBarJustPoppedUp() && IsInLocation("CastleCorridor")) && IsAtLeastOnDifficulty("Critical") && level() <= 3, TerraOnly(), False())
+        && CheckpointPassedForCharacters(once(InformationBarJustPoppedUp() && IsInLocation("CastleCorridor")) && IsAtLeastOnDifficulty("Critical") && level() <= 3, TerraOnly(), false)
         && TriggerConditionsMetForCharacters({
-            Terra(): (JustObtainedCommandWithId(counterHammerId(), True()) && trigger_when(IsInLocation("CastleFoyer")))
-        }, False())
+            Terra(): (JustObtainedCommandWithId(counterHammerId(), true) && trigger_when(IsInLocation("CastleFoyer")))
+        }, false)
         && unless(characterFieldPointer() == 0) // Prevent resets when transitioning to the foyer.
         && never(IsGuarding())
 )
@@ -803,10 +800,10 @@ function symphonyMastersDefeated() => word(0x1f35fc4)
 achievement(title = "Syncopation [m]", points = 25,
     description = "Defeat the Symphony Master without destroying more than one instrument (Proud Mode or higher, Level 3 or below).",
     trigger = CheckpointPassedForCharacters(InformationBarPoppedUpOnce()
-        && IsInLocation("CastleBallroom"), TerraOnly(), True()
+        && IsInLocation("CastleBallroom"), TerraOnly(), true
     ) && TriggerConditionsMetForCharacters({
         Terra(): WasValueSetInGame(symphonyMastersDefeated(), 0, 1)
-    }, True()) && trigger_when(Delta(numberOfActiveEnemies()) >= 3 && numberOfActiveEnemies() == 0)
+    }, true) && trigger_when(Delta(numberOfActiveEnemies()) >= 3 && numberOfActiveEnemies() == 0)
     && IsAtLeastOnDifficulty("Proud") && level() <= 3
     && never(!IsInLocation("CastleBallroom"))
 )
@@ -882,17 +879,17 @@ function CreateCommandDenylistFromAllowlist(allowlist)
     for i in commands
     {
         command = commands[i]
-        commandFound = False()
+        commandFound = false
         
         for allowed in allowlist
         {
             if (allowed["id"] == command["id"])
             {
-                commandFound = True()
+                commandFound = true
             }
         }
         
-        if (commandFound == False())
+        if (commandFound == false)
         {
             array_push(denylist, command)
         }
@@ -917,11 +914,11 @@ achievement(title = "Sleeping Death [m]", points = 10,
     description = "Defeat the Spirit of the Magic Mirror equipping battle commands that only inflict status effects (Proud Mode or higher, Level 4 or below, no D-Links).",
     trigger = HasOnlyTheGivenCommandsEquipped(statusCommands)
         && CheckpointPassedForCharacters(InformationBarPoppedUpOnce()
-            && IsInLocation("DwarfMirror"), [Terra(), Aqua() ], True()
+            && IsInLocation("DwarfMirror"), [Terra(), Aqua() ], true
         ) && TriggerConditionsMetForCharacters({
             Terra(): FirestormLearned(),
             Aqua(): DeckCapacityIncreased()
-        }, True()) && trigger_when(Delta(numberOfActiveEnemies()) >= 1 && numberOfActiveEnemies() == 0)
+        }, true) && trigger_when(Delta(numberOfActiveEnemies()) >= 1 && numberOfActiveEnemies() == 0)
         && IsAtLeastOnDifficulty("Proud") && level() <= 4
         && never(!IsInLocation("DwarfMirror"))
         && never(IsUsingDLink())
@@ -944,12 +941,13 @@ function onceMoreActiveAddr() => 0x1f2acc0
 achievement(title = "Face, Meet Cannon [m]", points = 10,
     description = "Defeat the Trinity Armor in Radiant Garden without Second Chance or Once More equipped (Critical Mode, Level 6 or below).",
     trigger = IsAlwaysInGame()
-        && CheckpointPassedForCharacters(once(InformationBarJustPoppedUp() && IsInLocation("RadiantReactor")) && IsAtLeastOnDifficulty("Critical") && level() <= 6, [ Terra(), Ventus(), Aqua() ], True())
+        && CheckpointPassedForCharacters(once(InformationBarJustPoppedUp() && IsInLocation("RadiantReactor")) && IsAtLeastOnDifficulty("Critical") && level() <= 6,
+            [ Terra(), Ventus(), Aqua() ], true)
         && TriggerConditionsMetForCharacters({
             Terra(): TrinityArmorWasJustDefeated(),
             Ventus(): TrinityArmorWasJustDefeated(),
             Aqua(): TrinityArmorWasJustDefeated()
-        }, True())
+        }, true)
         && never(IsAbilityTurnedOn(secondChanceActiveAddr()))
         && never(IsAbilityTurnedOn(onceMoreActiveAddr()))
 )
@@ -957,10 +955,10 @@ achievement(title = "Face, Meet Cannon [m]", points = 10,
 achievement(title = "He Who Liveth by the Sword... [m]", points = 10,
     description = "Defeat Braig in Radiant Garden without using any standard attacks (Proud Mode or higher, Level 6 or below).",
     trigger = CheckpointPassedForCharacters(InformationBarPoppedUpOnce()
-        && IsInLocation("RadiantPurification"), TerraOnly(), True()
+        && IsInLocation("RadiantPurification"), TerraOnly(), true
     ) && TriggerConditionsMetForCharacters({
         Terra(): DeckCapacityIncreased()
-    }, True())
+    }, true)
     && IsAtLeastOnDifficulty("Proud") && level() <= 6
     && never(!IsInLocation("RadiantPurification"))
     && never(IsUsingAStandardAttack())
@@ -980,15 +978,15 @@ achievement(title = "Full Tilt", points = 5,
 
 function maxHp() => word(0x1f19afc)
 function MaxHPIncreased() => Delta(maxHp()) < maxHp()
-nonHealingMagicCommands = GetCommandsByProperties({ "supercategory": "Magic", "healsHp": False() })
+nonHealingMagicCommands = GetCommandsByProperties({ "supercategory": "Magic", "healsHp": 0 })
 function BeganFinalsAsTerra() => bit4(0x1f28505) == 1
 achievement(title = "Self-Reliance [m]", points = 50,
     description = "Reach the finals of the Olympus Coliseum Games as Terra without using D-Links or non-healing magic commands (Proud Mode or higher, Level 8 or below).",
     trigger = CheckpointPassedForCharacters(InformationBarPoppedUpOnce()
-            && IsInLocation("OlympusEast"), TerraOnly(), True())
+            && IsInLocation("OlympusEast"), TerraOnly(), true)
             && TriggerConditionsMetForCharacters({
                 Terra(): MaxHPIncreased()
-            }, True())
+            }, true)
         && IsAtLeastOnDifficulty("Proud") && level() <= 8
         && never(!IsInLocation("OlympusEast"))
         && never(IsUsingDLink())
@@ -996,28 +994,16 @@ achievement(title = "Self-Reliance [m]", points = 50,
         && !BeganFinalsAsTerra()
 )
 
-function ForbiddenCommandsAgainstZackCallback(command)
-{
-    if (command["element"] != "N/A" && command["element"] != "Null" && command["element"] != "Physical" && command["id"] != 0xffff)
-    {
-        return True()
-    }
-    else
-    {
-        return False()
-    }
-}
-
-forbiddenCommandsAgainstZack = GetCommandsByCallback(ForbiddenCommandsAgainstZackCallback)
+forbiddenCommandsAgainstZack = GetCommandsByCallback(command => command["element"] != "N/A" && command["element"] != "Null" && command["element"] != "Physical" && command["id"] != 0xffff)
 function DefeatedZackForTheFirstTime() => bit2(0x1f28505) == 1
 achievement(title = "Out of Your Element [m]", points = 10,
     description = "Win your second fight against Zack using only physical- or null-elemental commands (Proud Mode or higher, Level 8 or below).",
     trigger = CheckpointPassedForCharacters(InformationBarPoppedUpOnce()
-            && IsInLocation("OlympusEast"), TerraOnly(), True())
+            && IsInLocation("OlympusEast"), TerraOnly(), true)
             && TriggerConditionsMetForCharacters({
                 // The second fight yields no reward, so we must use something that may be less than reliable here...
                 Terra(): BossDefeatTriggered()
-            }, True())
+            }, true)
         && IsAtLeastOnDifficulty("Proud") && level() <= 8
         && never(!IsInLocation("OlympusEast"))
         && never(JustUsedAnyGivenCommand(forbiddenCommandsAgainstZack))
@@ -1037,10 +1023,10 @@ function ThunderboltLearned() => Delta(thunderboltState()) == 0 && thunderboltSt
 achievement(title = "Hypoxic Cabin [m]", points = 5,
     description = "Defeat Experiment 221 without using any fire-elemental commands (Proud Mode or higher, Level 11 or below).",
     trigger = CheckpointPassedForCharacters(InformationBarPoppedUpOnce()
-            && IsInLocation("SpacePod"), TerraOnly(), True())
+            && IsInLocation("SpacePod"), TerraOnly(), true)
             && TriggerConditionsMetForCharacters({
                 Terra(): ThunderboltLearned()
-            }, True())
+            }, true)
         && IsAtLeastOnDifficulty("Proud") && level() <= 11
         && never(!IsInLocation("SpacePod"))
         && never(JustUsedAnyGivenCommand(fireCommands))
@@ -1076,43 +1062,19 @@ function UsedAnyUniqueCommandsGivenNumberOfTimesInArena(usableCommands, usages)
     return tally(usages, trigger)
 }
 
-function BattleCommandsCallback(command)
-{
-    if (command["supercategory"] == "Attack" || command["supercategory"] == "Magic" || command["supercategory"] == "Item" || command["supercategory"] == "Friendship"
-        || command["supercategory"] == "D-Link")
-    {
-        return True()
-    }
-    else
-    {
-        return False()
-    }
-}
-
-function JumpCommandsCallback(command)
-{
-    if (command["name"] == "Jump" || command["name"] == "High Jump")
-    {
-        return True()
-    }
-    else
-    {
-        return False()
-    }
-}
-
-jumpCommands = GetCommandsByCallback(JumpCommandsCallback)
-battleCommands = GetCommandsByCallback(BattleCommandsCallback)
+jumpCommands = GetCommandsByCallback(command => command["name"] == "Jump" || command["name"] == "High Jump")
+battleCommands = GetCommandsByCallback(command => command["supercategory"] == "Attack" || command["supercategory"] == "Magic" || command["supercategory"] == "Item"
+    || command["supercategory"] == "Friendship" || command["supercategory"] == "D-Link")
 function bladechargeState() => byte(0x1f2acd3)
 function BladechargeLearned() => Delta(bladechargeState()) == 0 && bladechargeState() == 5
 function DefeatedPeterPan() => bit5(0x1f28564) == 1
 achievement(title = "Minesweeper [m]", points = 5,
     description = "Defeat Peter Pan using only one type of battle command and without taking damage (Proud Mode or higher, Level 15 or below).",
     trigger = CheckpointPassedForCharacters(InformationBarPoppedUpOnce()
-        && IsInLocation("NeverlandSkullCavern"), TerraOnly(), True())
+        && IsInLocation("NeverlandSkullCavern"), TerraOnly(), true)
         && TriggerConditionsMetForCharacters({
             Terra(): BladechargeLearned()
-        }, True())
+        }, true)
         && IsAtLeastOnDifficulty("Proud") && level() <= 15
         && never(!IsInLocation("NeverlandSkullCavern"))
         && never(UsedAnyUniqueCommandsGivenNumberOfTimes(battleCommands, 2))
@@ -1129,10 +1091,10 @@ achievement(title = "One Man's Treasure", points = 3,
 achievement(title = "Claimed by the Abyss [m]", points = 25,
     description = "Defeat Eraqus without ever leaving the Dark Impulse Command Style (Proud Mode or higher, Level 16 or below).",
     trigger = CheckpointPassedForCharacters(InformationBarPoppedUpOnce()
-        && IsInLocation("DepartureForecourtDay"), TerraOnly(), True())
+        && IsInLocation("DepartureForecourtDay"), TerraOnly(), true)
         && TriggerConditionsMetForCharacters({
             Terra(): MaxHPIncreased()
-        }, True())
+        }, true)
         && IsAtLeastOnDifficulty("Proud") && level() <= 16
         && never(!IsInLocation("DepartureForecourtDay"))
         && never(CommandGaugeEmptied())
@@ -1148,38 +1110,26 @@ function DefeatedXehanortI() => bit0(0x1f285a5) == 1
 achievement(title = "Give Me Strength [m]", points = 10,
     description = "Defeat Xehanort solo using only battle commands while a D-Link is active (Proud Mode or higher, Level 20 or below).",
     trigger = CheckpointPassedForCharacters(InformationBarPoppedUpOnce()
-        && IsInLocation("Graveyard3"), TerraOnly(), True())
+        && IsInLocation("Graveyard3"), TerraOnly(), true)
         && TriggerConditionsMetForCharacters({
             Terra(): MaxHPIncreased()
-        }, True())
+        }, true)
         && IsAtLeastOnDifficulty("Proud") && level() <= 20
         && never(!IsInLocation("Graveyard3"))
         && never(!DefeatedXehanortI())
         && (always_true() || never(JustUsedAnyGivenCommand(battleCommands)) && unless(IsUsingDLink()))
 )
 
-function CureFamilyCommandsCallback(command)
-{
-    if (command["name"] == "Cure" || command["name"] == "Cura" || command["name"] == "Curaga")
-    {
-        return True()
-    }
-    else
-    {
-        return False()
-    }
-}
-
 function DefeatedXehanortII() => bit1(0x1f285a5) == 1
-cureFamilyCommands = GetCommandsByCallback(CureFamilyCommandsCallback)
+cureFamilyCommands = GetCommandsByCallback(command => command["name"] == "Cure" || command["name"] == "Cura" || command["name"] == "Curaga")
 achievement(title = "Terminal Corruption [m]", points = 50,
     description = "Defeat Terra-Xehanort in the Keyblade Graveyard without using any commands in the Cure family (Proud Mode or higher, Level 20 or below).",
     trigger = CheckpointPassedForCharacters(InformationBarPoppedUpOnce()
-        && IsInLocation("GraveyardCage"), [ TerraArmored() ], True())
+        && IsInLocation("GraveyardCage"), [ TerraArmored() ], true)
         && TriggerConditionsMetForCharacters({
             // The final boss, of course, yields no rewards.
             TerraArmored(): BossDefeatTriggered()
-        }, True())
+        }, true)
         && IsAtLeastOnDifficulty("Proud") && level() <= 20
         && never(!IsInLocation("GraveyardCage"))
         && never(JustUsedAnyGivenCommand(cureFamilyCommands))
@@ -1319,10 +1269,10 @@ GenerateCheevoFromBits(name = "Peer Reviewer - Terra", description = "Obtain all
     }
 )
 
-// A "golf" setting of 1 means that lower values are better.
-function HighScoreEarned(mem, target, golf = 0)
+// A "golf" setting of true means that lower values are better.
+function HighScoreEarned(mem, target, golf = false)
 {
-    if (golf == True())
+    if (golf == true)
     {
         // We assume that golf values are set to 0 by default before a new record is set.
         return (ValueJustDecreasedInGame(mem) || ValueJustIncreasedInGame(mem) && Delta(mem) == 0) && mem <= target
@@ -1358,7 +1308,7 @@ function bellyBalloonMissionHighScore() => dword(0x1f35d30)
 function bellyBalloonMissionScoreTarget() => 15
 achievement(title = "Wind Rusher", points = 5,
     description = "Set a new record of " + SecondsToFormat(bellyBalloonMissionScoreTarget()) + " or faster in the Belly Balloon Unversed Mission.",
-    trigger = HighScoreEarned(bellyBalloonMissionHighScore(), SecondsToFrames(bellyBalloonMissionScoreTarget()), True())
+    trigger = HighScoreEarned(bellyBalloonMissionHighScore(), SecondsToFrames(bellyBalloonMissionScoreTarget()), true)
 )
 
 function ringerMissionHighScore() => dword(0x1f35d48)
@@ -1386,7 +1336,7 @@ function jellyshadeMissionHighScore() => dword(0x1f35d50)
 function jellyshadeMissionScoreTarget() => 20
 achievement(title = "Greater Fumigator", points = 5,
     description = "Set a new record of " + SecondsToFormat(jellyshadeMissionScoreTarget()) + " or faster in the Jellyshade Unversed Mission.",
-    trigger = HighScoreEarned(jellyshadeMissionHighScore(), SecondsToFrames(jellyshadeMissionScoreTarget()), True())
+    trigger = HighScoreEarned(jellyshadeMissionHighScore(), SecondsToFrames(jellyshadeMissionScoreTarget()), true)
 )
 
 function floatingFloraMissionHighScore() => dword(0x1f35d40)
@@ -1452,19 +1402,7 @@ GenerateCheevoFromBits(name = "Savage Slayer", description = "Complete all Arena
 function HostingArenaEvent() => bit0(0x194e9f0) == 1
 function mirageArenaEvent() => word(0x194ea38)
 
-function DayOfReckoningCallback(command)
-{
-    if (command["healsHp"] == True() && command["name"] != "Cure")
-    {
-        return True()
-    }
-    else
-    {
-        return False()
-    }
-}
-
-dayOfReckoningForbiddenHealingCommands = GetCommandsByCallback(DayOfReckoningCallback)
+dayOfReckoningForbiddenHealingCommands = GetCommandsByCallback(command => command["healsHp"] == 1 && command["name"] != "Cure")
 cureCommand = GetCommandsByProperties({ "name": "Cure" })
 cureLimit = 3
 
@@ -1472,7 +1410,7 @@ function MirageArenaCheckpointPassedCallback(eventId, locationName) => once(Host
 
 function MirageArenaCheckpointReachedForCharacters(eventId, locationName, characters, numberOfRounds)
 {
-    return CheckpointPassedForCharacters(MirageArenaCheckpointPassedCallback(eventId, locationName), characters, False())
+    return CheckpointPassedForCharacters(MirageArenaCheckpointPassedCallback(eventId, locationName), characters, false)
         && never(!WasInLocation(locationName) && IsInLocation("MirageHub"))
         && trigger_when(mirageArenaRoundsCompleted() == numberOfRounds)
 }
@@ -1526,7 +1464,7 @@ function DeckLoadoutChanged()
     return trigger
 }
 
-equippableBattleCommands = GetCommandsByProperties({ "equippableBattleCommand": True() })
+equippableBattleCommands = GetCommandsByProperties({ "equippableBattleCommand": 1 })
 achievement(title = "Rainbow Loom [m]", points = 10,
     description = "Complete \"Weaver Fever\" in the Mirage Arena without any duplicate commands equipped (Critical Mode, Level 8 or below, Deck 1 only).",
     trigger = never(HasDuplicateCommandInDeckOfSize(equippableBattleCommands, 1, 8))
@@ -1565,19 +1503,7 @@ achievement(title = "Weapon Confiscation [m]", points = 5,
         && never(CommandDeckSlotsFilledIsAtLeast(4))
 )
 
-function SurgeCallback(command)
-{
-    if (command["name"] == "Fire Surge" || command["name"] == "Thunder Surge" || command["name"] == "Barrier Surge")
-    {
-        return True()
-    }
-    else
-    {
-        return False()
-    }
-}
-
-surgeBattleCommands = GetCommandsByCallback(SurgeCallback)
+surgeBattleCommands = GetCommandsByCallback(command => command["name"] == "Fire Surge" || command["name"] == "Thunder Surge" || command["name"] == "Barrier Surge")
 achievement(title = "Minor Duplication [m]", points = 5,
     description = "Complete \"Dead Ringer\" in the Mirage Arena using only two kinds of non-Surge battle commands (Critical Mode, Level 20 or below).",
     trigger = MirageArenaCheckpointReachedForCharacters(0x501, "MirageDeck", [ TerraArmored() ], 5) // todo: insert other characters
@@ -1655,19 +1581,7 @@ achievement(title = "Combined Boon [m]", points = 10,
         && never(NumberOfBeneficialSupportAbilitiesEquippedGreaterThanOrEqualTo(3))
 )
 
-function MultiSlotCommandCallback(command)
-{
-    if (command["slots"] > 1)
-    {
-        return True()
-    }
-    else
-    {
-        return False()
-    }
-}
-
-battleCommandsThatUseMoreThanOneSlot = GetCommandsByCallback(MultiSlotCommandCallback)
+battleCommandsThatUseMoreThanOneSlot = GetCommandsByCallback(command => command["slots"] > 1)
 achievement(title = "Healthcare Budgeting [m]", points = 10,
     description = "Complete \"Risky Riches\" in the Mirage Arena using only commands that take up a single slot and without taking damage more than three times (Critical Mode, Level 20 or below).",
     trigger = MirageArenaCheckpointReachedForCharacters(0x201, "MirageSkull", [ TerraArmored() ], 3) // todo: insert other characters
@@ -1685,7 +1599,7 @@ achievement(title = "Escalation of Force [m]", points = 10,
 
 function MonstroMirageArenaCheckpointReachedForCharacters()
 {
-    return CheckpointPassedForCharacters(MirageArenaCheckpointPassedCallback(0xc01, "MirageMonstro"), [ TerraArmored() ], False()) // todo: insert other characters
+    return CheckpointPassedForCharacters(MirageArenaCheckpointPassedCallback(0xc01, "MirageMonstro"), [ TerraArmored() ], false) // todo: insert other characters
         && never(!WasInLocation("MirageMonstro") && IsInLocation("MirageHub"))
         && mirageArenaCurrentRound() < 7
         && trigger_when(MonstroDefeatTriggered())
@@ -1699,7 +1613,7 @@ achievement(title = "The Madness of Man [m]", points = 25,
         && level() <= 20
 )
 
-directHealingCommands = GetCommandsByProperties({ "healsHp": True() })
+directHealingCommands = GetCommandsByProperties({ "healsHp": 1 })
 achievement(title = "Scrounging to Survive [m]", points = 10,
     description = "Complete \"Treasure Tussle\" in the Mirage Arena without using commands that directly heal you (Critical Mode, Level 20 or below).",
     trigger = MirageArenaCheckpointReachedForCharacters(0x701, "MiragePinball", [ TerraArmored() ], 3) // todo: insert other characters
