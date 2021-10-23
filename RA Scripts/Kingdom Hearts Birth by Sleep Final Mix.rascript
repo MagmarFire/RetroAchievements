@@ -1350,7 +1350,7 @@ achievement(title = "Iron Lung", points = 5,
 
 function bellyBalloonMissionHighScore() => dword(0x1f35d30)
 function bellyBalloonMissionScoreTarget() => 15
-achievement(title = "Wind Rush", points = 5,
+achievement(title = "Wind Rusher", points = 5,
     description = "Set a new record of " + SecondsToFormat(bellyBalloonMissionScoreTarget()) + " or faster in the Belly Balloon Unversed Mission.",
     trigger = HighScoreEarned(bellyBalloonMissionHighScore(), SecondsToFrames(bellyBalloonMissionScoreTarget()), True())
 )
@@ -1358,15 +1358,36 @@ achievement(title = "Wind Rush", points = 5,
 function ringerMissionHighScore() => dword(0x1f35d48)
 function ringerMissionScoreTarget() => 50
 achievement(title = "Allegro con Grazia", points = 10,
-    description = "Set a new record of " + ringerMissionScoreTarget() + " or more in the Ringer Unversed Mission.",
+    description = "Set a new high score of " + ringerMissionScoreTarget() + " or more in the Ringer Unversed Mission.",
     trigger = HighScoreEarned(ringerMissionHighScore(), ringerMissionScoreTarget())
 )
 
 function gluttonousGooMissionHighScore() => dword(0x1f35d4c)
 function gluttonousGooMissionScoreTarget() => 100
 achievement(title = "Struggle Champion", points = 10,
-    description = "Set a new record of " + gluttonousGooMissionScoreTarget() + " in the Gluttonous Goo Unversed Mission.",
+    description = "Set a new high score of " + gluttonousGooMissionScoreTarget() + " in the Gluttonous Goo Unversed Mission.",
     trigger = HighScoreEarned(gluttonousGooMissionHighScore(), gluttonousGooMissionScoreTarget())
+)
+
+function elementClusterMissionHighScore() => dword(0x1f35d34)
+function elementClusterMissionScoreTarget() => 100
+achievement(title = "Elemental Pulsar", points = 10,
+    description = "Set a new high score of " + elementClusterMissionScoreTarget() + " or more in the Element Cluster Unversed Mission.",
+    trigger = HighScoreEarned(elementClusterMissionHighScore(), elementClusterMissionScoreTarget())
+)
+
+function jellyshadeMissionHighScore() => dword(0x1f35d50)
+function jellyshadeMissionScoreTarget() => 20
+achievement(title = "Greater Fumigator", points = 5,
+    description = "Set a new record of " + SecondsToFormat(jellyshadeMissionScoreTarget()) + " or faster in the Jellyshade Unversed Mission.",
+    trigger = HighScoreEarned(jellyshadeMissionHighScore(), SecondsToFrames(jellyshadeMissionScoreTarget()), True())
+)
+
+function floatingFloraMissionHighScore() => dword(0x1f35d40)
+function floatingFloraMissionScoreTarget() => 999
+achievement(title = "Green Thumb", points = 5,
+    description = "Set a new record of " + floatingFloraMissionScoreTarget() + " in the Floating Flora Unversed Mission.",
+    trigger = HighScoreEarned(floatingFloraMissionHighScore(), floatingFloraMissionScoreTarget())
 )
 
 GenerateCheevoFromBits(name = "Career Rumbler", description = "Complete all Rumble Racing Arena Missions for any character.", points = 5,
@@ -1391,7 +1412,7 @@ GenerateCheevoFromBits(name = "Medal Detector", description = "Complete all meda
     }
 )
 
-GenerateCheevoFromBits(name = "Command Street", description = "Complete all Command Board Arena Missions for any character.", points = 10,
+GenerateCheevoFromBits(name = "Command Street", description = "Complete all Command Board Arena Missions for any character.", points = 5,
     threshold = 4,
     addresses = {
         1: { "addr": 0x1f35d7f, "bit": 1 },
