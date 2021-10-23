@@ -742,7 +742,12 @@ function informationBarState() => byte(0x1f3d760)
 function InformationBarJustPoppedUp() => Delta(informationBarState()) == 1 && informationBarState() == 2
 function InformationBarPoppedUpOnce() => once(InformationBarJustPoppedUp())
 function criticalImpactState() => byte(0x1f2accc)
-function LearnedCriticalImpact() => criticalImpactState() == 5 && Delta(criticalImpactState()) == 0
+function feverPitchState() => byte(0x1f2acce)
+
+function LearnedCommandStyle(commandStyleStateMem) => commandStyleStateMem == 5 && Delta(commandStyleStateMem) == 0
+
+function LearnedCriticalImpact() => LearnedCommandStyle(criticalImpactState())
+function LearnedFeverPitch() => LearnedCommandStyle(feverPitchState())
 
 function MarkOfMasteryCheckpointReached() => CheckpointPassedForCharacters(InformationBarPoppedUpOnce()
     && IsInLocation("DepartureGreatHall"), [ Terra(), Ventus(), Aqua() ], True()
@@ -750,11 +755,12 @@ function MarkOfMasteryCheckpointReached() => CheckpointPassedForCharacters(Infor
     
 function TriggerConditionsMetForMarkOfMastery() =>
     TriggerConditionsMetForCharacters({
-        Terra(): LearnedCriticalImpact()
+        Terra(): LearnedCriticalImpact(),
+        Ventus(): LearnedFeverPitch()
     }, True())
 
 achievement(title = "Hit Ball to Pass Test [m]", points = 3,
-    description = "Complete the first phase of the Mark of Mastery using only one attack or fewer.",
+    description = "Complete the first phase of the Mark of Mastery exam using only one attack or fewer.",
     trigger = MarkOfMasteryCheckpointReached() && never(repeated(2, EnteredAttackState()))
         && TriggerConditionsMetForMarkOfMastery()
 )
