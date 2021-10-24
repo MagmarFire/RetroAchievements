@@ -1,6 +1,10 @@
 // Kingdom Hearts Birth by Sleep
 // #ID = 3556
 
+// todo: There is an issue with the save protection that could cause pauselocks to not reset when loading different save files from a game over screen.
+//       Fixing this will likely require an address that actually tells us what episode is currently being played instead of knowing what character is currently under the player's control.
+//       This will, then, have to wait until after achievements for each episode are completed.
+
 function Delta(mem) => prev(mem)
 
 function SecondsToFormat(value)
@@ -230,10 +234,15 @@ function systemTimer() => dword(0x1f25ee0)
 
 function saveState() => word(0xb5c1a0)
 
+function saveLoadMenuPointer() => dword(0xb5c188)
+function SaveOrLoadMenuIsActive() => saveLoadMenuPointer() != 0
 
-function IsInGame() => !IsInLocation("Title")
+// There are some (unknown) instances where saveState() will equal 0x0401
+function IsAlwaysInGame() => never(IsInLocation("Title")) && never(SaveOrLoadMenuIsActive()) && never(currentCharacter() != Delta(currentCharacter()))
 
-function GameJustLoaded() => Delta(saveState()) != 0x0101 && saveState() == 0x0101
+function IsInGame() => !IsInLocation("Title") && !SaveOrLoadMenuIsActive()
+
+function GameJustLoaded() => SaveOrLoadMenuIsActive() && saveState() != 0xff01
 
 function WasValueSet(mem, oldValue, newValue)
 {
@@ -1737,3 +1746,4 @@ achievement(title = "Style Specialist [m]", points = 50,
             once(GivenCommandStyleWasActivated(timesFrozenFortuneWasActivated())),
         ]))
 )
+
