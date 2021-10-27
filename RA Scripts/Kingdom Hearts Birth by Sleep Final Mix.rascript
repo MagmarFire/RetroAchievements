@@ -635,6 +635,10 @@ function arenaHp() => word(characterArenaPointer() + 0x7c + 0x1000000)
 function commandBeingUsedInArena() => word(characterArenaPointer() - 0x149a8 + 0x1000000)
 function TookDamageInTheMirageArena() => Delta(arenaHp()) > arenaHp() && characterArenaPointer() != 0
 
+function partyFieldPointer() => tbyte(0xb59cec)
+function kingMickeyHp() => word(partyFieldPointer() - 0x9af4 + 0x1000000)
+function KingMickeyHpReachedZero() => kingMickeyHp() <= 0 && Delta(kingMickeyHp()) > 0 && partyFieldPointer() != 0
+
 function EnteredAttackState() => Delta(characterState()) != 0x10 && characterState() == 0x10
 function IsUsingFinisher() => characterState() == 0x14
 function IsGuarding() => characterState() == 0x16
@@ -1312,6 +1316,22 @@ achievement(title = "Pursuit of the Wayward", points = 3,
     description = "Complete Enchanted Dominion as Ventus.",
     trigger = WasBitflagSetInGame(enchantedDominionVenStoryEntry()) && IsInLocation("WorldMap")
         && MustBeVentus()
+)
+
+function cutsceneBeforeVanitasIFightAsVen() => bit5(0x1f285a4)
+function badlandsVenStoryEntry() => bit7(0x1f285a4)
+function IsFacingVanitasIAsVen() => cutsceneBeforeVanitasIFightAsVen() == 1 && badlandsVenStoryEntry() == 0
+achievement(title = "No One Left Behind [m]", points = 25,
+    description = "Defeat Vanitas alongside King Mickey without the latter's HP dropping to zero (Proud Mode or higher, Level 5 or below).",
+    trigger = CheckpointPassedForCharacters(InformationBarPoppedUpOnce()
+        && IsInLocation("GraveyardBadlands"), VentusOnly(), true)
+        && TriggerConditionsMetForCharacters({
+            Ventus(): DeckCapacityIncreased()
+        }, true)
+        && IsAtLeastOnDifficulty("Proud") && level() <= 5
+        && never(!IsInLocation("GraveyardBadlands"))
+        && never(!IsFacingVanitasIAsVen()) // We need to check this because the information bar is triggered in this room in a previous scripted battle (sure is happening a lot with Ven...).
+        && never(KingMickeyHpReachedZero())
 )
 
 achievement(title = "Apotheosis [m]", points = 100,
