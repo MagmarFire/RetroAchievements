@@ -1334,6 +1334,58 @@ achievement(title = "No One Left Behind [m]", points = 25,
         && never(KingMickeyHpReachedZero())
 )
 
+function radiantGardenVenStoryEntry() => bit2(0x1f284c5)
+achievement(title = "The Problem of Trust", points = 3,
+    description = "Complete Radiant Garden as Ventus.",
+    trigger = WasBitflagSetInGame(radiantGardenVenStoryEntry()) && IsInLocation("WorldMap")
+        && MustBeVentus()
+)
+
+// A "golf" setting of true means that lower values are better.
+function HighScoreEarned(mem, target, golf = false)
+{
+    if (golf == true)
+    {
+        // We assume that golf values are set to 0 by default before a new record is set.
+        return (ValueJustDecreasedInGame(mem) || ValueJustIncreasedInGame(mem) && Delta(mem) == 0) && mem <= target
+    }
+    else
+    {
+        return ValueJustIncreasedInGame(mem) && mem >= target
+    }
+}
+
+// So, some explanation is in order in regards to how ranking works in Ice Cream Beat. As it turns out, the only score that matters is the base high score, NOT the total
+// high score. The latter is simply a sum of the base high score and the "meter bonus" and ultimately has no bearing whatsoever on the final ranking.
+
+function itsASmallWorldMasterBaseHighScore() => dword(0x1f357a4)
+function itsASmallWorldMasterScoreTarget() => 0x9b8
+achievement(title = "Maestro - \"It's a Small World\"", points = 10,
+    description = "Set a new base high score that earns a ranking of Fantastic for the song \"It's a Small World\" in Ice Cream Beat on Master Mode.",
+    trigger = HighScoreEarned(itsASmallWorldMasterBaseHighScore(), itsASmallWorldMasterScoreTarget())
+)
+
+function blastAwayMasterBaseHighScore() => dword(0x1f35804)
+function blastAwayMasterScoreTarget() => 0xcc6
+achievement(title = "Maestro - \"Blast Away! Gummi Ship II\"", points = 10,
+    description = "Set a new base high score that earns a ranking of Fantastic for the song \"Blast Away! Gummi Ship II\" in Ice Cream Beat on Master Mode.",
+    trigger = HighScoreEarned(blastAwayMasterBaseHighScore(), blastAwayMasterScoreTarget())
+)
+
+function dessertParadiseMasterBaseHighScore() => dword(0x1f357d4)
+function dessertParadiseMasterScoreTarget() => 0x94e
+achievement(title = "Maestro - \"Dessert Paradise\"", points = 10,
+    description = "Set a new base high score that earns a ranking of Fantastic for the song \"Dessert Paradise\" in Ice Cream Beat on Master Mode.",
+    trigger = HighScoreEarned(dessertParadiseMasterBaseHighScore(), dessertParadiseMasterScoreTarget())
+)
+
+function destinyIslandsMasterBaseHighScore() => dword(0x1f35834)
+function destinyIslandsMasterScoreTarget() => 0xb8e
+achievement(title = "Maestro - \"Destiny Islands\"", points = 10,
+    description = "Set a new base high score that earns a ranking of Fantastic for the song \"Destiny Islands\" in Ice Cream Beat on Master Mode.",
+    trigger = HighScoreEarned(destinyIslandsMasterBaseHighScore(), destinyIslandsMasterScoreTarget())
+)
+
 achievement(title = "Apotheosis [m]", points = 100,
     description = "Complete any character's story at Level 1 on Critical Mode.",
     trigger = level() == 1 && IsAtLeastOnDifficulty("Critical")
@@ -1448,20 +1500,6 @@ GenerateCheevoFromBits(name = "Peer Reviewer - Terra", description = "Obtain all
         4: { "addr": 0x1f2932d, "bit": 0 },
     }
 )
-
-// A "golf" setting of true means that lower values are better.
-function HighScoreEarned(mem, target, golf = false)
-{
-    if (golf == true)
-    {
-        // We assume that golf values are set to 0 by default before a new record is set.
-        return (ValueJustDecreasedInGame(mem) || ValueJustIncreasedInGame(mem) && Delta(mem) == 0) && mem <= target
-    }
-    else
-    {
-        return ValueJustIncreasedInGame(mem) && mem >= target
-    }
-}
 
 function flameBoxMissionHighScore() => dword(0x1f35d38)
 function flameBoxMissionScoreTarget() => 65
