@@ -1672,8 +1672,8 @@ function NeverUsedAnyGivenCommandInArenaGivenNumberOfTimes(command, commandLimit
 
 function NeverJustUsedAnyGivenCommandInArena(haystack)
 {
-    return never(TerraJustUsedAnyGivenCommandInArena(dayOfReckoningForbiddenHealingCommands))
-        && never(VentusJustUsedAnyGivenCommandInArena(dayOfReckoningForbiddenHealingCommands)) // todo: must add Aqua
+    return never(TerraJustUsedAnyGivenCommandInArena(haystack))
+        && never(VentusJustUsedAnyGivenCommandInArena(haystack)) // todo: must add Aqua
 }
 
 achievement(title = "Prison Rations [m]", points = 10,
@@ -1727,10 +1727,11 @@ function DeckLoadoutChanged()
 
 equippableBattleCommands = GetCommandsByProperties({ "equippableBattleCommand": 1 })
 achievement(title = "Rainbow Loom [m]", points = 10,
-    description = "Complete \"Weaver Fever\" in the Mirage Arena without any duplicate commands equipped (Critical Mode, Level 8 or below, Deck 1 only).",
+    description = "Complete \"Weaver Fever\" in the Mirage Arena without any duplicate commands equipped (Critical Mode, Level 10 or below, Deck 1 only).",
     trigger = never(HasDuplicateCommandInDeckOfSize(equippableBattleCommands, 1, 8))
         && never(DeckLoadoutChanged()) && CurrentDeckIs(1)
         && MirageArenaCheckpointReachedForCharacters(0x301, "MirageChamber", [ TerraArmored(), VentusArmored() ], 4) // todo: insert other characters
+        && IsAtLeastOnDifficulty("Critical") && level() <= 10
 )
 
 function CommandDeckSlotsFilledIsAtLeast(slotsFilled)
@@ -1758,8 +1759,8 @@ shotlocks = GetCommandsByProperties({ "supercategory": "Shotlock" })
 // todo: rebalance, since Level 20 is probably too high
 achievement(title = "Weapon Confiscation [m]", points = 5,
     description = "Complete \"Sinister Sentinel\" in the Mirage Arena with only three battle command slots filled and without using Shotlocks (Critical Mode, Level 20 or below).",
-    trigger = never(TerraJustUsedAnyGivenCommandInArena(shotlocks))
-        && MirageArenaCheckpointReachedForCharacters(0x401, "MirageArena1", [ TerraArmored() ], 5) // todo: insert other characters
+    trigger = NeverJustUsedAnyGivenCommandInArena(shotlocks)
+        && MirageArenaCheckpointReachedForCharacters(0x401, "MirageArena1", [ TerraArmored(), VentusArmored() ], 5) // todo: insert other characters
         && IsAtLeastOnDifficulty("Critical") && level() <= 20
         && never(CommandDeckSlotsFilledIsAtLeast(4))
 )
