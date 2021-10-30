@@ -571,6 +571,7 @@ function Terra() => 3
 function TerraArmored() => 6
 function TerraArmoredGlider() => 0xc
 function Ventus() => 1
+function VentusArmored() => 4
 function Aqua() => 2
 
 function TerraOnly() => [ Terra() ]
@@ -583,6 +584,7 @@ function CharacterIdToNames()
         Terra(): "Terra",
         Aqua(): "Aqua",
         Ventus(): "Ventus",
+        VentusArmored(): "Ventus",
         TerraArmored(): "Terra",
         TerraArmoredGlider(): "Terra"
     }
@@ -632,7 +634,8 @@ function commandBeingUsed() => word(characterFieldPointer() + 0xc98 + 0x1000000)
 
 function characterArenaPointer() => tbyte(0xb59ce8)
 function arenaHp() => word(characterArenaPointer() + 0x7c + 0x1000000)
-function commandBeingUsedInArena() => word(characterArenaPointer() - 0x149a8 + 0x1000000)
+function commandBeingUsedInArenaByTerra() => word(characterArenaPointer() - 0x149a8 + 0x1000000)
+function commandBeingUsedInArenaByVentus() => word(characterArenaPointer() - 0x15018 + 0x1000000)
 function TookDamageInTheMirageArena() => Delta(arenaHp()) > arenaHp() && characterArenaPointer() != 0
 
 function partyFieldPointer() => tbyte(0xb59cec)
@@ -689,14 +692,25 @@ function JustUsedAnyGivenCommand(haystack)
     return trigger
 }
 
-function JustUsedAnyGivenCommandInArena(haystack)
+function JustUsedAnyGivenCommandInArenaByMem(haystack, memContainingIdOfCommandBeingUsedInArenaByCharacter)
 {
     trigger = always_false()
     for needle in haystack
     {
-        trigger = trigger || Delta(commandBeingUsedInArena()) != commandBeingUsedInArena() && commandBeingUsedInArena() == needle["id"]
+        trigger = trigger || Delta(memContainingIdOfCommandBeingUsedInArenaByCharacter) != memContainingIdOfCommandBeingUsedInArenaByCharacter
+            && memContainingIdOfCommandBeingUsedInArenaByCharacter == needle["id"]
     }
-    return trigger
+    return trigger 
+}
+
+function TerraJustUsedAnyGivenCommandInArena(haystack)
+{
+    return JustUsedAnyGivenCommandInArenaByMem(haystack, commandBeingUsedInArenaByTerra())
+}
+
+function VentusJustUsedAnyGivenCommandInArena(haystack)
+{
+    return JustUsedAnyGivenCommandInArenaByMem(haystack, commandBeingUsedInArenaByVentus())
 }
 
 function CheckpointPassedForCharacters(checkpointLogic, allowedCharacters, resetOnDeath = false)
@@ -1088,13 +1102,13 @@ function UsedAnyUniqueCommandsGivenNumberOfTimes(usableCommands, usages)
     return tally(usages, trigger)
 }
 
-function UsedAnyUniqueCommandsGivenNumberOfTimesInArena(usableCommands, usages)
+function TerraUsedAnyUniqueCommandsGivenNumberOfTimesInArena(usableCommands, usages)
 {
     trigger = []
     
     for command in usableCommands
     {
-        array_push(trigger, once(Delta(commandBeingUsedInArena()) == 0 && commandBeingUsedInArena() == command["id"]))
+        array_push(trigger, once(Delta(commandBeingUsedInArenaByTerra()) == 0 && commandBeingUsedInArenaByTerra() == command["id"]))
     }
     
     return tally(usages, trigger)
@@ -1692,11 +1706,33 @@ function MirageArenaCheckpointReachedForCharacters(eventId, locationName, charac
         && trigger_when(mirageArenaRoundsCompleted() == numberOfRounds)
 }
 
+function TerraNeverUsedAnyGivenCommandInArenaGivenNumberOfTimes(command, commandLimit)
+{
+    return never(repeated(commandLimit, TerraJustUsedAnyGivenCommandInArena(command)) && currentCharacter() == TerraArmored())
+}
+
+function VentusNeverUsedAnyGivenCommandInArenaGivenNumberOfTimes(command, commandLimit)
+{
+    return never(repeated(commandLimit, VentusJustUsedAnyGivenCommandInArena(command)) && currentCharacter() == VentusArmored())
+}
+
+function NeverUsedAnyGivenCommandInArenaGivenNumberOfTimes(command, commandLimit)
+{
+    return TerraNeverUsedAnyGivenCommandInArenaGivenNumberOfTimes(command, commandLimit)
+        && VentusNeverUsedAnyGivenCommandInArenaGivenNumberOfTimes(command, commandLimit) // todo: must add Aqua
+}
+
+function NeverJustUsedAnyGivenCommandInArena(haystack)
+{
+    return never(TerraJustUsedAnyGivenCommandInArena(haystack))
+        && never(VentusJustUsedAnyGivenCommandInArena(haystack)) // todo: must add Aqua
+}
+
 achievement(title = "Prison Rations [m]", points = 10,
     description = "Complete \"Day of Reckoning\" in the Mirage Arena using Cure as your only healing command no more than thrice (Critical Mode, Level 8 or below).",
-    trigger = never(JustUsedAnyGivenCommandInArena(dayOfReckoningForbiddenHealingCommands))
-        && never(repeated(cureLimit + 1, JustUsedAnyGivenCommandInArena(cureCommand)))
-        && MirageArenaCheckpointReachedForCharacters(1, "MirageArena1", [ TerraArmored() ], 4) // todo: insert other characters
+    trigger = NeverJustUsedAnyGivenCommandInArena(dayOfReckoningForbiddenHealingCommands)
+        && NeverUsedAnyGivenCommandInArenaGivenNumberOfTimes(cureCommand, cureLimit + 1)
+        && MirageArenaCheckpointReachedForCharacters(1, "MirageArena1", [ TerraArmored(), VentusArmored() ], 4) // todo: insert other characters
         && IsAtLeastOnDifficulty("Critical") && level() <= 8
 )
 
@@ -1743,10 +1779,11 @@ function DeckLoadoutChanged()
 
 equippableBattleCommands = GetCommandsByProperties({ "equippableBattleCommand": 1 })
 achievement(title = "Rainbow Loom [m]", points = 10,
-    description = "Complete \"Weaver Fever\" in the Mirage Arena without any duplicate commands equipped (Critical Mode, Level 8 or below, Deck 1 only).",
+    description = "Complete \"Weaver Fever\" in the Mirage Arena without any duplicate commands equipped (Critical Mode, Level 10 or below, Deck 1 only).",
     trigger = never(HasDuplicateCommandInDeckOfSize(equippableBattleCommands, 1, 8))
         && never(DeckLoadoutChanged()) && CurrentDeckIs(1)
-        && MirageArenaCheckpointReachedForCharacters(0x301, "MirageChamber", [ TerraArmored() ], 4) // todo: insert other characters
+        && MirageArenaCheckpointReachedForCharacters(0x301, "MirageChamber", [ TerraArmored(), VentusArmored() ], 4) // todo: insert other characters
+        && IsAtLeastOnDifficulty("Critical") && level() <= 10
 )
 
 function CommandDeckSlotsFilledIsAtLeast(slotsFilled)
@@ -1774,8 +1811,8 @@ shotlocks = GetCommandsByProperties({ "supercategory": "Shotlock" })
 // todo: rebalance, since Level 20 is probably too high
 achievement(title = "Weapon Confiscation [m]", points = 5,
     description = "Complete \"Sinister Sentinel\" in the Mirage Arena with only three battle command slots filled and without using Shotlocks (Critical Mode, Level 20 or below).",
-    trigger = never(JustUsedAnyGivenCommandInArena(shotlocks))
-        && MirageArenaCheckpointReachedForCharacters(0x401, "MirageArena1", [ TerraArmored() ], 5) // todo: insert other characters
+    trigger = NeverJustUsedAnyGivenCommandInArena(shotlocks)
+        && MirageArenaCheckpointReachedForCharacters(0x401, "MirageArena1", [ TerraArmored(), VentusArmored() ], 5) // todo: insert other characters
         && IsAtLeastOnDifficulty("Critical") && level() <= 20
         && never(CommandDeckSlotsFilledIsAtLeast(4))
 )
@@ -1785,8 +1822,8 @@ achievement(title = "Minor Duplication [m]", points = 5,
     description = "Complete \"Dead Ringer\" in the Mirage Arena using only two kinds of non-Surge battle commands (Critical Mode, Level 20 or below).",
     trigger = MirageArenaCheckpointReachedForCharacters(0x501, "MirageDeck", [ TerraArmored() ], 5) // todo: insert other characters
         && IsAtLeastOnDifficulty("Critical") && level() <= 20
-        && never(UsedAnyUniqueCommandsGivenNumberOfTimesInArena(battleCommands, 3))
-        && never(JustUsedAnyGivenCommandInArena(surgeBattleCommands))
+        && never(TerraUsedAnyUniqueCommandsGivenNumberOfTimesInArena(battleCommands, 3))
+        && never(TerraJustUsedAnyGivenCommandInArena(surgeBattleCommands))
 )
 
 function GetAbilityByAddress(addr)
@@ -1864,7 +1901,7 @@ achievement(title = "Healthcare Budgeting [m]", points = 10,
     trigger = MirageArenaCheckpointReachedForCharacters(0x201, "MirageSkull", [ TerraArmored() ], 3) // todo: insert other characters
         && IsAtLeastOnDifficulty("Critical") && level() <= 20
         && never(repeated(4, TookDamageInTheMirageArena()))
-        && never(JustUsedAnyGivenCommandInArena(battleCommandsThatUseMoreThanOneSlot))
+        && never(TerraJustUsedAnyGivenCommandInArena(battleCommandsThatUseMoreThanOneSlot))
 )
 
 achievement(title = "Escalation of Force [m]", points = 10,
@@ -1895,7 +1932,7 @@ achievement(title = "Scrounging to Survive [m]", points = 10,
     description = "Complete \"Treasure Tussle\" in the Mirage Arena without using commands that directly heal you (Critical Mode, Level 20 or below).",
     trigger = MirageArenaCheckpointReachedForCharacters(0x701, "MiragePinball", [ TerraArmored() ], 3) // todo: insert other characters
         && IsAtLeastOnDifficulty("Critical") && level() <= 20
-        && never(JustUsedAnyGivenCommandInArena(directHealingCommands))
+        && never(TerraJustUsedAnyGivenCommandInArena(directHealingCommands))
 )
 
 achievement(title = "Rolling Blackout [m]", points = 50,
@@ -1903,10 +1940,10 @@ achievement(title = "Rolling Blackout [m]", points = 50,
     trigger = MirageArenaCheckpointReachedForCharacters(0xa01, "MirageSummit", [ TerraArmored() ], 8) // todo: insert other characters
         && IsAtLeastOnDifficulty("Critical") && level() <= 25
         // We need to check oddness for each round individually because (1) the modulo operator isn't supported in the editor and (2) the logic would be too complex otherwise.
-        && never(JustUsedAnyGivenCommandInArena(battleCommands) && mirageArenaCurrentRound() == 1)
-        && never(JustUsedAnyGivenCommandInArena(battleCommands) && mirageArenaCurrentRound() == 3)
-        && never(JustUsedAnyGivenCommandInArena(battleCommands) && mirageArenaCurrentRound() == 5)
-        && never(JustUsedAnyGivenCommandInArena(battleCommands) && mirageArenaCurrentRound() == 7)
+        && never(TerraJustUsedAnyGivenCommandInArena(battleCommands) && mirageArenaCurrentRound() == 1)
+        && never(TerraJustUsedAnyGivenCommandInArena(battleCommands) && mirageArenaCurrentRound() == 3)
+        && never(TerraJustUsedAnyGivenCommandInArena(battleCommands) && mirageArenaCurrentRound() == 5)
+        && never(TerraJustUsedAnyGivenCommandInArena(battleCommands) && mirageArenaCurrentRound() == 7)
 )
 
 
