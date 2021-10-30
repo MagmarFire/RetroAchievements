@@ -1386,6 +1386,13 @@ achievement(title = "Maestro - \"Destiny Islands\"", points = 10,
     trigger = HighScoreEarned(destinyIslandsMasterBaseHighScore(), destinyIslandsMasterScoreTarget())
 )
 
+function handInHandMasterBaseHighScore() => dword(0x1f35864)
+function handInHandMasterScoreTarget() => 0xc6a
+achievement(title = "Maestro - \"Hand in Hand\"", points = 25,
+    description = "Set a new base high score that earns a ranking of Fantastic for the song \"Hand in Hand\" in Ice Cream Beat on Master Mode.",
+    trigger = HighScoreEarned(handInHandMasterBaseHighScore(), handInHandMasterScoreTarget())
+)
+
 achievement(title = "Apotheosis [m]", points = 100,
     description = "Complete any character's story at Level 1 on Critical Mode.",
     trigger = level() == 1 && IsAtLeastOnDifficulty("Critical")
