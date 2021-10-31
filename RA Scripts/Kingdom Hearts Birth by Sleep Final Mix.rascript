@@ -649,6 +649,7 @@ function IsUsingFinisher() => characterState() == 0x14
 function IsGuarding() => characterState() == 0x16
 function IsUsingAPhysicalAttack() => characterState() == 0x10
 function IsUsingAStandardAttack() => currentAttackInCombo() != 0 && nextAttackInCombo() != 0
+function JustStartedSwimming() => characterState() != Delta(characterState()) && characterState() == 0x9
 
 function dLinkPointer() => tbyte(0xb59ce8)
 function dLinkCharge() => dword(dLinkPointer() + 0x1000000 + 0x3c) // todo: actually a float; change when supported
@@ -1116,6 +1117,18 @@ function TerraUsedAnyUniqueCommandsGivenNumberOfTimesInArena(usableCommands, usa
     return tally(usages, trigger)
 }
 
+function VentusUsedAnyUniqueCommandsGivenNumberOfTimesInArena(usableCommands, usages)
+{
+    trigger = []
+    
+    for command in usableCommands
+    {
+        array_push(trigger, once(Delta(commandBeingUsedInArenaByVentus()) == 0 && commandBeingUsedInArenaByVentus() == command["id"]))
+    }
+    
+    return tally(usages, trigger)
+}
+
 jumpCommands = GetCommandsByCallback(command => command["name"] == "Jump" || command["name"] == "High Jump")
 battleCommands = GetCommandsByCallback(command => command["supercategory"] == "Attack" || command["supercategory"] == "Magic" || command["supercategory"] == "Item"
     || command["supercategory"] == "Friendship" || command["supercategory"] == "D-Link")
@@ -1480,6 +1493,24 @@ achievement(title = "To the Ends of the Cosmos", points = 3,
         && MustBeVentus()
 )
 
+achievement(title = "Warning! Crocodile Habitat!", points = 25,
+    description = "Defeat Captain Hook without diving into the water more than three times (Proud Mode or higher, Level 20 or below).",
+    trigger = CheckpointPassedForCharacters(InformationBarPoppedUpOnce() && IsInLocation("NeverlandCove"), VentusOnly(), true)
+        && TriggerConditionsMetForCharacters({
+            Ventus(): BossDefeatTriggered()
+        }, true)
+        && IsAtLeastOnDifficulty("Proud") && level() <= 20
+        && never(!IsInLocation("NeverlandCove"))
+        && never(repeated(4, JustStartedSwimming()))
+)
+
+function neverlandVenStoryEntryUnlocked() => bit4(0x1f28565)
+achievement(title = "Always a Step Closer to Home", points = 3,
+    description = "Complete Neverland as Ventus.",
+    trigger = WasBitflagSetInGame(neverlandVenStoryEntryUnlocked()) && IsInLocation("WorldMap")
+        && MustBeVentus()
+)
+
 achievement(title = "Apotheosis [m]", points = 100,
     description = "Complete any character's story at Level 1 on Critical Mode.",
     trigger = level() == 1 && IsAtLeastOnDifficulty("Critical")
@@ -1829,22 +1860,27 @@ function CommandDeckSlotsFilledIsAtLeast(slotsFilled)
 
 shotlocks = GetCommandsByProperties({ "supercategory": "Shotlock" })
 
-// todo: rebalance, since Level 20 is probably too high
 achievement(title = "Weapon Confiscation [m]", points = 5,
-    description = "Complete \"Sinister Sentinel\" in the Mirage Arena with only three battle command slots filled and without using Shotlocks (Critical Mode, Level 20 or below).",
+    description = "Complete \"Sinister Sentinel\" in the Mirage Arena with only three battle command slots filled and without using Shotlocks (Critical Mode, Level 18 or below).",
     trigger = NeverJustUsedAnyGivenCommandInArena(shotlocks)
         && MirageArenaCheckpointReachedForCharacters(0x401, "MirageArena1", [ TerraArmored(), VentusArmored() ], 5) // todo: insert other characters
-        && IsAtLeastOnDifficulty("Critical") && level() <= 20
+        && IsAtLeastOnDifficulty("Critical") && level() <= 18
         && never(CommandDeckSlotsFilledIsAtLeast(4))
 )
+
+function NeverUsedAnyUniqueCommandsGivenNumberOfTimesInArena(haystack, limit)
+{
+    return never(TerraUsedAnyUniqueCommandsGivenNumberOfTimesInArena(haystack, limit))
+        && never(VentusUsedAnyUniqueCommandsGivenNumberOfTimesInArena(haystack, limit))
+}
 
 surgeBattleCommands = GetCommandsByCallback(command => command["name"] == "Fire Surge" || command["name"] == "Thunder Surge" || command["name"] == "Barrier Surge")
 achievement(title = "Minor Duplication [m]", points = 5,
     description = "Complete \"Dead Ringer\" in the Mirage Arena using only two kinds of non-Surge battle commands (Critical Mode, Level 20 or below).",
-    trigger = MirageArenaCheckpointReachedForCharacters(0x501, "MirageDeck", [ TerraArmored() ], 5) // todo: insert other characters
+    trigger = MirageArenaCheckpointReachedForCharacters(0x501, "MirageDeck", [ TerraArmored(), VentusArmored() ], 5) // todo: insert other characters
         && IsAtLeastOnDifficulty("Critical") && level() <= 20
-        && never(TerraUsedAnyUniqueCommandsGivenNumberOfTimesInArena(battleCommands, 3))
-        && never(TerraJustUsedAnyGivenCommandInArena(surgeBattleCommands))
+        && NeverUsedAnyUniqueCommandsGivenNumberOfTimesInArena(battleCommands, 3)
+        && NeverJustUsedAnyGivenCommandInArena(surgeBattleCommands)
 )
 
 function GetAbilityByAddress(addr)
