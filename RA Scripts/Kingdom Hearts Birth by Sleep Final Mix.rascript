@@ -573,6 +573,7 @@ function TerraArmoredGlider() => 0xc
 function Ventus() => 1
 function VentusArmored() => 4
 function VentusArmoredGlider() => 0xa
+function VentusArmoredHelmetless() => 0xd
 function Aqua() => 2
 
 function TerraOnly() => [ Terra() ]
@@ -588,7 +589,8 @@ function CharacterIdToNames()
         VentusArmored(): "Ventus",
         TerraArmored(): "Terra",
         VentusArmoredGlider(): "Ventus",
-        TerraArmoredGlider(): "Terra"
+        TerraArmoredGlider(): "Terra",
+        VentusArmoredHelmetless(): "Ventus"
     }
 }
 
@@ -1204,19 +1206,20 @@ achievement(title = "Terminal Corruption [m]", points = 50,
 
 function gameStateDeterminer() => byte(0xb47ade)
 function xehanortReport11() => bit0(0x1f2932d)
-function ViewedBattleReportLongEnough() => once(Delta(gameStateDeterminer()) == 0xd && gameStateDeterminer() == 0x81) && repeated(60, gameStateDeterminer() == 0x81)
+function ViewedBattleReportLongEnough() => once(Delta(gameStateDeterminer()) != gameStateDeterminer() && gameStateDeterminer() == 0x81)
+    && repeated(60, gameStateDeterminer() == 0x81)
 function TerraStoryCompleted() => WasBitflagSetInGame(xehanortReport11()) && ViewedBattleReportLongEnough() && currentCharacter() == TerraArmored()
 achievement(title = "The Vessel", points = 10, // todo: name subject to change
     description = "Complete Terra's story.",
     trigger = TerraStoryCompleted()
 )
 
-achievement(title = "Proud Warrior [m]", points = 10,
-    description = "Complete Terra's Story on Proud Mode or higher.",
+achievement(title = "Proud Warrior", points = 10,
+    description = "Complete Terra's story on Proud Mode or higher.",
     trigger = TerraStoryCompleted() && IsAtLeastOnDifficulty("Proud")
 )
 
-achievement(title = "Critical Warrior [m]", points = 25,
+achievement(title = "Critical Warrior", points = 25,
     description = "Complete Terra's story on Critical Mode.",
     trigger = TerraStoryCompleted() && IsAtLeastOnDifficulty("Critical")
 )
@@ -1511,10 +1514,114 @@ achievement(title = "Always a Step Closer to Home", points = 3,
         && MustBeVentus()
 )
 
+function fireScreenActiveAddr() => 0x1f2ac98
+function blizzardScreenActiveAddr() => 0x1f2ac9c
+function thunderScreenActiveAddr() => 0x1f2aca0
+function darkScreenActiveAddr() => 0x1f2aca4
+nonBlizzardAndNonCureBattleCommandsAndShotlocks = GetCommandsByCallback(command => command["element"] != "Blizzard" && command["healsHp"] == 0 && command["equippableBattleCommand"] == 1
+    || command["supercategory"] == "Shotlock" && command["element"] != "Blizzard")
+achievement(title = "Severe Frostbite [m]", points = 10,
+    description = "Defeat Vanitas in the Keyblade Graveyard with no Screen abilities enabled and " +
+        "without using battle commands or Shotlocks that aren't Blizzard-based or HP curative (Proud Mode or higher, Level 22 or below).",
+    trigger = CheckpointPassedForCharacters(InformationBarPoppedUpOnce() && IsInLocation("Graveyard4"), [ VentusArmoredHelmetless() ], true)
+        && TriggerConditionsMetForCharacters({
+            VentusArmoredHelmetless(): MaxHPIncreased()
+        }, true)
+        && IsAtLeastOnDifficulty("Proud") && level() <= 22
+        && never(!IsInLocation("Graveyard4"))
+        && never(JustUsedAnyGivenCommand(nonBlizzardAndNonCureBattleCommandsAndShotlocks))
+        && never(IsAbilityTurnedOn(fireScreenActiveAddr()))
+        && never(IsAbilityTurnedOn(blizzardScreenActiveAddr()))
+        && never(IsAbilityTurnedOn(thunderScreenActiveAddr()))
+        && never(IsAbilityTurnedOn(darkScreenActiveAddr()))
+)
+
+function CommandDeckSlotsFilledIsAtLeast(slotsFilled)
+{
+    trigger = always_false()
+    slotBaseAddrs = [ deck1Slot1BaseAddr(), deck2Slot1BaseAddr(), deck3Slot1BaseAddr() ]
+    
+    for deck in range(0, 2)
+    {
+        slotsUsedInDeck = []
+        for i in range(0, maxNumberOfCommandSlots() - 1)
+        {
+            inventoryIndex = word(slotBaseAddrs[deck] + i * commandIndexWidth()) // 0xffff when no command is equipped
+            array_push(slotsUsedInDeck, once(inventoryIndex != 0xffff))
+        }
+        
+        trigger = trigger || CurrentDeckIs(deck + 1) && tally(slotsFilled, slotsUsedInDeck)
+    }
+    
+    return trigger
+}
+
+function CommandDeckSlotsFilledByGivenCommandsIsAtLeast(haystack, slotsFilled)
+{
+    trigger = always_false()
+    slotBaseAddrs = [ deck1Slot1BaseAddr(), deck2Slot1BaseAddr(), deck3Slot1BaseAddr() ]
+    
+    for deck in range(0, 2)
+    {
+        slotsUsedInDeck = []
+        for i in range(0, maxNumberOfCommandSlots() - 1)
+        {
+            needleFoundInHaystack = false
+            inventoryIndex = word(slotBaseAddrs[deck] + i * commandIndexWidth()) // 0xffff when no command is equipped
+            inventoryOffset = inventoryIndex * commandInventoryWidth() // The memory offset from the beginning of the inventory where the command lies
+            inventoryCommandId = word(commandInventorySlot1BaseAddr() + inventoryOffset) // The accessor containing the actual command ID
+            
+            for j in haystack
+            {
+                needleFoundInHaystack = needleFoundInHaystack || inventoryCommandId == j["id"]
+            }
+            
+            array_push(slotsUsedInDeck, once(inventoryIndex != 0xffff && needleFoundInHaystack))
+        }
+        
+        trigger = trigger || CurrentDeckIs(deck + 1) && tally(slotsFilled, slotsUsedInDeck)
+    }
+    
+    return trigger
+}
+
+healingCommands = GetCommandsByProperties({ "healsHp": 1, "equippableBattleCommand": 1 })
+achievement(title = "Incomplete Being [m]", points = 25,
+    description = "Defeat Vanitas at the end of Ventus's story with only four battle command slots occupied in the Command Deck, " +
+        "only three max of which may be healing commands (Proud Mode or higher, Level 22 or below).",
+    trigger = CheckpointPassedForCharacters(InformationBarPoppedUpOnce() && IsInLocation("VentusHeart2"), VentusOnly(), true)
+        && TriggerConditionsMetForCharacters({
+            Ventus(): BossDefeatTriggered()
+        }, true)
+        && IsAtLeastOnDifficulty("Proud") && level() <= 22
+        && never(!IsInLocation("VentusHeart2"))
+        && never(CommandDeckSlotsFilledIsAtLeast(5))
+        && never(CommandDeckSlotsFilledByGivenCommandsIsAtLeast(healingCommands, 4))
+)
+
+function xehanortReport10() => bit7(0x1f2932c)
+function VentusStoryCompleted() => WasBitflagSetInGame(xehanortReport10()) && ViewedBattleReportLongEnough() && currentCharacter() == Ventus()
+achievement(title = "The Dormant", points = 10, // todo: name subject to change
+    description = "Complete Ventus's story.",
+    trigger = VentusStoryCompleted()
+)
+
+achievement(title = "Proud Guardian", points = 10,
+    description = "Complete Ventus's story on Proud Mode or higher.",
+    trigger = VentusStoryCompleted() && IsAtLeastOnDifficulty("Proud")
+)
+
+achievement(title = "Critical Guardian", points = 25,
+    description = "Complete Ventus's story on Critical Mode.",
+    trigger = VentusStoryCompleted() && IsAtLeastOnDifficulty("Critical")
+)
+
 achievement(title = "Apotheosis [m]", points = 100,
     description = "Complete any character's story at Level 1 on Critical Mode.",
     trigger = level() == 1 && IsAtLeastOnDifficulty("Critical")
-        && TerraStoryCompleted() // todo: add more characters' stories later
+        && (
+        TerraStoryCompleted() || VentusStoryCompleted() // todo: add more characters' stories later
+        )
 )
 
 // We're checking for a pointer-esque format rather than checking for NULL here because this address flickers between values before finally settling onto the final pointer address
@@ -1837,26 +1944,6 @@ achievement(title = "Rainbow Loom [m]", points = 10,
         && MirageArenaCheckpointReachedForCharacters(0x301, "MirageChamber", [ TerraArmored(), VentusArmored() ], 4) // todo: insert other characters
         && IsAtLeastOnDifficulty("Critical") && level() <= 10
 )
-
-function CommandDeckSlotsFilledIsAtLeast(slotsFilled)
-{
-    trigger = always_false()
-    slotBaseAddrs = [ deck1Slot1BaseAddr(), deck2Slot1BaseAddr(), deck3Slot1BaseAddr() ]
-    
-    for deck in range(0, 2)
-    {
-        slotsUsedInDeck = []
-        for i in range(0, maxNumberOfCommandSlots() - 1)
-        {
-            inventoryIndex = word(slotBaseAddrs[deck] + i * commandIndexWidth()) // 0xffff when no command is equipped
-            array_push(slotsUsedInDeck, once(inventoryIndex != 0xffff))
-        }
-        
-        trigger = trigger || CurrentDeckIs(deck + 1) && tally(slotsFilled, slotsUsedInDeck)
-    }
-    
-    return trigger
-}
 
 shotlocks = GetCommandsByProperties({ "supercategory": "Shotlock" })
 
