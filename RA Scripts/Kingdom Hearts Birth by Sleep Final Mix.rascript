@@ -1536,17 +1536,33 @@ achievement(title = "Severe Frostbite [m]", points = 10,
         && never(IsAbilityTurnedOn(darkScreenActiveAddr()))
 )
 
+slotBaseAddrs = [ deck1Slot1BaseAddr(), deck2Slot1BaseAddr(), deck3Slot1BaseAddr() ]
+
+function GetInventoryIndex(deckId, commandSlot)
+{
+    return word(slotBaseAddrs[deckId] + commandSlot * commandIndexWidth()) // 0xffff when no command is equipped
+}
+
+// note: will return 0xffff in memory if no command is equipped in the given deck's given slot
+function GetInventoryCommandId(deckId, commandSlot)
+{
+    inventoryIndex = GetInventoryIndex(deckId, commandSlot)
+    inventoryOffset = inventoryIndex * commandInventoryWidth() // The memory offset from the beginning of the inventory where the command lies
+    inventoryCommandId = word(commandInventorySlot1BaseAddr() + inventoryOffset) // The accessor containing the actual command ID
+    
+    return inventoryCommandId
+}
+
 function CommandDeckSlotsFilledIsAtLeast(slotsFilled)
 {
     trigger = always_false()
-    slotBaseAddrs = [ deck1Slot1BaseAddr(), deck2Slot1BaseAddr(), deck3Slot1BaseAddr() ]
     
     for deck in range(0, 2)
     {
         slotsUsedInDeck = []
         for i in range(0, maxNumberOfCommandSlots() - 1)
         {
-            inventoryIndex = word(slotBaseAddrs[deck] + i * commandIndexWidth()) // 0xffff when no command is equipped
+            inventoryIndex = GetInventoryIndex(deck, i)
             array_push(slotsUsedInDeck, once(inventoryIndex != 0xffff))
         }
         
@@ -1567,9 +1583,8 @@ function CommandDeckSlotsFilledByGivenCommandsIsAtLeast(haystack, slotsFilled)
         for i in range(0, maxNumberOfCommandSlots() - 1)
         {
             needleFoundInHaystack = false
-            inventoryIndex = word(slotBaseAddrs[deck] + i * commandIndexWidth()) // 0xffff when no command is equipped
-            inventoryOffset = inventoryIndex * commandInventoryWidth() // The memory offset from the beginning of the inventory where the command lies
-            inventoryCommandId = word(commandInventorySlot1BaseAddr() + inventoryOffset) // The accessor containing the actual command ID
+            inventoryIndex = GetInventoryIndex(deck, i)
+            inventoryCommandId = GetInventoryCommandId(deck, i)
             
             for j in haystack
             {
@@ -1898,7 +1913,6 @@ achievement(title = "Prison Rations [m]", points = 10,
 function HasDuplicateCommandInDeckOfSize(haystack, deckId, deckSize = 8)
 {
     trigger = always_false()
-    slotBaseAddrs = [ deck1Slot1BaseAddr(), deck2Slot1BaseAddr(), deck3Slot1BaseAddr() ]
     
     for commandToCheckForDuplicate in haystack
     {
@@ -1906,9 +1920,7 @@ function HasDuplicateCommandInDeckOfSize(haystack, deckId, deckSize = 8)
         
         for i in range(0, deckSize)
         {
-            inventoryIndex = word(slotBaseAddrs[deckId - 1] + i * commandIndexWidth()) // 0xffff when no command is equipped
-            inventoryOffset = inventoryIndex * commandInventoryWidth() // The memory offset from the beginning of the inventory where the command lies
-            inventoryCommandId = word(commandInventorySlot1BaseAddr() + inventoryOffset) // The accessor containing the actual command ID
+            inventoryCommandId = GetInventoryCommandId(deckId - 1, i)
             
             array_push(commandChecks, once(inventoryCommandId == commandToCheckForDuplicate["id"]))
         }
@@ -1922,13 +1934,12 @@ function HasDuplicateCommandInDeckOfSize(haystack, deckId, deckSize = 8)
 function DeckLoadoutChanged()
 {
     trigger = always_false()
-    slotBaseAddrs = [ deck1Slot1BaseAddr(), deck2Slot1BaseAddr(), deck3Slot1BaseAddr() ]
     
     for deck in range(0, 2)
     {
         for i in range(0, maxNumberOfCommandSlots() - 1)
         {
-            inventoryIndex = word(slotBaseAddrs[deck] + i * commandIndexWidth()) // 0xffff when no command is equipped
+            inventoryIndex = GetInventoryIndex(deck, i)
             trigger = trigger || Delta(inventoryIndex) != inventoryIndex
         }
     }
