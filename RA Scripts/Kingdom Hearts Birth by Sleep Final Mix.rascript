@@ -888,6 +888,68 @@ function currentDeck() => byte(0x1f2bb78)
 function CurrentDeckIs(deckId) => currentDeck() == deckId - 1
 function maxNumberOfCommandSlots() => 8
 
+slotBaseAddrs = [ deck1Slot1BaseAddr(), deck2Slot1BaseAddr(), deck3Slot1BaseAddr() ]
+
+function GetInventoryIndex(deckId, commandSlot)
+{
+    return word(slotBaseAddrs[deckId] + commandSlot * commandIndexWidth()) // 0xffff when no command is equipped
+}
+
+// note: will return 0xffff in memory if no command is equipped in the given deck's given slot
+function GetInventoryCommandId(deckId, commandSlot)
+{
+    inventoryIndex = GetInventoryIndex(deckId, commandSlot)
+    inventoryOffset = inventoryIndex * commandInventoryWidth() // The memory offset from the beginning of the inventory where the command lies
+    inventoryCommandId = word(commandInventorySlot1BaseAddr() + inventoryOffset) // The accessor containing the actual command ID
+    
+    return inventoryCommandId
+}
+
+// `callback` is an anonymous function that makes a comparison for every battle command slot and accepts the following parameters:
+// inventoryIndex - (16-bit) accessor that holds the index for what command lies in a given slot in the Command Menu
+// inventoryCommandId - (16-bit) accessor that holds the actual ID of the command represented by the slot being looked at in the callback function
+//
+// It then evaluates to a tally() call that represents the number of slots that satisfy the callback.
+function CommandDeckSlotsFulfillCallback(callback, numberToSatisfy = 0)
+{
+    trigger = always_false()
+    
+    for deck in range(0, 2)
+    {
+        slotsUsedInDeck = []
+        for i in range(0, maxNumberOfCommandSlots() - 1)
+        {
+            needleFoundInHaystack = false
+            inventoryIndex = GetInventoryIndex(deck, i)
+            inventoryCommandId = GetInventoryCommandId(deck, i)
+            
+            array_push(slotsUsedInDeck, once(callback(inventoryIndex, inventoryCommandId)))
+        }
+        
+        trigger = trigger || CurrentDeckIs(deck + 1) && tally(numberToSatisfy, slotsUsedInDeck)
+    }
+    
+    return trigger
+}
+
+function CommandDeckSlotsFilledIsAtLeast(slotsFilled)
+{
+    return CommandDeckSlotsFulfillCallback((index, id) => index != 0xffff, slotsFilled)
+}
+
+function CommandDeckSlotsFilledByGivenCommandsIsAtLeast(haystack, slotsFilled)
+{
+    return CommandDeckSlotsFulfillCallback((index, id) {
+        needleFoundInHaystack = false
+        for i in haystack
+        {
+            needleFoundInHaystack = needleFoundInHaystack || id == i["id"]
+        }
+        
+        return index != 0xffff && needleFoundInHaystack
+    }, slotsFilled)
+}
+
 function HasAnyOfTheGivenCommandsEquipped(commands)
 {
     commandIds = GetIdsFromObjects(commands)
@@ -1535,70 +1597,6 @@ achievement(title = "Severe Frostbite [m]", points = 10,
         && never(IsAbilityTurnedOn(thunderScreenActiveAddr()))
         && never(IsAbilityTurnedOn(darkScreenActiveAddr()))
 )
-
-slotBaseAddrs = [ deck1Slot1BaseAddr(), deck2Slot1BaseAddr(), deck3Slot1BaseAddr() ]
-
-function GetInventoryIndex(deckId, commandSlot)
-{
-    return word(slotBaseAddrs[deckId] + commandSlot * commandIndexWidth()) // 0xffff when no command is equipped
-}
-
-// note: will return 0xffff in memory if no command is equipped in the given deck's given slot
-function GetInventoryCommandId(deckId, commandSlot)
-{
-    inventoryIndex = GetInventoryIndex(deckId, commandSlot)
-    inventoryOffset = inventoryIndex * commandInventoryWidth() // The memory offset from the beginning of the inventory where the command lies
-    inventoryCommandId = word(commandInventorySlot1BaseAddr() + inventoryOffset) // The accessor containing the actual command ID
-    
-    return inventoryCommandId
-}
-
-function CommandDeckSlotsFilledIsAtLeast(slotsFilled)
-{
-    trigger = always_false()
-    
-    for deck in range(0, 2)
-    {
-        slotsUsedInDeck = []
-        for i in range(0, maxNumberOfCommandSlots() - 1)
-        {
-            inventoryIndex = GetInventoryIndex(deck, i)
-            array_push(slotsUsedInDeck, once(inventoryIndex != 0xffff))
-        }
-        
-        trigger = trigger || CurrentDeckIs(deck + 1) && tally(slotsFilled, slotsUsedInDeck)
-    }
-    
-    return trigger
-}
-
-function CommandDeckSlotsFilledByGivenCommandsIsAtLeast(haystack, slotsFilled)
-{
-    trigger = always_false()
-    slotBaseAddrs = [ deck1Slot1BaseAddr(), deck2Slot1BaseAddr(), deck3Slot1BaseAddr() ]
-    
-    for deck in range(0, 2)
-    {
-        slotsUsedInDeck = []
-        for i in range(0, maxNumberOfCommandSlots() - 1)
-        {
-            needleFoundInHaystack = false
-            inventoryIndex = GetInventoryIndex(deck, i)
-            inventoryCommandId = GetInventoryCommandId(deck, i)
-            
-            for j in haystack
-            {
-                needleFoundInHaystack = needleFoundInHaystack || inventoryCommandId == j["id"]
-            }
-            
-            array_push(slotsUsedInDeck, once(inventoryIndex != 0xffff && needleFoundInHaystack))
-        }
-        
-        trigger = trigger || CurrentDeckIs(deck + 1) && tally(slotsFilled, slotsUsedInDeck)
-    }
-    
-    return trigger
-}
 
 healingCommands = GetCommandsByProperties({ "healsHp": 1, "equippableBattleCommand": 1 })
 achievement(title = "Incomplete Being [m]", points = 25,
