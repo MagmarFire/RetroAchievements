@@ -950,20 +950,19 @@ function CommandDeckSlotsFilledByGivenCommandsIsAtLeast(haystack, slotsFilled)
     }, slotsFilled)
 }
 
+// todo: the last attempt to refactor this to use `CommandDeckSlotsFulfillCallback` resulted in a "&& and || chain is too complex" error. Attempt to try again later.
 function HasAnyOfTheGivenCommandsEquipped(commands)
 {
     commandIds = GetIdsFromObjects(commands)
     clusters = GetClustersFromList(commandIds)
     trigger = always_false()
-    slotBaseAddrs = [ deck1Slot1BaseAddr(), deck2Slot1BaseAddr(), deck3Slot1BaseAddr() ]
     
     for deck in range(0, 2)
     {
         for i in range(0, maxNumberOfCommandSlots() - 1)
         {
-            inventoryIndex = word(slotBaseAddrs[deck] + i * commandIndexWidth()) // 0xffff when no command is equipped
-            inventoryOffset = inventoryIndex * commandInventoryWidth() // The memory offset from the beginning of the inventory where the command lies
-            inventoryCommandId = word(commandInventorySlot1BaseAddr() + inventoryOffset) // The accessor containing the actual command ID
+            inventoryIndex = GetInventoryIndex(deck, i)
+            inventoryCommandId = GetInventoryCommandId(deck, i)
             
             for cluster in clusters
             {
@@ -2166,4 +2165,3 @@ achievement(title = "Style Specialist [m]", points = 50,
             once(GivenCommandStyleWasActivated(timesFrozenFortuneWasActivated())),
         ]))
 )
-
