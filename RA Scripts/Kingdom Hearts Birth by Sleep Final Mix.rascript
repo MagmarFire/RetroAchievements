@@ -659,7 +659,9 @@ function characterArenaPointer() => tbyte(0xb59ce8)
 function arenaHp() => word(characterArenaPointer() + 0x7c + 0x1000000)
 function commandBeingUsedInArenaByTerra() => word(characterArenaPointer() - 0x149a8 + 0x1000000)
 function commandBeingUsedInArenaByVentus() => word(characterArenaPointer() - 0x15018 + 0x1000000)
-function TookDamageInTheMirageArena() => Delta(arenaHp()) > arenaHp() && characterArenaPointer() != 0
+
+// We need to check the character pointer delta here because the pointer + offset may point to garbage that's less than the player's HP, causing a hit.
+function TookDamageInTheMirageArena() => Delta(arenaHp()) > arenaHp() && Delta(characterArenaPointer()) != 0
 
 function partyFieldPointer() => tbyte(0xb59cec)
 function kingMickeyHp() => word(partyFieldPointer() - 0x9af4 + 0x1000000)
@@ -2100,9 +2102,10 @@ function NumberOfGivenAbilitiesEquippedByAddrGreaterThanOrEqualTo(addrs, max)
     return tally(max, ret)
 }
 
+// todo: consider rebalancing, since Level 20 may be too low for Ven
 achievement(title = "Combined Boon [m]", points = 10,
     description = "Complete \"Combined Threat\" in the Mirage Arena with only two beneficial Stat and Support Abilities each turned on (Critical Mode, Level 20 or below).",
-    trigger = MirageArenaCheckpointReachedForCharacters(0x601, "MirageExterior", [ TerraArmored() ], 6) // todo: insert other characters
+    trigger = MirageArenaCheckpointReachedForCharacters(0x601, "MirageExterior", [ TerraArmored(), VentusArmored() ], 6) // todo: insert other characters
         && IsAtLeastOnDifficulty("Critical") && level() <= 20
         && never(NumberOfStatAbilitiesEquipped(3))
         && never(NumberOfBeneficialSupportAbilitiesEquippedGreaterThanOrEqualTo(3))
@@ -2111,15 +2114,16 @@ achievement(title = "Combined Boon [m]", points = 10,
 battleCommandsThatUseMoreThanOneSlot = GetCommandsByCallback(command => command["slots"] > 1)
 achievement(title = "Healthcare Budgeting [m]", points = 10,
     description = "Complete \"Risky Riches\" in the Mirage Arena using only commands that take up a single slot and without taking damage more than three times (Critical Mode, Level 20 or below).",
-    trigger = MirageArenaCheckpointReachedForCharacters(0x201, "MirageSkull", [ TerraArmored() ], 3) // todo: insert other characters
+    trigger = MirageArenaCheckpointReachedForCharacters(0x201, "MirageSkull", [ TerraArmored(), VentusArmored() ], 3) // todo: insert other characters
         && IsAtLeastOnDifficulty("Critical") && level() <= 20
         && never(repeated(4, TookDamageInTheMirageArena()))
-        && never(TerraJustUsedAnyGivenCommandInArena(battleCommandsThatUseMoreThanOneSlot))
+        && NeverJustUsedAnyGivenCommandInArena(battleCommandsThatUseMoreThanOneSlot)
 )
 
+// todo: consider rebalancing, since Level 20 may be too low for Ven
 achievement(title = "Escalation of Force [m]", points = 10,
     description = "Complete \"Harsh Punishment\" in the Mirage Arena with only five battle command slots filled (Critical Mode, Level 20 or below).",
-    trigger = MirageArenaCheckpointReachedForCharacters(0x801, "MirageArena1", [ TerraArmored() ], 6) // todo: insert other characters
+    trigger = MirageArenaCheckpointReachedForCharacters(0x801, "MirageArena1", [ TerraArmored(), VentusArmored() ], 6) // todo: insert other characters
         && IsAtLeastOnDifficulty("Critical") && level() <= 20
         && never(CommandDeckSlotsFilledIsAtLeast(6))
 )
