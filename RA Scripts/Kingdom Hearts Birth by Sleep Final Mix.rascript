@@ -183,9 +183,14 @@ function GetCountableAccessorArrayFromAddressBits(dict)
 // onlyAvailableWhen: a condition that must be true in all conditions for the achievement to trigger.
 // id: self-explanatory
 // badge: self-explanatory
-function GenerateCheevoFromBits(name, description, points, threshold, addresses, onlyAvailableWhen = always_true(), id = 0, badge = "00000")
+function GenerateCheevoFromBits(name, description, points, addresses, onlyAvailableWhen = always_true(), id = 0, badge = "00000", threshold = 0)
 {
     bitcounts = GenerateBitcountFromCountableObjects(GetCountableAccessorArrayFromAddressBits(addresses))
+    
+    if (threshold <= 0)
+    {
+        threshold = length(addresses)
+    }
 
     // This is the score when the game is loaded. If the loaded score is greater than or equal to the threshold--that is,
     // if the save file would satisfy enough conditions to trigger the achievement on load--this should trigger a
@@ -579,6 +584,20 @@ function Aqua() => 2
 function TerraOnly() => [ Terra() ]
 function VentusOnly() => [ Ventus() ]
 function AquaOnly() => [ Aqua() ]
+
+function CharacterIsInArray(arr)
+{
+    trigger = false
+    for element in arr
+    {
+        trigger = trigger || currentCharacter() == element
+    }
+    
+    return trigger
+}
+
+function IsPlayingAsTerra() => CharacterIsInArray([ Terra(), TerraArmored(), TerraArmoredGlider() ])
+function IsPlayingAsVentus() => CharacterIsInArray([ Ventus(), VentusArmored(), VentusArmoredGlider(), VentusArmoredHelmetless() ])
 
 function CharacterIdToNames()
 {
@@ -1686,7 +1705,6 @@ CreateRumbleRacingAchievementAndLeaderboard("Prix Spree", GetLocationByName("Dis
 CreateRumbleRacingAchievementAndLeaderboard("Castle Crasher", GetLocationByName("DisneyCastle"), 236, 50)
 
 GenerateCheevoFromBits(name = "Sticker Warrior", description = "Collect every sticker in Terra's story.", points = 5,
-    threshold = 20,
     addresses = {
         1: { "addr": 0x1f2929c, "bit": 1 },
         2: { "addr": 0x1f2929c, "bit": 2 },
@@ -1699,16 +1717,43 @@ GenerateCheevoFromBits(name = "Sticker Warrior", description = "Collect every st
         9: { "addr": 0x1f2929d, "bit": 1 },
         10: { "addr": 0x1f2929d, "bit": 2 },
         11: { "addr": 0x1f2929d, "bit": 3 },
-        12: { "addr": 0x1f2929e, "bit": 2 },
-        13: { "addr": 0x1f2929e, "bit": 3 },
-        14: { "addr": 0x1f2929d, "bit": 4 },
-        15: { "addr": 0x1f2929d, "bit": 5 },
-        16: { "addr": 0x1f2929d, "bit": 6 },
+        12: { "addr": 0x1f2929d, "bit": 4 },
+        13: { "addr": 0x1f2929d, "bit": 5 },
+        14: { "addr": 0x1f2929d, "bit": 6 },
+        15: { "addr": 0x1f2929d, "bit": 7 },
+        16: { "addr": 0x1f2929e, "bit": 0 },
         17: { "addr": 0x1f2929e, "bit": 1 },
-        18: { "addr": 0x1f2929d, "bit": 7 },
-        19: { "addr": 0x1f2929e, "bit": 0 },
+        18: { "addr": 0x1f2929e, "bit": 2 },
+        19: { "addr": 0x1f2929e, "bit": 3 },
         20: { "addr": 0x1f2929e, "bit": 4 },
-    }
+    },
+    onlyAvailableWhen = IsPlayingAsTerra()
+)
+
+GenerateCheevoFromBits(name = "Sticker Guardian", description = "Collect every sticker in Ventus's story.", points = 5,
+    addresses = {
+        1: { "addr": 0x1f2929c, "bit": 1 },
+        2: { "addr": 0x1f2929c, "bit": 2 },
+        3: { "addr": 0x1f2929c, "bit": 3 },
+        4: { "addr": 0x1f2929c, "bit": 4 },
+        5: { "addr": 0x1f2929c, "bit": 5 },
+        6: { "addr": 0x1f2929c, "bit": 6 },
+        7: { "addr": 0x1f2929c, "bit": 7 },
+        8: { "addr": 0x1f2929d, "bit": 0 },
+        9: { "addr": 0x1f2929d, "bit": 1 },
+        10: { "addr": 0x1f2929d, "bit": 2 },
+        11: { "addr": 0x1f2929d, "bit": 3 },
+        12: { "addr": 0x1f2929d, "bit": 4 },
+        13: { "addr": 0x1f2929d, "bit": 5 },
+        14: { "addr": 0x1f2929d, "bit": 6 },
+        15: { "addr": 0x1f2929d, "bit": 7 },
+        16: { "addr": 0x1f2929e, "bit": 0 },
+        17: { "addr": 0x1f2929e, "bit": 1 },
+        18: { "addr": 0x1f2929e, "bit": 2 },
+        19: { "addr": 0x1f2929e, "bit": 3 },
+        20: { "addr": 0x1f2929e, "bit": 4 },
+    },
+    onlyAvailableWhen = IsPlayingAsVentus()
 )
 
 function finishCommandWidth() => 8
@@ -1732,17 +1777,33 @@ function UnlockedFinishCommand(id)
 
 achievement(title = "Apex of War", points = 5,
     description = "Unlock Terra's ultimate Finish command.",
-    trigger = UnlockedFinishCommand(0x5a) && (currentCharacter() == Terra() || currentCharacter() == TerraArmored() || currentCharacter() == TerraArmoredGlider())
+    trigger = UnlockedFinishCommand(0x5a) && IsPlayingAsTerra()
+)
+
+achievement(title = "Apex of Wardship", points = 5,
+    description = "Unlock Ventus's ultimate Finish command.",
+    trigger = UnlockedFinishCommand(0x58) && IsPlayingAsVentus()
 )
 
 GenerateCheevoFromBits(name = "Peer Reviewer - Terra", description = "Obtain all secret reports in Terra's story.", points = 5,
-    threshold = 4,
     addresses = {
-        1: { "addr": 0x1f2932b, "bit": 7 },
-        2: { "addr": 0x1f2932c, "bit": 2 },
-        3: { "addr": 0x1f2932c, "bit": 5 },
-        4: { "addr": 0x1f2932d, "bit": 0 },
-    }
+        1: { "addr": 0x1f2932b, "bit": 7 }, // 2
+        2: { "addr": 0x1f2932c, "bit": 2 }, // 5
+        3: { "addr": 0x1f2932c, "bit": 5 }, // 8
+        4: { "addr": 0x1f2932d, "bit": 0 }, // 11
+    },
+    onlyAvailableWhen = IsPlayingAsTerra()
+)
+
+GenerateCheevoFromBits(name = "Peer Reviewer - Ventus", description = "Obtain all secret reports in Ventus's story.", points = 5,
+    addresses = {
+        1: { "addr": 0x1f2932b, "bit": 4 }, // Letter
+        2: { "addr": 0x1f2932b, "bit": 6 }, // 1
+        3: { "addr": 0x1f2932c, "bit": 6 }, // 9
+        4: { "addr": 0x1f2932c, "bit": 7 }, // 10
+        5: { "addr": 0x1f2932b, "bit": 5 }, // 12
+    },
+    onlyAvailableWhen = IsPlayingAsVentus()
 )
 
 function flameBoxMissionHighScore() => dword(0x1f35d38)
