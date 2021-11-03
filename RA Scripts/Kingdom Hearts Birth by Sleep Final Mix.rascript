@@ -2130,12 +2130,13 @@ achievement(title = "Escalation of Force [m]", points = 10,
 
 function MonstroMirageArenaCheckpointReachedForCharacters()
 {
-    return CheckpointPassedForCharacters(MirageArenaCheckpointPassedCallback(0xc01, "MirageMonstro"), [ TerraArmored() ], false) // todo: insert other characters
+    return CheckpointPassedForCharacters(MirageArenaCheckpointPassedCallback(0xc01, "MirageMonstro"), [ TerraArmored(), VentusArmored() ], false) // todo: insert other characters
         && never(!WasInLocation("MirageMonstro") && IsInLocation("MirageHub"))
         && mirageArenaCurrentRound() < 7
         && trigger_when(MonstroDefeatTriggered())
 }
 
+// todo: consider rebalancing, since Level 20 may be too low for Ven
 function MonstroDefeatTriggered() => IsInBattle() && bit3(battleFlagsAddr()) == 1 && arenaHp() > 0 && characterArenaPointer() != 0
 achievement(title = "The Madness of Man [m]", points = 25,
     description = "Complete \"The Monster of the Sea\" in the Mirage Arena in six rounds or fewer (Critical Mode, Level 20 or below).",
@@ -2147,9 +2148,9 @@ achievement(title = "The Madness of Man [m]", points = 25,
 directHealingCommands = GetCommandsByProperties({ "healsHp": 1 })
 achievement(title = "Scrounging to Survive [m]", points = 10,
     description = "Complete \"Treasure Tussle\" in the Mirage Arena without using commands that directly heal you (Critical Mode, Level 20 or below).",
-    trigger = MirageArenaCheckpointReachedForCharacters(0x701, "MiragePinball", [ TerraArmored() ], 3) // todo: insert other characters
+    trigger = MirageArenaCheckpointReachedForCharacters(0x701, "MiragePinball", [ TerraArmored(), VentusArmored() ], 3) // todo: insert other characters
         && IsAtLeastOnDifficulty("Critical") && level() <= 20
-        && never(TerraJustUsedAnyGivenCommandInArena(directHealingCommands))
+        && NeverJustUsedAnyGivenCommandInArena(directHealingCommands)
 )
 
 achievement(title = "Rolling Blackout [m]", points = 50,
