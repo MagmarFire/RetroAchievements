@@ -1964,10 +1964,10 @@ function NeverJustUsedAnyGivenCommandInArena(haystack)
 
 achievement(title = "Prison Rations [m]", points = 10,
     description = "Complete \"Day of Reckoning\" in the Mirage Arena using Cure as your only healing command no more than thrice (Critical Mode, Level 8 or below).",
-    trigger = NeverJustUsedAnyGivenCommandInArena(dayOfReckoningForbiddenHealingCommands)
-        && NeverUsedAnyGivenCommandInArenaGivenNumberOfTimes(cureCommand, cureLimit + 1)
-        && MirageArenaCheckpointReachedForCharacters(1, "MirageArena1", [ TerraArmored(), VentusArmored() ], 4) // todo: insert other characters
+    trigger = MirageArenaCheckpointReachedForCharacters(1, "MirageArena1", [ TerraArmored(), VentusArmored() ], 4) // todo: insert other characters
         && IsAtLeastOnDifficulty("Critical") && level() <= 8
+        && NeverJustUsedAnyGivenCommandInArena(dayOfReckoningForbiddenHealingCommands)
+        && NeverUsedAnyGivenCommandInArenaGivenNumberOfTimes(cureCommand, cureLimit + 1)
 )
 
 function HasDuplicateCommandInDeckOfSize(haystack, deckId, deckSize = 8)
@@ -2102,11 +2102,10 @@ function NumberOfGivenAbilitiesEquippedByAddrGreaterThanOrEqualTo(addrs, max)
     return tally(max, ret)
 }
 
-// todo: consider rebalancing, since Level 20 may be too low for Ven
 achievement(title = "Combined Boon [m]", points = 10,
-    description = "Complete \"Combined Threat\" in the Mirage Arena with only two beneficial Stat and Support Abilities each turned on (Critical Mode, Level 20 or below).",
+    description = "Complete \"Combined Threat\" in the Mirage Arena with only two beneficial Stat and Support Abilities each turned on (Critical Mode, Level 25 or below).",
     trigger = MirageArenaCheckpointReachedForCharacters(0x601, "MirageExterior", [ TerraArmored(), VentusArmored() ], 6) // todo: insert other characters
-        && IsAtLeastOnDifficulty("Critical") && level() <= 20
+        && IsAtLeastOnDifficulty("Critical") && level() <= 25
         && never(NumberOfStatAbilitiesEquipped(3))
         && never(NumberOfBeneficialSupportAbilitiesEquippedGreaterThanOrEqualTo(3))
 )
@@ -2120,11 +2119,10 @@ achievement(title = "Healthcare Budgeting [m]", points = 10,
         && NeverJustUsedAnyGivenCommandInArena(battleCommandsThatUseMoreThanOneSlot)
 )
 
-// todo: consider rebalancing, since Level 20 may be too low for Ven
 achievement(title = "Escalation of Force [m]", points = 10,
-    description = "Complete \"Harsh Punishment\" in the Mirage Arena with only five battle command slots filled (Critical Mode, Level 20 or below).",
+    description = "Complete \"Harsh Punishment\" in the Mirage Arena with only five battle command slots filled (Critical Mode, Level 25 or below).",
     trigger = MirageArenaCheckpointReachedForCharacters(0x801, "MirageArena1", [ TerraArmored(), VentusArmored() ], 6) // todo: insert other characters
-        && IsAtLeastOnDifficulty("Critical") && level() <= 20
+        && IsAtLeastOnDifficulty("Critical") && level() <= 25
         && never(CommandDeckSlotsFilledIsAtLeast(6))
 )
 
@@ -2136,13 +2134,12 @@ function MonstroMirageArenaCheckpointReachedForCharacters()
         && trigger_when(MonstroDefeatTriggered())
 }
 
-// todo: consider rebalancing, since Level 20 may be too low for Ven
 function MonstroDefeatTriggered() => IsInBattle() && bit3(battleFlagsAddr()) == 1 && arenaHp() > 0 && characterArenaPointer() != 0
 achievement(title = "The Madness of Man [m]", points = 25,
-    description = "Complete \"The Monster of the Sea\" in the Mirage Arena in six rounds or fewer (Critical Mode, Level 20 or below).",
+    description = "Complete \"The Monster of the Sea\" in the Mirage Arena in six rounds or fewer (Critical Mode, Level 25 or below).",
     trigger = MonstroMirageArenaCheckpointReachedForCharacters() // todo: insert other characters
         && IsAtLeastOnDifficulty("Critical")
-        && level() <= 20
+        && level() <= 25
 )
 
 directHealingCommands = GetCommandsByProperties({ "healsHp": 1 })
@@ -2154,14 +2151,19 @@ achievement(title = "Scrounging to Survive [m]", points = 10,
 )
 
 achievement(title = "Rolling Blackout [m]", points = 50,
-    description = "Complete \"Copycat Crisis\" in the Mirage Arena using battle commands only on even-numbered rounds (Critical Mode, Level 25 or below).",
-    trigger = MirageArenaCheckpointReachedForCharacters(0xa01, "MirageSummit", [ TerraArmored() ], 8) // todo: insert other characters
-        && IsAtLeastOnDifficulty("Critical") && level() <= 25
+    description = "Complete \"Copycat Crisis\" in the Mirage Arena using battle commands only on even-numbered rounds (Critical Mode, Level 30 or below).",
+    trigger = MirageArenaCheckpointReachedForCharacters(0xa01, "MirageSummit", [ TerraArmored(), VentusArmored() ], 8) // todo: insert other characters
+        && IsAtLeastOnDifficulty("Critical") && level() <= 30
         // We need to check oddness for each round individually because (1) the modulo operator isn't supported in the editor and (2) the logic would be too complex otherwise.
-        && never(TerraJustUsedAnyGivenCommandInArena(battleCommands) && mirageArenaCurrentRound() == 1)
-        && never(TerraJustUsedAnyGivenCommandInArena(battleCommands) && mirageArenaCurrentRound() == 3)
-        && never(TerraJustUsedAnyGivenCommandInArena(battleCommands) && mirageArenaCurrentRound() == 5)
-        && never(TerraJustUsedAnyGivenCommandInArena(battleCommands) && mirageArenaCurrentRound() == 7)
+        && never(TerraJustUsedAnyGivenCommandInArena(battleCommands) && mirageArenaCurrentRound() == 1 && currentCharacter() == TerraArmored())
+        && never(TerraJustUsedAnyGivenCommandInArena(battleCommands) && mirageArenaCurrentRound() == 3 && currentCharacter() == TerraArmored())
+        && never(TerraJustUsedAnyGivenCommandInArena(battleCommands) && mirageArenaCurrentRound() == 5 && currentCharacter() == TerraArmored())
+        && never(TerraJustUsedAnyGivenCommandInArena(battleCommands) && mirageArenaCurrentRound() == 7 && currentCharacter() == TerraArmored())
+        
+        && never(VentusJustUsedAnyGivenCommandInArena(battleCommands) && mirageArenaCurrentRound() == 1 && currentCharacter() == VentusArmored())
+        && never(VentusJustUsedAnyGivenCommandInArena(battleCommands) && mirageArenaCurrentRound() == 3 && currentCharacter() == VentusArmored())
+        && never(VentusJustUsedAnyGivenCommandInArena(battleCommands) && mirageArenaCurrentRound() == 5 && currentCharacter() == VentusArmored())
+        && never(VentusJustUsedAnyGivenCommandInArena(battleCommands) && mirageArenaCurrentRound() == 7 && currentCharacter() == VentusArmored())
 )
 
 
@@ -2188,7 +2190,7 @@ function GivenCommandStyleWasActivated(activatedMem)
 
 achievement(title = "The Spice of Life [m]", points = 50,
     description = "Activate seven different Command Styles in a single attempt of the \"Keepers of the Arena\" event in the Mirage Arena, and then complete it (Critical Mode, Level 42 or below).",
-    trigger = MirageArenaCheckpointReachedForCharacters(0xb01, "MirageArena1", [ TerraArmored() ], 9) // todo: insert other characters
+    trigger = MirageArenaCheckpointReachedForCharacters(0xb01, "MirageArena1", [ TerraArmored(), VentusArmored() ], 9) // todo: insert other characters
         && IsAtLeastOnDifficulty("Critical") && level() <= 42
         && trigger_when(tally(7, [
             once(GivenCommandStyleWasActivated(timesCritialImpactWasActivated())),
@@ -2211,7 +2213,7 @@ achievement(title = "The Spice of Life [m]", points = 50,
 
 achievement(title = "Style Specialist [m]", points = 50,
     description = "Complete \"Villains' Vendetta\" in the Mirage Arena while activating at most one type of Command Style (Critical Mode, Level 45 or below).",
-    trigger = MirageArenaCheckpointReachedForCharacters(0xd01, "MirageArena1", [ TerraArmored() ], 8) // todo: insert other characters
+    trigger = MirageArenaCheckpointReachedForCharacters(0xd01, "MirageArena1", [ TerraArmored(), VentusArmored() ], 8) // todo: insert other characters
         && IsAtLeastOnDifficulty("Critical") && level() <= 45
         && never(tally(2, [
             once(GivenCommandStyleWasActivated(timesCritialImpactWasActivated())),
