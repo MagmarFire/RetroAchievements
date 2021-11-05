@@ -812,12 +812,14 @@ function InformationBarJustPoppedUp() => Delta(informationBarState()) == 1 && in
 function InformationBarPoppedUpOnce() => once(InformationBarJustPoppedUp())
 function criticalImpactState() => byte(0x1f2accc)
 function feverPitchState() => byte(0x1f2acce)
+function spellweaverState() => byte(0x1f2accd)
 
 function LearnedCommandStyle(commandStyleStateMem) => commandStyleStateMem == 5 && Delta(commandStyleStateMem) == 0
 
 function LearnedCriticalImpact() => LearnedCommandStyle(criticalImpactState())
 function LearnedFeverPitch() => LearnedCommandStyle(feverPitchState())
 function LearnedThunderbolt() => LearnedCommandStyle(thunderboltState())
+function LearnedSpellweaver() => LearnedCommandStyle(spellweaverState())
 
 function MarkOfMasteryCheckpointReached() => CheckpointPassedForCharacters(InformationBarPoppedUpOnce()
     && IsInLocation("DepartureGreatHall"), [ Terra(), Ventus(), Aqua() ], true
@@ -826,7 +828,8 @@ function MarkOfMasteryCheckpointReached() => CheckpointPassedForCharacters(Infor
 function TriggerConditionsMetForMarkOfMastery() =>
     TriggerConditionsMetForCharacters({
         Terra(): LearnedCriticalImpact(),
-        Ventus(): LearnedFeverPitch()
+        Ventus(): LearnedFeverPitch(),
+        Aqua(): LearnedSpellweaver()
     }, true)
 
 achievement(title = "Hit Ball to Pass Test [m]", points = 3,
