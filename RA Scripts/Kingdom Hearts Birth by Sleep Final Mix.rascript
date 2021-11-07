@@ -665,7 +665,9 @@ function TookDamageInTheMirageArena() => Delta(arenaHp()) > arenaHp() && Delta(c
 
 function partyFieldPointer() => tbyte(0xb59cec)
 function kingMickeyHp() => word(partyFieldPointer() - 0x9af4 + 0x1000000)
+function jaqDamage() => word(partyFieldPointer() + 0x20c4 + 0x1000000)
 function KingMickeyHpReachedZero() => kingMickeyHp() <= 0 && Delta(kingMickeyHp()) > 0 && partyFieldPointer() != 0
+function JaqTookDamage() => Delta(jaqDamage()) < jaqDamage()
 
 function EnteredAttackState() => Delta(characterState()) != 0x10 && characterState() == 0x10
 function IsUsingFinisher() => characterState() == 0x14
@@ -673,6 +675,7 @@ function IsGuarding() => characterState() == 0x16
 function IsUsingAPhysicalAttack() => characterState() == 0x10
 function IsUsingAStandardAttack() => currentAttackInCombo() != 0 && nextAttackInCombo() != 0
 function JustStartedSwimming() => characterState() != Delta(characterState()) && characterState() == 0x9
+function IsRunning() => characterState() == 0x3
 
 function dLinkPointer() => tbyte(0xb59ce8)
 function dLinkCharge() => dword(dLinkPointer() + 0x1000000 + 0x3c) // todo: actually a float; change when supported
@@ -889,7 +892,7 @@ achievement(title = "Syncopation [m]", points = 25,
 
 function castleOfDreamsTerraStoryEntry() => bit7(0x1f28464)
 achievement(title = "Boundless Faith", points = 3,
-    description = "Complete the Castle of Dreams as Terra.",
+    description = "Complete Castle of Dreams as Terra.",
     trigger = WasBitflagSetInGame(castleOfDreamsTerraStoryEntry()) && IsInLocation("WorldMap")
         && MustBeTerra()
 )
@@ -1066,7 +1069,7 @@ achievement(title = "Sleeping Death [m]", points = 10,
 )
 
 achievement(title = "A Grave Riddle", points = 3,
-    description = "Complete the Dwarf Woodlands as Terra.",
+    description = "Complete Dwarf Woodlands as Terra.",
     trigger = WasBitflagSetInGame(dwarfWoodlandsTerraStoryEntry()) && IsInLocation("WorldMap")
 )
 
@@ -1345,7 +1348,7 @@ function MustBeVentus() => never(currentCharacter() != Ventus())
 
 function dwarfWoodlandsVenStoryEntry() => bit6(0x1f28445)
 achievement(title = "The Fruits of His Labor", points = 3,
-    description = "Complete the Dwarf Woodlands as Ventus.",
+    description = "Complete Dwarf Woodlands as Ventus.",
     trigger = WasBitflagSetInGame(dwarfWoodlandsVenStoryEntry()) && IsInLocation("WorldMap")
 )
 
@@ -1427,7 +1430,7 @@ achievement(title = "Accept Your Helplessness [m]", points = 5,
 )
 
 achievement(title = "Shoot for the Moon", points = 3,
-    description = "Complete the Castle of Dreams as Ventus.",
+    description = "Complete Castle of Dreams as Ventus.",
     trigger = WasBitflagSetInGame(castleOfDreamsVenStoryEntry()) && IsInLocation("WorldMap")
         && MustBeVentus()
 )
@@ -1581,8 +1584,8 @@ achievement(title = "To the Ends of the Cosmos", points = 3,
         && MustBeVentus()
 )
 
-achievement(title = "Warning! Crocodile Habitat!", points = 25,
-    description = "Defeat Captain Hook without diving into the water more than three times (Proud Mode or higher, Level 20 or below).",
+achievement(title = "Warning! Crocodile Habitat! [m]", points = 25,
+    description = "Defeat Captain Hook without swimming in the water more than three times (Proud Mode or higher, Level 20 or below).",
     trigger = CheckpointPassedForCharacters(InformationBarPoppedUpOnce() && IsInLocation("NeverlandCove"), VentusOnly(), true)
         && TriggerConditionsMetForCharacters({
             Ventus(): BossDefeatTriggered()
@@ -1650,6 +1653,40 @@ achievement(title = "Proud Guardian", points = 10,
 achievement(title = "Critical Guardian", points = 25,
     description = "Complete Ventus's story on Critical Mode.",
     trigger = VentusStoryCompleted() && IsAtLeastOnDifficulty("Critical")
+)
+
+achievement(title = "Mouse-like Stealth [m]", points = 5,
+    description = "Escort Jaq to the mousehole without running or using battle commands (Proud Mode or higher, Level 1).",
+    trigger = CheckpointPassedForCharacters(InformationBarPoppedUpOnce()
+        && IsInLocation("CastleWardrobe"), AquaOnly(), true)
+        && TriggerConditionsMetForCharacters({
+            Aqua(): LearnedThunderbolt()
+        }, true)
+        && IsAtLeastOnDifficulty("Proud") && level() <= 1
+        && never(!IsInLocation("CastleWardrobe"))
+        && never(IsRunning())
+        && never(JustUsedAnyGivenCommand(battleCommands))
+)
+
+magicCommands = GetCommandsByProperties({ "supercategory": "Magic" })
+achievement(title = "Broken Wand [m]", points = 5,
+    description = "Defeat the Cursed Coach in Castle of Dreams without using magic commands (Proud Mode or higher, Level 1).",
+    trigger = CheckpointPassedForCharacters(InformationBarPoppedUpOnce()
+        && IsInLocation("CastleForest"), AquaOnly(), true)
+        && TriggerConditionsMetForCharacters({
+            Aqua(): DeckCapacityIncreased()
+        }, true)
+        && IsAtLeastOnDifficulty("Proud") && level() <= 1
+        && never(!IsInLocation("CastleForest"))
+        && never(JustUsedAnyGivenCommand(magicCommands))
+)
+
+function MustBeAqua() => never(currentCharacter() != Aqua())
+function castleOfDreamsAquaStoryEntry() => bit6(0x1f28465)
+achievement(title = "Innocence of Youth", points = 3,
+    description = "Complete Castle of Dreams as Aqua.",
+    trigger = WasBitflagSetInGame(castleOfDreamsAquaStoryEntry()) && IsInLocation("WorldMap")
+        && MustBeAqua()
 )
 
 achievement(title = "Apotheosis [m]", points = 100,
@@ -1785,7 +1822,7 @@ achievement(title = "Apex of War", points = 5,
     trigger = UnlockedFinishCommand(0x5a) && IsPlayingAsTerra()
 )
 
-achievement(title = "Apex of Wardship", points = 5,
+achievement(title = "Apex of Warding", points = 5,
     description = "Unlock Ventus's ultimate Finish command.",
     trigger = UnlockedFinishCommand(0x58) && IsPlayingAsVentus()
 )
@@ -1869,7 +1906,7 @@ achievement(title = "Greater Fumigator", points = 5,
 
 function floatingFloraMissionHighScore() => dword(0x1f35d40)
 function floatingFloraMissionScoreTarget() => 999
-achievement(title = "Green Thumb", points = 5,
+achievement(title = "Green Thumb", points = 3,
     description = "Set a new record of " + floatingFloraMissionScoreTarget() + " in the Floating Flora Unversed Mission.",
     trigger = HighScoreEarned(floatingFloraMissionHighScore(), floatingFloraMissionScoreTarget())
 )
