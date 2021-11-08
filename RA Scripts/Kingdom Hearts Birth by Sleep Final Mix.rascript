@@ -902,6 +902,7 @@ function dwarfWoodlandsTerraStoryEntry() => bit7(0x1f28444)
 achievement(title = "Swiping the Cookie Jar [m]", points = 5,
     description = "Open the Fission Firaga chest in Dwarf Woodlands as Terra before defeating the boss.",
     trigger = WasBitflagSetInGame(fissionFiragaTerraChest()) && dwarfWoodlandsTerraStoryEntry() == 0
+        && MustBeTerra()
 )
 
 function commandInventorySlot1BaseAddr() => 0x1f29388
@@ -1058,7 +1059,7 @@ achievement(title = "Sleeping Death [m]", points = 10,
     description = "Defeat the Spirit of the Magic Mirror equipping battle commands that only inflict status effects (Proud Mode or higher, Level 4 or below, no D-Links).",
     trigger = HasOnlyTheGivenCommandsEquipped(statusCommands)
         && CheckpointPassedForCharacters(InformationBarPoppedUpOnce()
-            && IsInLocation("DwarfMirror"), [Terra(), Aqua() ], true
+            && IsInLocation("DwarfMirror"), [ Terra(), Aqua() ], true
         ) && TriggerConditionsMetForCharacters({
             Terra(): FirestormLearned(),
             Aqua(): DeckCapacityIncreased()
@@ -1071,6 +1072,7 @@ achievement(title = "Sleeping Death [m]", points = 10,
 achievement(title = "A Grave Riddle", points = 3,
     description = "Complete Dwarf Woodlands as Terra.",
     trigger = WasBitflagSetInGame(dwarfWoodlandsTerraStoryEntry()) && IsInLocation("WorldMap")
+        && MustBeTerra()
 )
 
 function IsAbilityTurnedOn(addr)
@@ -1686,6 +1688,13 @@ function castleOfDreamsAquaStoryEntry() => bit6(0x1f28465)
 achievement(title = "Innocence of Youth", points = 3,
     description = "Complete Castle of Dreams as Aqua.",
     trigger = WasBitflagSetInGame(castleOfDreamsAquaStoryEntry()) && IsInLocation("WorldMap")
+        && MustBeAqua()
+)
+
+function dwarfWoodlandsAquaStoryEntry() => bit1(0x1f28445)
+achievement(title = "Sound Awake", points = 3,
+    description = "Complete Dwarf Woodlands as Aqua.",
+    trigger = WasBitflagSetInGame(dwarfWoodlandsAquaStoryEntry()) && IsInLocation("WorldMap")
         && MustBeAqua()
 )
 
