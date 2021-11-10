@@ -1757,6 +1757,24 @@ achievement(title = "Love Conquers", points = 3,
         && MustBeAqua()
 )
 
+achievement(title = "One Precious Chance [m]", points = 25,
+    description = "Defeat Vanitas in Radiant Garden without healing more than twice (Proud Mode or higher, Level 6 or below).",
+    trigger = CheckpointPassedForCharacters(InformationBarPoppedUpOnce() && IsAtLeastOnDifficulty("Proud") && level() <= 6
+        && IsInLocation("RadiantCentral"), AquaOnly(), true)
+        && TriggerConditionsMetForCharacters({
+            Aqua(): DeckCapacityIncreased()
+        }, true)
+        && never(!IsInLocation("RadiantCentral"))
+        && never(repeated(3, Delta(hp()) < hp() && Delta(hp()) != 0))
+)
+
+function radiantGardenAquaStoryEntry() => bit0(0x1f284c5)
+achievement(title = "Unwitting Predecessor", points = 3,
+    description = "Complete Radiant Garden as Aqua.",
+    trigger = WasBitflagSetInGame(radiantGardenAquaStoryEntry()) && IsInLocation("WorldMap")
+        && MustBeAqua()
+)
+
 achievement(title = "Apotheosis [m]", points = 100,
     description = "Complete any character's story at Level 1 on Critical Mode.",
     trigger = level() == 1 && IsAtLeastOnDifficulty("Critical")
