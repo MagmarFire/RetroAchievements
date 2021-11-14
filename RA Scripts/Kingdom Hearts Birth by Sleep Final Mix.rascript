@@ -582,10 +582,14 @@ function VentusArmored() => 4
 function VentusArmoredGlider() => 0xa
 function VentusArmoredHelmetless() => 0xd
 function Aqua() => 2
+function AquaArmored() => 5
+function AquaArmoredGlider() => 0xb
 
 function TerraOnly() => [ Terra() ]
 function VentusOnly() => [ Ventus() ]
 function AquaOnly() => [ Aqua() ]
+
+function AnyArmoredCharacter() => [ TerraArmored(), VentusArmored(), AquaArmored() ]
 
 function CharacterIsInArray(arr)
 {
@@ -609,8 +613,10 @@ function CharacterIdToNames()
         Ventus(): "Ventus",
         VentusArmored(): "Ventus",
         TerraArmored(): "Terra",
+        AquaArmored(): "Aqua",
         VentusArmoredGlider(): "Ventus",
         TerraArmoredGlider(): "Terra",
+        AquaArmoredGlider(): "Aqua",
         VentusArmoredHelmetless(): "Ventus"
     }
 }
@@ -657,10 +663,13 @@ function mirageArenaCurrentRound() => byte(characterFieldPointer() + 0xb58 + 0x1
 function mirageArenaRoundsCompleted() => byte(characterFieldPointer() + 0xb5a + 0x1000000)
 function commandBeingUsed() => word(characterFieldPointer() + 0xc98 + 0x1000000)
 
+function ArenaRoundChanged() => mirageArenaCurrentRound() != Delta(mirageArenaCurrentRound()) && characterFieldPointer() != 0
+
 function characterArenaPointer() => tbyte(0xb59ce8)
 function arenaHp() => word(characterArenaPointer() + 0x7c + 0x1000000)
 function commandBeingUsedInArenaByTerra() => word(characterArenaPointer() - 0x149a8 + 0x1000000)
 function commandBeingUsedInArenaByVentus() => word(characterArenaPointer() - 0x15018 + 0x1000000)
+function commandBeingUsedInArenaByAqua() => word(characterArenaPointer() - 0x15b48 + 0x1000000)
 
 // We need to check the character pointer delta here because the pointer + offset may point to garbage that's less than the player's HP, causing a hit.
 function TookDamageInTheMirageArena() => Delta(arenaHp()) > arenaHp() && Delta(characterArenaPointer()) != 0
@@ -742,6 +751,11 @@ function TerraJustUsedAnyGivenCommandInArena(haystack)
 function VentusJustUsedAnyGivenCommandInArena(haystack)
 {
     return JustUsedAnyGivenCommandInArenaByMem(haystack, commandBeingUsedInArenaByVentus())
+}
+
+function AquaJustUsedAnyGivenCommandInArena(haystack)
+{
+    return JustUsedAnyGivenCommandInArenaByMem(haystack, commandBeingUsedInArenaByAqua())
 }
 
 function CheckpointPassedForCharacters(checkpointLogic, allowedCharacters, resetOnDeath = false)
@@ -1223,6 +1237,19 @@ function VentusUsedAnyUniqueCommandsGivenNumberOfTimesInArena(usableCommands, us
     return tally(usages, trigger)
 }
 
+
+function AquaUsedAnyUniqueCommandsGivenNumberOfTimesInArena(usableCommands, usages)
+{
+    trigger = []
+    
+    for command in usableCommands
+    {
+        array_push(trigger, once(Delta(commandBeingUsedInArenaByAqua()) == 0 && commandBeingUsedInArenaByAqua() == command["id"]))
+    }
+    
+    return tally(usages, trigger)
+}
+
 jumpCommands = GetCommandsByCallback(command => command["name"] == "Jump" || command["name"] == "High Jump")
 battleCommands = GetCommandsByCallback(command => command["supercategory"] == "Attack" || command["supercategory"] == "Magic" || command["supercategory"] == "Item"
     || command["supercategory"] == "Friendship" || command["supercategory"] == "D-Link")
@@ -1265,6 +1292,7 @@ function landOfDepartureIITerraStoryEntry() => bit0(0x1f28425)
 achievement(title = "Patricide", points = 3,
     description = "Complete Terra's second visit to the Land of Departure.",
     trigger = WasBitflagSetInGame(landOfDepartureIITerraStoryEntry()) && IsInLocation("WorldMap")
+        && MustBeTerra()
 )
 
 function DefeatedXehanortI() => bit0(0x1f285a5) == 1
@@ -1775,6 +1803,115 @@ achievement(title = "Unwitting Predecessor", points = 3,
         && MustBeAqua()
 )
 
+
+function fruitballShoegazersHighScore() => dword(0x1f35754)
+function fruitballBruisersHighScore() => dword(0x1f35724)
+function fruitballChipAndDaleHighScore() => dword(0x1f35730)
+function fruitballCaptainDarkHighScore() => dword(0x1f35748)
+function fruitballChallengeScoreTarget() => 20
+
+achievement(title = "Running Up the Score", points = 5,
+    description = "Set a new high score of " + fruitballChallengeScoreTarget() + " or more in any round of Fruitball.",
+    trigger = HighScoreEarned(fruitballShoegazersHighScore(), fruitballChallengeScoreTarget())
+        || HighScoreEarned(fruitballBruisersHighScore(), fruitballChallengeScoreTarget())
+        || HighScoreEarned(fruitballChipAndDaleHighScore(), fruitballChallengeScoreTarget())
+        || HighScoreEarned(fruitballCaptainDarkHighScore(), fruitballChallengeScoreTarget())
+)
+
+achievement(title = "Regular Fruitballer", points = 5,
+    description = "Set a new high score versus the Bruisers team in Fruitball.",
+    trigger = HighScoreEarned(fruitballBruisersHighScore(), 1)
+)
+
+achievement(title = "Veteran Fruitballer", points = 10,
+    description = "Set a new high score versus Chip and Dale in Fruitball.",
+    trigger = HighScoreEarned(fruitballChipAndDaleHighScore(), 1)
+)
+
+achievement(title = "Legendary Fruitballer", points = 25,
+    description = "Set a new high score versus Captain Dark in Fruitball.",
+    trigger = HighScoreEarned(fruitballCaptainDarkHighScore(), 1)
+)
+
+function BeganFinalsAsAqua() => bit7(0x1f28504) == 1
+achievement(title = "With but a Finger [m]", points = 5,
+    description = "Reach the finals of the Olympus Coliseum Games as Aqua using only one type of battle command (Proud Mode or higher, Level 8 or below).",
+    trigger = CheckpointPassedForCharacters(InformationBarPoppedUpOnce()
+            && IsInLocation("OlympusEast") && IsAtLeastOnDifficulty("Proud") && level() <= 8, AquaOnly(), true)
+            && TriggerConditionsMetForCharacters({
+                Aqua(): MaxHPIncreased()
+            }, true)
+        && never(!IsInLocation("OlympusEast"))
+        && !BeganFinalsAsAqua()
+        && never(UsedAnyUniqueCommandsGivenNumberOfTimes(battleCommands, 2))
+)
+
+firewheelCommand = GetCommandsByProperties({ "name": "Firewheel" })
+achievement(title = "Bad Manners [m]", points = 5,
+    description = "As Aqua, finish off Zack with Firewheel (Proud Mode or higher, Level 8 or below).",
+    trigger = CheckpointPassedForCharacters(InformationBarPoppedUpOnce()
+            && IsInLocation("OlympusEast") && IsAtLeastOnDifficulty("Proud") && level() <= 8, AquaOnly(), true)
+            && TriggerConditionsMetForCharacters({
+                Aqua(): (BossDefeatTriggered() && IsUsingAnyGivenCommand(firewheelCommand)) // Like with Terra, defeating Zack yields no reward.
+            }, true)
+        && never(!IsInLocation("OlympusEast"))
+        && BeganFinalsAsAqua()
+)
+
+defenseCommand = GetCommandsByProperties({ "supercategory": "Defense" })
+achievement(title = "By His Own Petard [m]", points = 5,
+    description = "Defeat Hades and the Ice Titan while a defensive command is active (Proud Mode or higher, Level 8 or below).",
+    trigger = CheckpointPassedForCharacters(InformationBarPoppedUpOnce()
+            && IsInLocation("OlympusEastNight") && IsAtLeastOnDifficulty("Proud") && level() <= 8, AquaOnly(), true)
+            && TriggerConditionsMetForCharacters({
+                Aqua(): (LearnedDiamondDust() && IsUsingAnyGivenCommand(defenseCommand))
+            }, true)
+        && never(!IsInLocation("OlympusEastNight"))
+)
+
+function olympusColiseumAquaStoryEntry() => bit5(0x1f28505)
+achievement(title = "Star-Crossed", points = 3,
+    description = "Complete Olympus Coliseum as Aqua.",
+    trigger = WasBitflagSetInGame(olympusColiseumAquaStoryEntry()) && IsInLocation("WorldMap")
+        && MustBeAqua()
+)
+
+cartwheelAndFirewheelCommands = GetCommandsByCallback(command => command["name"] == "Cartwheel" || command["name"] == "Firewheel")
+achievement(title = "Heightened Vulnerability [m]", points = 5,
+    description = "Defeat Gantu without using the Cartwheel or Firewheel commands (Proud Mode or higher, Level 14 or below).",
+    trigger = CheckpointPassedForCharacters(InformationBarPoppedUpOnce()
+            && IsInLocation("SpaceLaunch") && IsAtLeastOnDifficulty("Proud") && level() <= 14, AquaOnly(), true)
+            && TriggerConditionsMetForCharacters({
+                Aqua(): BossDefeatTriggered()
+            }, true)
+        && never(!IsInLocation("SpaceLaunch"))
+        && never(JustUsedAnyGivenCommand(cartwheelAndFirewheelCommands))
+)
+
+function deepSpaceAquaStoryEntry() => bit6(0x1f28525)
+achievement(title = "Proof of Amicability", points = 3,
+    description = "Complete Deep Space as Aqua.",
+    trigger = WasBitflagSetInGame(deepSpaceAquaStoryEntry()) && IsInLocation("WorldMap")
+        && MustBeAqua()
+)
+
+achievement(title = "Undergrowth [m]", points = 5,
+    description = "Defeat Vanitas in Neverland at Level 21 or below on Critical Mode.",
+    trigger = CheckpointPassedForCharacters(InformationBarPoppedUpOnce()
+            && IsInLocation("NeverlandCamp") && IsAtLeastOnDifficulty("Critical") && level() <= 21, AquaOnly(), true)
+            && TriggerConditionsMetForCharacters({
+                Aqua(): MaxHPIncreased()
+            }, true)
+        && never(!IsInLocation("NeverlandCamp"))
+)
+
+function neverlandAquaStoryEntry() => bit0(0x1f28565)
+achievement(title = "Never Apart", points = 3,
+    description = "Complete Neverland as Aqua.",
+    trigger = WasBitflagSetInGame(neverlandAquaStoryEntry()) && IsInLocation("LanesBetween")
+        && MustBeAqua()
+)
+
 achievement(title = "Apotheosis [m]", points = 100,
     description = "Complete any character's story at Level 1 on Critical Mode.",
     trigger = level() == 1 && IsAtLeastOnDifficulty("Critical")
@@ -2057,11 +2194,12 @@ dayOfReckoningForbiddenHealingCommands = GetCommandsByCallback(command => comman
 cureCommand = GetCommandsByProperties({ "name": "Cure" })
 cureLimit = 3
 
-function MirageArenaCheckpointPassedCallback(eventId, locationName) => once(HostingArenaEvent() && mirageArenaEvent() == eventId && IsInLocation(locationName))
+function MirageArenaCheckpointPassedCallback(eventId, locationName, difficulty, level) => once(HostingArenaEvent() && mirageArenaEvent() == eventId && IsInLocation(locationName)
+    && IsAtLeastOnDifficulty(difficulty) && level() <= level)
 
-function MirageArenaCheckpointReachedForCharacters(eventId, locationName, characters, numberOfRounds)
+function MirageArenaCheckpointReachedForCharacters(eventId, locationName, characters, numberOfRounds, difficulty, level)
 {
-    return CheckpointPassedForCharacters(MirageArenaCheckpointPassedCallback(eventId, locationName), characters, false)
+    return CheckpointPassedForCharacters(MirageArenaCheckpointPassedCallback(eventId, locationName, difficulty, level), characters, false)
         && never(!WasInLocation(locationName) && IsInLocation("MirageHub"))
         && trigger_when(mirageArenaRoundsCompleted() == numberOfRounds)
 }
@@ -2076,22 +2214,28 @@ function VentusNeverUsedAnyGivenCommandInArenaGivenNumberOfTimes(command, comman
     return never(repeated(commandLimit, VentusJustUsedAnyGivenCommandInArena(command)) && currentCharacter() == VentusArmored())
 }
 
+function AquaNeverUsedAnyGivenCommandInArenaGivenNumberOfTimes(command, commandLimit)
+{
+    return never(repeated(commandLimit, AquaJustUsedAnyGivenCommandInArena(command)) && currentCharacter() == AquaArmored())
+}
+
 function NeverUsedAnyGivenCommandInArenaGivenNumberOfTimes(command, commandLimit)
 {
     return TerraNeverUsedAnyGivenCommandInArenaGivenNumberOfTimes(command, commandLimit)
-        && VentusNeverUsedAnyGivenCommandInArenaGivenNumberOfTimes(command, commandLimit) // todo: must add Aqua
+        && VentusNeverUsedAnyGivenCommandInArenaGivenNumberOfTimes(command, commandLimit)
+        && AquaNeverUsedAnyGivenCommandInArenaGivenNumberOfTimes(command, commandLimit)
 }
 
 function NeverJustUsedAnyGivenCommandInArena(haystack)
 {
-    return never(TerraJustUsedAnyGivenCommandInArena(haystack))
-        && never(VentusJustUsedAnyGivenCommandInArena(haystack)) // todo: must add Aqua
+    return never(TerraJustUsedAnyGivenCommandInArena(haystack) && currentCharacter() == TerraArmored())
+        && never(VentusJustUsedAnyGivenCommandInArena(haystack) && currentCharacter() == VentusArmored())
+        && never(AquaJustUsedAnyGivenCommandInArena(haystack) && currentCharacter() == AquaArmored())
 }
 
 achievement(title = "Prison Rations [m]", points = 10,
     description = "Complete \"Day of Reckoning\" in the Mirage Arena using Cure as your only healing command no more than thrice (Critical Mode, Level 8 or below).",
-    trigger = MirageArenaCheckpointReachedForCharacters(1, "MirageArena1", [ TerraArmored(), VentusArmored() ], 4) // todo: insert other characters
-        && IsAtLeastOnDifficulty("Critical") && level() <= 8
+    trigger = MirageArenaCheckpointReachedForCharacters(1, "MirageArena1", AnyArmoredCharacter(), 4, difficulty = "Critical", level = 8)
         && NeverJustUsedAnyGivenCommandInArena(dayOfReckoningForbiddenHealingCommands)
         && NeverUsedAnyGivenCommandInArenaGivenNumberOfTimes(cureCommand, cureLimit + 1)
 )
@@ -2133,22 +2277,31 @@ function DeckLoadoutChanged()
     return trigger
 }
 
+// todo: it would be nice if we could get NeverUsedAnyGivenCommandInArenaGivenNumberOfTimes() to work with more than one command at a time so that way we can get "Equivalent Exchange"
+// to work
+megaFlareLimit = 3
+directHealingCommands = GetCommandsByProperties({ "healsHp": 1 })
+megaFlareCommand = GetCommandsByProperties({ "name": "Mega Flare" })
+achievement(title = "Nuclear Disarmament [m]", points = 5,
+    description = "Complete \"Wheels of Misfortune\" in the Mirage Arena using Mega Flare only three times or fewer and with a max of "
+        + "six battle command slots filled (Critical Mode, Level 8 or below).",
+    trigger = MirageArenaCheckpointReachedForCharacters(0x101, "MirageForest", AnyArmoredCharacter(), 4, difficulty = "Critical", level = 8)
+        && NeverUsedAnyGivenCommandInArenaGivenNumberOfTimes(megaFlareCommand, megaFlareLimit + 1)
+)
+
 equippableBattleCommands = GetCommandsByProperties({ "equippableBattleCommand": 1 })
 achievement(title = "Rainbow Loom [m]", points = 10,
     description = "Complete \"Weaver Fever\" in the Mirage Arena without any duplicate commands equipped (Critical Mode, Level 10 or below, Deck 1 only).",
     trigger = never(HasDuplicateCommandInDeckOfSize(equippableBattleCommands, 1, 8))
         && never(DeckLoadoutChanged()) && CurrentDeckIs(1)
-        && MirageArenaCheckpointReachedForCharacters(0x301, "MirageChamber", [ TerraArmored(), VentusArmored() ], 4) // todo: insert other characters
-        && IsAtLeastOnDifficulty("Critical") && level() <= 10
+        && MirageArenaCheckpointReachedForCharacters(0x301, "MirageChamber", AnyArmoredCharacter(), 4, difficulty = "Critical", level = 10) // todo: insert other characters
 )
 
 shotlocks = GetCommandsByProperties({ "supercategory": "Shotlock" })
-
 achievement(title = "Weapon Confiscation [m]", points = 5,
     description = "Complete \"Sinister Sentinel\" in the Mirage Arena with only three battle command slots filled and without using Shotlocks (Critical Mode, Level 18 or below).",
     trigger = NeverJustUsedAnyGivenCommandInArena(shotlocks)
-        && MirageArenaCheckpointReachedForCharacters(0x401, "MirageArena1", [ TerraArmored(), VentusArmored() ], 5) // todo: insert other characters
-        && IsAtLeastOnDifficulty("Critical") && level() <= 18
+        && MirageArenaCheckpointReachedForCharacters(0x401, "MirageArena1", AnyArmoredCharacter(), 5, difficulty = "Critical", level = 18) // todo: insert other characters
         && never(CommandDeckSlotsFilledIsAtLeast(4))
 )
 
@@ -2156,13 +2309,13 @@ function NeverUsedAnyUniqueCommandsGivenNumberOfTimesInArena(haystack, limit)
 {
     return never(TerraUsedAnyUniqueCommandsGivenNumberOfTimesInArena(haystack, limit))
         && never(VentusUsedAnyUniqueCommandsGivenNumberOfTimesInArena(haystack, limit))
+        && never(AquaUsedAnyUniqueCommandsGivenNumberOfTimesInArena(haystack, limit))
 }
 
 surgeBattleCommands = GetCommandsByCallback(command => command["name"] == "Fire Surge" || command["name"] == "Thunder Surge" || command["name"] == "Barrier Surge")
 achievement(title = "Minor Duplication [m]", points = 5,
     description = "Complete \"Dead Ringer\" in the Mirage Arena using only two kinds of non-Surge battle commands (Critical Mode, Level 20 or below).",
-    trigger = MirageArenaCheckpointReachedForCharacters(0x501, "MirageDeck", [ TerraArmored(), VentusArmored() ], 5) // todo: insert other characters
-        && IsAtLeastOnDifficulty("Critical") && level() <= 20
+    trigger = MirageArenaCheckpointReachedForCharacters(0x501, "MirageDeck", AnyArmoredCharacter(), 5, difficulty = "Critical", level = 20) // todo: insert other characters
         && NeverUsedAnyUniqueCommandsGivenNumberOfTimesInArena(battleCommands, 3)
         && NeverJustUsedAnyGivenCommandInArena(surgeBattleCommands)
 )
@@ -2230,31 +2383,28 @@ function NumberOfGivenAbilitiesEquippedByAddrGreaterThanOrEqualTo(addrs, max)
 
 achievement(title = "Combined Boon [m]", points = 10,
     description = "Complete \"Combined Threat\" in the Mirage Arena with only two beneficial Stat and Support Abilities each turned on (Critical Mode, Level 25 or below).",
-    trigger = MirageArenaCheckpointReachedForCharacters(0x601, "MirageExterior", [ TerraArmored(), VentusArmored() ], 6) // todo: insert other characters
-        && IsAtLeastOnDifficulty("Critical") && level() <= 25
+    trigger = MirageArenaCheckpointReachedForCharacters(0x601, "MirageExterior", AnyArmoredCharacter(), 6, difficulty = "Critical", level = 25)
         && never(NumberOfStatAbilitiesEquipped(3))
         && never(NumberOfBeneficialSupportAbilitiesEquippedGreaterThanOrEqualTo(3))
 )
 
 battleCommandsThatUseMoreThanOneSlot = GetCommandsByCallback(command => command["slots"] > 1)
-achievement(title = "Healthcare Budgeting [m]", points = 10,
+achievement(title = "Healthcare Budgeting [m]", points = 5,
     description = "Complete \"Risky Riches\" in the Mirage Arena using only commands that take up a single slot and without taking damage more than three times (Critical Mode, Level 20 or below).",
-    trigger = MirageArenaCheckpointReachedForCharacters(0x201, "MirageSkull", [ TerraArmored(), VentusArmored() ], 3) // todo: insert other characters
-        && IsAtLeastOnDifficulty("Critical") && level() <= 20
+    trigger = MirageArenaCheckpointReachedForCharacters(0x201, "MirageSkull", AnyArmoredCharacter(), 3, difficulty = "Critical", level = 20)
         && never(repeated(4, TookDamageInTheMirageArena()))
         && NeverJustUsedAnyGivenCommandInArena(battleCommandsThatUseMoreThanOneSlot)
 )
 
 achievement(title = "Escalation of Force [m]", points = 10,
     description = "Complete \"Harsh Punishment\" in the Mirage Arena with only five battle command slots filled (Critical Mode, Level 25 or below).",
-    trigger = MirageArenaCheckpointReachedForCharacters(0x801, "MirageArena1", [ TerraArmored(), VentusArmored() ], 6) // todo: insert other characters
-        && IsAtLeastOnDifficulty("Critical") && level() <= 25
+    trigger = MirageArenaCheckpointReachedForCharacters(0x801, "MirageArena1", AnyArmoredCharacter(), 6, difficulty = "Critical", level = 25)
         && never(CommandDeckSlotsFilledIsAtLeast(6))
 )
 
 function MonstroMirageArenaCheckpointReachedForCharacters()
 {
-    return CheckpointPassedForCharacters(MirageArenaCheckpointPassedCallback(0xc01, "MirageMonstro"), [ TerraArmored(), VentusArmored() ], false) // todo: insert other characters
+    return CheckpointPassedForCharacters(MirageArenaCheckpointPassedCallback(0xc01, "MirageMonstro", difficulty = "Critical", level = 25), AnyArmoredCharacter(), false)
         && never(!WasInLocation("MirageMonstro") && IsInLocation("MirageHub"))
         && mirageArenaCurrentRound() < 7
         && trigger_when(MonstroDefeatTriggered())
@@ -2263,23 +2413,18 @@ function MonstroMirageArenaCheckpointReachedForCharacters()
 function MonstroDefeatTriggered() => IsInBattle() && bit3(battleFlagsAddr()) == 1 && arenaHp() > 0 && characterArenaPointer() != 0
 achievement(title = "The Madness of Man [m]", points = 25,
     description = "Complete \"The Monster of the Sea\" in the Mirage Arena in six rounds or fewer (Critical Mode, Level 25 or below).",
-    trigger = MonstroMirageArenaCheckpointReachedForCharacters() // todo: insert other characters
-        && IsAtLeastOnDifficulty("Critical")
-        && level() <= 25
+    trigger = MonstroMirageArenaCheckpointReachedForCharacters()
 )
 
-directHealingCommands = GetCommandsByProperties({ "healsHp": 1 })
 achievement(title = "Scrounging to Survive [m]", points = 10,
     description = "Complete \"Treasure Tussle\" in the Mirage Arena without using commands that directly heal you (Critical Mode, Level 20 or below).",
-    trigger = MirageArenaCheckpointReachedForCharacters(0x701, "MiragePinball", [ TerraArmored(), VentusArmored() ], 3) // todo: insert other characters
-        && IsAtLeastOnDifficulty("Critical") && level() <= 20
+    trigger = MirageArenaCheckpointReachedForCharacters(0x701, "MiragePinball", AnyArmoredCharacter(), 3, difficulty = "Critical", level = 20)
         && NeverJustUsedAnyGivenCommandInArena(directHealingCommands)
 )
 
 achievement(title = "Rolling Blackout [m]", points = 50,
     description = "Complete \"Copycat Crisis\" in the Mirage Arena using battle commands only on even-numbered rounds (Critical Mode, Level 30 or below).",
-    trigger = MirageArenaCheckpointReachedForCharacters(0xa01, "MirageSummit", [ TerraArmored(), VentusArmored() ], 8) // todo: insert other characters
-        && IsAtLeastOnDifficulty("Critical") && level() <= 30
+    trigger = MirageArenaCheckpointReachedForCharacters(0xa01, "MirageSummit", AnyArmoredCharacter(), 8, difficulty = "Critical", level = 30) // todo: insert other characters
         // We need to check oddness for each round individually because (1) the modulo operator isn't supported in the editor and (2) the logic would be too complex otherwise.
         && never(TerraJustUsedAnyGivenCommandInArena(battleCommands) && mirageArenaCurrentRound() == 1 && currentCharacter() == TerraArmored())
         && never(TerraJustUsedAnyGivenCommandInArena(battleCommands) && mirageArenaCurrentRound() == 3 && currentCharacter() == TerraArmored())
@@ -2290,6 +2435,11 @@ achievement(title = "Rolling Blackout [m]", points = 50,
         && never(VentusJustUsedAnyGivenCommandInArena(battleCommands) && mirageArenaCurrentRound() == 3 && currentCharacter() == VentusArmored())
         && never(VentusJustUsedAnyGivenCommandInArena(battleCommands) && mirageArenaCurrentRound() == 5 && currentCharacter() == VentusArmored())
         && never(VentusJustUsedAnyGivenCommandInArena(battleCommands) && mirageArenaCurrentRound() == 7 && currentCharacter() == VentusArmored())
+        
+        && never(AquaJustUsedAnyGivenCommandInArena(battleCommands) && mirageArenaCurrentRound() == 1 && currentCharacter() == AquaArmored())
+        && never(AquaJustUsedAnyGivenCommandInArena(battleCommands) && mirageArenaCurrentRound() == 3 && currentCharacter() == AquaArmored())
+        && never(AquaJustUsedAnyGivenCommandInArena(battleCommands) && mirageArenaCurrentRound() == 5 && currentCharacter() == AquaArmored())
+        && never(AquaJustUsedAnyGivenCommandInArena(battleCommands) && mirageArenaCurrentRound() == 7 && currentCharacter() == AquaArmored())
 )
 
 
@@ -2316,8 +2466,7 @@ function GivenCommandStyleWasActivated(activatedMem)
 
 achievement(title = "The Spice of Life [m]", points = 50,
     description = "Activate seven different Command Styles in a single attempt of the \"Keepers of the Arena\" event in the Mirage Arena, and then complete it (Critical Mode, Level 42 or below).",
-    trigger = MirageArenaCheckpointReachedForCharacters(0xb01, "MirageArena1", [ TerraArmored(), VentusArmored() ], 9) // todo: insert other characters
-        && IsAtLeastOnDifficulty("Critical") && level() <= 42
+    trigger = MirageArenaCheckpointReachedForCharacters(0xb01, "MirageArena1", AnyArmoredCharacter(), 9, difficulty = "Critical", level = 42)
         && trigger_when(tally(7, [
             once(GivenCommandStyleWasActivated(timesCritialImpactWasActivated())),
             once(GivenCommandStyleWasActivated(timesSpellweaverWasActivated())),
@@ -2339,8 +2488,7 @@ achievement(title = "The Spice of Life [m]", points = 50,
 
 achievement(title = "Style Specialist [m]", points = 50,
     description = "Complete \"Villains' Vendetta\" in the Mirage Arena while activating at most one type of Command Style (Critical Mode, Level 45 or below).",
-    trigger = MirageArenaCheckpointReachedForCharacters(0xd01, "MirageArena1", [ TerraArmored(), VentusArmored() ], 8) // todo: insert other characters
-        && IsAtLeastOnDifficulty("Critical") && level() <= 45
+    trigger = MirageArenaCheckpointReachedForCharacters(0xd01, "MirageArena1", AnyArmoredCharacter(), 8, difficulty = "Critical", level = 45)
         && never(tally(2, [
             once(GivenCommandStyleWasActivated(timesCritialImpactWasActivated())),
             once(GivenCommandStyleWasActivated(timesSpellweaverWasActivated())),
@@ -2359,4 +2507,3 @@ achievement(title = "Style Specialist [m]", points = 50,
             once(GivenCommandStyleWasActivated(timesFrozenFortuneWasActivated())),
         ]))
 )
-
