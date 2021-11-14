@@ -584,6 +584,7 @@ function VentusArmoredHelmetless() => 0xd
 function Aqua() => 2
 function AquaArmored() => 5
 function AquaArmoredGlider() => 0xb
+function AquaArmoredHelmetless() => 0xe
 
 function TerraOnly() => [ Terra() ]
 function VentusOnly() => [ Ventus() ]
@@ -604,6 +605,7 @@ function CharacterIsInArray(arr)
 
 function IsPlayingAsTerra() => CharacterIsInArray([ Terra(), TerraArmored(), TerraArmoredGlider() ])
 function IsPlayingAsVentus() => CharacterIsInArray([ Ventus(), VentusArmored(), VentusArmoredGlider(), VentusArmoredHelmetless() ])
+function IsPlayingAsAqua() => CharacterIsInArray([ Aqua(), AquaArmored(), AquaArmoredGlider(), AquaArmoredHelmetless() ])
 
 function CharacterIdToNames()
 {
@@ -617,7 +619,8 @@ function CharacterIdToNames()
         VentusArmoredGlider(): "Ventus",
         TerraArmoredGlider(): "Terra",
         AquaArmoredGlider(): "Aqua",
-        VentusArmoredHelmetless(): "Ventus"
+        VentusArmoredHelmetless(): "Ventus",
+        AquaArmoredHelmetless(): "Aqua"
     }
 }
 
@@ -1912,11 +1915,62 @@ achievement(title = "Never Apart", points = 3,
         && MustBeAqua()
 )
 
+function equippedKeyblade() => byte(0x1f19b15)
+function defeatedBraigKeybladeGraveyard() => bit7(0x1f285a4)
+aquaGuardCommands = GetCommandsByCallback(command => command["name"] == "Barrier" || command["name"] == "Renewal Barrier" || command["name"] == "Focus Barrier"
+    || command["name"] == "Confuse Barrier" || command["name"] == "Stop Barrier")
+function AquaFinalSegmentSharedConditions() => never(JustUsedAnyGivenCommand(aquaGuardCommands)) && never(CommandDeckSlotsFilledByGivenCommandsIsAtLeast(cureFamilyCommands, 2))
+    && equippedKeyblade() == 0x17
+
+achievement(title = "Magical Rage [m]", points = 10,
+    description = "Defeat Braig in the Keyblade Graveyard without Barrier defensive commands and with Pixie Petal and only one Cure-family command"
+        + " equipped (Proud Mode or higher, Level 21 or below).",
+    trigger = CheckpointPassedForCharacters(InformationBarPoppedUpOnce()
+            && IsInLocation("Graveyard4") && IsAtLeastOnDifficulty("Proud") && level() <= 21, [ AquaArmoredHelmetless() ], true)
+            && TriggerConditionsMetForCharacters({
+                AquaArmoredHelmetless(): MaxHPIncreased()
+            }, true)
+        && never(!IsInLocation("Graveyard4"))
+        && AquaFinalSegmentSharedConditions()
+        && never(defeatedBraigKeybladeGraveyard() == 1)
+)
+
+achievement(title = "Divine Rebellion [m]", points = 25,
+    description = "Defeat the final boss of Aqua's story with the same restrictions as the ones in \"Magical Rage\", but with only four battle command slots filled"
+        + " (Proud Mode or higher, Level 21 or below).",
+    trigger = CheckpointPassedForCharacters(InformationBarPoppedUpOnce()
+            && IsInLocation("Graveyard4") && IsAtLeastOnDifficulty("Proud") && level() <= 21, [ AquaArmoredHelmetless() ], true)
+            && TriggerConditionsMetForCharacters({
+                AquaArmoredHelmetless(): BossDefeatTriggered() // Venitas doesn't yield any rewards, of course, being a final boss.
+            }, true)
+        && never(!IsInLocation("Graveyard4"))
+        && AquaFinalSegmentSharedConditions()
+        && never(defeatedBraigKeybladeGraveyard() != 1)
+        && never(CommandDeckSlotsFilledIsAtLeast(5))
+)
+
+function xehanortReport7() => bit4(0x1f2932c)
+function AquaStoryCompleted() => WasBitflagSetInGame(xehanortReport7()) && ViewedBattleReportLongEnough() && currentCharacter() == AquaArmoredHelmetless()
+achievement(title = "The Seeker", points = 10, // todo: name subject to change
+    description = "Complete Aqua's story.",
+    trigger = AquaStoryCompleted()
+)
+
+achievement(title = "Proud Mystic", points = 10,
+    description = "Complete Aqua's story on Proud Mode or higher.",
+    trigger = AquaStoryCompleted() && IsAtLeastOnDifficulty("Proud")
+)
+
+achievement(title = "Critical Mystic", points = 25,
+    description = "Complete Aqua's story on Critical Mode.",
+    trigger = AquaStoryCompleted() && IsAtLeastOnDifficulty("Critical")
+)
+
 achievement(title = "Apotheosis [m]", points = 100,
     description = "Complete any character's story at Level 1 on Critical Mode.",
     trigger = level() == 1 && IsAtLeastOnDifficulty("Critical")
         && (
-        TerraStoryCompleted() || VentusStoryCompleted() // todo: add more characters' stories later
+        TerraStoryCompleted() || VentusStoryCompleted() || AquaStoryCompleted()
         )
 )
 
@@ -2069,6 +2123,16 @@ GenerateCheevoFromBits(name = "Peer Reviewer - Ventus", description = "Obtain al
         5: { "addr": 0x1f2932b, "bit": 5 }, // 12
     },
     onlyAvailableWhen = IsPlayingAsVentus()
+)
+
+GenerateCheevoFromBits(name = "Peer Reviewer - Aqua", description = "Obtain all secret reports in Aqua's story.", points = 5,
+    addresses = {
+        1: { "addr": 0x1f2932c, "bit": 0 }, // 3
+        2: { "addr": 0x1f2932c, "bit": 1 }, // 4
+        3: { "addr": 0x1f2932c, "bit": 3 }, // 6
+        4: { "addr": 0x1f2932c, "bit": 4 }, // 7
+    },
+    onlyAvailableWhen = IsPlayingAsAqua()
 )
 
 function flameBoxMissionHighScore() => dword(0x1f35d38)
@@ -2294,14 +2358,14 @@ achievement(title = "Rainbow Loom [m]", points = 10,
     description = "Complete \"Weaver Fever\" in the Mirage Arena without any duplicate commands equipped (Critical Mode, Level 10 or below, Deck 1 only).",
     trigger = never(HasDuplicateCommandInDeckOfSize(equippableBattleCommands, 1, 8))
         && never(DeckLoadoutChanged()) && CurrentDeckIs(1)
-        && MirageArenaCheckpointReachedForCharacters(0x301, "MirageChamber", AnyArmoredCharacter(), 4, difficulty = "Critical", level = 10) // todo: insert other characters
+        && MirageArenaCheckpointReachedForCharacters(0x301, "MirageChamber", AnyArmoredCharacter(), 4, difficulty = "Critical", level = 10)
 )
 
 shotlocks = GetCommandsByProperties({ "supercategory": "Shotlock" })
 achievement(title = "Weapon Confiscation [m]", points = 5,
     description = "Complete \"Sinister Sentinel\" in the Mirage Arena with only three battle command slots filled and without using Shotlocks (Critical Mode, Level 18 or below).",
     trigger = NeverJustUsedAnyGivenCommandInArena(shotlocks)
-        && MirageArenaCheckpointReachedForCharacters(0x401, "MirageArena1", AnyArmoredCharacter(), 5, difficulty = "Critical", level = 18) // todo: insert other characters
+        && MirageArenaCheckpointReachedForCharacters(0x401, "MirageArena1", AnyArmoredCharacter(), 5, difficulty = "Critical", level = 18)
         && never(CommandDeckSlotsFilledIsAtLeast(4))
 )
 
@@ -2315,7 +2379,7 @@ function NeverUsedAnyUniqueCommandsGivenNumberOfTimesInArena(haystack, limit)
 surgeBattleCommands = GetCommandsByCallback(command => command["name"] == "Fire Surge" || command["name"] == "Thunder Surge" || command["name"] == "Barrier Surge")
 achievement(title = "Minor Duplication [m]", points = 5,
     description = "Complete \"Dead Ringer\" in the Mirage Arena using only two kinds of non-Surge battle commands (Critical Mode, Level 20 or below).",
-    trigger = MirageArenaCheckpointReachedForCharacters(0x501, "MirageDeck", AnyArmoredCharacter(), 5, difficulty = "Critical", level = 20) // todo: insert other characters
+    trigger = MirageArenaCheckpointReachedForCharacters(0x501, "MirageDeck", AnyArmoredCharacter(), 5, difficulty = "Critical", level = 20)
         && NeverUsedAnyUniqueCommandsGivenNumberOfTimesInArena(battleCommands, 3)
         && NeverJustUsedAnyGivenCommandInArena(surgeBattleCommands)
 )
