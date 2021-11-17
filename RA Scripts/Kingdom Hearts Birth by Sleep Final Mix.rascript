@@ -1966,6 +1966,21 @@ achievement(title = "Critical Mystic", points = 25,
     trigger = AquaStoryCompleted() && IsAtLeastOnDifficulty("Critical")
 )
 
+shotlocks = GetCommandsByProperties({ "supercategory": "Shotlock" })
+equippableBattleCommands = GetCommandsByProperties({ "equippableBattleCommand": 1 })
+achievement(title = "Prime Sacrifice [m]", points = 25,
+    description = "Defeat the first phase of the final boss of the Final Episode using any two of equipped battle commands, D-Links, or Shotlocks, but not all three"
+        + " (Proud Mode or higher, Level 25 or below).",
+    trigger = CheckpointPassedForCharacters(InformationBarPoppedUpOnce()
+            && IsInLocation("RadiantCentralDark") && IsAtLeastOnDifficulty("Proud") && level() <= 25, AquaOnly(), true)
+            && TriggerConditionsMetForCharacters({
+                Aqua(): BossDefeatTriggered()
+            }, true)
+        && never(!IsInLocation("RadiantCentralDark"))
+        && never(tally(3, [ once(IsUsingDLink()), once(IsUsingAnyGivenCommand(shotlocks)), once(IsUsingAnyGivenCommand(equippableBattleCommands)) ]))
+        //&& once(IsUsingAnyGivenCommand(equippableBattleCommands))
+)
+
 achievement(title = "Apotheosis [m]", points = 100,
     description = "Complete any character's story at Level 1 on Critical Mode.",
     trigger = level() == 1 && IsAtLeastOnDifficulty("Critical")
@@ -2361,7 +2376,6 @@ achievement(title = "Rainbow Loom [m]", points = 10,
         && MirageArenaCheckpointReachedForCharacters(0x301, "MirageChamber", AnyArmoredCharacter(), 4, difficulty = "Critical", level = 10)
 )
 
-shotlocks = GetCommandsByProperties({ "supercategory": "Shotlock" })
 achievement(title = "Weapon Confiscation [m]", points = 5,
     description = "Complete \"Sinister Sentinel\" in the Mirage Arena with only three battle command slots filled and without using Shotlocks (Critical Mode, Level 18 or below).",
     trigger = NeverJustUsedAnyGivenCommandInArena(shotlocks)
