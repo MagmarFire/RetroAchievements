@@ -1317,7 +1317,7 @@ achievement(title = "Give Me Strength [m]", points = 10,
 function DefeatedXehanortII() => bit1(0x1f285a5) == 1
 cureFamilyCommands = GetCommandsByCallback(command => command["name"] == "Cure" || command["name"] == "Cura" || command["name"] == "Curaga")
 achievement(title = "Terminal Corruption [m]", points = 50,
-    description = "Defeat Terra-Xehanort in the Keyblade Graveyard without using any commands in the Cure family (Proud Mode or higher, Level 20 or below).",
+    description = "Defeat the final boss of Terra's story without using any commands in the Cure family (Proud Mode or higher, Level 20 or below).",
     trigger = CheckpointPassedForCharacters(InformationBarPoppedUpOnce()
         && IsInLocation("GraveyardCage"), [ TerraArmored() ], true)
         && TriggerConditionsMetForCharacters({
@@ -2000,12 +2000,12 @@ achievement(title = "The Wanderer", points = 3,
     trigger = FinalEpisodeCompleted()
 )
 
-achievement(title = "Proud Wanderer", points = 5,
+achievement(title = "Proud Wanderer [m]", points = 5,
     description = "Complete the Final Episode on Proud Mode or higher.",
     trigger = FinalEpisodeCompleted() && IsAtLeastOnDifficulty("Proud")
 )
 
-achievement(title = "Critical Wanderer", points = 10,
+achievement(title = "Critical Wanderer [m]", points = 10,
     description = "Complete the Final Episode on Critical Mode.",
     trigger = FinalEpisodeCompleted() && IsAtLeastOnDifficulty("Critical")
 )
@@ -2047,12 +2047,12 @@ achievement(title = "The Wayfinder", points = 3,
     trigger = SecretEpisodeCompleted()
 )
 
-achievement(title = "Proud Wayfinder", points = 5,
+achievement(title = "Proud Wayfinder [m]", points = 5,
     description = "Complete the Secret Episode on Proud Mode or higher.",
     trigger = SecretEpisodeCompleted() && IsAtLeastOnDifficulty("Proud")
 )
 
-achievement(title = "Critical Wayfinder", points = 10,
+achievement(title = "Critical Wayfinder [m]", points = 10,
     description = "Complete the Secret Episode on Critical Mode.",
     trigger = SecretEpisodeCompleted() && IsAtLeastOnDifficulty("Critical")
 )
@@ -2164,6 +2164,32 @@ GenerateCheevoFromBits(name = "Sticker Guardian", description = "Collect every s
         20: { "addr": 0x1f2929e, "bit": 4 },
     },
     onlyAvailableWhen = IsPlayingAsVentus()
+)
+
+GenerateCheevoFromBits(name = "Sticker Mystic", description = "Collect every sticker in Aqua's story.", points = 5,
+    addresses = {
+        1: { "addr": 0x1f2929c, "bit": 1 },
+        2: { "addr": 0x1f2929c, "bit": 2 },
+        3: { "addr": 0x1f2929c, "bit": 3 },
+        4: { "addr": 0x1f2929c, "bit": 4 },
+        5: { "addr": 0x1f2929c, "bit": 5 },
+        6: { "addr": 0x1f2929c, "bit": 6 },
+        7: { "addr": 0x1f2929c, "bit": 7 },
+        8: { "addr": 0x1f2929d, "bit": 0 },
+        9: { "addr": 0x1f2929d, "bit": 1 },
+        10: { "addr": 0x1f2929d, "bit": 2 },
+        11: { "addr": 0x1f2929d, "bit": 3 },
+        12: { "addr": 0x1f2929d, "bit": 4 },
+        13: { "addr": 0x1f2929d, "bit": 5 },
+        14: { "addr": 0x1f2929d, "bit": 6 },
+        15: { "addr": 0x1f2929d, "bit": 7 },
+        16: { "addr": 0x1f2929e, "bit": 0 },
+        17: { "addr": 0x1f2929e, "bit": 1 },
+        18: { "addr": 0x1f2929e, "bit": 2 },
+        19: { "addr": 0x1f2929e, "bit": 3 },
+        20: { "addr": 0x1f2929e, "bit": 4 },
+    },
+    onlyAvailableWhen = IsPlayingAsAqua()
 )
 
 function finishCommandWidth() => 8
