@@ -512,6 +512,19 @@ GenerateCheevoFromConditions(
     threshold = GetCollectableTotalsByLevel("Fairy Glade")
 )
 
+// todo: document changes and promotion in plan
+function raymanAnimation() => word(0x21A288)
+function StartedSkiing() => raymanAnimation() != Delta(raymanAnimation()) && raymanAnimation() == 0x4434 && IsInArea("MarshesArea1")
+function Respawned() => raymanAnimation() != Delta(raymanAnimation()) && raymanAnimation() == 0x43bc
+function AButtonPressed() => bit7(0x0cf263) == 1
+function ZButtonPressed() => bit5(0x0cf263) == 1
+achievement(
+    title = "Slalom in the Swamp", description = "Complete the waterski section without pressing A or Z.", points = 5,
+    id = 54211, badge = "55942", published = "11/2/2017 7:03:57 PM", modified = "11/3/2017 11:30:32 AM",
+    trigger = once(StartedSkiing()) && trigger_when(dword(0x1768b4) == 0x801aaaec)
+        && never(AButtonPressed()) && never(ZButtonPressed()) && never(Respawned() && IsInArea("MarshesArea1"))
+)
+
 // todo: document changes in plan
 GenerateCheevoFromConditions(
     name = "Skiway Rescue", description = "Find everything in the Marshes of Awakening.", points = 5,
@@ -663,7 +676,6 @@ function SecondsToFrames(seconds) => seconds * 50 // The PAL version runs at 50 
 function IsCutscenePlaying() => byte(0x22494e) == 0xc
 function echoingCavesTimeLimit() => 117
 function echoingCavesFrameBuffer() => 27 // This amount of time passes when transitioning between the cutscene area and the actual playable area. We don't want to count it against the player.
-function raymanAnimation() => word(0x21A288)
 function RaymanIsCelebrating() => raymanAnimation() == 0x44ac
 function EnteredEchoingCaves() => CreateHitTargetedAndNextChain([IsInArea("EchoingCavesArea1"), IsInArea("None"), IsInArea("EchoingCavesArea2")])
 function FrameAdvancedWhilePlaying() => FrameAdvanced() && EnteredEchoingCaves() && !IsCutscenePlaying() && !IsPausing()
@@ -923,19 +935,6 @@ achievement(
     id = 71529, badge = "165881", published = "2/5/2019 4:39:07 AM", modified = "4/5/2021 3:05:48 PM",
     trigger = prev(byte(0x224941)) == 79 && byte(0x224941) == 80
 )
-
-// todo: document changes and promotion in plan
-function StartedSkiing() => raymanAnimation() != Delta(raymanAnimation()) && raymanAnimation() == 0x4434 && IsInArea("MarshesArea1")
-function Respawned() => raymanAnimation() != Delta(raymanAnimation()) && raymanAnimation() == 0x43bc
-function AButtonPressed() => bit7(0x0cf263) == 1
-function ZButtonPressed() => bit5(0x0cf263) == 1
-achievement(
-    title = "Slalom in the Swamp", description = "Complete the waterski section without pressing A or Z.", points = 5,
-    id = 54211, badge = "55942", published = "11/2/2017 7:03:57 PM", modified = "11/3/2017 11:30:32 AM",
-    trigger = once(StartedSkiing()) && trigger_when(dword(0x1768b4) == 0x801aaaec)
-        && never(AButtonPressed()) && never(ZButtonPressed()) && never(Respawned() && IsInArea("MarshesArea1"))
-)
-
 
 function lum1000Consumed() => bit0(0x224a11)
 
