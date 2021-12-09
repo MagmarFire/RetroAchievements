@@ -79,5 +79,52 @@ function CreateHitTargetedAndNextChain(permutation)
 
 function Debug(string)
 {
-	achievement(title = string, description = "", points = 0, trigger = always_false())
+    achievement(title = string, description = "", points = 0, trigger = always_false())
+}
+
+// This function allows the creation of achievements with built-in save protection that deal with a collection of values being set
+// throughout the game. The schemas for both parameters are as follows:
+//
+// cheevo: "name": title
+//         "description": self-explanatory
+//         "points": self-explanatory
+//         "threshold": how many values in the "addresses" dictionary must be set before this achievement is triggered
+//
+// conditions: "countsWhen": the condition that must be true in order for it to be counted in the total
+//             "recalculateWhen": the condition that indicates that relevant values in the condition have changed,
+//                                and so everything must be recalculated
+//
+// onlyAvailableWhen: A condition that must be true in all conditions for the achievement to trigger.
+function GenerateCheevoFromConditions(cheevo, conditions, onlyAvailableWhen)
+{
+    loadedCounts = []
+    totalCounts = []
+    resetAlt = always_false()
+
+    for i in conditions
+    {
+        condition = conditions[i]
+
+        // This is the score when the game is loaded. If the loaded score is greater than or equal to the threshold--that is,
+        // if the save file would satisfy enough conditions to trigger the achievement on load--this should trigger a
+        // permanant pauselock to serve as save protection.
+        array_push(loadedCounts, once(condition["countsWhen"] && IsLoadingSaveFile()))
+
+        // We want both loaded and session counts here (that is, we don't care if we're loading a save file when these are tallied).
+        // This way, loading a save doesn't invalidate the achievement outright if a player hasn't actually earned it yet.
+        array_push(totalCounts, once(condition["countsWhen"]))
+
+        resetAlt = resetAlt || condition["recalculateWhen"]
+    }
+
+    achievement(title = cheevo["name"], description = cheevo["description"], points = cheevo["points"], badge = cheevo["badge"],
+        trigger = IsInGame() &&
+            measured(tally(cheevo["threshold"], totalCounts)) && unless(tally(cheevo["threshold"], loadedCounts))
+            && never(resetAlt) && onlyAvailableWhen && (always_false() || never(Delta(char1()) == 0 && char1() == 0))
+    )
+}
+
+function GenerateConditionFromBitflag(bit)
+{
+    return { "countsWhen": (bit == 1), "recalculateWhen": (Delta(bit) != bit) }
 }

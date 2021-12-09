@@ -2175,7 +2175,7 @@ function PerformedAFusionOfAGivenLevelVersusAnguisCantus(level)
 {
     return tally(1, fusionLevel() == 0 && Delta(fusionLevel()) == level)
 }
-achievement(title = "Trust Your Partner", points = 10,
+achievement(title = "Trust Your Partner", points = 10, id = 120635, badge = "131628",
     description = "Perform a LV1, LV2, and LV3 Fusion against Anguis Cantus (Normal or higher, Level 35 or below).",
     trigger = enemyId() == GetEnemyIdByName("Anguis Cantus")
         && EnterBattleCheckpointValid()
@@ -2183,9 +2183,9 @@ achievement(title = "Trust Your Partner", points = 10,
         && PerformedAFusionOfAGivenLevelVersusAnguisCantus(1)
         && PerformedAFusionOfAGivenLevelVersusAnguisCantus(2)
         && PerformedAFusionOfAGivenLevelVersusAnguisCantus(3)
-        && IsInBattle()
+        && never(!IsInBattle())
         && never(IsOnResultsScreen())
-        && unless(bossHP() <= 0)
+        && unless(bossHP() <= 0 && IsInBattle())
 )
 
 offensivePins = GetPinsByTrait("Spec", "Attack")

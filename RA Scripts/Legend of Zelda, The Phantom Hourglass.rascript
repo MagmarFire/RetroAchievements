@@ -59,11 +59,9 @@ function SecondsToFormat(value)
     return value / 60 + ":" + leadingZero + value % 60
 }
 
-// $19f998: 0x3 = is loading save file(?)
-// obyte isn't needed here because this value holds regardless of locale.
-function IsLoadingSaveFile() => byte(0x19f998) == 0x3
+function IsLoadingSaveFile() => Delta(maxHp()) == 0 && maxHp() > 0
 
-function IsInGame() => !IsInLocation("File") && !WasInLocation("File")
+function IsInGame() => maxHp() > 0 && !IsInLocation("File")
     && !IsInLocation("WFC") && !IsInLocation("Title")
     && !IsInLocation("Battle") && !IsInLocation("Download")
 
@@ -110,18 +108,18 @@ function GenerateSaveProtectedAchievementFromConditions(cheevo, conditions)
         // permanant pauselock to serve as save protection.
         array_push(loadedCounts, once(condition["countsWhen"] && IsLoadingSaveFile()))
         
-        // We want both loaded and session counts here (that is, we don't care if we're loading a save file when these are tallied).
-        // This way, loading a save doesn't invalidate the achievement outright if a player hasn't actually earned it yet.
-        array_push(totalCounts, once(condition["countsWhen"]))
+        // We want both loaded and session counts here (that is, we don't care if we're loading a save file when these are tallied, though we do care if the player is in game,
+        // hence the check for nonzero max HP). This way, loading a save doesn't invalidate the achievement outright if a player hasn't actually earned it yet.
+        array_push(totalCounts, once(condition["countsWhen"] && maxHp() > 0))
         
         resetAlt = resetAlt || condition["recalculateWhen"]
     }
 
     achievement(title = cheevo["name"], description = cheevo["description"], points = cheevo["points"], id = cheevo["id"], badge = cheevo["badge"],
-        trigger = never(!IsInGame())
-            && never(MayHaveBeenInBootState()) // Prevent save protection from failing in the event of a manual game reset.
+        trigger = never(MayHaveBeenInBootState()) // Prevent save protection from failing in the event of a manual game reset.
             && measured(tally(cheevo["threshold"], totalCounts)) && unless(tally(cheevo["threshold"], loadedCounts))
             && never(resetAlt)
+            && (always_false() || never(!IsInGame()))
     )
 }
 
