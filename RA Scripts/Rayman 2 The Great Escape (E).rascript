@@ -581,7 +581,8 @@ achievement(
 
 function elixirOfLife() => bit7(0x224a13)
 achievement(
-    title = "Screw the Money; I Have Rules!", description = "Acquire the Elixir of Life.", points = 1,
+    // Can't use semicolons in titles...
+    title = "Screw the Money, I Have Rules!", description = "Acquire the Elixir of Life.", points = 1,
     id = 71515, badge = "165868", published = "2/5/2019 4:38:44 AM", modified = "4/5/2021 3:03:51 PM",
     trigger = WasBitflagSetInGame(elixirOfLife())
 )
@@ -599,7 +600,7 @@ function PreJanoChaseMusicWasPlaying() => Delta(musicId()) == preJanoMusicId()
 function JanoChaseMusicPlaying() => musicId() == 0x801aabec
 function JanoEncounterMusicPlaying() => musicId() == 0x801aac0c
 function IsShooting() => bit0(0x204263) == 1
-achievement(title = "Appreciate the Scenery [m]", points = 10,
+achievement(title = "Appreciate the Scenery [m]", points = 10, id = 186623, badge = "207543",
     description = "Complete the slide escape in the Cave of Bad Dreams without firing a shot.",
     trigger = once(PreJanoChaseMusicWasPlaying() && JanoChaseMusicPlaying())
         && trigger_when(JanoEncounterMusicPlaying())
@@ -679,7 +680,7 @@ function FrameAdvancedWhilePlaying() => FrameAdvanced() && EnteredEchoingCaves()
 
 achievement(
     title = "Rayman the Handyman", description = "Open the main door in the Echoing Caves within " + SecondsToFormat(echoingCavesTimeLimit()) + ".", points = 10,
-    id = 71534, badge = "165887", published = "2/5/2019 4:39:15 AM", modified = "4/5/2021 3:05:38 PM",
+    id = 71534, badge = "207544", published = "2/5/2019 4:39:15 AM", modified = "4/5/2021 3:05:38 PM",
     trigger = never(repeated(SecondsToFrames(echoingCavesTimeLimit()) + echoingCavesFrameBuffer(), FrameAdvancedWhilePlaying()))
         && trigger_when(RaymanIsCelebrating()) && EnteredEchoingCaves() && never(!IsInLocation("Echoing Caves") && !IsInLocation("None"))
 )
