@@ -36,7 +36,8 @@ function HitJackpotOnGivenReel(reelAngleMem) => once(prev(reelAngleMem) == 0xfff
 achievement(
     title = "My Lucky Day", description = "Get the Jackpot in the Slot Machine Bonus", points = 10,
     id = 36585, badge = "37420", published = "5/27/2016 8:54:41 AM", modified = "10/18/2019 2:35:01 PM",
-    trigger = HitJackpotOnGivenReel(slotMachineReel1Angle()) && HitJackpotOnGivenReel(slotMachineReel2Angle()) && HitJackpotOnGivenReel(slotMachineReel3Angle()) && 
+    trigger = slotMachineReel1Angle() == 0x0 && slotMachineReel2Angle() == 0x0 && slotMachineReel3Angle() == 0x0 && 
               never(cheatFlags() == 257)
-              && IsInNormalLevel() && never(zoneId() != 0x15)
+              && word(0x00ff90) == 0x1d
+              //&& IsInNormalLevel() && never(zoneId() != 0x15)
 )
