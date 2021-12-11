@@ -600,7 +600,7 @@ function PreJanoChaseMusicWasPlaying() => Delta(musicId()) == preJanoMusicId()
 function JanoChaseMusicPlaying() => musicId() == 0x801aabec
 function JanoEncounterMusicPlaying() => musicId() == 0x801aac0c
 function IsShooting() => bit0(0x204263) == 1
-achievement(title = "Appreciate the Scenery [m]", points = 10, id = 186623, badge = "207543",
+achievement(title = "Appreciate the Scenery", points = 10, id = 186623, badge = "207543",
     description = "Complete the slide escape in the Cave of Bad Dreams without firing a shot.",
     trigger = once(PreJanoChaseMusicWasPlaying() && JanoChaseMusicPlaying())
         && trigger_when(JanoEncounterMusicPlaying())
@@ -849,7 +849,7 @@ leaderboard(title = "Walk of Life", description = "Complete the Walk of Life as 
 )
 
 function walkOfPowerTimer() => dword(0x5ECF34) // todo: actually a float
-function StartedWalkOfPower() => IsInLocation("Walk of Power") && Delta(walkOfPowerTimer()) == 0 && walkOfPowerTimer() > 0
+function StartedWalkOfPower() => IsInLocation("Walk of Power") && Delta(walkOfPowerTimer()) == 0 && walkOfPowerTimer() > 0 && IsInGame()
 function CanceledWalkOfPower() => !IsInLocation("Walk of Power") || Delta(walkOfPowerTimer()) > 0 && walkOfPowerTimer() == 0
 function FinishedWalkOfPower() => RaymanIsCelebrating()
 function AbleToAdvanceTimeInWalkOfPower() => walkOfPowerTimer() > 0 && !IsPausing()
