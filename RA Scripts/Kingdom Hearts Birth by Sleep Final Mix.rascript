@@ -686,7 +686,7 @@ rich_presence_conditional_display(IsOnTitleScreen(), "On the title screen...")
 
 rich_presence_display("Somewhere in the World...")
 
-achievement(title = "The Final Stargaze", points = 1,
+achievement(title = "The Final Stargaze", points = 1, id = 187047, badge = "207934",
     description = "Complete the prologue.",
     trigger = WasInLocation("DepartureSummitNight") && IsInLocation("MysteriousChamber")
 )
@@ -889,7 +889,7 @@ function TriggerConditionsMetForMarkOfMastery() =>
         Aqua(): LearnedSpellweaver()
     }, true)
 
-achievement(title = "Hit Ball to Pass Test [m]", points = 3,
+achievement(title = "Hit Ball to Pass Test [m]", points = 3, id = 187048, badge = "207935",
     description = "Complete the first phase of the Mark of Mastery exam using only one attack or fewer.",
     trigger = MarkOfMasteryCheckpointReached() && never(repeated(2, EnteredAttackState()))
         && TriggerConditionsMetForMarkOfMastery()
