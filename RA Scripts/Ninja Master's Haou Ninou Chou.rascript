@@ -48,13 +48,15 @@ function player2Status() => byte(0x00FDB6)
 //        03 = GAME OVER
 function player1Status() => byte(0x00FDB7)
 
+function cpuCharacter() => byte(0xc085)
+
 // $FE30: UNIBIOS 32-BITS
 function unibios() => dword(0x00FE30)
 
 achievement(
     title = "The Content and Pleasure of the Difficulty", description = "Finish the arcade on maximum difficulty [Lv8]", points = 25,
     id = 132852, badge = "146912", published = "11/20/2020 11:31:07 PM", modified = "11/21/2020 3:42:15 PM",
-    trigger = never(unibios() != 0) && never(player2Status() != 0) && never(player1Status() != 1) && 
+    trigger = cpuCharacter() == 0xb && never(unibios() != 0) && never(player2Status() != 0) && never(player1Status() != 1) && 
               wonFight() == 2 && arcadeProgression() >= 11 && screenId() != 20154 && prev(screenId()) == 20154 &&
               ((biosIndicator() == 0 && difficulty() == 7) ||
                (biosIndicator() == 2 && softDipMvsDifficulty() == 7))
