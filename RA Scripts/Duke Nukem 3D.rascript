@@ -29,6 +29,6 @@ achievement(
     id = 1784, badge = "02235", published = "7/16/2013 1:15:35 PM", modified = "7/16/2021 11:54:41 AM",
     trigger = prev(level()) == 3 && (prev(levelIsComplete()) == 0 && levelIsComplete() == 1) && 
               unless(once(password1() == 260 && password2() == 2064 && byte(0x00F747) == 16)) && unless(once(password1() == 320 && password2() == 528 && byte(0x00F747) == 32)) && 
-              unless(once(password1() == 16416 && password2() == 1088 && byte(0x00F747) == 16)) && badMemory() == 0 &&
+              unless(once(password1() == 16416 && password2() == 1088 && byte(0x00F747) == 16)) &&
               (always_false() || (never(level() != 3) && never(health() == 0)))
 )
