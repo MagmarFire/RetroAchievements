@@ -92,20 +92,25 @@ function defaultWeapon() => byte(0x000A94)
 //        0x0a - 10 Items
 function numberOfItems() => byte(0x000AAE)
 
+function PlayerWasHitAfterDefeatingBrides() => once(playerXCoord() >= 3024 && playerXCoord() <= 3583 && playerIsHit() == 1)
+function PlayerUsedSubweapon() => once(prev(numberOfItems()) > numberOfItems())
+function PlayerIsOutsideBrideFight() => playerXCoord() < 0xbd0
+
 achievement(
     title = "Leeches", description = "Defeat Dracula's Brides with 0 items, using only Gladius and without being hit.", points = 10,
     id = 172942, badge = "193320", published = "9/20/2021 2:55:02 AM", modified = "10/2/2021 12:45:49 AM",
     trigger = (playerXCoord() >= 3024 && playerXCoord() <= 3583 && bossIsDefeated() == 1) && 
-              unless(once(playerXCoord() >= 3024 && playerXCoord() <= 3583 && playerIsHit() == 1)) && unless(playerIsActive() == 0) && unless(chapter() != 6) && unless(levelSelectCheat() == 1) && 
-              numberOfItems() == 0 && defaultWeapon() == 4 && difficulty() >= 1 && unless(gameState() == 0) &&
-              (always_false() || (never(gameScreen() == 33298)))
+              unless(PlayerWasHitAfterDefeatingBrides()) && unless(playerIsActive() == 0) && unless(chapter() != 6) && unless(levelSelectCheat() == 1) && 
+              unless(PlayerUsedSubweapon()) && defaultWeapon() == 4 && difficulty() >= 1 && unless(gameState() == 0) &&
+              (always_false() || never(gameScreen() == 33298) && never(PlayerIsOutsideBrideFight())) // Reset pauselocks
 )
 
+function PlayerIsOutsideOfGentlemanFight() => playerXCoord() < 0xcd0
 achievement(
     title = "Independent Hunter", description = "Defeat Dracula Gentleman with 0 items, using only Gladius and without being hit.", points = 10,
     id = 172943, badge = "193321", published = "9/20/2021 2:55:03 AM", modified = "10/1/2021 10:45:07 PM",
     trigger = (playerXCoord() >= 3280 && playerXCoord() <= 3807 && bossIsDefeated() == 1) && 
               unless(once(playerXCoord() >= 3280 && playerXCoord() <= 3807 && playerIsHit() == 1)) && unless(playerIsActive() == 0) && unless(chapter() != 8) && unless(levelSelectCheat() == 1) && 
-              numberOfItems() == 0 && defaultWeapon() == 4 && difficulty() >= 1 &&
-              (always_false() || (never(gameScreen() == 33298)))
+              unless(PlayerUsedSubweapon()) && defaultWeapon() == 4 && difficulty() >= 1 &&
+              (always_false() || never(gameScreen() == 33298) && never(PlayerIsOutsideOfGentlemanFight())) // Reset pauselocks
 )
