@@ -35,12 +35,15 @@ function bossLife() => byte(0x00DA50)
 // $DA51: FF = Boss Defeated
 function bossDefeatedAlt() => byte(0x00DA51)
 
+// We need to check if the last value is 1 because only bats will have that much health.
+// This does, however, mean that if the boss just so happens to have 1 HP and falls, the achievement won't trigger.
+function BossLostAllLife(mem) => mem < prev(mem) && mem == 0 && prev(mem) != 1
+
 achievement(
     title = "Eating the Pumpkin", description = "Defeat VAN Pookin using Thunder Bolt", points = 3,
     id = 65441, badge = "102676", published = "8/30/2018 4:59:13 PM", modified = "1/3/2020 4:27:57 PM",
     trigger = equippedWeapon() == 3 && stageId() == 12 && bossId() == 22 && gameMode() == 4 &&
-              ((bossDefeatedAlt() > prev(bossDefeatedAlt()) && bossDefeatedAlt() == 255) ||
-               (bossLife() < prev(bossLife()) && bossLife() == 0) ||
-               (bossDefeatedAlt() > prev(bossDefeatedAlt()) && bossDefeatedAlt() == 255) ||
-               (bossLifeAlt() < prev(bossLifeAlt()) && bossLifeAlt() == 0))
+              (bossDefeatedAlt() > prev(bossDefeatedAlt()) && bossDefeatedAlt() == 0xff ||
+               BossLostAllLife(bossLife()) ||
+               BossLostAllLife(bossLifeAlt()))
 )
