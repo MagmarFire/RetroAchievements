@@ -1005,10 +1005,10 @@ function CommandDeckSlotsFulfillCallback(callback, numberToSatisfy = 0)
             inventoryIndex = GetInventoryIndex(deck, i)
             inventoryCommandId = GetInventoryCommandId(deck, i)
             
-            array_push(slotsUsedInDeck, once(callback(inventoryIndex, inventoryCommandId)))
+            array_push(slotsUsedInDeck, once(CurrentDeckIs(deck + 1) && callback(inventoryIndex, inventoryCommandId)))
         }
         
-        trigger = trigger || CurrentDeckIs(deck + 1) && tally(numberToSatisfy, slotsUsedInDeck)
+        trigger = trigger || tally(numberToSatisfy, slotsUsedInDeck)
     }
     
     return trigger
@@ -1695,7 +1695,7 @@ achievement(title = "Severe Frostbite [m]", points = 10,
 )
 
 healingCommands = GetCommandsByProperties({ "healsHp": 1, "equippableBattleCommand": 1 })
-achievement(title = "Incomplete Being [m]", points = 25,
+achievement(title = "Incomplete Being [m]", points = 25, id = 187098, badge = "207985",
     description = "Defeat Vanitas at the end of Ventus's story with only four battle command slots occupied in the Command Deck, " +
         "only three max of which may be healing commands (Proud Mode or higher, Level 22 or below).",
     trigger = CheckpointPassedForCharacters(InformationBarPoppedUpOnce() && IsInLocation("VentusHeart2"), VentusOnly(), true)
@@ -1957,7 +1957,7 @@ aquaGuardCommands = GetCommandsByCallback(command => command["name"] == "Barrier
 function AquaFinalSegmentSharedConditions() => never(JustUsedAnyGivenCommand(aquaGuardCommands)) && never(CommandDeckSlotsFilledByGivenCommandsIsAtLeast(cureFamilyCommands, 2))
     && equippedKeyblade() == 0x17
 
-achievement(title = "Magical Rage [m]", points = 10,
+achievement(title = "Magical Rage [m]", points = 10, id = 187123, badge = "208010",
     description = "Defeat Braig in the Keyblade Graveyard without Barrier defensive commands and with Pixie Petal and only one Cure-family command"
         + " equipped (Proud Mode or higher, Level 21 or below).",
     trigger = CheckpointPassedForCharacters(InformationBarPoppedUpOnce()
@@ -1970,7 +1970,7 @@ achievement(title = "Magical Rage [m]", points = 10,
         && never(defeatedBraigKeybladeGraveyard() == 1)
 )
 
-achievement(title = "Divine Rebellion [m]", points = 25,
+achievement(title = "Divine Rebellion [m]", points = 25, id = 187124, badge = "208011",
     description = "Defeat the final boss of Aqua's story with the same restrictions as the ones in \"Magical Rage\", but with only four battle command slots filled"
         + " (Proud Mode or higher, Level 21 or below).",
     trigger = CheckpointPassedForCharacters(InformationBarPoppedUpOnce()
@@ -2485,7 +2485,7 @@ achievement(title = "Rainbow Loom [m]", points = 10,
         && MirageArenaCheckpointReachedForCharacters(0x301, "MirageChamber", AnyArmoredCharacter(), 4, difficulty = "Critical", level = 10)
 )
 
-achievement(title = "Weapon Confiscation [m]", points = 5,
+achievement(title = "Weapon Confiscation [m]", points = 5, id = 187164, badge = "208051",
     description = "Complete \"Sinister Sentinel\" in the Mirage Arena with only three battle command slots filled and without using Shotlocks (Critical Mode, Level 18 or below).",
     trigger = NeverJustUsedAnyGivenCommandInArena(shotlocks)
         && MirageArenaCheckpointReachedForCharacters(0x401, "MirageArena1", AnyArmoredCharacter(), 5, difficulty = "Critical", level = 18)
@@ -2583,7 +2583,7 @@ achievement(title = "Healthcare Budgeting [m]", points = 5,
         && NeverJustUsedAnyGivenCommandInArena(battleCommandsThatUseMoreThanOneSlot)
 )
 
-achievement(title = "Escalation of Force [m]", points = 10,
+achievement(title = "Escalation of Force [m]", points = 10, id = 187168, badge = "208055",
     description = "Complete \"Harsh Punishment\" in the Mirage Arena with only five battle command slots filled (Critical Mode, Level 25 or below).",
     trigger = MirageArenaCheckpointReachedForCharacters(0x801, "MirageArena1", AnyArmoredCharacter(), 6, difficulty = "Critical", level = 25)
         && never(CommandDeckSlotsFilledIsAtLeast(6))
