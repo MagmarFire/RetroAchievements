@@ -2119,13 +2119,13 @@ function rumbleRacingTotalLaps() => dword(rumbleRacingPointer() - 0x148)
 function RumbleRacingRecordableTimeElapsed() => Delta(rumbleRacingElapsedMinutes()) * 6000 + Delta(rumbleRacingElapsedSeconds()) * 100 + Delta(rumbleRacingElapsedCentiseconds())
 function RumbleRacingJustFinished() => RumbleRacingWasJustInProgress() && RumbleRacingFinished()
 
-function CreateRumbleRacingAchievementAndLeaderboard(achievementName, location, timeLimit, points)
+function CreateRumbleRacingAchievementAndLeaderboard(achievementName, location, timeLimit, points, id = 0, badge = "00000")
 {
-    rumbleRacingCheckpointReached = once(RumbleRacingIntroWasJustPlaying() && RumbleRacingCountingDown() && IsInLocation(location["name"]) && rumbleRacingTotalLaps() == 5)
+    rumbleRacingCheckpointReached = RumbleRacingIntroWasJustPlaying() && RumbleRacingCountingDown() && IsInLocation(location["name"]) && rumbleRacingTotalLaps() == 5
     isInRaceLocation = AddressIsPointer(rumbleRacingPointerAddr()) && IsInLocation(location["name"])
-    achievement(title = achievementName, points = points,
+    achievement(title = achievementName, points = points, id = id, badge = badge,
         description = "Finish a five-lap race on the " + location["display"] + " course in Rumble Racing in " + SecondsToFormat(timeLimit) + ".",
-        trigger = rumbleRacingCheckpointReached
+        trigger = once(rumbleRacingCheckpointReached)
             && trigger_when(RumbleRacingJustFinished())
             && RumbleRacingRecordableTimeElapsed() <= timeLimit * 100
             && never(!isInRaceLocation)
@@ -2139,13 +2139,13 @@ function CreateRumbleRacingAchievementAndLeaderboard(achievementName, location, 
     )
 }
 
-CreateRumbleRacingAchievementAndLeaderboard("Country Thrills", GetLocationByName("DisneyCountryChase"), 125, 10)
+CreateRumbleRacingAchievementAndLeaderboard("Country Thrills", GetLocationByName("DisneyCountryChase"), 125, 10, id = 187138, badge = "208025")
 
-CreateRumbleRacingAchievementAndLeaderboard("Disney Town Dragster", GetLocationByName("DisneyDrive"), 246, 10)
+CreateRumbleRacingAchievementAndLeaderboard("Disney Town Dragster", GetLocationByName("DisneyDrive"), 246, 10, id = 187139, badge = "208026")
 
-CreateRumbleRacingAchievementAndLeaderboard("Prix Spree", GetLocationByName("DisneySpree"), 294, 25)
+CreateRumbleRacingAchievementAndLeaderboard("Prix Spree", GetLocationByName("DisneySpree"), 294, 25, id = 187140, badge = "208027")
 
-CreateRumbleRacingAchievementAndLeaderboard("Castle Crasher", GetLocationByName("DisneyCastle"), 236, 50)
+CreateRumbleRacingAchievementAndLeaderboard("Castle Crasher", GetLocationByName("DisneyCastle"), 236, 50, id = 187141, badge = "208028")
 
 GenerateCheevoFromBits(name = "Sticker Warrior", description = "Collect every sticker in Terra's story.", points = 5,
     addresses = {
