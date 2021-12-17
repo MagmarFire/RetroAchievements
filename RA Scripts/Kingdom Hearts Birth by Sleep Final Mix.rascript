@@ -2132,7 +2132,7 @@ function CreateRumbleRacingAchievementAndLeaderboard(achievementName, location, 
     )
     
     leaderboard(title = "Rumble Racing - " + location["display"] + " (5 Laps)", description = "Race to the finish!",
-        start = rumbleRacingCheckpointReached,
+        start = once(rumbleRacingCheckpointReached) && never(!isInRaceLocation),
         cancel = !isInRaceLocation,
         submit = RumbleRacingJustFinished(),
         value = RumbleRacingRecordableTimeElapsed()
