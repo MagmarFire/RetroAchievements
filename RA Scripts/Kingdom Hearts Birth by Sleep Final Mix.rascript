@@ -1405,7 +1405,7 @@ achievement(title = "White Noise [m]", points = 10,
 
 madTreantForbiddenCommands = GetCommandsByCallback(command => command["element"] == "Fire" || command["element"] == "Thunder")
 achievement(title = "Only You Can Prevent Wildfires [m]", points = 10, id = 187076, badge = "207963",
-    description = "Defeat the Mad Treant in the Dwarf Woodlands without using fire- or thunder-elemental commands (Proud Mode or higher, Level 3).",
+    description = "Defeat the Mad Treant in the Dwarf Woodlands without using fire- or thunder-elemental commands (Proud Mode or higher, Level 3 or below).",
     trigger = CheckpointPassedForCharacters(InformationBarPoppedUpOnce()
         && IsInLocation("DwarfWoods"), VentusOnly(), true)
         && TriggerConditionsMetForCharacters({
@@ -1490,7 +1490,7 @@ achievement(title = "Be-twine My Toes", points = 1,
 )
 
 achievement(title = "Accept Your Helplessness [m]", points = 5, id = 187079, badge = "207966",
-    description = "Defeat Lucifer without healing (Proud Mode or higher, Level 4).",
+    description = "Defeat Lucifer without healing (Proud Mode or higher, Level 4 or below).",
     trigger = CheckpointPassedForCharacters(InformationBarPoppedUpOnce()
         && IsInLocation("CastleWardrobe2"), VentusOnly(), true)
         && TriggerConditionsMetForCharacters({
