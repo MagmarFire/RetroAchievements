@@ -718,6 +718,7 @@ function KingMickeyHpReachedZero() => kingMickeyHp() <= 0 && Delta(kingMickeyHp(
 function JaqTookDamage() => Delta(jaqDamage()) < jaqDamage()
 
 function EnteredAttackState() => Delta(characterState()) != 0x10 && characterState() == 0x10
+function EnteredMagicState() => Delta(characterState()) != 0x11 && characterState() == 0x11
 function IsUsingFinisher() => characterState() == 0x14
 function IsGuarding() => characterState() == 0x16
 function IsUsingAPhysicalAttack() => characterState() == 0x10
@@ -889,10 +890,12 @@ function TriggerConditionsMetForMarkOfMastery() =>
         Aqua(): LearnedSpellweaver()
     }, true)
 
+shotlocks = GetCommandsByProperties({ "supercategory": "Shotlock" })
 achievement(title = "Hit Ball to Pass Test [m]", points = 3, id = 187048, badge = "207935",
-    description = "Complete the first phase of the Mark of Mastery exam using only one attack or fewer.",
-    trigger = MarkOfMasteryCheckpointReached() && never(repeated(2, EnteredAttackState()))
+    description = "Complete the first phase of the Mark of Mastery exam using only one attack or fewer and no Shotlocks.",
+    trigger = MarkOfMasteryCheckpointReached() && never(tally(2, [ EnteredAttackState(), EnteredMagicState() ]))
         && TriggerConditionsMetForMarkOfMastery()
+        && never(JustUsedAnyGivenCommand(shotlocks))
 )
 
 function diamondDustState() => byte(0x1f2acd0)
@@ -2001,7 +2004,6 @@ achievement(title = "Critical Mystic", points = 25,
     trigger = AquaStoryCompleted() && IsAtLeastOnDifficulty("Critical")
 )
 
-shotlocks = GetCommandsByProperties({ "supercategory": "Shotlock" })
 equippableBattleCommands = GetCommandsByProperties({ "equippableBattleCommand": 1 })
 achievement(title = "Prime Sacrifice [m]", points = 10, id = 187128, badge = "208015",
     description = "Defeat the first phase of the final boss of the Final Episode using any two of battle commands, D-Links, or Shotlocks, but not all three"
