@@ -2094,7 +2094,7 @@ achievement(title = "Critical Wayfinder [m]", points = 10,
 
 achievement(title = "The Mark of Mastery [m]", points = 100, id = 187137, badge = "208024",
     description = "Complete any character's story at Level 1 on Critical Mode.",
-    trigger = level() == 1 && IsAtLeastOnDifficulty("Critical")
+    trigger = never(level() > 1) && IsAtLeastOnDifficulty("Critical")
         && (
         TerraStoryCompleted() || VentusStoryCompleted() || AquaStoryCompleted()
         )
