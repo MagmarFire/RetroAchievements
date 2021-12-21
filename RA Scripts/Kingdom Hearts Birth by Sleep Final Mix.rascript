@@ -1367,20 +1367,25 @@ achievement(title = "Terminal Corruption [m]", points = 25, id = 187071, badge =
 
 function gameStateDeterminer() => byte(0xb47ade)
 function xehanortReport11() => bit0(0x1f2932d)
+function battleReportFrameLimit() => 60
 function ViewedBattleReportLongEnough() => once(Delta(gameStateDeterminer()) != gameStateDeterminer() && gameStateDeterminer() == 0x81)
-    && repeated(60, gameStateDeterminer() == 0x81)
+    && repeated(battleReportFrameLimit(), gameStateDeterminer() == 0x81)
+    // This reset clause here is intended to avoid false triggers. The idea is that if the player doesn't earn the achievement by the time the previous line of code is true,
+    // they won't have the chance to unlock it at all. We need to do this because the game doesn't properly clear key memory once the player returns to the title screen.
+    && never(repeated(battleReportFrameLimit() + 1, gameStateDeterminer() == 0x81))
+    
 function TerraStoryCompleted() => WasBitflagSetInGame(xehanortReport11()) && ViewedBattleReportLongEnough() && currentCharacter() == TerraArmored()
-achievement(title = "The Vessel", points = 10, // todo: name subject to change
+achievement(title = "The Vessel", points = 10, id = 187072, badge = "207959",
     description = "Complete Terra's story.",
     trigger = TerraStoryCompleted()
 )
 
-achievement(title = "Proud Warrior", points = 10,
+achievement(title = "Proud Warrior", points = 10, id = 187073, badge = "207960",
     description = "Complete Terra's story on Proud Mode or higher.",
     trigger = TerraStoryCompleted() && IsAtLeastOnDifficulty("Proud")
 )
 
-achievement(title = "Critical Warrior", points = 25,
+achievement(title = "Critical Warrior", points = 25, id = 187047, badge = "207961",
     description = "Complete Terra's story on Critical Mode.",
     trigger = TerraStoryCompleted() && IsAtLeastOnDifficulty("Critical")
 )
@@ -1713,17 +1718,17 @@ achievement(title = "Incomplete Being [m]", points = 25, id = 187098, badge = "2
 
 function xehanortReport10() => bit7(0x1f2932c)
 function VentusStoryCompleted() => WasBitflagSetInGame(xehanortReport10()) && ViewedBattleReportLongEnough() && currentCharacter() == Ventus()
-achievement(title = "The Dormant", points = 10, // todo: name subject to change
+achievement(title = "The Dormant", points = 10, id = 187099, badge = "207986",
     description = "Complete Ventus's story.",
     trigger = VentusStoryCompleted()
 )
 
-achievement(title = "Proud Guardian", points = 10,
+achievement(title = "Proud Guardian", points = 10, id = 187100, badge = "207987",
     description = "Complete Ventus's story on Proud Mode or higher.",
     trigger = VentusStoryCompleted() && IsAtLeastOnDifficulty("Proud")
 )
 
-achievement(title = "Critical Guardian", points = 25,
+achievement(title = "Critical Guardian", points = 25, id = 187101, badge = "207988",
     description = "Complete Ventus's story on Critical Mode.",
     trigger = VentusStoryCompleted() && IsAtLeastOnDifficulty("Critical")
 )
@@ -1989,17 +1994,17 @@ achievement(title = "Divine Rebellion [m]", points = 25, id = 187124, badge = "2
 
 function xehanortReport7() => bit4(0x1f2932c)
 function AquaStoryCompleted() => WasBitflagSetInGame(xehanortReport7()) && ViewedBattleReportLongEnough() && currentCharacter() == AquaArmoredHelmetless()
-achievement(title = "The Seeker", points = 10, // todo: name subject to change
+achievement(title = "The Seeker", points = 10, id = 187125, badge = "208012",
     description = "Complete Aqua's story.",
     trigger = AquaStoryCompleted()
 )
 
-achievement(title = "Proud Mystic", points = 10,
+achievement(title = "Proud Mystic", points = 10, id = 187126, badge = "208013",
     description = "Complete Aqua's story on Proud Mode or higher.",
     trigger = AquaStoryCompleted() && IsAtLeastOnDifficulty("Proud")
 )
 
-achievement(title = "Critical Mystic", points = 25,
+achievement(title = "Critical Mystic", points = 25, id = 187127, badge = "208014",
     description = "Complete Aqua's story on Critical Mode.",
     trigger = AquaStoryCompleted() && IsAtLeastOnDifficulty("Critical")
 )
@@ -2030,17 +2035,17 @@ achievement(title = "Lonely Duet [m]", points = 5, id = 187129, badge = "208016"
 
 function aquaMetHerFate() => bit3(0x1f285a5)
 function FinalEpisodeCompleted() => WasBitflagSetInGame(aquaMetHerFate()) && ViewedBattleReportLongEnough() && currentCharacter() == Aqua()
-achievement(title = "The Wanderer", points = 3,
+achievement(title = "The Wanderer", points = 3, id = 187130, badge = "208017",
     description = "Complete the Final Episode.",
     trigger = FinalEpisodeCompleted()
 )
 
-achievement(title = "Proud Wanderer [m]", points = 5,
+achievement(title = "Proud Wanderer [m]", points = 5, id = 187131, badge = "208018",
     description = "Complete the Final Episode on Proud Mode or higher.",
     trigger = FinalEpisodeCompleted() && IsAtLeastOnDifficulty("Proud")
 )
 
-achievement(title = "Critical Wanderer [m]", points = 10,
+achievement(title = "Critical Wanderer [m]", points = 10, id = 187132, badge = "208019",
     description = "Complete the Final Episode on Critical Mode.",
     trigger = FinalEpisodeCompleted() && IsAtLeastOnDifficulty("Critical")
 )
@@ -2077,17 +2082,17 @@ leaderboard(title = "Dance with Death", description = "Defeat the Dark Hide with
 
 function darkHideDefeated() => bit2(0x1f284e5)
 function SecretEpisodeCompleted() => WasBitflagSetInGame(darkHideDefeated()) && ViewedBattleReportLongEnough() && currentCharacter() == Aqua()
-achievement(title = "The Wayfinder", points = 3,
+achievement(title = "The Wayfinder", points = 3, id = 187134, badge = "208021",
     description = "Complete the Secret Episode.",
     trigger = SecretEpisodeCompleted()
 )
 
-achievement(title = "Proud Wayfinder [m]", points = 5,
+achievement(title = "Proud Wayfinder [m]", points = 5, id = 187135, badge = "208022",
     description = "Complete the Secret Episode on Proud Mode or higher.",
     trigger = SecretEpisodeCompleted() && IsAtLeastOnDifficulty("Proud")
 )
 
-achievement(title = "Critical Wayfinder [m]", points = 10,
+achievement(title = "Critical Wayfinder [m]", points = 10, id = 187136, badge = "208023"
     description = "Complete the Secret Episode on Critical Mode.",
     trigger = SecretEpisodeCompleted() && IsAtLeastOnDifficulty("Critical")
 )
