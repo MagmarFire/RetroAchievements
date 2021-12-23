@@ -300,6 +300,44 @@ achievement(
     trigger = word(0x052C30) == 0x0032 && bit5(0x0BAD90) == 0x1 && prev(bit5(0x0BAD90)) == 0x0
 )
 
+function urobolusHp() => word(0x1adf44)
+function itemsInInventory() => byte(0x0BADAE)
+function ItemCountDecreased() => Delta(itemsInInventory()) > itemsInInventory()
+function characterObjectWidth() => 0x2c
+
+function Dart() => 0
+function Lavitz() => 1
+function Shana() => 2
+
+function GetCharacterById(id)
+{
+    characterArrayBaseAddr = 0x0baef4
+    addr = characterArrayBaseAddr + id * characterObjectWidth()
+    return {
+        "exp": dword(addr),
+        "statusFlags": byte(addr + 4),
+        "hp": word(addr + 8),
+        "level": byte(addr + 18),
+        "accessoryId": byte(addr + 24)
+    }
+}
+
+function CharacterWithIdHasItemWithIdEquipped(charId, accessoryId)
+{
+    character = GetCharacterById(charId)
+    return character["accessoryId"] == accessoryId
+}
+
+function poisonGuardId() => 0x67
+achievement(title = "Pharmacophobia", points = 5,
+    description = "Defeat the Urobolus without using items and without equipping any Poison Guards.",
+    trigger = mapId() == 0x35 && enemyId() == 0x19e && EnteredBattleOnce() && never(!IsInBattle())
+        && trigger_when(once(Delta(urobolusHp()) > 0 && urobolusHp() == 0) && repeated(290, urobolusHp() == 0))
+        && never(ItemCountDecreased()) && never(CharacterWithIdHasItemWithIdEquipped(Dart(), poisonGuardId()))
+        && never(CharacterWithIdHasItemWithIdEquipped(Lavitz(), poisonGuardId()))
+        && never(CharacterWithIdHasItemWithIdEquipped(Shana(), poisonGuardId()))
+)
+
 achievement(
     title = "No Ordinary Keepsake", description = "Awaken the Dragoon Spirit of the Red-Eyed Dragon.", points = 5,
     id = 94790, badge = "106752", published = "1/15/2020 11:23:24 PM", modified = "2/3/2020 10:16:19 PM",
@@ -763,27 +801,6 @@ achievement(
     title = "Savan's Final Hope", description = "Carry on in lieu of the one who wished to protect the world.", points = 1,
     id = 98140, badge = "106726", published = "2/10/2020 5:10:15 AM", modified = "2/13/2020 10:38:46 PM",
     trigger = prev(word(0x052C30)) == 0x023C && word(0x052C30) == 0x0210
-)
-
-achievement(
-    title = "Protectionist Parliamentarian", description = "Repeal the law permitting use of the shop next to the Law Factory in Zenebatos.", points = 1,
-    id = 96106, badge = "106738", published = "1/26/2020 7:52:18 PM", modified = "2/3/2020 2:50:34 AM",
-    trigger = word(0x052C30) == 0x0218 && prev(bit0(0x0BAD68)) == 0x1 && bit0(0x0BAD68) == 0x0 && bit0(0x0BACDA) == 0x1 && 
-              prev(bit0(0x0BACDA)) == 0x0
-)
-
-achievement(
-    title = "Trespassers Will Be Ignored", description = "Prohibit the Zenebatos guards from arresting you by changing the law.", points = 1,
-    id = 96108, badge = "106738", published = "1/26/2020 8:05:07 PM", modified = "2/3/2020 2:50:37 AM",
-    trigger = word(0x052C30) == 0x0218 && prev(bit0(0x0BAD68)) == 0x1 && bit0(0x0BAD68) == 0x0 && bit5(0x0BACD9) == 0x1 && 
-              prev(bit5(0x0BACD9)) == 0x0
-)
-
-achievement(
-    title = "No Lines, No Waiting", description = "Repeal the law in Zenebatos requiring the need to queue at the Legislation Center.", points = 1,
-    id = 96111, badge = "106738", published = "1/26/2020 8:13:46 PM", modified = "2/3/2020 2:50:30 AM",
-    trigger = word(0x052C30) == 0x0218 && prev(bit0(0x0BAD68)) == 0x1 && bit0(0x0BAD68) == 0x0 && bit4(0x0BACD9) == 0x1 && 
-              prev(bit4(0x0BACD9)) == 0x0
 )
 
 achievement(
