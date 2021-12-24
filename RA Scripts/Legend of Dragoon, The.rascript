@@ -329,7 +329,7 @@ function CharacterWithIdHasItemWithIdEquipped(charId, accessoryId)
 }
 
 function poisonGuardId() => 0x67
-achievement(title = "Pharmacophobia", points = 5,
+achievement(title = "Pharmacophobia", points = 5, id = 189207, badge = "209992",
     description = "Defeat the Urobolus without using items and without equipping any Poison Guards.",
     trigger = mapId() == 0x35 && enemyId() == 0x19e && EnteredBattleOnce() && never(!IsInBattle())
         && trigger_when(once(Delta(urobolusHp()) > 0 && urobolusHp() == 0) && repeated(290, urobolusHp() == 0))
@@ -357,6 +357,129 @@ achievement(
                 unless(byte(0x0BAC58) == 0x01) && never(word(0x1AC26C) == 0x0000) && never(word(0x1ABEE4) == 0x0000)) ||
                (repeated(256, word(0x1AC894) == 0x0000) && unless(byte(0x0BAC54) == 0x03) && 
                 unless(byte(0x0BAC58) == 0x03) && never(word(0x1AC50C) == 0x0000) && never(word(0x1AC184) == 0x0000)))
+)
+
+function playerSlot1Addr() => 0x0bc1d8
+function playerSlot2Addr() => 0x0bc1dc
+function playerSlot3Addr() => 0x0bc1e0
+function enemySlot1Addr() => 0x0bc1ec
+function enemySlot2Addr() => 0x0bc1f0
+function garbagePointer() => 0xbc0c0
+
+function CombatantInSlotAddrIsLoaded(addr) => Delta(tbyte(addr)) != garbagePointer()
+function GetCombatantInGivenSlotAddr(addr)
+{
+    return {
+        "hp": word(tbyte(addr) + 0x108),
+        "mp": word(tbyte(addr) + 0x10c)
+    }
+}
+
+function CombatantInSlotAddrWasJustDefeated(addr)
+{
+    combatant = GetCombatantInGivenSlotAddr(addr)
+    return CombatantInSlotAddrIsLoaded(addr) && Delta(combatant["hp"]) > 0 && combatant["hp"] == 0
+}
+
+function AllCombatantsInGivenSlotAddrsWereJustDefeated(slots, useTrigger = true, deferTime = 0)
+{
+    allGivenCombatantsDefeated = always_true()
+    anyGivenCombatantWasJustDefeated = always_false()
+    for slot in slots
+    {
+        combatant = GetCombatantInGivenSlotAddr(slot)
+        allGivenCombatantsDefeated = allGivenCombatantsDefeated && combatant["hp"] == 0 && CombatantInSlotAddrIsLoaded(slot)
+        wasJustDefeated = CombatantInSlotAddrWasJustDefeated(slot)
+        
+        if (useTrigger == true)
+        {
+            wasJustDefeated = trigger_when(wasJustDefeated)
+        }
+        
+        anyGivenCombatantWasJustDefeated = anyGivenCombatantWasJustDefeated || wasJustDefeated
+    }
+    
+    if (useTrigger == true)
+    {
+        allGivenCombatantsDefeated = trigger_when(allGivenCombatantsDefeated)
+    }
+    
+    return repeated(deferTime, allGivenCombatantsDefeated) && anyGivenCombatantWasJustDefeated
+}
+
+function slot1DragoonTurnsRemaining() => byte(0x06e62c)
+function slot2DragoonTurnsRemaining() => byte(0x06e630)
+function slot3DragoonTurnsRemaining() => byte(0x06e634)
+
+function DragoonTurnConsumedBySlot(slotId)
+{
+    if (slotId == 1)
+    {
+        return Delta(slot1DragoonTurnsRemaining()) > slot1DragoonTurnsRemaining()
+    }
+    else if (slotId == 2)
+    {
+        return Delta(slot2DragoonTurnsRemaining()) > slot2DragoonTurnsRemaining()
+    }
+    else
+    {
+        return Delta(slot3DragoonTurnsRemaining()) > slot3DragoonTurnsRemaining()
+    }
+}
+
+function turnCounter() => dword(0x0bac80)
+function TurnConsumed() => Delta(turnCounter()) < turnCounter()
+
+function GetPlayerAddrFromSlot(slotId)
+{
+    if (slotId == 1)
+    {
+        return playerSlot1Addr()
+    }
+    else if (slotId == 2)
+    {
+        return playerSlot2Addr()
+    }
+    else
+    {
+        return playerSlot3Addr()
+    }
+}
+
+function PlayerUsedMagicThisTurn()
+{
+    trigger = always_false()
+    for slot in range(1, 3)
+    {
+        slotAddr = GetPlayerAddrFromSlot(slot)
+        combatant = GetCombatantInGivenSlotAddr(slotAddr)
+        // todo: use `trigger_when()` around the `once()` statement when https://github.com/Jamiras/RATools/issues/272 is addressed.
+        trigger = trigger || unless(!CombatantInSlotAddrIsLoaded(slotAddr)) && once(Delta(combatant["mp"]) > combatant["mp"] && never(TurnConsumed()))
+    }
+    
+    return trigger
+}
+
+function PlayerJustUsedMagic()
+{
+    trigger = always_false()
+    for slot in range(1, 3)
+    {
+        slotAddr = GetPlayerAddrFromSlot(slot)
+        combatant = GetCombatantInGivenSlotAddr(slotAddr)
+        // todo: use `trigger_when()` around the `once()` statement when https://github.com/Jamiras/RATools/issues/272 is addressed.
+        trigger = trigger || CombatantInSlotAddrIsLoaded(slotAddr) && once(Delta(combatant["mp"]) > combatant["mp"])
+    }
+    
+    return trigger
+}
+
+function Feyrbrand() => enemySlot1Addr()
+function Greham() => enemySlot2Addr()
+achievement(title = "No Revenge Like Overkill", description = "Finish the battle against Greham and Feyrbrand with a Dragoon spell.", points = 10,
+    id = 189209, badge = "209994",
+    trigger = mapId() == 0x290 && enemyId() == 0x189 && EnteredBattleOnce() && never(!IsInBattle())
+        && AllCombatantsInGivenSlotAddrsWereJustDefeated([ Feyrbrand(), Greham() ], true) && PlayerUsedMagicThisTurn()
 )
 
 achievement(
@@ -471,6 +594,15 @@ achievement(
     title = "Later, Buddy", description = "Suffer a great loss in Hellena Prison.", points = 1,
     id = 94802, badge = "106744", published = "1/15/2020 11:26:40 PM", modified = "2/3/2020 2:24:58 AM",
     trigger = word(0x0BB0F8) == 0x0183 && word(0x0BC95C) == 0x07D0
+)
+
+function Doel() => enemySlot1Addr()
+function DragoonDoel() => enemySlot2Addr()
+achievement(title = "Electrical Paralysis", points = 5, id = 189208, badge = "209993",
+    description = "Defeat Emperor Doel without using Dragoon magic.",
+    trigger = mapId() == 0x294 && enemyId() == 0x186 && EnteredBattleOnce() && never(!IsInBattle())
+        && AllCombatantsInGivenSlotAddrsWereJustDefeated([ Doel(), DragoonDoel() ], true)
+        && never(PlayerJustUsedMagic())
 )
 
 // To make sure the achievement doesn't trigger during a game over while still letting it trigger during the
