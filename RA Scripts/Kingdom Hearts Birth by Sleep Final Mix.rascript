@@ -1120,7 +1120,7 @@ achievement(title = "Sleeping Death [m]", points = 10, id = 187055, badge = "207
         ) && TriggerConditionsMetForCharacters({
             Terra(): FirestormLearned(),
             Aqua(): DeckCapacityIncreased()
-        }, true) && trigger_when(Delta(numberOfActiveEnemies()) >= 1 && numberOfActiveEnemies() == 0)
+        }, true)
         && IsAtLeastOnDifficulty("Proud") && level() <= 9
         && never(!IsInLocation("DwarfMirror"))
         && never(IsUsingDLink())
