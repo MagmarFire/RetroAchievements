@@ -726,6 +726,7 @@ function IsUsingAStandardAttack() => currentAttackInCombo() != 0 && nextAttackIn
 function JustStartedSwimming() => characterState() != Delta(characterState()) && characterState() == 0x9
 function IsRunning() => characterState() == 0x3
 function IsWaitingForBattleToBegin() => characterState() == 0x1c
+function IsPerformingASituationalCommand() => characterState() == 0x1d
 
 function dLinkPointer() => tbyte(0xb59ce8)
 function dLinkCharge() => dword(dLinkPointer() + 0x1000000 + 0x3c) // todo: actually a float; change when supported
@@ -752,7 +753,7 @@ function IsUsingAnyGivenCommand(haystack)
     return trigger
 }
 
-function JustUsedAnyGivenCommand(haystack)
+function JustUsedAnyGivenCommand(haystack, when = true)
 {
     trigger = always_false()
     commandIds = GetIdsFromObjects(haystack)
@@ -761,11 +762,11 @@ function JustUsedAnyGivenCommand(haystack)
     {
         if (needle["min"] == needle["max"])
         {
-            trigger = trigger || Delta(commandBeingUsed()) != commandBeingUsed() && commandBeingUsed() == needle["min"]
+            trigger = trigger || Delta(commandBeingUsed()) != commandBeingUsed() && commandBeingUsed() == needle["min"] && when
         }
         else
         {
-            trigger = trigger || Delta(commandBeingUsed()) != commandBeingUsed() && commandBeingUsed() >= needle["min"] && commandBeingUsed() <= needle["max"]
+            trigger = trigger || Delta(commandBeingUsed()) != commandBeingUsed() && commandBeingUsed() >= needle["min"] && commandBeingUsed() <= needle["max"] && when
         }
     }
     return trigger
@@ -1784,7 +1785,7 @@ achievement(title = "You Never Split the Party [m]", points = 10, id = 187106, b
             Aqua(): (JustObtainedCommandWithId(highJumpId(), true) && trigger_when(IsInLocation("EnchantedGates")))
         }, false)
         && never(!IsInLocation("EnchantedGates"))
-        && never(JustUsedAnyGivenCommand(unallowedCastleEscapeCommands))
+        && never(JustUsedAnyGivenCommand(unallowedCastleEscapeCommands, !IsPerformingASituationalCommand()))
         && never(IsUsingAStandardAttack())
 )
 
