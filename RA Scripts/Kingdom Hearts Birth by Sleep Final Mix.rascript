@@ -1861,32 +1861,47 @@ achievement(title = "Unwitting Predecessor", points = 3,
 
 
 function fruitballShoegazersHighScore() => dword(0x1f35754)
-function fruitballBruisersHighScore() => dword(0x1f35724)
-function fruitballChipAndDaleHighScore() => dword(0x1f35730)
-function fruitballCaptainDarkHighScore() => dword(0x1f35748)
+
+function fruitballBruisersHighScoreTerra() => dword(0x1f35760)
+function fruitballBruisersHighScoreVen() => dword(0x1f356e8)
+function fruitballBruisersHighScoreAqua() => dword(0x1f35724)
+
+function fruitballChipAndDaleHighScoreTerra() => dword(0x1f3576c)
+function fruitballChipAndDaleHighScoreVen() => dword(0x1f356f4)
+function fruitballChipAndDaleHighScoreAqua() => dword(0x1f35730)
+
+function fruitballPeteHighScoreTerra() => dword(0x1f35778)
+function fruitballPeteHighScoreVen() => dword(0x1f3570c)
+function fruitballPeteHighScoreAqua() => dword(0x1f35748)
+
 function fruitballChallengeScoreTarget() => 20
 
-achievement(title = "Running Up the Score", points = 5,
+function HighScoreEarnedAgainstBruisers(target = 1) => CharacterSpecificHighScoreEarned(fruitballBruisersHighScoreTerra(), fruitballBruisersHighScoreVen(), fruitballBruisersHighScoreAqua(), target)
+function HighScoreEarnedAgainstChipAndDale(target = 1) => CharacterSpecificHighScoreEarned(fruitballChipAndDaleHighScoreTerra(), fruitballChipAndDaleHighScoreVen(),
+    fruitballChipAndDaleHighScoreAqua(), target)
+function HighScoreEarnedAgainstPete(target = 1) => CharacterSpecificHighScoreEarned(fruitballPeteHighScoreTerra(), fruitballPeteHighScoreVen(), fruitballPeteHighScoreAqua(), target)
+
+achievement(title = "Running Up the Score", points = 5, id = 187111, badge = "207998",
     description = "Set a new high score of " + fruitballChallengeScoreTarget() + " or more in any round of Fruitball.",
     trigger = HighScoreEarned(fruitballShoegazersHighScore(), fruitballChallengeScoreTarget())
-        || HighScoreEarned(fruitballBruisersHighScore(), fruitballChallengeScoreTarget())
-        || HighScoreEarned(fruitballChipAndDaleHighScore(), fruitballChallengeScoreTarget())
-        || HighScoreEarned(fruitballCaptainDarkHighScore(), fruitballChallengeScoreTarget())
+        || HighScoreEarnedAgainstBruisers(fruitballChallengeScoreTarget())
+        || HighScoreEarnedAgainstChipAndDale(fruitballChallengeScoreTarget())
+        || HighScoreEarnedAgainstPete(fruitballChallengeScoreTarget())
 )
 
-achievement(title = "Regular Fruitballer", points = 5,
+achievement(title = "Regular Fruitballer", points = 5, id = 187112, badge = "207999",
     description = "Set a new high score versus the Bruisers team in Fruitball.",
-    trigger = HighScoreEarned(fruitballBruisersHighScore(), 1)
+    trigger = HighScoreEarnedAgainstBruisers()
 )
 
-achievement(title = "Veteran Fruitballer", points = 10,
+achievement(title = "Veteran Fruitballer", points = 10, id = 187113, badge = "208000",
     description = "Set a new high score versus Chip and Dale in Fruitball.",
-    trigger = HighScoreEarned(fruitballChipAndDaleHighScore(), 1)
+    trigger = HighScoreEarnedAgainstChipAndDale()
 )
 
-achievement(title = "Legendary Fruitballer", points = 25,
-    description = "Set a new high score versus Captain Dark in Fruitball.",
-    trigger = HighScoreEarned(fruitballCaptainDarkHighScore(), 1)
+achievement(title = "Legendary Fruitballer", points = 25, id = 187114, badge = "208001",
+    description = "Set a new high score versus Captain Justice or Captain Dark in Fruitball.",
+    trigger = HighScoreEarnedAgainstPete()
 )
 
 function BeganFinalsAsAqua() => bit7(0x1f28504) == 1
