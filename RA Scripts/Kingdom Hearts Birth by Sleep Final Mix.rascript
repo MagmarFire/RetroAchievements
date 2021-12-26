@@ -1183,14 +1183,14 @@ function maxHp() => word(0x1f19afc)
 function MaxHPIncreased() => Delta(maxHp()) < maxHp()
 nonHealingMagicCommands = GetCommandsByProperties({ "supercategory": "Magic", "healsHp": 0 })
 function BeganFinalsAsTerra() => bit4(0x1f28505) == 1
-achievement(title = "Self-Reliance [m]", points = 50, id = 187061, badge = "207948",
-    description = "Reach the finals of the Olympus Coliseum Games as Terra without using D-Links or non-healing magic commands (Proud Mode or higher, Level 20 or below).",
+achievement(title = "Self-Reliance [m]", points = 25, id = 187061, badge = "207948",
+    description = "Reach the finals of the Olympus Coliseum Games as Terra without using D-Links or non-healing magic commands (Proud Mode or higher, Level 11 or below).",
     trigger = CheckpointPassedForCharacters(InformationBarPoppedUpOnce()
             && IsInLocation("OlympusEast"), TerraOnly(), true)
             && TriggerConditionsMetForCharacters({
                 Terra(): MaxHPIncreased()
             }, true)
-        && IsAtLeastOnDifficulty("Proud") && level() <= 20
+        && IsAtLeastOnDifficulty("Proud") && level() <= 11
         && never(!IsInLocation("OlympusEast"))
         && never(IsUsingDLink())
         && never(JustUsedAnyGivenCommand(nonHealingMagicCommands))
@@ -1200,14 +1200,14 @@ achievement(title = "Self-Reliance [m]", points = 50, id = 187061, badge = "2079
 forbiddenCommandsAgainstZack = GetCommandsByCallback(command => command["element"] != "N/A" && command["element"] != "Null" && command["element"] != "Physical" && command["id"] != 0xffff)
 function DefeatedZackForTheFirstTime() => bit2(0x1f28505) == 1
 achievement(title = "Out of Your Element [m]", points = 10, id = 187062, badge = "207949",
-    description = "Win your second fight against Zack using only physical- or null-elemental commands (Proud Mode or higher, Level 20 or below).",
+    description = "Win your second fight against Zack using only physical- or null-elemental commands (Proud Mode or higher, Level 11 or below).",
     trigger = CheckpointPassedForCharacters(InformationBarPoppedUpOnce()
             && IsInLocation("OlympusEast"), TerraOnly(), true)
             && TriggerConditionsMetForCharacters({
                 // The second fight yields no reward, so we must use something that may be less than reliable here...
                 Terra(): BossDefeatTriggered()
             }, true)
-        && IsAtLeastOnDifficulty("Proud") && level() <= 20
+        && IsAtLeastOnDifficulty("Proud") && level() <= 11
         && never(!IsInLocation("OlympusEast"))
         && never(JustUsedAnyGivenCommand(forbiddenCommandsAgainstZack))
         && BeganFinalsAsTerra()
@@ -1337,14 +1337,14 @@ achievement(title = "Patricide", points = 3,
 )
 
 function DefeatedXehanortI() => bit0(0x1f285a5) == 1
-achievement(title = "Give Me Strength [m]", points = 5, id = 187070, badge = "207957",
-    description = "Defeat Xehanort solo using only battle commands while a D-Link is active (Proud Mode or higher, Level 35 or below).",
+achievement(title = "Give Me Strength [m]", points = 10, id = 187070, badge = "207957",
+    description = "Defeat Xehanort solo using only battle commands while a D-Link is active (Proud Mode or higher, Level 20 or below).",
     trigger = CheckpointPassedForCharacters(InformationBarPoppedUpOnce()
         && IsInLocation("Graveyard3"), TerraOnly(), true)
         && TriggerConditionsMetForCharacters({
             Terra(): MaxHPIncreased()
         }, true)
-        && IsAtLeastOnDifficulty("Proud") && level() <= 35
+        && IsAtLeastOnDifficulty("Proud") && level() <= 20
         && never(!IsInLocation("Graveyard3"))
         && never(!DefeatedXehanortI())
         && (always_true() || never(JustUsedAnyGivenCommand(battleCommands)) && unless(IsUsingDLink()))
@@ -1353,14 +1353,14 @@ achievement(title = "Give Me Strength [m]", points = 5, id = 187070, badge = "20
 function DefeatedXehanortII() => bit1(0x1f285a5) == 1
 cureFamilyCommands = GetCommandsByCallback(command => command["name"] == "Cure" || command["name"] == "Cura" || command["name"] == "Curaga")
 achievement(title = "Terminal Corruption [m]", points = 25, id = 187071, badge = "207958",
-    description = "Defeat the final boss of Terra's story without using any commands in the Cure family (Proud Mode or higher, Level 35 or below).",
+    description = "Defeat the final boss of Terra's story without using any commands in the Cure family (Proud Mode or higher, Level 22 or below).",
     trigger = CheckpointPassedForCharacters(InformationBarPoppedUpOnce()
         && IsInLocation("GraveyardCage"), [ TerraArmored() ], true)
         && TriggerConditionsMetForCharacters({
             // The final boss, of course, yields no rewards.
             TerraArmored(): BossDefeatTriggered()
         }, true)
-        && IsAtLeastOnDifficulty("Proud") && level() <= 35
+        && IsAtLeastOnDifficulty("Proud") && level() <= 22
         && never(!IsInLocation("GraveyardCage"))
         && never(JustUsedAnyGivenCommand(cureFamilyCommands))
 )
