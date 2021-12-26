@@ -2268,67 +2268,94 @@ achievement(title = "Apex of Witchcraft", points = 5,
     trigger = UnlockedFinishCommand(0x59) && IsPlayingAsAqua()
 )
 
-function flameBoxMissionHighScore() => dword(0x1f35d38)
+function CharacterSpecificHighScoreEarned(terraHighScore, venHighScore, aquaHighScore, target, golf = false)
+{
+    return HighScoreEarned(terraHighScore, target, golf) && currentCharacter() == Terra()
+        || HighScoreEarned(venHighScore, target, golf) && currentCharacter() == Ventus()
+        || HighScoreEarned(aquaHighScore, target, golf) && currentCharacter() == Aqua()
+}
+
+function flameBoxMissionHighScoreTerra() => dword(0x1f35d38)
+function flameBoxMissionHighScoreVen() => dword(0x1f35cb8)
+function flameBoxMissionHighScoreAqua() => dword(0x1f35cf8)
 function flameBoxMissionScoreTarget() => 65
-achievement(title = "Orbital Defender", points = 10,
+achievement(title = "Orbital Defender", points = 10, id = 187148, badge = "208035",
     description = "Set a new high score of " + flameBoxMissionScoreTarget() + " or more in the Flame Box Unversed Mission.",
-    trigger = HighScoreEarned(flameBoxMissionHighScore(), flameBoxMissionScoreTarget())
+    trigger = CharacterSpecificHighScoreEarned(flameBoxMissionHighScoreTerra(), flameBoxMissionHighScoreVen(), flameBoxMissionHighScoreAqua(), flameBoxMissionScoreTarget())
 )
 
-function loneRunnerMissionHighScore() => dword(0x1f35d3c)
+function loneRunnerMissionHighScoreTerra() => dword(0x1f35d3c)
+function loneRunnerMissionHighScoreVen() => dword(0x1f35cbc)
+function loneRunnerMissionHighScoreAqua() => dword(0x1f35cfc)
 function loneRunnerMissionScoreTarget() => 80
-achievement(title = "Shoe Snatcher", points = 5,
+achievement(title = "Shoe Snatcher", points = 5, id = 187149, badge = "208036",
     description = "Set a new high score of " + loneRunnerMissionScoreTarget() + " or more in the Lone Runner Unversed Mission.",
-    trigger = HighScoreEarned(loneRunnerMissionHighScore(), loneRunnerMissionScoreTarget())
+    trigger = CharacterSpecificHighScoreEarned(loneRunnerMissionHighScoreTerra(), loneRunnerMissionHighScoreVen(), loneRunnerMissionHighScoreAqua(), loneRunnerMissionScoreTarget())
 )
 
-function vitalityVialMissionHighScore() => dword(0x1f35d44)
+function vitalityVialMissionHighScoreTerra() => dword(0x1f35d44)
+function vitalityVialMissionHighScoreVen() => dword(0x1f35cc4)
+function vitalityVialMissionHighScoreAqua() => dword(0x1f35d04)
 function vitalityVialMissionScoreTarget() => 180
-achievement(title = "Iron Lung", points = 5,
+achievement(title = "Iron Lung", points = 5, id = 187150, badge = "208037",
     description = "Set a new survival record of " + SecondsToFormat(vitalityVialMissionScoreTarget()) + " or longer in the Vitality Vial Unversed Mission.",
-    trigger = HighScoreEarned(vitalityVialMissionHighScore(), SecondsToFrames(vitalityVialMissionScoreTarget()))
+    trigger = CharacterSpecificHighScoreEarned(vitalityVialMissionHighScoreTerra(), vitalityVialMissionHighScoreVen(), vitalityVialMissionHighScoreAqua(), vitalityVialMissionScoreTarget())
 )
 
-function bellyBalloonMissionHighScore() => dword(0x1f35d30)
+function bellyBalloonMissionHighScoreTerra() => dword(0x1f35d30)
+function bellyBalloonMissionHighScoreVen() => dword(0x1f35cb0)
+function bellyBalloonMissionHighScoreAqua() => dword(0x1f35cf0)
 function bellyBalloonMissionScoreTarget() => 15
-achievement(title = "Wind Rusher", points = 5,
+achievement(title = "Wind Rusher", points = 5, id = 187151, badge = "208038",
     description = "Set a new record of " + SecondsToFormat(bellyBalloonMissionScoreTarget()) + " or faster in the Belly Balloon Unversed Mission.",
-    trigger = HighScoreEarned(bellyBalloonMissionHighScore(), SecondsToFrames(bellyBalloonMissionScoreTarget()), true)
+    trigger = CharacterSpecificHighScoreEarned(bellyBalloonMissionHighScoreTerra(), bellyBalloonMissionHighScoreVen(), bellyBalloonMissionHighScoreAqua(),
+        SecondsToFrames(bellyBalloonMissionScoreTarget()), true)
 )
 
-function ringerMissionHighScore() => dword(0x1f35d48)
+function ringerMissionHighScoreTerra() => dword(0x1f35d48)
+function ringerMissionHighScoreVen() => dword(0x1f35cc8)
+function ringerMissionHighScoreAqua() => dword(0x1f35d08)
 function ringerMissionScoreTarget() => 50
-achievement(title = "Allegro con Grazia", points = 10,
+achievement(title = "Allegro con Grazia", points = 10, id = 187152, badge = "208039",
     description = "Set a new high score of " + ringerMissionScoreTarget() + " or more in the Ringer Unversed Mission.",
-    trigger = HighScoreEarned(ringerMissionHighScore(), ringerMissionScoreTarget())
+    trigger = CharacterSpecificHighScoreEarned(ringerMissionHighScoreTerra(), ringerMissionHighScoreVen(), ringerMissionHighScoreAqua(), ringerMissionScoreTarget())
 )
 
-function gluttonousGooMissionHighScore() => dword(0x1f35d4c)
+function gluttonousGooMissionHighScoreTerra() => dword(0x1f35d4c)
+function gluttonousGooMissionHighScoreVen() => dword(0x1f35ccc)
+function gluttonousGooMissionHighScoreAqua() => dword(0x1f35d0c)
 function gluttonousGooMissionScoreTarget() => 100
-achievement(title = "Struggle Champion", points = 10,
+achievement(title = "Struggle Champion", points = 10, id = 187153, badge = "208040",
     description = "Set a new high score of " + gluttonousGooMissionScoreTarget() + " in the Gluttonous Goo Unversed Mission.",
-    trigger = HighScoreEarned(gluttonousGooMissionHighScore(), gluttonousGooMissionScoreTarget())
+    trigger = CharacterSpecificHighScoreEarned(gluttonousGooMissionHighScoreTerra(), gluttonousGooMissionHighScoreVen(), gluttonousGooMissionHighScoreAqua(), gluttonousGooMissionScoreTarget())
 )
 
-function elementClusterMissionHighScore() => dword(0x1f35d34)
+function elementClusterMissionHighScoreTerra() => dword(0x1f35d34)
+function elementClusterMissionHighScoreVen() => dword(0x1f35cb4)
+function elementClusterMissionHighScoreAqua() => dword(0x1f35cf4)
 function elementClusterMissionScoreTarget() => 100
-achievement(title = "Elemental Pulsar", points = 10,
+achievement(title = "Elemental Pulsar", points = 10, id = 187154, badge = "208041",
     description = "Set a new high score of " + elementClusterMissionScoreTarget() + " or more in the Element Cluster Unversed Mission.",
-    trigger = HighScoreEarned(elementClusterMissionHighScore(), elementClusterMissionScoreTarget())
+    trigger = CharacterSpecificHighScoreEarned(elementClusterMissionHighScoreTerra(), elementClusterMissionHighScoreVen(), elementClusterMissionHighScoreAqua(), elementClusterMissionScoreTarget())
 )
 
-function jellyshadeMissionHighScore() => dword(0x1f35d50)
+function jellyshadeMissionHighScoreTerra() => dword(0x1f35d50)
+function jellyshadeMissionHighScoreVen() => dword(0x1f35cd0)
+function jellyshadeMissionHighScoreAqua() => dword(0x1f35d10)
 function jellyshadeMissionScoreTarget() => 20
-achievement(title = "Greater Fumigator", points = 5,
+achievement(title = "Greater Fumigator", points = 5, id = 187155, badge = "208042",
     description = "Set a new record of " + SecondsToFormat(jellyshadeMissionScoreTarget()) + " or faster in the Jellyshade Unversed Mission.",
-    trigger = HighScoreEarned(jellyshadeMissionHighScore(), SecondsToFrames(jellyshadeMissionScoreTarget()), true)
+    trigger = CharacterSpecificHighScoreEarned(jellyshadeMissionHighScoreTerra(), jellyshadeMissionHighScoreVen(), jellyshadeMissionHighScoreAqua(),
+        SecondsToFrames(jellyshadeMissionScoreTarget()), true)
 )
 
-function floatingFloraMissionHighScore() => dword(0x1f35d40)
+function floatingFloraMissionHighScoreTerra() => dword(0x1f35d40)
+function floatingFloraMissionHighScoreVen() => dword(0x1f35cc0)
+function floatingFloraMissionHighScoreAqua() => dword(0x1f35d00)
 function floatingFloraMissionScoreTarget() => 999
-achievement(title = "Green Thumb", points = 3,
+achievement(title = "Green Thumb", points = 3, id = 187156, badge = "208043"
     description = "Set a new record of " + floatingFloraMissionScoreTarget() + " in the Floating Flora Unversed Mission.",
-    trigger = HighScoreEarned(floatingFloraMissionHighScore(), floatingFloraMissionScoreTarget())
+    trigger = CharacterSpecificHighScoreEarned(floatingFloraMissionHighScoreTerra(), floatingFloraMissionHighScoreVen(), floatingFloraMissionHighScoreAqua(), floatingFloraMissionScoreTarget())
 )
 
 GenerateCheevoFromBits(name = "Career Rumbler", description = "Complete all Rumble Racing Arena Missions for any character.", points = 5,
