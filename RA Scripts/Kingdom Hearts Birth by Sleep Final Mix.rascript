@@ -1612,11 +1612,20 @@ achievement(title = "Maestro - \"Hand in Hand\"", points = 25,
     trigger = HighScoreEarned(handInHandMasterBaseHighScore(), handInHandMasterScoreTarget())
 )
 
-function breakTheUrnsHighScore() => dword(0x1f35c98)
-function breakTheUrnsScoreTarget() => 0xb4
-achievement(title = "The Urninator", points = 10,
+function CharacterSpecificHighScoreEarned(terraHighScore, venHighScore, aquaHighScore, target, golf = false)
+{
+    return HighScoreEarned(terraHighScore, target, golf) && currentCharacter() == Terra()
+        || HighScoreEarned(venHighScore, target, golf) && currentCharacter() == Ventus()
+        || HighScoreEarned(aquaHighScore, target, golf) && currentCharacter() == Aqua()
+}
+
+function breakTheUrnsHighScoreTerra() => word(0x1f35c9a)
+function breakTheUrnsHighScoreVen() => word(0x1f35c98)
+function breakTheUrnsHighScoreAqua() => word(0x1f35c9c)
+function breakTheUrnsScoreTarget() => 180
+achievement(title = "The Urninator", points = 10, id = 187090, badge = "207977",
     description = "Set a new high score of at least " + breakTheUrnsScoreTarget() + " in the Break the Urns minigame.",
-    trigger = HighScoreEarned(breakTheUrnsHighScore(), breakTheUrnsScoreTarget())
+    trigger = CharacterSpecificHighScoreEarned(breakTheUrnsHighScoreTerra(), breakTheUrnsHighScoreVen(), breakTheUrnsHighScoreAqua(), breakTheUrnsScoreTarget())
 )
 
 function airSlideId() => 0xff
@@ -2268,13 +2277,6 @@ achievement(title = "Apex of Witchcraft", points = 5,
     trigger = UnlockedFinishCommand(0x59) && IsPlayingAsAqua()
 )
 
-function CharacterSpecificHighScoreEarned(terraHighScore, venHighScore, aquaHighScore, target, golf = false)
-{
-    return HighScoreEarned(terraHighScore, target, golf) && currentCharacter() == Terra()
-        || HighScoreEarned(venHighScore, target, golf) && currentCharacter() == Ventus()
-        || HighScoreEarned(aquaHighScore, target, golf) && currentCharacter() == Aqua()
-}
-
 function flameBoxMissionHighScoreTerra() => dword(0x1f35d38)
 function flameBoxMissionHighScoreVen() => dword(0x1f35cb8)
 function flameBoxMissionHighScoreAqua() => dword(0x1f35cf8)
@@ -2353,7 +2355,7 @@ function floatingFloraMissionHighScoreTerra() => dword(0x1f35d40)
 function floatingFloraMissionHighScoreVen() => dword(0x1f35cc0)
 function floatingFloraMissionHighScoreAqua() => dword(0x1f35d00)
 function floatingFloraMissionScoreTarget() => 999
-achievement(title = "Green Thumb", points = 3, id = 187156, badge = "208043"
+achievement(title = "Green Thumb", points = 3, id = 187156, badge = "208043",
     description = "Set a new record of " + floatingFloraMissionScoreTarget() + " in the Floating Flora Unversed Mission.",
     trigger = CharacterSpecificHighScoreEarned(floatingFloraMissionHighScoreTerra(), floatingFloraMissionHighScoreVen(), floatingFloraMissionHighScoreAqua(), floatingFloraMissionScoreTarget())
 )
