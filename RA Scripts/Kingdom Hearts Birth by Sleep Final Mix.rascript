@@ -868,6 +868,7 @@ function JustObtainedCommandWithId(id, useTrigger = false)
 function informationBarState() => byte(0x1f3d760)
 function InformationBarJustPoppedUp() => Delta(informationBarState()) == 1 && informationBarState() == 2
 function InformationBarPoppedUpOnce() => once(InformationBarJustPoppedUp())
+function InformationBarJustReset() => Delta(informationBarState()) > 0 && informationBarState() == 0
 function criticalImpactState() => byte(0x1f2accc)
 function feverPitchState() => byte(0x1f2acce)
 function spellweaverState() => byte(0x1f2accd)
@@ -923,9 +924,9 @@ achievement(title = "The First of Seven", points = 3,
 
 function counterHammerId() => 0x114
 achievement(title = "Chipped Shield [m]", points = 10, id = 187051, badge = "207938",
-    description = "Escort Cinderella to the ball without guarding (Critical Mode, Level 7 or below).",
+    description = "Escort Cinderella to the ball without guarding (Critical Mode, Level 5 or below).",
     trigger = IsAlwaysInGame()
-        && CheckpointPassedForCharacters(once(InformationBarJustPoppedUp() && IsInLocation("CastleCorridor")) && IsAtLeastOnDifficulty("Critical") && level() <= 7, TerraOnly(), false)
+        && CheckpointPassedForCharacters(once(InformationBarJustPoppedUp() && IsInLocation("CastleCorridor")) && IsAtLeastOnDifficulty("Critical") && level() <= 5, TerraOnly(), false)
         && TriggerConditionsMetForCharacters({
             Terra(): (JustObtainedCommandWithId(counterHammerId(), true) && trigger_when(IsInLocation("CastleFoyer")))
         }, false)
@@ -937,13 +938,13 @@ achievement(title = "Chipped Shield [m]", points = 10, id = 187051, badge = "207
 // the boss itself is defeated in the same frame. We need to do this because the number of active enemies is set to zero as soon as the boss is defeated.
 function symphonyMastersDefeated() => word(0x1f35fc4)
 achievement(title = "Syncopation [m]", points = 10, id = 187052, badge = "207939",
-    description = "Defeat the Symphony Master without destroying more than one instrument (Proud Mode or higher, Level 7 or below).",
+    description = "Defeat the Symphony Master without destroying more than one instrument (Proud Mode or higher, Level 5 or below).",
     trigger = CheckpointPassedForCharacters(InformationBarPoppedUpOnce()
         && IsInLocation("CastleBallroom"), TerraOnly(), true
     ) && TriggerConditionsMetForCharacters({
         Terra(): WasValueSetInGame(symphonyMastersDefeated(), 0, 1)
     }, true) && trigger_when(Delta(numberOfActiveEnemies()) >= 3 && numberOfActiveEnemies() == 0)
-    && IsAtLeastOnDifficulty("Proud") && level() <= 7
+    && IsAtLeastOnDifficulty("Proud") && level() <= 5
     && never(!IsInLocation("CastleBallroom"))
 )
 
@@ -1186,15 +1187,16 @@ function BeganFinalsAsTerra() => bit4(0x1f28505) == 1
 achievement(title = "Self-Reliance [m]", points = 25, id = 187061, badge = "207948",
     description = "Reach the finals of the Olympus Coliseum Games as Terra without using D-Links or non-healing magic commands (Proud Mode or higher, Level 11 or below).",
     trigger = CheckpointPassedForCharacters(InformationBarPoppedUpOnce()
-            && IsInLocation("OlympusEast"), TerraOnly(), true)
+            && IsInLocation("OlympusEast") && level() <= 11, TerraOnly(), true)
             && TriggerConditionsMetForCharacters({
                 Terra(): MaxHPIncreased()
             }, true)
-        && IsAtLeastOnDifficulty("Proud") && level() <= 11
+        && IsAtLeastOnDifficulty("Proud")
         && never(!IsInLocation("OlympusEast"))
         && never(IsUsingDLink())
         && never(JustUsedAnyGivenCommand(nonHealingMagicCommands))
         && !BeganFinalsAsTerra()
+        && never(InformationBarJustReset()) // Ensure the checkpoints are reset on timeout failure, too.
 )
 
 forbiddenCommandsAgainstZack = GetCommandsByCallback(command => command["element"] != "N/A" && command["element"] != "Null" && command["element"] != "Physical" && command["id"] != 0xffff)
@@ -1645,12 +1647,12 @@ achievement(title = "A Wish to Reconcile", points = 3,
 
 metamorphosisForbiddenCommands = GetCommandsByCallback(command => command["name"] == "Astro Strike")
 achievement(title = "The Miracle of Gravity [m]", points = 5, id = 187093, badge = "207980",
-    description = "Defeat the Metamorphosis without using Astro Strike (Proud Mode or higher, Level 25 or below).",
+    description = "Defeat the Metamorphosis without using Astro Strike (Proud Mode or higher, Level 17 or below).",
     trigger = CheckpointPassedForCharacters(InformationBarPoppedUpOnce() && IsInLocation("SpaceMachineryBay"), VentusOnly(), true)
         && TriggerConditionsMetForCharacters({
             Ventus(): MaxHPIncreased()
         }, true)
-        && IsAtLeastOnDifficulty("Proud") && level() <= 25
+        && IsAtLeastOnDifficulty("Proud") && level() <= 17
         && never(!IsInLocation("SpaceMachineryBay"))
         && never(JustUsedAnyGivenCommand(metamorphosisForbiddenCommands))
 )
@@ -1662,13 +1664,13 @@ achievement(title = "To the Ends of the Cosmos", points = 3,
         && MustBeVentus()
 )
 
-achievement(title = "Warning! Crocodile Habitat! [m]", points = 25, id = 187095, badge = "207982",
-    description = "Defeat Captain Hook without swimming in the water more than three times (Proud Mode or higher, Level 35 or below).",
+achievement(title = "Closest Quarters [m]", points = 25, id = 187095, badge = "207982",
+    description = "Defeat Captain Hook without swimming in the water more than three times (Proud Mode or higher, Level 23 or below).",
     trigger = CheckpointPassedForCharacters(InformationBarPoppedUpOnce() && IsInLocation("NeverlandCove"), VentusOnly(), true)
         && TriggerConditionsMetForCharacters({
             Ventus(): BossDefeatTriggered()
         }, true)
-        && IsAtLeastOnDifficulty("Proud") && level() <= 35
+        && IsAtLeastOnDifficulty("Proud") && level() <= 23
         && never(!IsInLocation("NeverlandCove"))
         && never(repeated(4, JustStartedSwimming()))
 )
@@ -1688,12 +1690,12 @@ nonBlizzardAndNonCureBattleCommandsAndShotlocks = GetCommandsByCallback(command 
     || command["supercategory"] == "Shotlock" && command["element"] != "Blizzard")
 achievement(title = "Severe Frostbite [m]", points = 10, id = 187097, badge = "207984",
     description = "Defeat Vanitas in the Keyblade Graveyard with no Screen abilities enabled and " +
-        "without using battle commands or Shotlocks that aren't Blizzard-based or HP curative (Proud Mode or higher, Level 38 or below).",
+        "without using battle commands or Shotlocks that aren't Blizzard-based or HP curative (Proud Mode or higher, Level 24 or below).",
     trigger = CheckpointPassedForCharacters(InformationBarPoppedUpOnce() && IsInLocation("Graveyard4"), [ VentusArmoredHelmetless() ], true)
         && TriggerConditionsMetForCharacters({
             VentusArmoredHelmetless(): MaxHPIncreased()
         }, true)
-        && IsAtLeastOnDifficulty("Proud") && level() <= 38
+        && IsAtLeastOnDifficulty("Proud") && level() <= 24
         && never(!IsInLocation("Graveyard4"))
         && never(JustUsedAnyGivenCommand(nonBlizzardAndNonCureBattleCommandsAndShotlocks))
         && never(IsAbilityTurnedOn(fireScreenActiveAddr()))
@@ -1705,12 +1707,12 @@ achievement(title = "Severe Frostbite [m]", points = 10, id = 187097, badge = "2
 healingCommands = GetCommandsByProperties({ "healsHp": 1, "equippableBattleCommand": 1 })
 achievement(title = "Incomplete Being [m]", points = 25, id = 187098, badge = "207985",
     description = "Defeat Vanitas at the end of Ventus's story with only four battle command slots occupied in the Command Deck, " +
-        "only three max of which may be healing commands (Proud Mode or higher, Level 38 or below).",
+        "only three max of which may be healing commands (Proud Mode or higher, Level 24 or below).",
     trigger = CheckpointPassedForCharacters(InformationBarPoppedUpOnce() && IsInLocation("VentusHeart2"), VentusOnly(), true)
         && TriggerConditionsMetForCharacters({
             Ventus(): BossDefeatTriggered()
         }, true)
-        && IsAtLeastOnDifficulty("Proud") && level() <= 38
+        && IsAtLeastOnDifficulty("Proud") && level() <= 24
         && never(!IsInLocation("VentusHeart2"))
         && never(CommandDeckSlotsFilledIsAtLeast(5))
         && never(CommandDeckSlotsFilledByGivenCommandsIsAtLeast(healingCommands, 4))
