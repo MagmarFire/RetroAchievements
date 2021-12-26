@@ -1113,7 +1113,7 @@ function FirestormLearned() => firestormState() == 5 && Delta(firestormState()) 
 statusCommands = GetCommandsByProperties({ "type": "Status Effect" })
 cureCommands = GetCommandsByProperties({ "type": "Cure" })
 achievement(title = "Sleeping Death [m]", points = 10, id = 187055, badge = "207942",
-    description = "Defeat the Spirit of the Magic Mirror equipping battle commands that only inflict status effects (Proud Mode or higher, Level 9 or below, no D-Links).",
+    description = "Defeat the Spirit of the Magic Mirror equipping battle commands that only inflict status effects (Proud Mode or higher, Level 7 or below, no D-Links).",
     trigger = HasOnlyTheGivenCommandsEquipped(statusCommands)
         && CheckpointPassedForCharacters(InformationBarPoppedUpOnce()
             && IsInLocation("DwarfMirror"), [ Terra(), Aqua() ], true
@@ -1121,7 +1121,7 @@ achievement(title = "Sleeping Death [m]", points = 10, id = 187055, badge = "207
             Terra(): FirestormLearned(),
             Aqua(): DeckCapacityIncreased()
         }, true)
-        && IsAtLeastOnDifficulty("Proud") && level() <= 9
+        && IsAtLeastOnDifficulty("Proud") && level() <= 7
         && never(!IsInLocation("DwarfMirror"))
         && never(IsUsingDLink())
 )
@@ -1142,9 +1142,9 @@ function TrinityArmorWasJustDefeated() => Delta(trinityArmorsDefeated()) < trini
 function secondChanceActiveAddr() => 0x1f2acbc
 function onceMoreActiveAddr() => 0x1f2acc0
 achievement(title = "Face, Meet Cannon [m]", points = 10, id = 187057, badge = "207944",
-    description = "Defeat the Trinity Armor in Radiant Garden without Second Chance or Once More equipped (Critical Mode, Level 12 or below).",
+    description = "Defeat the Trinity Armor in Radiant Garden without Second Chance or Once More equipped (Critical Mode, Level 8 or below).",
     trigger = IsAlwaysInGame()
-        && CheckpointPassedForCharacters(once(InformationBarJustPoppedUp() && IsInLocation("RadiantReactor")) && IsAtLeastOnDifficulty("Critical") && level() <= 12,
+        && CheckpointPassedForCharacters(once(InformationBarJustPoppedUp() && IsInLocation("RadiantReactor")) && IsAtLeastOnDifficulty("Critical") && level() <= 8,
             [ Terra(), Ventus(), Aqua() ], true)
         && TriggerConditionsMetForCharacters({
             Terra(): TrinityArmorWasJustDefeated(),
@@ -1156,13 +1156,13 @@ achievement(title = "Face, Meet Cannon [m]", points = 10, id = 187057, badge = "
 )
 
 achievement(title = "He Who Liveth by the Sword... [m]", points = 10, id = 187058, badge = "207945",
-    description = "Defeat Braig in Radiant Garden without using any standard attacks (Proud Mode or higher, Level 12 or below).",
+    description = "Defeat Braig in Radiant Garden without using any standard attacks (Proud Mode or higher, Level 8 or below).",
     trigger = CheckpointPassedForCharacters(InformationBarPoppedUpOnce()
         && IsInLocation("RadiantPurification"), TerraOnly(), true
     ) && TriggerConditionsMetForCharacters({
         Terra(): DeckCapacityIncreased()
     }, true)
-    && IsAtLeastOnDifficulty("Proud") && level() <= 12
+    && IsAtLeastOnDifficulty("Proud") && level() <= 8
     && never(!IsInLocation("RadiantPurification"))
     && never(IsUsingAStandardAttack())
 )
@@ -1225,13 +1225,13 @@ fireCommands = GetCommandsByProperties({ "element": "Fire" })
 function thunderboltState() => byte(0x1f2acd1)
 function ThunderboltLearned() => Delta(thunderboltState()) == 0 && thunderboltState() == 5
 achievement(title = "Hypoxic Cabin [m]", points = 5, id = 187064, badge = "207951",
-    description = "Defeat Experiment 221 without using any fire-elemental commands (Proud Mode or higher, Level 20 or below).",
+    description = "Defeat Experiment 221 without using any fire-elemental commands (Proud Mode or higher, Level 15 or below).",
     trigger = CheckpointPassedForCharacters(InformationBarPoppedUpOnce()
             && IsInLocation("SpacePod"), TerraOnly(), true)
             && TriggerConditionsMetForCharacters({
                 Terra(): ThunderboltLearned()
             }, true)
-        && IsAtLeastOnDifficulty("Proud") && level() <= 20
+        && IsAtLeastOnDifficulty("Proud") && level() <= 15
         && never(!IsInLocation("SpacePod"))
         && never(JustUsedAnyGivenCommand(fireCommands))
 )
@@ -1298,13 +1298,13 @@ function bladechargeState() => byte(0x1f2acd3)
 function BladechargeLearned() => Delta(bladechargeState()) == 0 && bladechargeState() == 5
 function DefeatedPeterPan() => bit5(0x1f28564) == 1
 achievement(title = "Minesweeper [m]", points = 5, id = 187066, badge = "207953",
-    description = "Defeat Peter Pan using only one type of battle command and without taking damage (Proud Mode or higher, Level 27 or below).",
+    description = "Defeat Peter Pan using only one type of battle command and without taking damage (Proud Mode or higher, Level 17 or below).",
     trigger = CheckpointPassedForCharacters(InformationBarPoppedUpOnce()
         && IsInLocation("NeverlandSkullCavern"), TerraOnly(), true)
         && TriggerConditionsMetForCharacters({
             Terra(): BladechargeLearned()
         }, true)
-        && IsAtLeastOnDifficulty("Proud") && level() <= 27
+        && IsAtLeastOnDifficulty("Proud") && level() <= 17
         && never(!IsInLocation("NeverlandSkullCavern"))
         && never(UsedAnyUniqueCommandsGivenNumberOfTimes(battleCommands, 2))
         && never(Delta(hp()) > hp())
@@ -1317,14 +1317,14 @@ achievement(title = "One Man's Treasure", points = 3,
     trigger = WasBitflagSetInGame(neverlandTerraStoryEntry()) && IsInLocation("LanesBetween")
 )
 
-achievement(title = "Claimed by the Abyss [m]", points = 25, id = 187068, badge = "207955",
-    description = "Defeat Eraqus without ever leaving the Dark Impulse Command Style (Proud Mode or higher, Level 28 or below).",
+achievement(title = "Claimed by the Abyss [m]", points = 50, id = 187068, badge = "207955",
+    description = "Defeat Eraqus without ever leaving the Dark Impulse Command Style (Proud Mode or higher, Level 18 or below).",
     trigger = CheckpointPassedForCharacters(InformationBarPoppedUpOnce()
         && IsInLocation("DepartureForecourtDay"), TerraOnly(), true)
         && TriggerConditionsMetForCharacters({
             Terra(): MaxHPIncreased()
         }, true)
-        && IsAtLeastOnDifficulty("Proud") && level() <= 28
+        && IsAtLeastOnDifficulty("Proud") && level() <= 18
         && never(!IsInLocation("DepartureForecourtDay"))
         && never(CommandGaugeEmptied())
 )
