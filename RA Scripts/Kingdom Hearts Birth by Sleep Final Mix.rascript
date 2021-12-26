@@ -2316,7 +2316,8 @@ function vitalityVialMissionHighScoreAqua() => dword(0x1f35d04)
 function vitalityVialMissionScoreTarget() => 180
 achievement(title = "Iron Lung", points = 5, id = 187150, badge = "208037",
     description = "Set a new survival record of " + SecondsToFormat(vitalityVialMissionScoreTarget()) + " or longer in the Vitality Vial Unversed Mission.",
-    trigger = CharacterSpecificHighScoreEarned(vitalityVialMissionHighScoreTerra(), vitalityVialMissionHighScoreVen(), vitalityVialMissionHighScoreAqua(), vitalityVialMissionScoreTarget())
+    trigger = CharacterSpecificHighScoreEarned(vitalityVialMissionHighScoreTerra(), vitalityVialMissionHighScoreVen(), vitalityVialMissionHighScoreAqua(),
+        SecondsToFrames(vitalityVialMissionScoreTarget()))
 )
 
 function bellyBalloonMissionHighScoreTerra() => dword(0x1f35d30)
