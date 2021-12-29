@@ -924,9 +924,9 @@ achievement(title = "The First of Seven", points = 3,
 
 function counterHammerId() => 0x114
 achievement(title = "Chipped Shield [m]", points = 10, id = 187051, badge = "207938",
-    description = "Escort Cinderella to the ball without guarding (Critical Mode, Level 5 or below).",
+    description = "Escort Cinderella to the ball without guarding (Proud Mode or higher, Level 5 or below).",
     trigger = IsAlwaysInGame()
-        && CheckpointPassedForCharacters(once(InformationBarJustPoppedUp() && IsInLocation("CastleCorridor")) && IsAtLeastOnDifficulty("Critical") && level() <= 5, TerraOnly(), false)
+        && CheckpointPassedForCharacters(once(InformationBarJustPoppedUp() && IsInLocation("CastleCorridor")) && IsAtLeastOnDifficulty("Proud") && level() <= 5, TerraOnly(), false)
         && TriggerConditionsMetForCharacters({
             Terra(): (JustObtainedCommandWithId(counterHammerId(), true) && trigger_when(IsInLocation("CastleFoyer")))
         }, false)
@@ -1520,13 +1520,13 @@ function enchantedDominionVenStoryEntry() => bit6(0x1f28485)
 function IsFacingMaleficent() => cutsceneBeforeMaleficentFight() == 1 && enchantedDominionVenStoryEntry() == 0
 jointForceCommand = GetCommandsByProperties({ "name": "Joint Force" })
 achievement(title = "Disbelief in Fairies [m]", points = 5, id = 187081, badge = "207968",
-    description = "Defeat Maleficent without using the Joint Force command (Proud Mode or higher, Level 9 or below).",
+    description = "Defeat Maleficent without using the Joint Force command (Proud Mode or higher, Level 5 or below).",
     trigger = CheckpointPassedForCharacters(InformationBarPoppedUpOnce()
         && IsInLocation("EnchantedThrone"), VentusOnly(), true)
         && TriggerConditionsMetForCharacters({
             Ventus(): LearnedThunderbolt()
         }, true)
-        && IsAtLeastOnDifficulty("Proud") && level() <= 9
+        && IsAtLeastOnDifficulty("Proud") && level() <= 5
         && never(!IsInLocation("EnchantedThrone"))
         && never(JustUsedAnyGivenCommand(jointForceCommand))
         && never(!IsFacingMaleficent()) // We need to check this because the information bar is triggered in this room in a previous scripted battle.
@@ -1541,14 +1541,14 @@ achievement(title = "Pursuit of the Wayward", points = 3,
 function cutsceneBeforeVanitasIFightAsVen() => bit5(0x1f285a4)
 function badlandsVenStoryEntry() => bit7(0x1f285a4)
 function IsFacingVanitasIAsVen() => cutsceneBeforeVanitasIFightAsVen() == 1 && badlandsVenStoryEntry() == 0
-achievement(title = "No One Left Behind [m]", points = 25, id = 187083, badge = "207970",
-    description = "Defeat Vanitas alongside King Mickey without the latter's HP dropping to zero (Proud Mode or higher, Level 12 or below).",
+achievement(title = "Field Medic [m]", points = 25, id = 187083, badge = "207970",
+    description = "Defeat Vanitas alongside King Mickey without the latter's HP dropping to zero (Proud Mode or higher, Level 7 or below).",
     trigger = CheckpointPassedForCharacters(InformationBarPoppedUpOnce()
         && IsInLocation("GraveyardBadlands"), VentusOnly(), true)
         && TriggerConditionsMetForCharacters({
             Ventus(): DeckCapacityIncreased()
         }, true)
-        && IsAtLeastOnDifficulty("Proud") && level() <= 12
+        && IsAtLeastOnDifficulty("Proud") && level() <= 7
         && never(!IsInLocation("GraveyardBadlands"))
         && never(!IsFacingVanitasIAsVen()) // We need to check this because the information bar is triggered in this room in a previous scripted battle (sure is happening a lot with Ven...).
         && never(KingMickeyHpReachedZero())
@@ -1626,13 +1626,13 @@ function olympusColiseumVenStoryEntry() => bit4(0x1f28505)
 function IsDefendingOlympusColiseum() => cutsceneBeforeOlympusDefense() == 1 && olympusColiseumVenStoryEntry() == 0
 olympusDefenseForbiddenCommands = GetCommandsByCallback(command => command["name"] != "Swing Slash" && command["supercategory"] != "Movement")
 swingSlash = GetCommandsByProperties({ "name": "Swing Slash" })
-achievement(title = "So Long, King Ventus! [m]", points = 5, id = 187091, badge = "207978",
-    description = "As Ventus, defend the Games from the Unversed using only Swing Slash and movement commands, and no standard attacks (Proud Mode or higher, Level 19 or below).",
+achievement(title = "So Long, King Ventus! [m]", points = 1, id = 187091, badge = "207978",
+    description = "As Ventus, defend the Games from the Unversed using only Swing Slash and movement commands, and no standard attacks (Proud Mode or higher, Level 14 or below).",
     trigger = CheckpointPassedForCharacters(InformationBarPoppedUpOnce() && IsInLocation("OlympusTown"), VentusOnly(), true)
         && TriggerConditionsMetForCharacters({
             Ventus(): (JustObtainedCommandWithId(airSlideId(), true) && trigger_when(IsInLocation("OlympusTown")))
         }, false)
-        && IsAtLeastOnDifficulty("Proud") && level() <= 19
+        && IsAtLeastOnDifficulty("Proud") && level() <= 14
         && never(!IsInLocation("OlympusTown"))
         && never(JustUsedAnyGivenCommand(olympusDefenseForbiddenCommands))
         && never(IsUsingAStandardAttack())
@@ -1834,8 +1834,8 @@ achievement(title = "Love Conquers", points = 3,
 )
 
 achievement(title = "One Precious Chance [m]", points = 25, id = 187109, badge = "207996",
-    description = "Defeat Vanitas in Radiant Garden without healing more than twice (Proud Mode or higher, Level 14 or below).",
-    trigger = CheckpointPassedForCharacters(InformationBarPoppedUpOnce() && IsAtLeastOnDifficulty("Proud") && level() <= 14
+    description = "Defeat Vanitas in Radiant Garden without healing more than twice (Proud Mode or higher, Level 8 or below).",
+    trigger = CheckpointPassedForCharacters(InformationBarPoppedUpOnce() && IsAtLeastOnDifficulty("Proud") && level() <= 8
         && IsInLocation("RadiantCentral"), AquaOnly(), true)
         && TriggerConditionsMetForCharacters({
             Aqua(): DeckCapacityIncreased()
@@ -1925,10 +1925,10 @@ achievement(title = "Star-Crossed", points = 3,
 )
 
 cartwheelAndFirewheelCommands = GetCommandsByCallback(command => command["name"] == "Cartwheel" || command["name"] == "Firewheel")
-achievement(title = "Heightened Vulnerability [m]", points = 5, id = 187119, badge = "208006",
-    description = "Defeat Gantu without using the Cartwheel or Firewheel commands (Proud Mode or higher, Level 25 or below).",
+achievement(title = "Heightened Vulnerability [m]", points = 3, id = 187119, badge = "208006",
+    description = "Defeat Gantu without using the Cartwheel or Firewheel commands (Proud Mode or higher, Level 16 or below).",
     trigger = CheckpointPassedForCharacters(InformationBarPoppedUpOnce()
-            && IsInLocation("SpaceLaunch") && IsAtLeastOnDifficulty("Proud") && level() <= 25, AquaOnly(), true)
+            && IsInLocation("SpaceLaunch") && IsAtLeastOnDifficulty("Proud") && level() <= 16, AquaOnly(), true)
             && TriggerConditionsMetForCharacters({
                 Aqua(): BossDefeatTriggered()
             }, true)
@@ -1944,9 +1944,9 @@ achievement(title = "Proof of Amicability", points = 3,
 )
 
 achievement(title = "Undergrowth [m]", points = 5, id = 187121, badge = "208008",
-    description = "Defeat Vanitas in Neverland at Level 26 or below on Critical Mode.",
+    description = "Defeat Vanitas in Neverland at Level 23 or below on Critical Mode.",
     trigger = CheckpointPassedForCharacters(InformationBarPoppedUpOnce()
-            && IsInLocation("NeverlandCamp") && IsAtLeastOnDifficulty("Critical") && level() <= 26, AquaOnly(), true)
+            && IsInLocation("NeverlandCamp") && IsAtLeastOnDifficulty("Critical") && level() <= 23, AquaOnly(), true)
             && TriggerConditionsMetForCharacters({
                 Aqua(): MaxHPIncreased()
             }, true)
@@ -1968,10 +1968,10 @@ function AquaFinalSegmentSharedConditions() => never(JustUsedAnyGivenCommand(aqu
     && equippedKeyblade() == 0x17
 
 achievement(title = "Magical Rage [m]", points = 10, id = 187123, badge = "208010",
-    description = "Defeat Braig in the Keyblade Graveyard without Barrier defensive commands and with Pixie Petal and only one Cure-family command"
-        + " equipped (Proud Mode or higher, Level 36 or below).",
+    description = "Defeat Braig in the Keyblade Graveyard without using Barrier defensive commands and with Pixie Petal and only one Cure-family command"
+        + " equipped (Proud Mode or higher, Level 28 or below).",
     trigger = CheckpointPassedForCharacters(InformationBarPoppedUpOnce()
-            && IsInLocation("Graveyard4") && IsAtLeastOnDifficulty("Proud") && level() <= 36, [ AquaArmoredHelmetless() ], true)
+            && IsInLocation("Graveyard4") && IsAtLeastOnDifficulty("Proud") && level() <= 28, [ AquaArmoredHelmetless() ], true)
             && TriggerConditionsMetForCharacters({
                 AquaArmoredHelmetless(): MaxHPIncreased()
             }, true)
@@ -1982,9 +1982,9 @@ achievement(title = "Magical Rage [m]", points = 10, id = 187123, badge = "20801
 
 achievement(title = "Divine Rebellion [m]", points = 25, id = 187124, badge = "208011",
     description = "Defeat the final boss of Aqua's story with the same restrictions as the ones in \"Magical Rage\", but with only four battle command slots filled"
-        + " (Proud Mode or higher, Level 36 or below).",
+        + " (Proud Mode or higher, Level 28 or below).",
     trigger = CheckpointPassedForCharacters(InformationBarPoppedUpOnce()
-            && IsInLocation("Graveyard4") && IsAtLeastOnDifficulty("Proud") && level() <= 36, [ AquaArmoredHelmetless() ], true)
+            && IsInLocation("Graveyard4") && IsAtLeastOnDifficulty("Proud") && level() <= 28, [ AquaArmoredHelmetless() ], true)
             && TriggerConditionsMetForCharacters({
                 AquaArmoredHelmetless(): BossDefeatTriggered() // Venitas doesn't yield any rewards, of course, being a final boss.
             }, true)
@@ -2055,7 +2055,7 @@ achievement(title = "Critical Wanderer [m]", points = 10, id = 187132, badge = "
 
 cartwheelCommand = GetCommandsByProperties({ "name": "Cartwheel" })
 function DarkHideCheckpointReached() => CheckpointPassedForCharacters(InformationBarPoppedUpOnce()
-    && IsInLocation("DarknessValley") && IsAtLeastOnDifficulty("Proud") && level() <= 49, AquaOnly(), true)
+    && IsInLocation("DarknessValley") && IsAtLeastOnDifficulty("Proud") && level() <= 33, AquaOnly(), true)
     
 function DarkHideChallengeCompleted(resetOnDeath) => TriggerConditionsMetForCharacters({
         Aqua(): BossDefeatTriggered()
@@ -2065,11 +2065,11 @@ function DarkHideCancel() => !IsInLocation("DarknessValley") || GameOverTriggere
 
 function DarkHideScoreIncreased() => JustUsedAnyGivenCommand(cartwheelCommand)
 
-function darkHideCartwheelLimit() => 225
+function darkHideCartwheelLimit() => 155
 
 // High score: 186
 achievement(title = "Dance with Death [m]", points = 25, id = 187133, badge = "208020",
-    description = "Defeat the Dark Hide without using the Cartwheel command more than " + darkHideCartwheelLimit() + " times (Proud Mode or higher, Level 49 or below).",
+    description = "Defeat the Dark Hide without using the Cartwheel command more than " + darkHideCartwheelLimit() + " times (Proud Mode or higher, Level 33 or below).",
     trigger = DarkHideCheckpointReached()
         && DarkHideChallengeCompleted(true)
         && never(DarkHideCancel())
