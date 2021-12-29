@@ -1779,8 +1779,8 @@ achievement(title = "Sound Awake", points = 3,
 unallowedCastleEscapeCommands = GetCommandsByCallback(command => command["supercategory"] != "Magic" && command["name"] != "Jump" && command["name"] != "Selfless Prince")
 function highJumpId() => 0xfa
 achievement(title = "You Never Split the Party [m]", points = 10, id = 187106, badge = "207993",
-    description = "Escape from Maleficent's castle alongside Prince Phillip using only magic commands, Jump, and Selfless Prince (Proud Mode or higher, Level 9 or below).",
-    trigger = CheckpointPassedForCharacters(InformationBarPoppedUpOnce() && IsAtLeastOnDifficulty("Proud") && level() <= 9
+    description = "Escape from Maleficent's castle alongside Prince Phillip using only magic commands, Jump, and Selfless Prince (Proud Mode or higher, Level 6 or below).",
+    trigger = CheckpointPassedForCharacters(InformationBarPoppedUpOnce() && IsAtLeastOnDifficulty("Proud") && level() <= 6
         && IsInLocation("EnchantedGates"), AquaOnly(), true)
         && TriggerConditionsMetForCharacters({
             Aqua(): (JustObtainedCommandWithId(highJumpId(), true) && trigger_when(IsInLocation("EnchantedGates")))
@@ -1813,9 +1813,9 @@ function NumberOfTimesGivenCommandsUsed(haystack)
 balanceGroup1Commands = GetCommandsByProperties({ "supercategory": "Attack" })
 balanceGroup2Commands = GetCommandsByProperties({ "supercategory": "Magic" })
 itemCommands = GetCommandsByProperties({ "supercategory": "Item" })
-achievement(title = "Mind-Body Balance [m]", points = 10, id = 187107, badge = "207994",
-    description = "Defeat Dragon Maleficent without using magic commands two more times than attack commands, and vice versa (Proud Mode or higher, Level 11 or below, no items).",
-    trigger = CheckpointPassedForCharacters(InformationBarPoppedUpOnce() && IsAtLeastOnDifficulty("Proud") && level() <= 11
+achievement(title = "Mind-Body Balance [m]", points = 25, id = 187107, badge = "207994",
+    description = "Defeat Dragon Maleficent without using magic commands two more times than attack commands, and vice versa (Proud Mode or higher, Level 6 or below, no items).",
+    trigger = CheckpointPassedForCharacters(InformationBarPoppedUpOnce() && IsAtLeastOnDifficulty("Proud") && level() <= 6
         && IsInLocation("EnchantedBridgeThorns"), AquaOnly(), true)
         && TriggerConditionsMetForCharacters({
             Aqua(): MaxHPIncreased()
@@ -1833,7 +1833,7 @@ achievement(title = "Love Conquers", points = 3,
         && MustBeAqua()
 )
 
-achievement(title = "One Precious Chance [m]", points = 25, id = 187109, badge = "207996",
+achievement(title = "One Precious Chance [m]", points = 50, id = 187109, badge = "207996",
     description = "Defeat Vanitas in Radiant Garden without healing more than twice (Proud Mode or higher, Level 8 or below).",
     trigger = CheckpointPassedForCharacters(InformationBarPoppedUpOnce() && IsAtLeastOnDifficulty("Proud") && level() <= 8
         && IsInLocation("RadiantCentral"), AquaOnly(), true)
@@ -1882,10 +1882,10 @@ achievement(title = "Legendary Fruitballer", points = 25,
 )
 
 function BeganFinalsAsAqua() => bit7(0x1f28504) == 1
-achievement(title = "With but a Finger [m]", points = 5, id = 187115, badge = "208002",
-    description = "Reach the finals of the Olympus Coliseum Games as Aqua using only one type of battle command (Proud Mode or higher, Level 23 or below).",
+achievement(title = "With but a Finger [m]", points = 10, id = 187115, badge = "208002",
+    description = "Reach the finals of the Olympus Coliseum Games as Aqua using only one type of battle command (Proud Mode or higher, Level 10 or below).",
     trigger = CheckpointPassedForCharacters(InformationBarPoppedUpOnce()
-            && IsInLocation("OlympusEast") && IsAtLeastOnDifficulty("Proud") && level() <= 23, AquaOnly(), true)
+            && IsInLocation("OlympusEast") && IsAtLeastOnDifficulty("Proud") && level() <= 10, AquaOnly(), true)
             && TriggerConditionsMetForCharacters({
                 Aqua(): MaxHPIncreased()
             }, true)
@@ -1896,9 +1896,9 @@ achievement(title = "With but a Finger [m]", points = 5, id = 187115, badge = "2
 
 firewheelCommand = GetCommandsByProperties({ "name": "Firewheel" })
 achievement(title = "Bad Manners [m]", points = 5, id = 187116, badge = "208003",
-    description = "As Aqua, finish off Zack with Firewheel (Proud Mode or higher, Level 23 or below).",
+    description = "As Aqua, finish off Zack with Firewheel (Proud Mode or higher, Level 10 or below).",
     trigger = CheckpointPassedForCharacters(InformationBarPoppedUpOnce()
-            && IsInLocation("OlympusEast") && IsAtLeastOnDifficulty("Proud") && level() <= 23, AquaOnly(), true)
+            && IsInLocation("OlympusEast") && IsAtLeastOnDifficulty("Proud") && level() <= 10, AquaOnly(), true)
             && TriggerConditionsMetForCharacters({
                 Aqua(): (BossDefeatTriggered() && IsUsingAnyGivenCommand(firewheelCommand)) // Like with Terra, defeating Zack yields no reward.
             }, true)
@@ -1908,9 +1908,9 @@ achievement(title = "Bad Manners [m]", points = 5, id = 187116, badge = "208003"
 
 defenseCommand = GetCommandsByProperties({ "supercategory": "Defense" })
 achievement(title = "By His Own Petard [m]", points = 5, id = 187117, badge = "208004",
-    description = "Defeat Hades and the Ice Titan while a defensive command is active (Proud Mode or higher, Level 23 or below).",
+    description = "Defeat Hades and the Ice Titan while a defensive command is active (Proud Mode or higher, Level 10 or below).",
     trigger = CheckpointPassedForCharacters(InformationBarPoppedUpOnce()
-            && IsInLocation("OlympusEastNight") && IsAtLeastOnDifficulty("Proud") && level() <= 23, AquaOnly(), true)
+            && IsInLocation("OlympusEastNight") && IsAtLeastOnDifficulty("Proud") && level() <= 10, AquaOnly(), true)
             && TriggerConditionsMetForCharacters({
                 Aqua(): (LearnedDiamondDust() && IsUsingAnyGivenCommand(defenseCommand))
             }, true)
@@ -2015,9 +2015,9 @@ equippableBattleCommands = GetCommandsByProperties({ "equippableBattleCommand": 
 nonIllusionEquippableBattleCommands = GetCommandsByCallback(command => command["equippableBattleCommand"] == 1 && command["id"] <= 0xdf)
 achievement(title = "Prime Sacrifice [m]", points = 10, id = 187128, badge = "208015",
     description = "Defeat the first phase of the final boss of the Final Episode using any two of non-Illusion battle commands, D-Links, or Shotlocks, but not all three"
-        + " (Proud Mode or higher, Level 43 or below).",
+        + " (Proud Mode or higher, Level 29 or below).",
     trigger = CheckpointPassedForCharacters(InformationBarPoppedUpOnce()
-            && IsInLocation("RadiantCentralDark") && IsAtLeastOnDifficulty("Proud") && level() <= 43, AquaOnly(), true)
+            && IsInLocation("RadiantCentralDark") && IsAtLeastOnDifficulty("Proud") && level() <= 29, AquaOnly(), true)
             && TriggerConditionsMetForCharacters({
                 Aqua(): BossDefeatTriggered()
             }, true)
@@ -2027,9 +2027,9 @@ achievement(title = "Prime Sacrifice [m]", points = 10, id = 187128, badge = "20
 
 dualLimitCommand = GetCommandsByProperties({ "name": "Dual Limit" })
 achievement(title = "Lonely Duet [m]", points = 5, id = 187129, badge = "208016",
-    description = "Finish off the second phase of the final boss of the Final Episode with Dual Limit (Proud Mode or higher, Level 43 or below).",
+    description = "Finish off the second phase of the final boss of the Final Episode with Dual Limit (Proud Mode or higher, Level 29 or below).",
     trigger = CheckpointPassedForCharacters(InformationBarPoppedUpOnce()
-            && IsInLocation("RadiantCentralTerranort") && IsAtLeastOnDifficulty("Proud") && level() <= 43, AquaOnly(), true)
+            && IsInLocation("RadiantCentralTerranort") && IsAtLeastOnDifficulty("Proud") && level() <= 29, AquaOnly(), true)
             && TriggerConditionsMetForCharacters({
                 Aqua(): (BossDefeatTriggered() && IsUsingAnyGivenCommand(dualLimitCommand))
             }, true)
@@ -2432,8 +2432,8 @@ function NeverJustUsedAnyGivenCommandInArena(haystack)
 }
 
 achievement(title = "Prison Rations [m]", points = 10, id = 187161, badge = "208048",
-    description = "Complete \"Day of Reckoning\" in the Mirage Arena using Cure as your only healing command no more than thrice (Critical Mode, Level 18 or below).",
-    trigger = MirageArenaCheckpointReachedForCharacters(1, "MirageArena1", AnyArmoredCharacter(), 4, difficulty = "Critical", level = 18)
+    description = "Complete \"Day of Reckoning\" in the Mirage Arena using Cure as your only healing command no more than thrice (Critical Mode, Level 12 or below).",
+    trigger = MirageArenaCheckpointReachedForCharacters(1, "MirageArena1", AnyArmoredCharacter(), 4, difficulty = "Critical", level = 12)
         && NeverJustUsedAnyGivenCommandInArena(dayOfReckoningForbiddenHealingCommands)
         && NeverUsedAnyGivenCommandInArenaGivenNumberOfTimes(cureCommand, cureLimit + 1)
 )
@@ -2482,23 +2482,23 @@ directHealingCommands = GetCommandsByProperties({ "healsHp": 1 })
 megaFlareCommand = GetCommandsByProperties({ "name": "Mega Flare" })
 achievement(title = "Nuclear Disarmament [m]", points = 5, id = 187162, badge = "208049",
     description = "Complete \"Wheels of Misfortune\" in the Mirage Arena using Mega Flare only three times or fewer and with a max of "
-        + "six battle command slots filled (Critical Mode, Level 18 or below).",
-    trigger = MirageArenaCheckpointReachedForCharacters(0x101, "MirageForest", AnyArmoredCharacter(), 4, difficulty = "Critical", level = 18)
+        + "six battle command slots filled (Critical Mode, Level 12 or below).",
+    trigger = MirageArenaCheckpointReachedForCharacters(0x101, "MirageForest", AnyArmoredCharacter(), 4, difficulty = "Critical", level = 12)
         && NeverUsedAnyGivenCommandInArenaGivenNumberOfTimes(megaFlareCommand, megaFlareLimit + 1)
 )
 
 equippableBattleCommands = GetCommandsByProperties({ "equippableBattleCommand": 1 })
-achievement(title = "Rainbow Loom [m]", points = 10, id = 187163, badge = "208050",
-    description = "Complete \"Weaver Fever\" in the Mirage Arena without any duplicate commands equipped (Critical Mode, Level 22 or below, Deck 1 only).",
+achievement(title = "Rainbow Loom [m]", points = 5, id = 187163, badge = "208050",
+    description = "Complete \"Weaver Fever\" in the Mirage Arena without any duplicate commands equipped (Critical Mode, Level 16 or below, Deck 1 only).",
     trigger = never(HasDuplicateCommandInDeckOfSize(equippableBattleCommands, 1, 8))
         && never(DeckLoadoutChanged()) && CurrentDeckIs(1)
-        && MirageArenaCheckpointReachedForCharacters(0x301, "MirageChamber", AnyArmoredCharacter(), 4, difficulty = "Critical", level = 22)
+        && MirageArenaCheckpointReachedForCharacters(0x301, "MirageChamber", AnyArmoredCharacter(), 4, difficulty = "Critical", level = 16)
 )
 
 achievement(title = "Weapon Confiscation [m]", points = 5, id = 187164, badge = "208051",
-    description = "Complete \"Sinister Sentinel\" in the Mirage Arena with only three battle command slots filled and without using Shotlocks (Critical Mode, Level 28 or below).",
+    description = "Complete \"Sinister Sentinel\" in the Mirage Arena with only three battle command slots filled and without using Shotlocks (Critical Mode, Level 23 or below).",
     trigger = NeverJustUsedAnyGivenCommandInArena(shotlocks)
-        && MirageArenaCheckpointReachedForCharacters(0x401, "MirageArena1", AnyArmoredCharacter(), 5, difficulty = "Critical", level = 28)
+        && MirageArenaCheckpointReachedForCharacters(0x401, "MirageArena1", AnyArmoredCharacter(), 5, difficulty = "Critical", level = 23)
         && never(CommandDeckSlotsFilledIsAtLeast(4))
 )
 
@@ -2511,8 +2511,8 @@ function NeverUsedAnyUniqueCommandsGivenNumberOfTimesInArena(haystack, limit)
 
 surgeBattleCommands = GetCommandsByCallback(command => command["name"] == "Fire Surge" || command["name"] == "Thunder Surge" || command["name"] == "Barrier Surge")
 achievement(title = "Minor Duplication [m]", points = 5, id = 187165, badge = "208052",
-    description = "Complete \"Dead Ringer\" in the Mirage Arena using only two kinds of non-Surge battle commands (Critical Mode, Level 30 or below).",
-    trigger = MirageArenaCheckpointReachedForCharacters(0x501, "MirageDeck", AnyArmoredCharacter(), 5, difficulty = "Critical", level = 30)
+    description = "Complete \"Dead Ringer\" in the Mirage Arena using only two kinds of non-Surge battle commands (Critical Mode, Level 25 or below).",
+    trigger = MirageArenaCheckpointReachedForCharacters(0x501, "MirageDeck", AnyArmoredCharacter(), 5, difficulty = "Critical", level = 25)
         && NeverUsedAnyUniqueCommandsGivenNumberOfTimesInArena(battleCommands, 3)
         && NeverJustUsedAnyGivenCommandInArena(surgeBattleCommands)
 )
@@ -2579,23 +2579,23 @@ function NumberOfGivenAbilitiesEquippedByAddrGreaterThanOrEqualTo(addrs, max)
 }
 
 achievement(title = "Combined Boon [m]", points = 10, id = 187166, badge = "208053",
-    description = "Complete \"Combined Threat\" in the Mirage Arena with only two beneficial Stat and Support Abilities each turned on (Critical Mode, Level 35 or below).",
-    trigger = MirageArenaCheckpointReachedForCharacters(0x601, "MirageExterior", AnyArmoredCharacter(), 6, difficulty = "Critical", level = 35)
+    description = "Complete \"Combined Threat\" in the Mirage Arena with only two beneficial Stat and Support Abilities each turned on (Critical Mode, Level 29 or below).",
+    trigger = MirageArenaCheckpointReachedForCharacters(0x601, "MirageExterior", AnyArmoredCharacter(), 6, difficulty = "Critical", level = 29)
         && never(NumberOfStatAbilitiesEquipped(3))
         && never(NumberOfBeneficialSupportAbilitiesEquippedGreaterThanOrEqualTo(3))
 )
 
 battleCommandsThatUseMoreThanOneSlot = GetCommandsByCallback(command => command["slots"] > 1)
 achievement(title = "Healthcare Budgeting [m]", points = 5, id = 187167, badge = "208054",
-    description = "Complete \"Risky Riches\" in the Mirage Arena using only commands that take up a single slot and without taking damage more than three times (Critical Mode, Level 30 or below).",
-    trigger = MirageArenaCheckpointReachedForCharacters(0x201, "MirageSkull", AnyArmoredCharacter(), 3, difficulty = "Critical", level = 30)
+    description = "Complete \"Risky Riches\" in the Mirage Arena using only commands that take up a single slot and without taking damage more than three times (Critical Mode, Level 20 or below).",
+    trigger = MirageArenaCheckpointReachedForCharacters(0x201, "MirageSkull", AnyArmoredCharacter(), 3, difficulty = "Critical", level = 20)
         && never(repeated(4, TookDamageInTheMirageArena()))
         && NeverJustUsedAnyGivenCommandInArena(battleCommandsThatUseMoreThanOneSlot)
 )
 
 achievement(title = "Escalation of Force [m]", points = 10, id = 187168, badge = "208055",
-    description = "Complete \"Harsh Punishment\" in the Mirage Arena with only five battle command slots filled (Critical Mode, Level 35 or below).",
-    trigger = MirageArenaCheckpointReachedForCharacters(0x801, "MirageArena1", AnyArmoredCharacter(), 6, difficulty = "Critical", level = 35)
+    description = "Complete \"Harsh Punishment\" in the Mirage Arena with only five battle command slots filled (Critical Mode, Level 32 or below).",
+    trigger = MirageArenaCheckpointReachedForCharacters(0x801, "MirageArena1", AnyArmoredCharacter(), 6, difficulty = "Critical", level = 32)
         && never(CommandDeckSlotsFilledIsAtLeast(6))
 )
 
@@ -2603,25 +2603,25 @@ function MonstroMirageArenaCheckpointReachedForCharacters()
 {
     return CheckpointPassedForCharacters(MirageArenaCheckpointPassedCallback(0xc01, "MirageMonstro", difficulty = "Critical", level = 35), AnyArmoredCharacter(), false)
         && never(!WasInLocation("MirageMonstro") && IsInLocation("MirageHub"))
-        && mirageArenaCurrentRound() < 7
+        && mirageArenaCurrentRound() < 5
         && trigger_when(MonstroDefeatTriggered())
 }
 
 function MonstroDefeatTriggered() => IsInBattle() && bit3(battleFlagsAddr()) == 1 && arenaHp() > 0 && characterArenaPointer() != 0
 achievement(title = "The Madness of Man [m]", points = 25, id = 187169, badge = "208056",
-    description = "Complete \"The Monster of the Sea\" in the Mirage Arena in six rounds or fewer (Critical Mode, Level 35 or below).",
+    description = "Complete \"The Monster of the Sea\" in the Mirage Arena in four rounds or fewer (Critical Mode, Level 35 or below).",
     trigger = MonstroMirageArenaCheckpointReachedForCharacters()
 )
 
 achievement(title = "Scrounging to Survive [m]", points = 10, id = 187170, badge = "208057",
-    description = "Complete \"Treasure Tussle\" in the Mirage Arena without using commands that directly heal you (Critical Mode, Level 30 or below).",
-    trigger = MirageArenaCheckpointReachedForCharacters(0x701, "MiragePinball", AnyArmoredCharacter(), 3, difficulty = "Critical", level = 30)
+    description = "Complete \"Treasure Tussle\" in the Mirage Arena without using commands that directly heal you (Critical Mode, Level 24 or below).",
+    trigger = MirageArenaCheckpointReachedForCharacters(0x701, "MiragePinball", AnyArmoredCharacter(), 3, difficulty = "Critical", level = 24)
         && NeverJustUsedAnyGivenCommandInArena(directHealingCommands)
 )
 
-achievement(title = "Rolling Blackout [m]", points = 50, id = 187171, badge = "208058",
-    description = "Complete \"Copycat Crisis\" in the Mirage Arena using battle commands only on even-numbered rounds (Critical Mode, Level 40 or below).",
-    trigger = MirageArenaCheckpointReachedForCharacters(0xa01, "MirageSummit", AnyArmoredCharacter(), 8, difficulty = "Critical", level = 40)
+achievement(title = "Rolling Blackout [m]", points = 25, id = 187171, badge = "208058",
+    description = "Complete \"Copycat Crisis\" in the Mirage Arena using battle commands only on even-numbered rounds (Critical Mode, Level 45 or below).",
+    trigger = MirageArenaCheckpointReachedForCharacters(0xa01, "MirageSummit", AnyArmoredCharacter(), 8, difficulty = "Critical", level = 45)
         // We need to check oddness for each round individually because (1) the modulo operator isn't supported in the editor and (2) the logic would be too complex otherwise.
         && never(TerraJustUsedAnyGivenCommandInArena(battleCommands) && mirageArenaCurrentRound() == 1 && currentCharacter() == TerraArmored())
         && never(TerraJustUsedAnyGivenCommandInArena(battleCommands) && mirageArenaCurrentRound() == 3 && currentCharacter() == TerraArmored())
@@ -2645,8 +2645,8 @@ nonFireOrCureBattleCommandsAndShotlocks = GetCommandsByCallback(command => (comm
     && command["name"] != "Cure" && command["name"] != "Cura" && command["name"] != "Curaga")
 achievement(title = "Ribbon of Terracotta [m]", points = 10, id = 187172, badge = "208059",
     description = "As Terra, complete \"A Time to Chill\" in the Mirage Arena using only fire-based battle commands and Shotlocks, "
-        + "with Cure commands permissible only in Round 4 (Critical Mode, Level 55 or below).",
-    trigger = MirageArenaCheckpointReachedForCharacters(0x901, "MirageColiseum", [ TerraArmored() ], 8, difficulty = "Critical", level = 55)
+        + "with Cure commands permissible only in Round 4 (Proud Mode or higher, Level 45 or below).",
+    trigger = MirageArenaCheckpointReachedForCharacters(0x901, "MirageColiseum", [ TerraArmored() ], 8, difficulty = "Proud", level = 45)
         && never(TerraJustUsedAnyGivenCommandInArena(nonFireBattleCommandsAndShotlocks) && mirageArenaCurrentRound() != 4)
         && never(TerraJustUsedAnyGivenCommandInArena(nonFireOrCureBattleCommandsAndShotlocks) && mirageArenaCurrentRound() == 4)
 )
@@ -2673,8 +2673,8 @@ function GivenCommandStyleWasActivated(activatedMem)
 }
 
 achievement(title = "The Spice of Life [m]", points = 50, id = 187173, badge = "208060",
-    description = "Activate seven different Command Styles in a single attempt of the \"Keepers of the Arena\" event in the Mirage Arena, and then complete it (Critical Mode, Level 52 or below).",
-    trigger = MirageArenaCheckpointReachedForCharacters(0xb01, "MirageArena1", AnyArmoredCharacter(), 9, difficulty = "Critical", level = 52)
+    description = "Activate seven different Command Styles in a single attempt of the \"Keepers of the Arena\" event in the Mirage Arena, and then complete it (Critical Mode, Level 48 or below).",
+    trigger = MirageArenaCheckpointReachedForCharacters(0xb01, "MirageArena1", AnyArmoredCharacter(), 9, difficulty = "Critical", level = 48)
         && trigger_when(tally(7, [
             once(GivenCommandStyleWasActivated(timesCritialImpactWasActivated())),
             once(GivenCommandStyleWasActivated(timesSpellweaverWasActivated())),
@@ -2695,8 +2695,8 @@ achievement(title = "The Spice of Life [m]", points = 50, id = 187173, badge = "
 )
 
 achievement(title = "Style Specialist [m]", points = 50, id = 187174, badge = "208061",
-    description = "Complete \"Villains' Vendetta\" in the Mirage Arena while activating at most one type of Command Style (Critical Mode, Level 57 or below).",
-    trigger = MirageArenaCheckpointReachedForCharacters(0xd01, "MirageArena1", AnyArmoredCharacter(), 8, difficulty = "Critical", level = 57)
+    description = "Complete \"Villains' Vendetta\" in the Mirage Arena while activating at most one type of Command Style (Critical Mode, Level 53 or below).",
+    trigger = MirageArenaCheckpointReachedForCharacters(0xd01, "MirageArena1", AnyArmoredCharacter(), 8, difficulty = "Critical", level = 53)
         && never(tally(2, [
             once(GivenCommandStyleWasActivated(timesCritialImpactWasActivated())),
             once(GivenCommandStyleWasActivated(timesSpellweaverWasActivated())),
