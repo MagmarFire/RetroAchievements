@@ -2443,7 +2443,7 @@ function MirageArenaCheckpointReachedForCharacters(eventId, locationName, charac
 {
     return CheckpointPassedForCharacters(MirageArenaCheckpointPassedCallback(eventId, locationName, difficulty, level), characters, false)
         && never(!WasInLocation(locationName) && IsInLocation("MirageHub"))
-        && trigger_when(mirageArenaRoundsCompleted() == numberOfRounds)
+        && trigger_when(mirageArenaRoundsCompleted() == numberOfRounds && Delta(mirageArenaRoundsCompleted()) != mirageArenaRoundsCompleted())
 }
 
 function TerraNeverUsedAnyGivenCommandInArenaGivenNumberOfTimes(command, commandLimit)
@@ -2761,7 +2761,7 @@ achievement(title = "Style Specialist [m]", points = 50, id = 187174, badge = "2
 )
 
 shotlockCommands = GetCommandsByProperties({ "supercategory": "Shotlock" })
-achievement(title = "Clash of Blades", points = 50,
+achievement(title = "Clash of Blades", points = 50, id = 187175, badge = "208062",
     description = "Defeat the Armor of Eraqus without using Shotlocks (Critical Mode only).",
     trigger = MirageArenaCheckpointReachedForCharacters(0xe01, "MirageSummit2", AnyArmoredCharacter(), 1, difficulty = "Critical", level = 99)
         && NeverJustUsedAnyGivenCommandInArena(shotlockCommands)
@@ -2770,7 +2770,7 @@ achievement(title = "Clash of Blades", points = 50,
 function damageSyphonAddr() => 0x1f2acb8
 commandsThatExplicitlyAffectFocus = GetCommandsByCallback(command => command["name"] == "Focus Block" || command["name"] == "Focus Barrier" || command["name"] == "Ether"
     || command["name"] == "Mega-Ether" || command["name"] == "Elixir" || command["name"] == "Megalixir")
-achievement(title = "Unparalleled Focus", points = 50,
+achievement(title = "Unparalleled Focus", points = 50, id = 187176, badge = "208063"
     description = "Defeat No Heart without using battle commands or abilities that explicitly refill the Focus Gauge (Critical Mode only).",
     trigger = MirageArenaCheckpointReachedForCharacters(0xf01, "MirageGreatHall", AnyArmoredCharacter(), 2, difficulty = "Critical", level = 99)
         && never(IsAbilityTurnedOn(damageSyphonAddr()))
