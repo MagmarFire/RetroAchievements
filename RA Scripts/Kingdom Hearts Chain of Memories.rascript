@@ -2247,9 +2247,10 @@ achievement(
 
 function TotalButtonsUsed(buttonThreshold)
 {
-    return tally(buttonThreshold, [ once(aIsPressed() == 1), once(bIsPressed() == 1), once(lIsPressed() == 1), once(rIsPressed() == 1),
-        once(startIsPressed() == 1), once(selectIsPressed() == 1), once(dpadUpPressed() == 1), once(dpadDownPressed() == 1),
-        once(dpadLeftPressed() == 1), once(dpadRightPressed() == 1) ])
+    return tally(buttonThreshold, [ once(aIsPressed() == 1 && Delta(aIsPressed()) == 0), once(bIsPressed() == 1 && Delta(bIsPressed()) == 0), once(lIsPressed() == 1 && Delta(lIsPressed()) == 0),
+        once(rIsPressed() == 1 && Delta(rIsPressed()) == 0), once(startIsPressed() == 1 && Delta(startIsPressed()) == 0), once(selectIsPressed() == 1 && Delta(selectIsPressed()) == 0),
+        once(dpadUpPressed() == 1 && Delta(dpadUpPressed()) == 0), once(dpadDownPressed() == 1 && Delta(dpadDownPressed()) == 0), once(dpadLeftPressed() == 1 && Delta(dpadLeftPressed()) == 0),
+        once(dpadRightPressed() == 1 && Delta(dpadRightPressed()) == 0) ])
 }
 
 buttonLimit = 4
