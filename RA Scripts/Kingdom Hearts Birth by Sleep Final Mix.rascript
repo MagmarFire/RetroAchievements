@@ -2772,7 +2772,7 @@ achievement(title = "Clash of Blades", points = 50, id = 187175, badge = "208062
 function damageSyphonAddr() => 0x1f2acb8
 commandsThatExplicitlyAffectFocus = GetCommandsByCallback(command => command["name"] == "Focus Block" || command["name"] == "Focus Barrier" || command["name"] == "Ether"
     || command["name"] == "Mega-Ether" || command["name"] == "Elixir" || command["name"] == "Megalixir")
-achievement(title = "Unparalleled Focus", points = 50, id = 187176, badge = "208063"
+achievement(title = "Unparalleled Focus", points = 50, id = 187176, badge = "208063",
     description = "Defeat No Heart without using battle commands or abilities that explicitly refill the Focus Gauge (Critical Mode only).",
     trigger = MirageArenaCheckpointReachedForCharacters(0xf01, "MirageGreatHall", AnyArmoredCharacter(), 2, difficulty = "Critical", level = 99)
         && never(IsAbilityTurnedOn(damageSyphonAddr()))
