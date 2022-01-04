@@ -1388,7 +1388,7 @@ achievement(title = "Proud Warrior", points = 10, id = 187073, badge = "207960",
     trigger = TerraStoryCompleted() && IsAtLeastOnDifficulty("Proud")
 )
 
-achievement(title = "Critical Warrior", points = 25, id = 187047, badge = "207961",
+achievement(title = "Critical Warrior", points = 25, id = 187074, badge = "207961",
     description = "Complete Terra's story on Critical Mode.",
     trigger = TerraStoryCompleted() && IsAtLeastOnDifficulty("Critical")
 )
