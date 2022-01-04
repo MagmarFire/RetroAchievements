@@ -453,8 +453,7 @@ function PlayerUsedMagicThisTurn()
     {
         slotAddr = GetPlayerAddrFromSlot(slot)
         combatant = GetCombatantInGivenSlotAddr(slotAddr)
-        // todo: use `trigger_when()` around the `once()` statement when https://github.com/Jamiras/RATools/issues/272 is addressed.
-        trigger = trigger || unless(!CombatantInSlotAddrIsLoaded(slotAddr)) && once(Delta(combatant["mp"]) > combatant["mp"] && never(TurnConsumed()))
+        trigger = trigger || unless(!CombatantInSlotAddrIsLoaded(slotAddr)) && trigger_when(once(Delta(combatant["mp"]) > combatant["mp"] && never(TurnConsumed())))
     }
     
     return trigger
