@@ -272,36 +272,6 @@ function GenerateBitcountFromCountableObjects(addresses)
     return finalBitcount
 }
 
-// This function allows the creation of achievements with built-in save protection that deal with a collection of values being set
-// throughout the game. The schemas for both parameters are as follows:
-//
-// name: title
-// description: self-explanatory
-// points: self-explanatory
-// threshold: how many values in the "conditions" dictionary must be set before this achievement is triggered
-// addresses: a list of address accessors that need to have their bits summed (each address must have an "addr" and "bit" value in order to be properly aggregated)
-// onlyAvailableWhen: a condition that must be true in all conditions for the achievement to trigger.
-// id: self-explanatory
-// badge: self-explanatory
-function GenerateCheevoFromBits(name, description, points, threshold, addresses, onlyAvailableWhen = always_true(), id = 0, badge = "00000")
-{
-    bitcounts = GenerateBitcountFromCountableObjects(GetCountableAccessorArrayFromAddressBits(lums))
-
-    // This is the score when the game is loaded. If the loaded score is greater than or equal to the threshold--that is,
-    // if the save file would satisfy enough conditions to trigger the achievement on load--this should trigger a
-    // permanant pauselock to serve as save protection.
-    shouldTriggerPauselock = once(bitcounts >= threshold && IsOnMainOrPauseMenu())
-    
-    // We want both loaded and session counts here (that is, we don't care if we're loading a save file when these are tallied).
-    // This way, loading a save doesn't invalidate the achievement outright if a player hasn't actually earned it yet.
-    trigger = bitcounts >= threshold
-
-    achievement(title = name, description = description, points = points, badge = badge, id = id,
-        trigger = IsInGame() && measured(trigger) && unless(shouldTriggerPauselock) && onlyAvailableWhen
-            && (always_false() || never(ChangedFile())) // Reset any potential pauselock when changing save files.
-    )
-}
-
 // END OF BITFLAG AGGREGATION REGION
 
 function SecondsToFormat(value)
