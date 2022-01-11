@@ -2105,7 +2105,8 @@ leaderboard(title = "Dance with Death", description = "Defeat the Dark Hide with
     start = DarkHideCheckpointReached(),
     cancel = DarkHideCancel(),
     submit = DarkHideChallengeCompleted(false),
-    value = measured(repeated(0, DarkHideScoreIncreased()))
+    value = measured(repeated(0, DarkHideScoreIncreased())),
+    id = 27894
 )
 
 function darkHideDefeated() => bit2(0x1f284e5)
