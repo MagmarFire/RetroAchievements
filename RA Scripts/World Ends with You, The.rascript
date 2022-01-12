@@ -2128,11 +2128,12 @@ for i in brands
     array_push(equippedBrands, DoesNekuHaveBrandEquipped(i))
 }
 
-achievement(title = "It's My Asskicking Outfit, Bitch!", points = 5,
+achievement(title = "It's My Asskicking Outfit, Bitch!", points = 5, id = 120569, badge = "131561",
     description = "Defeat Koki Kariya while Neku is wearing threads from four different brands (Normal or higher, Level 27 or below).",
     trigger = tally(4, equippedBrands) && never(HasNekuClothingChanged())
         && EnterBattleCheckpointValid() && IsRankingRevealed()
         && enemyId() == GetEnemyIdByName("Koki Kariya")
+        && IsAtLeastOnDifficulty("Normal") && currentLevel() <= 27
 )
 
 achievement(title = "Inner Peace", points = 10,
