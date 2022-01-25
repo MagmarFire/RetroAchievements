@@ -2145,8 +2145,8 @@ achievement(title = "Inner Peace", points = 10,
 )
 
 timeLimit = 163 // 2.72 minutes ~= e minutes
-achievement(title = "Logarithmic Time", points = 5,
-    description = "Defeat Sho Minamimoto on Week 3, Day 6, within " + SecondsToFormat(timeLimit) + " (Normal or higher, Level 30 or below).",
+achievement(title = "Logarithmic Time", points = 5, id = 120631, badge = "131624",
+    description = "Defeat Sho Minamimoto on Week 3, Day 6, or his Blue Noise equivalent, within " + SecondsToFormat(timeLimit) + " (Normal or higher, Level 30 or below).",
     trigger = enemyId() == GetEnemyIdByName("Sho Minamimoto")
         && EnterBattleCheckpointValid()
         && IsAtLeastOnDifficulty("Normal") && currentLevel() <= 30 && IsRankingRevealed()
