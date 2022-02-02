@@ -2329,8 +2329,8 @@ lowestLevelVirtualBitsToRealBits = {
         2: { "addr": 0x195be1, "bit": 5 },
         3: { "addr": 0x195be1, "bit": 6 },
         4: { "addr": 0x195be1, "bit": 7 },
-        5: { "addr": 0x195be1, "bit": 0 },
-        6: { "addr": 0x195be1, "bit": 1 },
+        5: { "addr": 0x195be2, "bit": 0 },
+        6: { "addr": 0x195be2, "bit": 1 },
     },
     "Hollow Bastion, Part II": {
         0: { "addr": 0x195be0, "bit": 4 },
