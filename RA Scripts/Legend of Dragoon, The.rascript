@@ -366,7 +366,7 @@ function enemySlot1Addr() => 0x0bc1ec
 function enemySlot2Addr() => 0x0bc1f0
 function garbagePointer() => 0xbc0c0
 
-function CombatantInSlotAddrIsLoaded(addr) => Delta(tbyte(addr)) != garbagePointer()
+function PointerIsValid(addr) => Delta(tbyte(addr)) != garbagePointer()
 function GetCombatantInGivenSlotAddr(addr)
 {
     return {
@@ -378,7 +378,7 @@ function GetCombatantInGivenSlotAddr(addr)
 function CombatantInSlotAddrWasJustDefeated(addr)
 {
     combatant = GetCombatantInGivenSlotAddr(addr)
-    return CombatantInSlotAddrIsLoaded(addr) && Delta(combatant["hp"]) > 0 && combatant["hp"] == 0
+    return PointerIsValid(addr) && Delta(combatant["hp"]) > 0 && combatant["hp"] == 0
 }
 
 function AllCombatantsInGivenSlotAddrsWereJustDefeated(slots, useTrigger = true, deferTime = 0)
@@ -388,7 +388,7 @@ function AllCombatantsInGivenSlotAddrsWereJustDefeated(slots, useTrigger = true,
     for slot in slots
     {
         combatant = GetCombatantInGivenSlotAddr(slot)
-        allGivenCombatantsDefeated = allGivenCombatantsDefeated && combatant["hp"] == 0 && CombatantInSlotAddrIsLoaded(slot)
+        allGivenCombatantsDefeated = allGivenCombatantsDefeated && combatant["hp"] == 0 && PointerIsValid(slot)
         wasJustDefeated = CombatantInSlotAddrWasJustDefeated(slot)
         
         if (useTrigger == true)
@@ -453,7 +453,7 @@ function PlayerUsedMagicThisTurn()
     {
         slotAddr = GetPlayerAddrFromSlot(slot)
         combatant = GetCombatantInGivenSlotAddr(slotAddr)
-        trigger = trigger || unless(!CombatantInSlotAddrIsLoaded(slotAddr)) && trigger_when(once(Delta(combatant["mp"]) > combatant["mp"] && never(TurnConsumed())))
+        trigger = trigger || unless(!PointerIsValid(slotAddr)) && trigger_when(once(Delta(combatant["mp"]) > combatant["mp"] && never(TurnConsumed())))
     }
     
     return trigger
@@ -467,7 +467,7 @@ function PlayerJustUsedMagic()
         slotAddr = GetPlayerAddrFromSlot(slot)
         combatant = GetCombatantInGivenSlotAddr(slotAddr)
         // todo: use `trigger_when()` around the `once()` statement when https://github.com/Jamiras/RATools/issues/272 is addressed.
-        trigger = trigger || CombatantInSlotAddrIsLoaded(slotAddr) && once(Delta(combatant["mp"]) > combatant["mp"])
+        trigger = trigger || PointerIsValid(slotAddr) && once(Delta(combatant["mp"]) > combatant["mp"])
     }
     
     return trigger
@@ -528,14 +528,14 @@ achievement(
               word(0x052C30) == 0x027E
 )
 
+function monsterConquestAddr() => tbyte(0x0bc1e8)
+function monsterConquestScore() => dword(monsterConquestAddr() + 0x7c)
 achievement(
     title = "Monkeyball Master", description = "Get a score of 100 or more in the Monster Conquest Game Stand minigame.", points = 5,
     id = 94798, badge = "106744", published = "1/15/2020 11:26:27 PM", modified = "2/4/2020 10:54:22 PM",
-    trigger = word(0x052C30) == 0x0098 && never(word(0x052C30) != 0x0098) &&
-              ((dword(0x195DD4) >= 0x00000064 && dword(0x195DD4) != 0xFFFFFFFF && once(word(0x195DD4) == 0xFFFF) && 
-                word(0x0BAC60) == 0x0000) ||
-               (word(0x0BAC60) > 0x0000 && dword(0x195054) >= 0x00000064 && dword(0x195054) != 0xFFFFFFFF && 
-                once(word(0x195054) == 0xFFFF)))
+    trigger = mapId() == 0x98 && never(mapId() != 0x98) &&
+        never(!PointerIsValid(monsterConquestAddr())) && monsterConquestScore() >= 100 && monsterConquestScore() != 0xffffffff
+        && once(monsterConquestScore() == 0xffffffff)
 )
 
 achievement(
