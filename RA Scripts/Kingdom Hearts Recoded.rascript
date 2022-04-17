@@ -1872,8 +1872,9 @@ function HPCheatIsBeingUsed()
 
 function dodgeRollActive() => bit0(0x1986f0)
 achievement(title = "Smooth Operator", description = "Defeat the Darkside without the Dodge Roll ability equipped (Critical Mode, Level 2 or below, no HP Cheat).",
-    points = 5,
-    trigger = IsAtLeastOnDifficulty("Critical") && dodgeRollActive() == 0 && JustDefeatedEnemy("Darkside") && Level() <= 2 && never(HPCheatIsBeingUsed())
+    points = 5, id = 153005, badge = "171730",
+    trigger = IsAtLeastOnDifficulty("Critical") && dodgeRollActive() == 0 && trigger_when(JustDefeatedEnemy("Darkside")) && Level() <= 2 && never(HPCheatIsBeingUsed())
+        && IsInLocation("DestinyStorm")
 )
 
 achievement(title = "I Am the New God", description = "Earn a Star rank against the Darkside (Proud Mode or higher, Level 5 or below, no HP Cheat).",
