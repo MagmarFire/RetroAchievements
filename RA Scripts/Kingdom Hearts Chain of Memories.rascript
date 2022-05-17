@@ -2002,7 +2002,7 @@ achievement(
 )
 
 function marluxiaIIEncounterId() => 0x9c
-function PlayerIsUsingSummon() => Delta(soraBattleState()) == 0x12 || Delta(soraBattleState()) >= 0x17 && Delta(soraBattleState()) <= 0x1b
+function PlayerIsUsingSummon() => prior(soraBattleState()) == 0x12 || prior(soraBattleState()) >= 0x17 && prior(soraBattleState()) <= 0x1b
 
 // Appears to affect which summon is used during Marluxia II (16-bit)
 //
