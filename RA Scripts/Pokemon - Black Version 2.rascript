@@ -582,7 +582,7 @@ achievement(title = "Salt the Earth [m]", points = 25, badge = "00000",
     description = "Defeat Elesa with a party containing no Ground-type Pokemon (max Level " + elesaMaxLevel() + ", max party of " + elesaMaxParty() + ").",
     trigger = VictoriousWhenMaxPartyLevelIsAtMostWhenGymLeaderBattleStarts(elesaMaxLevel(), elesaMaxParty())
         && never(!IsInLocation("NimbasaGym")) && never(ElesaGymMusicIsPlaying()) // Must be battling the Gym Leader while in the Gym Leader's room
-        && never(HasOnlyGivenPokemonInParty(groundMons, elesaMaxParty()))
+        && never(HasAtLeastOneGivenPokemonInParty(groundMons, elesaMaxParty()))
 )
 
 function boltBadge() => bit3(0x2266e8)
