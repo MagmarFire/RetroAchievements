@@ -1,11 +1,10 @@
 // Kingdom Hearts II: Final Mix
-// #ID = 11264
-// #ID = 2781 // This is the actual ID. We're using the one for Legend of Dragoon while we wait for a PS2 core for RALibRetro.
+// #ID = 2781
 
 function Delta(mem) => prev(mem)
 
 areas = {
-    65535: { "worldId": 255, "name": "Title", "display": "On the title screen…", "areaId": 255, "hideWorld": 1, },
+    65535: { "worldId": 255, "name": "Title", "display": "On the title screen…", "areaId": 255, "hideWorld": 1, },523: { "worldId": 2, "name": "SunsetStation", "display": "Sunset Station", "areaId": 11, "hideWorld": 0, },522: { "worldId": 2, "name": "SunsetTerrace", "display": "Sunset Terrace", "areaId": 10, "hideWorld": 0, },548: { "worldId": 2, "name": "Tunnelway", "display": "Tunnelway", "areaId": 36, "hideWorld": 0, },524: { "worldId": 2, "name": "SunsetHill", "display": "Sunset Hill", "areaId": 12, "hideWorld": 0, },520: { "worldId": 2, "name": "StationPlaza", "display": "Station Plaza", "areaId": 8, "hideWorld": 0, },518: { "worldId": 2, "name": "StationHeights", "display": "Market Street: Station Heights", "areaId": 6, "hideWorld": 0, },515: { "worldId": 2, "name": "BackAlley", "display": "Back Alley", "areaId": 3, "hideWorld": 0, },514: { "worldId": 2, "name": "UsualSpot", "display": "The Usual Spot", "areaId": 2, "hideWorld": 0, },516: { "worldId": 2, "name": "Sandlot", "display": "Sandlot", "areaId": 4, "hideWorld": 0, },519: { "worldId": 2, "name": "TramCommon", "display": "Market Street: Tram Common", "areaId": 7, "hideWorld": 0, },525: { "worldId": 2, "name": "Woods", "display": "The Woods", "areaId": 13, "hideWorld": 0, },513: { "worldId": 2, "name": "RoxasRoom", "display": "Roxas’s Room", "areaId": 1, "hideWorld": 0, },
 }
 
 worlds = {
@@ -13,7 +12,7 @@ worlds = {
 2: "Twilight Town",
 3: "Destiny Islands",
 4: "Hollow Bastion",
-5: "Beast’s Castle",
+5: "Beast's Castle",
 6: "Olympus Coliseum",
 7: "Agrabah",
 8: "Land of Dragons",
@@ -31,7 +30,7 @@ worlds = {
 
 function areaId() => byte(0x32bae1)
 function worldId() => byte(0x32bae0)
-function level() => 0
+function level() => byte(0x32e02f)
 
 function GetLocationByName(name)
 {
@@ -86,7 +85,7 @@ function GetAreaRPLookup()
     return ret
 }
 
-function playTime() => dword(0x1f19880)
+function playTime() => dword(0x32df74)
 
 function GetWorldById(worldId)
 {
@@ -130,7 +129,7 @@ rich_presence_conditional_display(!IsOnTitleScreen(), "Level {0} | {1}{2} | Play
     rich_presence_value("Level", level(), "VALUE"),
     rich_presence_lookup("WorldDisplay", GetAreaHash(areaId(), worldId()), GetRPWorldLookup()),
     rich_presence_lookup("Areas", GetAreaHash(areaId(), worldId()), GetAreaRPLookup()),
-    rich_presence_value("Play Time", playTime(), "SECS")
+    rich_presence_value("Play Time", playTime() / 60, "SECS")
 )
 
 rich_presence_conditional_display(IsOnTitleScreen(), "On the title screen...")
