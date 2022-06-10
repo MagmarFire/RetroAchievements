@@ -522,14 +522,22 @@ function IsFileLoaded() => byte(0x001002) == 0x2
 
 function IsLoadingSaveFile() => Delta(byte(0x001002)) == 0x1 && IsFileLoaded()
 
+function WasValueJustSet(mem, oldValue, newValue) => Delta(mem) == oldValue && mem == newValue
+
 function WasValueSet(mem, oldValue, newValue)
 {
-    return once(Delta(mem) == oldValue && mem == newValue)
+    return once(WasValueJustSet(mem, oldValue, newValue))
 }
 
 function WasValueSetInGame(mem, oldValue, newValue)
 {
     return WasValueSet(mem, oldValue, newValue)
+        && never(!IsFileLoaded())
+}
+
+function WasValueJustSetInGame(mem, oldValue, newValue)
+{
+    return WasValueJustSet(mem, oldValue, newValue)
         && never(!IsFileLoaded())
 }
 
@@ -543,7 +551,7 @@ function GenerateConditionsForByte(addr)
     conditions = {}
     for i in range(0, 7)
     {
-        conditions[i] = { "countsWhen": (bit(i, addr) == 1), "recalculateWhen": (Delta(bit(i, addr)) == 0) }
+        conditions[i] = { "countsWhen": (bit(i, addr) == 1), "recalculateWhen": (Delta(bit(i, addr)) == 0 && bit(i, addr) == 1) }
     }
     return conditions
 }
@@ -581,7 +589,7 @@ function GenerateSaveProtectedAchievementFromConditions(cheevo, conditions)
         resetAlt = resetAlt || condition["recalculateWhen"]
     }
 
-    achievement(title = cheevo["name"], description = cheevo["description"], points = cheevo["points"],
+    achievement(title = cheevo["name"], description = cheevo["description"], points = cheevo["points"], badge = cheevo["badge"],
         trigger = IsFileLoaded()
             && measured(tally(cheevo["threshold"], totalCounts)) && unless(tally(cheevo["threshold"], loadedCounts))
             && never(resetAlt)
@@ -748,10 +756,12 @@ achievement(
     trigger = WasBitflagSetInGame(bit6(0x00AB40))
 )
 
+function bombs() => bit6(0x00AB33)
+function remoteBombs() => bit0(0x00ab34)
 achievement(
     title = "Don't Hurt Yourself", description = "Obtain a Bomb Bag.", points = 5,
     id = 2056, badge = "155812", published = "8/4/2013 8:02:32 AM", modified = "1/30/2021 2:30:23 PM",
-    trigger = word(0x000BF4) == 9760 && bit6(0x00AB33) > prev(bit6(0x00AB33))
+    trigger = WasValueJustSetInGame(bombs(), 0, 1) && Delta(remoteBombs()) == 0
 )
 
 achievement(
@@ -1010,10 +1020,13 @@ achievement(
     trigger = rupees() >= 0x03E7 && Delta(rupees()) < 0x3e7 && IsFileLoaded()
 )
 
+function bombUpgradesObtained() => byte(0x00AAEE)
+function quiverUpgradesObtained() => byte(0x00aaef)
 achievement(
     title = "Packing Heat", description = "Fully upgrade your Quiver and Bomb Bag", points = 10,
     id = 2259, badge = "155839", published = "8/16/2013 10:43:54 AM", modified = "1/30/2021 2:30:58 PM",
-    trigger = word(0x00AAEE) == 771
+    trigger = WasValueJustSetInGame(bombUpgradesObtained(), 2, 3) && quiverUpgradesObtained() == 3
+        || WasValueJustSetInGame(quiverUpgradesObtained(), 2, 3) && bombUpgradesObtained() == 3
 )
 
 achievement(
@@ -1043,21 +1056,56 @@ achievement(
     trigger = Delta(byte(0x00AAEB)) < 0xA0 && byte(0x00AAEB) == 0xa0 && IsFileLoaded()
 )
 
-achievement(
-    title = "Carlov Medal", description = "Collect all 136 Figurines", points = 25,
-    id = 2310, badge = "155842", published = "8/19/2013 8:49:12 PM", modified = "10/23/2019 5:12:02 PM",
-    trigger = word(0x00AB0E) >= 0xFFFE && word(0x00AB10) == 0xFFFF && word(0x00AB12) == 0xFFFF && 
-              word(0x00AB14) == 0xFFFF && word(0x00AB16) == 0xFFFF && word(0x00AB18) == 0xFFFF && word(0x00AB1A) == 0xFFFF && 
-              word(0x00AB1C) == 0xFFFF && word(0x00AB1E) == 0x01FF && byte(0x00AAF0) == 0x88 && byte(0x00AA46) == 0x01 && bit4(0x00AB41) == 0x1
-              && IsFileLoaded()
-              && (
-                // Any of the relevant valules must also change. I'd use the save protection I've already developed, but the number of moving parts
-                // here makes me nervous, and I'm somewhat lazy to set up the conditions at the moment besides.
-                  Delta(word(0x00AB0E)) < 0xFFFE || Delta(word(0x00AB10)) < 0xFFFF || Delta(word(0x00AB12)) < 0xFFFF
-                  || Delta(word(0x00AB14)) < 0xFFFF || Delta(word(0x00AB16)) < 0xFFFF || Delta(word(0x00AB18)) < 0xFFFF || Delta(word(0x00AB1A)) < 0xFFFF
-                  || Delta(word(0x00AB1C)) < 0xFFFF || Delta(word(0x00AB1E)) < 0x01FF || Delta(byte(0x00AAF0)) < 0x88 || Delta(bit4(0x00AB41)) < 0x1
-              )
-)
+figurineConditionsArr = [
+    {
+        1: { "countsWhen": (bit1(0x00ab0e) == 1), "recalculateWhen": (Delta(bit1(0x00ab0e)) == 0 && bit1(0x00ab0e) == 1) },
+        2: { "countsWhen": (bit2(0x00ab0e) == 1), "recalculateWhen": (Delta(bit2(0x00ab0e)) == 0 && bit2(0x00ab0e) == 1) },
+        3: { "countsWhen": (bit3(0x00ab0e) == 1), "recalculateWhen": (Delta(bit3(0x00ab0e)) == 0 && bit3(0x00ab0e) == 1) },
+        4: { "countsWhen": (bit4(0x00ab0e) == 1), "recalculateWhen": (Delta(bit4(0x00ab0e)) == 0 && bit4(0x00ab0e) == 1) },
+        5: { "countsWhen": (bit5(0x00ab0e) == 1), "recalculateWhen": (Delta(bit5(0x00ab0e)) == 0 && bit5(0x00ab0e) == 1) },
+        6: { "countsWhen": (bit6(0x00ab0e) == 1), "recalculateWhen": (Delta(bit6(0x00ab0e)) == 0 && bit6(0x00ab0e) == 1) },
+        7: { "countsWhen": (bit7(0x00ab0e) == 1), "recalculateWhen": (Delta(bit7(0x00ab0e)) == 0 && bit7(0x00ab0e) == 1) },
+    },
+    GenerateConditionsForByte(0x00ab0f),
+    GenerateConditionsForByte(0x00ab10),
+    GenerateConditionsForByte(0x00ab11),
+    GenerateConditionsForByte(0x00ab12),
+    GenerateConditionsForByte(0x00ab13),
+    GenerateConditionsForByte(0x00ab14),
+    GenerateConditionsForByte(0x00ab15),
+    GenerateConditionsForByte(0x00ab16),
+    GenerateConditionsForByte(0x00ab17),
+    GenerateConditionsForByte(0x00ab18),
+    GenerateConditionsForByte(0x00ab19),
+    GenerateConditionsForByte(0x00ab1a),
+    GenerateConditionsForByte(0x00ab1b),
+    GenerateConditionsForByte(0x00ab1c),
+    GenerateConditionsForByte(0x00ab1d),
+    GenerateConditionsForByte(0x00ab1e)
+]
+
+
+figurineConditions = {}
+count = 0
+for element in figurineConditionsArr
+{
+    for i in element
+    {
+        figurineConditions[count] = element[i]
+        count = count + 1
+    }
+}
+
+figurineConditions[count] = { "countsWhen": (bit0(0x00ab1f) == 1), "recalculateWhen": (Delta(bit0(0x00ab1f)) == 0 && bit0(0x00ab1f) == 1) }
+
+GenerateSaveProtectedAchievementFromConditions({
+    "name": "Carlov Medal",
+    "description": "Collect all 136 Figurines",
+    "points": 25,
+    "threshold": 136,
+    "badge": "155842",
+    "id": 2310
+}, figurineConditions)
 
 achievement(
     title = "Bested Big Green Chuchu [m]", description = "Defeat the Big Green Chuchu without taking damage", points = 10,
