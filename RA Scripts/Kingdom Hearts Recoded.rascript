@@ -2428,6 +2428,13 @@ prizeBlox = [
     
     bit0(0x195b46), bit1(0x195b46), bit2(0x195b46), bit3(0x195b46), bit4(0x195b46), bit5(0x195b46), bit6(0x195b46), bit7(0x195b46), // Hollow Bastion, Part II
     bit0(0x195b47), bit1(0x195b47), bit2(0x195b47), bit3(0x195b47), bit4(0x195b47), bit5(0x195b47), bit6(0x195b47), bit7(0x195b47),
+    
+    // Unknown
+    bit0(0x195b39), bit1(0x195b39), bit2(0x195b39), bit4(0x195b39), bit6(0x195b39),
+    bit5(0x195b3a),
+    bit0(0x195b3b), bit1(0x195b3b), bit2(0x195b3b), bit3(0x195b3b), bit4(0x195b3b),
+    bit0(0x195b3c),
+    bit0(0x195b44), bit1(0x195b44), bit2(0x195b44), bit5(0x195b44), bit7(0x195b44)
 ]
 
 prizeBloxConditions = {}
@@ -2442,29 +2449,37 @@ GenerateSaveProtectedAchievementFromConditions({
     "name": "Rare Prize Pickup",
     "description": "Destroy 15 rare prize blox.",
     "points": 3,
-    "threshold": 15
+    "threshold": 15,
+    "id": 152956,
+    "badge": "171717"
 }, prizeBloxConditions, always_true())
 
 GenerateSaveProtectedAchievementFromConditions({
     "name": "Rare Prize Hold Up",
     "description": "Destroy 30 rare prize blox.",
     "points": 5,
-    "threshold": 30
+    "threshold": 30,
+    "id": 152955,
+    "badge": "171716"
 }, prizeBloxConditions, always_true())
 
 GenerateSaveProtectedAchievementFromConditions({
     "name": "Rare Prize Tally Up",
     "description": "Destroy 60 rare prize blox.",
     "points": 10,
-    "threshold": 60
+    "threshold": 60,
+    "id": 152958,
+    "badge": "171719"
 }, prizeBloxConditions, always_true())
 
 function rarePrizeRoundup() => bit5(0x195c78)
 GenerateSaveProtectedAchievementFromConditions({
     "name": "Rare Prize Roundup",
-    "description": "Destroy all rare prize blox.",
+    "description": "Destroy 111 rare prize blox.",
     "points": 25,
-    "threshold": 111
+    "threshold": 111,
+    "id": 152957,
+    "badge": "171718"
 }, prizeBloxConditions, always_true())
 
 function lordOfLoot() => bit4(0x195c78)
