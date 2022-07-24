@@ -296,3 +296,16 @@ achievement(title = "Pure of Mind [m]", description = "Defeat the Thresholder an
         && trigger_when(BonusObtained())
         && never(UsedAnyItem()) && never(JustEnteredValorForm())
 )
+
+function limitPointer() => dword(0x1d48cb0)
+function LimitIsBeingUsed() => limitPointer() != 0
+achievement(title = "Silence Is Golden [m]", description = "Defeat the Dark Thorn without using Limits (Proud Mode or higher; Level 16 or below; no rescues).", points = 25,
+    trigger = BattleCheckpointReached(location = "BallroomBattle", eventId = 0x4f, when = level() <= 16 && IsAtLeastOnDifficulty("Proud"))
+        && trigger_when(BonusObtained())
+        && never(LimitIsBeingUsed())
+)
+
+function beastCastleFirstVisitComplete() => bit7(0x32d861)
+achievement(title = "Tending the Garden", description = "Complete the first visit to Beast's Castle.", points = 3,
+    trigger = WasBitflagSetInGame(beastCastleFirstVisitComplete()) && IsInLocation("WorldMap")
+)
