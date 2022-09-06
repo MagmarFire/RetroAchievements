@@ -355,10 +355,12 @@ achievement(title = "Way of the Pacifist [m]", description = "Defeat Cerberus wi
 
 function SecondsToFrames(seconds) => seconds * 60
 function timeRemainingInWaterFormFight() => dword(0x349df8)
-achievement(title = "Breakneck Breakdance [m]", description = "Defeat 100 of Demyx's water forms in 30 seconds.", points = 5,
+function breakneckBreakdanceTimeLimit() => 50
+function demyxITimeLimit() => 80
+achievement(title = "Breakneck Breakdance [m]", description = "Defeat 100 of Demyx's water forms within " + breakneckBreakdanceTimeLimit() + " seconds.", points = 5,
     trigger = BattleCheckpointReached(location = "UnderworldCavernsAtrium", eventId = 0x7b)
         && trigger_when(BonusObtained())
-        && never(timeRemainingInWaterFormFight() < SecondsToFrames(30))
+        && never(timeRemainingInWaterFormFight() < SecondsToFrames(demyxITimeLimit() - breakneckBreakdanceTimeLimit()))
 )
 
 leaderboard(title = "Tight Deadline", description = "Escape from the Valley of the Dead with Auron as quickly as possible.",
