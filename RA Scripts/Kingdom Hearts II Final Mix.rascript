@@ -28,6 +28,8 @@ worlds = {
 19: "The World That Never Was",
 }
 
+function generateBonusAchievements() => false
+
 function areaId() => byte(0x32bae1)
 function worldId() => byte(0x32bae0)
 function level() => byte(0x32e02f)
@@ -232,13 +234,23 @@ function BattleCheckpointReached(location, eventId, when = always_true(), overri
         && once(eventId() == eventId && IsActiveInTheField() && IsInLocation(location) && JustBecameActiveInTheField() && when)
 }
 
+registeredBosses = {
+"Twilight Thorn": { "locationCode": "StationOfAwakening", "eventId": 0x9d, },"Axel": { "locationCode": "BasementHallAxel", "eventId": 0x89, },"Shan-Yu": { "locationCode": "PalaceGate", "eventId": 0x4b, },"Thresholder": { "locationCode": "Undercroft", "eventId": 0x48, },"Dark Thorn": { "locationCode": "BallroomBattle", "eventId": 0x4f, },"Cerberus": { "locationCode": "CaveOfTheDeadEntrance", "eventId": 0x72, },"Olympus Pete": { "locationCode": "UnderworldLock2", "eventId": 0x74, },"Timeless Pete": { "locationCode": "RiverWharf", "eventId": 0x35, },"Hydra": { "locationCode": "ColiseumGatesRuined", "eventId": 0xab, },
+}
+
+function GetCheckpointForRegisteredBoss(bossCode, when = always_true(), overrideNever = false, neverOverride = always_false())
+{
+    boss = registeredBosses[bossCode]
+    return BattleCheckpointReached(location = boss["locationCode"], eventId = boss["eventId"], when = when, overrideNever = overrideNever, neverOverride = neverOverride)
+}
+
 achievement(title = "Doing Everything I Can", description = "Perform all three different aerial skateboard tricks before touching the ground.", points = 1,
     trigger = IsActiveInTheField() && tally(3, [ DidMethodGrab(), Did360DegreeSpin(), DidAirWalk() ])
         && never(LandedWithSkateboard()) && never(JustDidGrind()) && never(IdleWithSkateboard()) && IsInWorld("Twilight Town")
 )
 
 achievement(title = "We Tech Those [m]", description = "Finish off the Twilight Thorn with the Break Raid reaction command.", points = 10,
-    trigger = BattleCheckpointReached(location = "StationOfAwakening", eventId = 0x9d)
+    trigger = GetCheckpointForRegisteredBoss("Twilight Thorn")
         // Note that IDs used may be used elsewhere in the game for different purposes. However, this ID is used in this particular area for this purpose and not for anything else.
         && trigger_when(fieldActionId() == 0x102 && BonusObtained())
 )
@@ -271,7 +283,7 @@ function UsedAnyItem()
 }
 
 achievement(title = "Third-Degree Burns [m]", description = "Defeat Axel in the old mansion basement without using items or reaction commands (Proud Mode or higher; Level 4 or below).", points = 10,
-    trigger = BattleCheckpointReached(location = "BasementHallAxel", eventId = 0x89, when = level() <= 4 && IsAtLeastOnDifficulty("Proud"))
+    trigger = GetCheckpointForRegisteredBoss("Axel", when = level() <= 4 && IsAtLeastOnDifficulty("Proud"))
         && trigger_when(BonusObtained())
         && never(UsedAnyItem())
         && never(fieldActionId() == 0xfe) // Overtaker when playing as dual-wielding Roxas
@@ -297,7 +309,7 @@ achievement(title = "Like Lady Godiva", description = "Reach Medal Level 30 in a
 
 function redMeteorId() => 0x8e
 achievement(title = "Bursting in Air [m]", description = "Finish off Shan-Yu with the Red Meteor Limit finisher (Proud Mode or higher; Level 10 or below; no rescues).", points = 10,
-    trigger = BattleCheckpointReached(location = "PalaceGate", eventId = 0x4b, when = level() <= 10 && IsAtLeastOnDifficulty("Proud"))
+    trigger = GetCheckpointForRegisteredBoss("Shan-Yu", when = level() <= 10 && IsAtLeastOnDifficulty("Proud"))
         && trigger_when(reactionCommandId() == redMeteorId() && BonusObtained())
 )
 
@@ -309,7 +321,7 @@ achievement(title = "Unquestionable Honor", description = "Complete the first vi
 function currentForm() => byte(0x32f054)
 function JustEnteredValorForm() => currentForm() == 1 && Delta(currentForm()) != 1
 achievement(title = "Pure of Mind [m]", description = "Defeat the Thresholder and Possessor without using items or Valor Form (Proud Mode or higher; Level 13 or below; no rescues).", points = 5,
-    trigger = BattleCheckpointReached(location = "Undercroft", eventId = 0x48, when = level() <= 13 && IsAtLeastOnDifficulty("Proud"))
+    trigger = GetCheckpointForRegisteredBoss("Thresholder", when = level() <= 13 && IsAtLeastOnDifficulty("Proud"))
         && trigger_when(BonusObtained())
         && never(UsedAnyItem()) && never(JustEnteredValorForm())
 )
@@ -317,7 +329,7 @@ achievement(title = "Pure of Mind [m]", description = "Defeat the Thresholder an
 function limitPointer() => dword(0x1d48cb0)
 function LimitIsBeingUsed() => limitPointer() != 0
 achievement(title = "Silence Is Golden [m]", description = "Defeat the Dark Thorn without using Limits (Proud Mode or higher; Level 16 or below; no rescues).", points = 25,
-    trigger = BattleCheckpointReached(location = "BallroomBattle", eventId = 0x4f, when = level() <= 16 && IsAtLeastOnDifficulty("Proud"))
+    trigger = GetCheckpointForRegisteredBoss("Dark Thorn", when = level() <= 16 && IsAtLeastOnDifficulty("Proud"))
         && trigger_when(BonusObtained())
         && never(LimitIsBeingUsed())
 )
@@ -348,7 +360,7 @@ achievement(title = "Tight Deadline [m]", description = "Escape from the Valley 
 )
 
 achievement(title = "Way of the Pacifist [m]", description = "Defeat Cerberus without using Bushido (Proud Mode or higher; Level 18 or below; no rescues).", points = 5,
-    trigger = BattleCheckpointReached(location = "CaveOfTheDeadEntrance", eventId = 0x72, when = level() <= 18 && IsAtLeastOnDifficulty("Proud"))
+    trigger = GetCheckpointForRegisteredBoss("Cerberus", when = level() <= 18 && IsAtLeastOnDifficulty("Proud"))
         && trigger_when(BonusObtained())
         && never(LimitIsBeingUsed())
 )
@@ -367,14 +379,14 @@ function petePinballTimeLimit() => 40
 function peteHerculesOverallTimeLimit() => 90
 achievement(title = "Skill Shot [m]", description = "Help Hercules defeat Pete at the Lock within " + petePinballTimeLimit() + " seconds (Proud Mode or higher; Level 18 or below; no rescues).",
     points = 5,
-    trigger = BattleCheckpointReached(location = "UnderworldLock2", eventId = 0x74, when = level() <= 18 && IsAtLeastOnDifficulty("Proud"))
+    trigger = GetCheckpointForRegisteredBoss("Olympus Pete", when = level() <= 18 && IsAtLeastOnDifficulty("Proud"))
         && trigger_when(BonusObtained())
         && never(timeRemainingInWaterFormFight() < SecondsToFrames(peteHerculesOverallTimeLimit() - petePinballTimeLimit()))
 )
 
 achievement(title = "Aerophobia [m]", description = "Defeat the Hydra without using the Pegasus Run reaction command (Proud Mode or higher; Level 18 or below; no rescues).",
     points = 5,
-    trigger = BattleCheckpointReached(location = "ColiseumGatesRuined", eventId = 0xab, when = level() <= 18 && IsAtLeastOnDifficulty("Proud"))
+    trigger = GetCheckpointForRegisteredBoss("Hydra", when = level() <= 18 && IsAtLeastOnDifficulty("Proud"))
         && trigger_when(BonusObtained())
         && never(reactionCommandId() == 0x14f)
 )
@@ -397,7 +409,7 @@ function healBlockerLimit() => 50
 function peteEnemySlotHP() => dword(0x1c6bdb0)
 achievement(title = "Heal Blocker [m]", description = "Defeat Pete for the second time in Timeless River without letting him restore more than " + healBlockerLimit()
     + " HP (Proud Mode or higher; Level 21 or below).", points = 5,
-    trigger = BattleCheckpointReached(location = "RiverWharf", eventId = 0x35, when = level() <= 21 && IsAtLeastOnDifficulty("Proud"))
+    trigger = GetCheckpointForRegisteredBoss("Timeless Pete", when = level() <= 21 && IsAtLeastOnDifficulty("Proud"))
         && trigger_when(BonusObtained())
         && never(repeated(healBlockerLimit() + 1, Delta(peteEnemySlotHP()) < peteEnemySlotHP()))
 )
@@ -409,3 +421,14 @@ leaderboard(title = "Tight Deadline", description = "Escape from the Valley of t
     value = measured(FrameAdvanced()),
     format = "FRAMES"
 )
+
+if (generateBonusAchievements())
+{
+    for boss in registeredBosses
+    {
+        achievement(title = boss + " [m]", description = "Defeat " + boss + " at Level 1 on Critical Mode and without being rescued.", points = 10,
+            trigger = GetCheckpointForRegisteredBoss(boss, when = level() <= 1 && IsAtLeastOnDifficulty("Critical"))
+                && trigger_when(BonusObtained())
+        )
+    }
+}
