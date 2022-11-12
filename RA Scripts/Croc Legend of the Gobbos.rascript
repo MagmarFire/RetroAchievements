@@ -260,7 +260,8 @@ for levelCode in levelCodesToLevelInfo
             submit = isLevelComplete && LevelCheckpointWasReached(levelId),
             value = measured(frameIncrementedInGame),
             id = levelCodesToLevelInfo[levelCode]["lbId"],
-            format = "FRAMES")
+            format = "FRAMES",
+            lower_is_better = true)
     }
 }
 
