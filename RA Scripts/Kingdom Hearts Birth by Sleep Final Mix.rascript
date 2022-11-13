@@ -730,8 +730,9 @@ function IsPerformingASituationalCommand() => characterState() == 0x1d
 
 function dLinkPointer() => tbyte(0xb59ce8)
 function dLinkCharge() => dword(dLinkPointer() + 0x1000000 + 0x3c) // todo: actually a float; change when supported
+function dLinkId() => word(dLinkPointer() + 0x1000000 + 0x8c)
 function commandGaugeCharge() => dword(dLinkPointer() + 0x1000000 + 0x1d30) // todo: also a float
-function IsUsingDLink() => word(characterFieldPointer() + 0x1000000 + 0x102c) > 0 && characterFieldPointer() != 0
+function IsUsingDLink() => dLinkId() != 0 && dLinkPointer() != 0
 function CommandGaugeEmptied() => Delta(commandGaugeCharge()) != commandGaugeCharge() && commandGaugeCharge() == 0
 
 function IsUsingAnyGivenCommand(haystack)
@@ -1345,7 +1346,7 @@ achievement(title = "Give Me Strength [m]", points = 10, id = 187070, badge = "2
     trigger = CheckpointPassedForCharacters(InformationBarPoppedUpOnce()
         && IsInLocation("Graveyard3"), TerraOnly(), true)
         && TriggerConditionsMetForCharacters({
-            Terra(): MaxHPIncreased()
+            Terra(): BossDefeatTriggered()
         }, true)
         && IsAtLeastOnDifficulty("Proud") && level() <= 20
         && never(!IsInLocation("Graveyard3"))
