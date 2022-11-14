@@ -414,6 +414,20 @@ achievement(title = "Heal Blocker [m]", description = "Defeat Pete for the secon
         && never(repeated(healBlockerLimit() + 1, Delta(peteEnemySlotHP()) < peteEnemySlotHP()))
 )
 
+function disneyCastleComplete() => bit2(0x32d942)
+achievement(title = "Historic Preservation", description = "Complete Disney Castle.", points = 3,
+    trigger = WasBitflagSetInGame(disneyCastleComplete()) && IsInLocation("WorldMap")
+)
+
+function fieldMp() => dword(0x1c6c8d0)
+function UsedFire() => fieldActionId() == 0x38 && Delta(fieldMp()) > fieldMp()
+function UsedFireFinisher() => fieldActionId() == 0x39 && Delta(fieldMp()) > fieldMp()
+
+function IsUsingFireCheese()
+{
+    
+}
+
 leaderboard(title = "Tight Deadline", description = "Escape from the Valley of the Dead with Auron as quickly as possible.",
     start = BattleCheckpointReached(location = "ValleyOfTheDead", eventId = 0x6f, when = level() <= 18 && IsAtLeastOnDifficulty("Proud")),
     cancel = IsDead(),
