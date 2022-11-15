@@ -428,6 +428,16 @@ function IsUsingFireCheese()
     
 }
 
+function valorLevel() => byte(0x32ee26)
+achievement(title = "The Dauntless", description = "Raise Valor Form to the maximum level.", points = 5,
+    trigger = WasValueSetInGame(valorLevel(), 6, 7) && measured(valorLevel() == 7)
+)
+
+function wisdomLevel() => byte(0x32ee5e)
+achievement(title = "The Erudite", description = "Raise Wisdom Form to the maximum level.", points = 5,
+    trigger = WasValueSetInGame(wisdomLevel(), 6, 7) && measured(wisdomLevel() == 7)
+)
+
 leaderboard(title = "Tight Deadline", description = "Escape from the Valley of the Dead with Auron as quickly as possible.",
     start = BattleCheckpointReached(location = "ValleyOfTheDead", eventId = 0x6f, when = level() <= 18 && IsAtLeastOnDifficulty("Proud")),
     cancel = IsDead(),
