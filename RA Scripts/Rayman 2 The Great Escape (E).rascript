@@ -826,7 +826,10 @@ leaderboard(title = "Bonus Stage", description = "Get a better time in the race 
     start = IsInArea("Bonus") && BonusRaceStarted(),
     cancel = BonusRaceCanceled(),
     submit = WonBonusRace(),
-    value = measured(TimeElapsedInMilliseconds())
+    value = measured(TimeElapsedInMilliseconds()),
+    id = 4996,
+    lower_is_better = true,
+    format = "MILLISECS"
 )
 
 function walkOfLifeTimer() => dword(0x5E9AC0) // todo: actually a float
