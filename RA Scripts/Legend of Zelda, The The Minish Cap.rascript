@@ -768,8 +768,7 @@ function remoteBombs() => bit0(0x00ab34)
 achievement(
     title = "Don't Hurt Yourself", description = "Obtain a Bomb Bag.", points = 5,
     id = 2056, badge = "155812", published = "8/4/2013 8:02:32 AM", modified = "1/30/2021 2:30:23 PM",
-    trigger = WasValueJustSetInGame(bombs(), 0, 1) && Delta(remoteBombs()) == 0 &&
-              MusicId() == 0x14 && ScreenIdWord() == 0x2620
+    trigger = WasValueJustSetInGame(bombs(), 0, 1) && Delta(remoteBombs()) == 0
 )
 
 achievement(
