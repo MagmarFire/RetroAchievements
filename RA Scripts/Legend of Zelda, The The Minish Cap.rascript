@@ -1,5 +1,6 @@
 // Legend of Zelda, The: The Minish Cap
 // #ID = 559
+// Original script by AlmightyXor, updated by wolfman2000
 
 // $000004: X Cam location
 // $000005: X Cam Rollover (Room ID?)
@@ -596,19 +597,26 @@ function GenerateSaveProtectedAchievementFromConditions(cheevo, conditions)
     )
 }
 
+function MusicId() => byte(0x029EF4)
+
+function CreditsLoaded() => MusicId() == 0x09 && prev(MusicId()) == 0x00
+
+function ScreenIdByte() => byte(0x000BF4)
+function ScreenIdWord() => word(0x000BF4)
+
 achievement(
     title = "Bested Gyorg Pair[m]", description = "Defeat the Gyorg Pair without taking damage", points = 25,
     id = 2257, badge = "155782", published = "8/16/2013 8:24:47 AM", modified = "1/30/2021 2:29:51 PM",
     trigger = byte(0x0015AC) == 9 && once(byte(0x0015AC) == 1) && once(byte(0x0015AC) == 2) && once(byte(0x0015AC) == 3) && 
               once(byte(0x0015AC) == 4) && once(byte(0x0015AC) == 5) && once(byte(0x0015AC) == 6) && once(byte(0x0015AC) == 7) && 
-              once(byte(0x0015AC) == 8) && word(0x000BF4) == 113 && never(byte(0x00AAEA) < prev(byte(0x00AAEA))) && 
+              once(byte(0x0015AC) == 8) && ScreenIdWord() == 113 && never(byte(0x00AAEA) < prev(byte(0x00AAEA))) && 
               never(byte(0x0015AC) < prev(byte(0x0015AC)))
 )
 
 achievement(
     title = "Earth", description = "Obtain the Earth Element.", points = 5,
     id = 2034, badge = "155783", published = "8/4/2013 8:00:28 AM", modified = "1/30/2021 2:29:52 PM",
-    trigger = word(0x000BF4) == 73 && bit0(0x00AB42) > prev(bit0(0x00AB42))
+    trigger = ScreenIdWord() == 73 && bit0(0x00AB42) > prev(bit0(0x00AB42))
 )
 
 achievement(
@@ -632,13 +640,13 @@ achievement(
 achievement(
     title = "Gust Jar", description = "Obtain the Gust Jar.", points = 5,
     id = 2033, badge = "155787", published = "8/4/2013 8:00:23 AM", modified = "1/30/2021 2:29:57 PM",
-    trigger = word(0x000BF4) == 72 && bit2(0x00AB36) > prev(bit2(0x00AB36))
+    trigger = ScreenIdWord() == 72 && bit2(0x00AB36) > prev(bit2(0x00AB36))
 )
 
 achievement(
     title = "Grip Ring", description = "Obtain the Grip Ring.", points = 5,
     id = 2038, badge = "155788", published = "8/4/2013 8:00:45 AM", modified = "1/30/2021 2:29:58 PM",
-    trigger = word(0x000BF4) == 1062 && bit0(0x00AB43) > prev(bit0(0x00AB43))
+    trigger = ScreenIdWord() == 1062 && bit0(0x00AB43) > prev(bit0(0x00AB43))
 )
 
 achievement(
@@ -656,7 +664,7 @@ achievement(
 achievement(
     title = "But I Can Walk Just Fine!", description = "Obtain the Cane of Pacci.", points = 5,
     id = 2041, badge = "155791", published = "8/4/2013 8:00:54 AM", modified = "1/30/2021 2:30:02 PM",
-    trigger = word(0x000BF4) == 336 && bit4(0x00AB36) > prev(bit4(0x00AB36))
+    trigger = ScreenIdWord() == 336 && bit4(0x00AB36) > prev(bit4(0x00AB36))
 )
 
 achievement(
@@ -669,13 +677,13 @@ function graveyardKeyUsed() => bit1(0x00AB41)
 achievement(
     title = "Graveyard", description = "Obtain the Graveyard Key and use it", points = 5,
     id = 2043, badge = "155794", published = "8/4/2013 8:01:00 AM", modified = "8/4/2019 9:04:58 PM",
-    trigger = once(Delta(graveyardKeyUsed()) == 0 && graveyardKeyUsed() == 1 && word(0x000BF4) == 0x9) && never(word(0x000BF4) != 0x9)
+    trigger = once(Delta(graveyardKeyUsed()) == 0 && graveyardKeyUsed() == 1 && ScreenIdWord() == 0x9) && never(ScreenIdWord() != 0x9)
 )
 
 achievement(
     title = "A New Quest", description = "Obtain the Broken Picori Blade.", points = 5,
     id = 2031, badge = "155797", published = "8/3/2013 6:22:56 PM", modified = "1/30/2021 2:30:05 PM",
-    trigger = word(0x000BF4) == 640 && bit2(0x00AB3F) > prev(bit2(0x00AB3F))
+    trigger = ScreenIdWord() == 640 && bit2(0x00AB3F) > prev(bit2(0x00AB3F))
 )
 
 achievement(
@@ -761,7 +769,8 @@ function remoteBombs() => bit0(0x00ab34)
 achievement(
     title = "Don't Hurt Yourself", description = "Obtain a Bomb Bag.", points = 5,
     id = 2056, badge = "155812", published = "8/4/2013 8:02:32 AM", modified = "1/30/2021 2:30:23 PM",
-    trigger = WasValueJustSetInGame(bombs(), 0, 1) && Delta(remoteBombs()) == 0
+    trigger = WasValueJustSetInGame(bombs(), 0, 1) && Delta(remoteBombs()) == 0 &&
+              MusicId() == 0x14 && ScreenIdWord() == 0x2620
 )
 
 achievement(
@@ -797,7 +806,7 @@ achievement(
 achievement(
     title = "Jibber-Jabber", description = "Obtain the Jabber Nut.", points = 5,
     id = 2065, badge = "155818", published = "8/4/2013 6:20:26 PM", modified = "1/30/2021 2:30:31 PM",
-    trigger = word(0x000BF4) == 2336 && bit6(0x00AB48) > prev(bit6(0x00AB48))
+    trigger = ScreenIdWord() == 2336 && bit6(0x00AB48) > prev(bit6(0x00AB48))
 )
 
 achievement(
@@ -1110,61 +1119,65 @@ GenerateSaveProtectedAchievementFromConditions({
 achievement(
     title = "Bested Big Green Chuchu [m]", description = "Defeat the Big Green Chuchu without taking damage", points = 10,
     id = 2078, badge = "155845", published = "8/5/2013 5:15:22 AM", modified = "8/5/2013 5:31:38 AM",
-    trigger = once(byte(0x000BF4) == 0x48) && once(byte(0x000BF5) == 0x17) && never(byte(0x000BF5) == 0x0B) && 
-              word(0x000BF4) == 0x0049 && never(byte(0x00AAEA) < prev(byte(0x00AAEA))) && once(byte(0x00188D) == 0xFF) && trigger_when(byte(0x00188D) == 0x00) && 
+    trigger = once(ScreenIdByte() == 0x48) && once(byte(0x000BF5) == 0x17) && never(byte(0x000BF5) == 0x0B) && 
+              ScreenIdWord() == 0x0049 && never(byte(0x00AAEA) < prev(byte(0x00AAEA))) && once(byte(0x00188D) == 0xFF) && trigger_when(byte(0x00188D) == 0x00) && 
               never(bit0(0x00AB42) < prev(bit0(0x00AB42))) && bit0(0x00AB42) == 0x1
 )
+
+firstTimeGameBeaten = bit0(0x00AA46) > prev(bit0(0x00AA46))
 
 achievement(
     title = "Courage", description = "Restore peace to Hyrule with only 3 Heart Containers", points = 50,
     id = 2311, badge = "155844", published = "8/19/2013 10:10:52 PM", modified = "8/16/2021 2:20:45 AM",
-    trigger = word(0x000BF4) == 129 && byte(0x00AAEB) == 24 && trigger_when(prev(byte(0x00AA46)) == 0) && 
-              trigger_when(byte(0x00AA46) == 1)
+    trigger = ScreenIdWord() == 129 && byte(0x00AAEB) == 24 &&
+              (trigger_when(firstTimeGameBeaten) || trigger_when(CreditsLoaded()))
 )
 
 achievement(
     title = "Hero of Hyrule", description = "Restore peace to Hyrule", points = 25,
     id = 2312, badge = "155846", published = "8/19/2013 10:11:40 PM", modified = "1/30/2021 2:31:07 PM",
-    trigger = word(0x000BF4) == 129 && byte(0x00AA46) == 1
+    trigger = ScreenIdWord() == 129 && (firstTimeGameBeaten || CreditsLoaded())
 )
 
 achievement(
     title = "Bested Gleerok [m]", description = "Defeat Gleerok without taking damage", points = 25,
     id = 2086, badge = "155847", published = "8/7/2013 9:26:09 AM", modified = "8/16/2021 2:22:15 AM",
     trigger = never(byte(0x00AAEA) < prev(byte(0x00AAEA))) && once(byte(0x0015E5) == 255) && 
-              trigger_when(byte(0x0015E5) == 0) && never(byte(0x000BF5) == 23) && once(byte(0x000BF5) == 18) && once(byte(0x000BF4) == 80) && 
-              byte(0x000BF4) == 81 && byte(0x000BF5) == 0 && once(bit2(0x00AB42) > prev(bit2(0x00AB42))) && 
-              never(bit2(0x00AB42) < prev(bit2(0x00AB42))) && never(byte(0x000BF4) == 6)
+              trigger_when(byte(0x0015E5) == 0) && never(byte(0x000BF5) == 23) && once(byte(0x000BF5) == 18) && once(ScreenIdByte() == 80) && 
+              ScreenIdByte() == 81 && byte(0x000BF5) == 0 && once(bit2(0x00AB42) > prev(bit2(0x00AB42))) && 
+              never(bit2(0x00AB42) < prev(bit2(0x00AB42))) && never(ScreenIdByte() == 6)
 )
 
 achievement(
     title = "Bested Mazaal [m]", description = "Defeat Mazaal without taking damage", points = 25,
     id = 2188, badge = "155849", published = "8/12/2013 7:16:01 PM", modified = "1/30/2021 2:31:16 PM",
-    trigger = once(word(0x000BF4) == 344) && once(word(0x000BF4) == 346) && once(word(0x000BF4) == 90) && 
-              word(0x000BF4) == 89 && once(word(0x000BF4) == 5720) && never(word(0x000BF4) == 1112) && 
+    trigger = once(ScreenIdWord() == 344) && once(ScreenIdWord() == 346) && once(ScreenIdWord() == 90) && 
+              ScreenIdWord() == 89 && once(ScreenIdWord() == 5720) && never(ScreenIdWord() == 1112) && 
               never(byte(0x00AAEA) < prev(byte(0x00AAEA))) && once(bit6(0x00AB37) > prev(bit6(0x00AB37))) && never(bit6(0x00AB37) < prev(bit6(0x00AB37)))
 )
 
 achievement(
     title = "Gambler", description = "Win 270 Rupees or more at the Chest Mini-Game Shop", points = 25,
     id = 2344, badge = "155848", published = "8/20/2013 4:22:53 AM", modified = "1/30/2021 2:31:13 PM",
-    trigger = word(0x0010A6) >= 270 && word(0x000BF4) == 1571
+    trigger = word(0x0010A6) >= 270 && ScreenIdWord() == 1571
 )
 
 achievement(
     title = "Bested Big Blue Chuchu [m]", description = "Defeat the Big Blue Chuchu without taking damage", points = 25,
     id = 2198, badge = "155850", published = "8/14/2013 8:36:42 PM", modified = "8/16/2021 2:24:31 AM",
     trigger = bit6(0x00AD8C) == 1 && once(bit6(0x00AD8C) > prev(bit6(0x00AD8C))) && 
-              never(bit6(0x00AD8C) < prev(bit6(0x00AD8C))) && word(0x000BF4) == 4192 && once(byte(0x00188D) == 255) && trigger_when(byte(0x00188D) == 0) && 
-              bit0(0x03C364) == 0 && once(bit0(0x03C364) < prev(bit0(0x03C364))) && never(byte(0x000BF5) == 15) && 
+              never(bit6(0x00AD8C) < prev(bit6(0x00AD8C))) && ScreenIdWord() == 4192 && once(byte(0x00188D) == 255) && trigger_when(byte(0x00188D) == 0) && 
+              trigger_when(bit0(0x03C364) == 0) &&
+              trigger_when(once(bit0(0x03C364) < prev(bit0(0x03C364)))) &&
+              never(byte(0x000BF5) == 15) && 
               never(byte(0x00AAEA) < prev(byte(0x00AAEA)))
 )
 
 achievement(
     title = "Bested Big Octorok [m]", description = "Defeat the Big Octorok without taking damage", points = 25,
     id = 2245, badge = "155851", published = "8/15/2013 10:33:00 AM", modified = "1/30/2021 2:31:18 PM",
-    trigger = never(word(0x000BF4) == 1888) && never(word(0x000BF4) == 2912) && never(word(0x000BF4) == 2400) && 
-              never(word(0x000BF4) == 864) && once(word(0x000BF4) == 2144) && word(0x000BF4) == 3680 && bit4(0x00AB42) == 1 && 
+    trigger = never(ScreenIdWord() == 1888) && never(ScreenIdWord() == 2912) && never(ScreenIdWord() == 2400) && 
+              never(ScreenIdWord() == 864) && once(ScreenIdWord() == 2144) && ScreenIdWord() == 3680 && bit4(0x00AB42) == 1 && 
               once(bit4(0x00AB42) > prev(bit4(0x00AB42))) && never(bit4(0x00AB42) < prev(bit4(0x00AB42))) && never(byte(0x00AAEB) > prev(byte(0x00AAEB))) && 
               once(byte(0x0017B4) == 1) && once(byte(0x0017B4) == 2) && once(byte(0x0017B4) == 3) && once(byte(0x0017B4) == 4) && 
               byte(0x0017B4) == 0 && byte(0x00177D) == 0 && never(byte(0x00AAEA) < prev(byte(0x00AAEA)))
@@ -1173,10 +1186,10 @@ achievement(
 achievement(
     title = "Bested Vaati", description = "Defeat Vaati without taking damage", points = 100,
     id = 2313, badge = "155853", published = "8/19/2013 11:38:00 PM", modified = "1/30/2021 2:31:20 PM",
-    trigger = once(word(0x000BF4) == 1672) && once(byte(0x00ADC3) == 96) && once(byte(0x00ADC3) == 97) && 
+    trigger = once(ScreenIdWord() == 1672) && once(byte(0x00ADC3) == 96) && once(byte(0x00ADC3) == 97) && 
               once(byte(0x00ADC3) == 105) && once(byte(0x00ADC3) == 107) && once(byte(0x00ADC3) == 111) && byte(0x00ADC3) == 239 && 
               never(byte(0x00ADC3) < prev(byte(0x00ADC3))) && repeated(5, byte(0x00ADC3) > prev(byte(0x00ADC3))) && never(byte(0x00ADC3) < 96) && 
-              never(byte(0x00AAEA) < prev(byte(0x00AAEA))) && word(0x000BF4) == 393
+              never(byte(0x00AAEA) < prev(byte(0x00AAEA))) && ScreenIdWord() == 393
 )
 
 rich_presence_conditional_display(((byte(0x00AAEB) == 0 && prior(byte(0x00AAEB)) == 0) ||
