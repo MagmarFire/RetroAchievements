@@ -624,8 +624,8 @@ achievement(title = "One-Trick Lion [m]", description = "Protect Timon and Pumba
 )
 
 // This fight sucks, and no number of challenges will make this any more fun or less frustrating, so I'm throwing players a bone here.
-achievement(title = "Dull Claws [m]", description = "Defeat Scar on Proud Mode at Level 27 or below.", points = 10,
-    trigger = BattleCheckpointReached(location = "PridePeakBattle", eventId = 0x37, when = level() <= 27 && IsAtLeastOnDifficulty("Proud"))
+achievement(title = "Dull Claws [m]", description = "Defeat Scar on Proud Mode or higher at Level 27 or below.", points = 10,
+    trigger = GetCheckpointForRegisteredBoss("Scar", when = level() <= 27 && IsAtLeastOnDifficulty("Proud"))
         && trigger_when(BonusObtained())
 )
 
