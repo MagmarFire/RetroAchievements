@@ -7,8 +7,8 @@ areas = {
     65535: { "worldId": 255, "name": "Title", "display": "On the title screen…", "areaId": 255, "hideWorld": 1, },523: { "worldId": 2, "name": "SunsetStation", "display": "Sunset Station", "areaId": 11, "hideWorld": 0, },522: { "worldId": 2, "name": "SunsetTerrace", "display": "Sunset Terrace", "areaId": 10, "hideWorld": 0, },548: { "worldId": 2, "name": "Tunnelway", "display": "Tunnelway", "areaId": 36, "hideWorld": 0, },524: { "worldId": 2, "name": "SunsetHill", "display": "Sunset Hill", "areaId": 12, "hideWorld": 0, },520: { "worldId": 2, "name": "StationPlaza", "display": "Station Plaza", "areaId": 8, "hideWorld": 0, },518: { "worldId": 2, "name": "StationHeights", "display": "Market Street: Station Heights", "areaId": 6, "hideWorld": 0, },515: { "worldId": 2, "name": "BackAlley", "display": "Back Alley", "areaId": 3, "hideWorld": 0, },514: { "worldId": 2, "name": "UsualSpot", "display": "The Usual Spot", "areaId": 2, "hideWorld": 0, },516: { "worldId": 2, "name": "Sandlot", "display": "Sandlot", "areaId": 4, "hideWorld": 0, },519: { "worldId": 2, "name": "TramCommon", "display": "Market Street: Tram Common", "areaId": 7, "hideWorld": 0, },525: { "worldId": 2, "name": "Woods", "display": "The Woods", "areaId": 13, "hideWorld": 0, },513: { "worldId": 2, "name": "RoxasRoom", "display": "Roxas’s Room", "areaId": 1, "hideWorld": 0, },526: { "worldId": 2, "name": "Courtyard", "display": "Mansion: Courtyard", "areaId": 14, "hideWorld": 0, },527: { "worldId": 2, "name": "Foyer", "display": "Mansion: Foyer", "areaId": 15, "hideWorld": 0, },530: { "worldId": 2, "name": "WhiteRoom", "display": "Mansion: The White Room", "areaId": 18, "hideWorld": 0, },529: { "worldId": 2, "name": "Library", "display": "Mansion: Library", "areaId": 17, "hideWorld": 0, },533: { "worldId": 2, "name": "ComputerRoom", "display": "Mansion: Computer Room", "areaId": 21, "hideWorld": 0, },531: { "worldId": 2, "name": "BasementHall", "display": "Mansion: Basement Hall", "areaId": 19, "hideWorld": 0, },532: { "worldId": 2, "name": "BasementHallAxel", "display": "Mansion: Basement Hall", "areaId": 20, "hideWorld": 0, },534: { "worldId": 2, "name": "BasementCorridor", "display": "Mansion: Basement Corridor", "areaId": 22, "hideWorld": 0, },535: { "worldId": 2, "name": "PodRoom", "display": "Mansion: Pod Room", "areaId": 23, "hideWorld": 0, },544: { "worldId": 2, "name": "StationOfSerenity", "display": "Station of Serenity", "areaId": 32, "hideWorld": 1, },545: { "worldId": 2, "name": "StationOfCalling", "display": "Station of Calling", "areaId": 33, "hideWorld": 1, },546: { "worldId": 2, "name": "StationOfAwakening", "display": "Station of Awakening", "areaId": 34, "hideWorld": 1, },517: { "worldId": 2, "name": "SandlotBattlefield", "display": "Sandlot", "areaId": 5, "hideWorld": 0, },521: { "worldId": 2, "name": "CentralStation", "display": "Central Station", "areaId": 9, "hideWorld": 0, },537: { "worldId": 2, "name": "Tower", "display": "The Tower", "areaId": 25, "hideWorld": 1, },541: { "worldId": 2, "name": "StarChamber", "display": "Tower: Star Chamber", "areaId": 29, "hideWorld": 1, },543: { "worldId": 2, "name": "WaywardStairs", "display": "Tower: Wayward Stairs", "areaId": 31, "hideWorld": 1, },550: { "worldId": 2, "name": "WaywardStairs2", "display": "Tower: Wayward Stairs", "areaId": 38, "hideWorld": 1, },542: { "worldId": 2, "name": "MoonChamber", "display": "Tower: Moon Chamber", "areaId": 30, "hideWorld": 1, },551: { "worldId": 2, "name": "WaywardStairs3", "display": "Tower: Wayward Stairs", "areaId": 39, "hideWorld": 1, },539: { "worldId": 2, "name": "SorcererLoft", "display": "Tower: Sorcerer’s Loft", "areaId": 27, "hideWorld": 1, },540: { "worldId": 2, "name": "Wardrobe", "display": "Tower: Wardrobe", "areaId": 28, "hideWorld": 1, },3840: { "worldId": 15, "name": "WorldMap", "display": "World Map", "areaId": 0, "hideWorld": 1, },1024: { "worldId": 4, "name": "VillainVale", "display": "Villain’s Vale", "areaId": 0, "hideWorld": 0, },1034: { "worldId": 4, "name": "Marketplace", "display": "Marketplace", "areaId": 10, "hideWorld": 0, },1033: { "worldId": 4, "name": "Borough", "display": "Borough", "areaId": 9, "hideWorld": 0, },1037: { "worldId": 4, "name": "Merlin", "display": "Merlin’s House", "areaId": 13, "hideWorld": 0, },2048: { "worldId": 8, "name": "BambooGrove", "display": "Bamboo Grove", "areaId": 0, "hideWorld": 0, },2049: { "worldId": 8, "name": "Encampment", "display": "Encampment", "areaId": 1, "hideWorld": 0, },2050: { "worldId": 8, "name": "Checkpoint", "display": "Checkpoint", "areaId": 2, "hideWorld": 0, },2052: { "worldId": 8, "name": "Village", "display": "Village", "areaId": 4, "hideWorld": 0, },2051: { "worldId": 8, "name": "MountainTrail", "display": "Mountain Trail", "areaId": 3, "hideWorld": 0, },2053: { "worldId": 8, "name": "VillageCave", "display": "Village Cave", "areaId": 5, "hideWorld": 0, },2060: { "worldId": 8, "name": "RuinedVillage", "display": "Village", "areaId": 12, "hideWorld": 0, },2054: { "worldId": 8, "name": "Ridge", "display": "Ridge", "areaId": 6, "hideWorld": 0, },2055: { "worldId": 8, "name": "Summit", "display": "Summit", "areaId": 7, "hideWorld": 0, },2056: { "worldId": 8, "name": "ImperialSquare", "display": "Imperial Square", "areaId": 8, "hideWorld": 0, },2057: { "worldId": 8, "name": "PalaceGate", "display": "Palace Gate", "areaId": 9, "hideWorld": 0, },1280: { "worldId": 5, "name": "EntranceHall", "display": "Entrance Hall", "areaId": 0, "hideWorld": 0, },1281: { "worldId": 5, "name": "Parlor", "display": "Parlor", "areaId": 1, "hideWorld": 0, },1286: { "worldId": 5, "name": "BeastCourtyard", "display": "Courtyard", "areaId": 6, "hideWorld": 0, },1282: { "worldId": 5, "name": "BelleRoom", "display": "Belle’s Room", "areaId": 2, "hideWorld": 0, },1287: { "worldId": 5, "name": "EastWing", "display": "The East Wing", "areaId": 7, "hideWorld": 0, },1284: { "worldId": 5, "name": "Ballroom", "display": "Ballroom", "areaId": 4, "hideWorld": 0, },1288: { "worldId": 5, "name": "WestHall", "display": "The West Hall", "areaId": 8, "hideWorld": 0, },1291: { "worldId": 5, "name": "Undercroft", "display": "Undercroft", "areaId": 11, "hideWorld": 0, },1290: { "worldId": 5, "name": "Dungeon", "display": "Dungeon", "areaId": 10, "hideWorld": 0, },1292: { "worldId": 5, "name": "SecretPassage", "display": "Secret Passage", "areaId": 12, "hideWorld": 0, },1289: { "worldId": 5, "name": "WestWing", "display": "The West Wing", "areaId": 9, "hideWorld": 0, },1283: { "worldId": 5, "name": "BeastRoom", "display": "The Beast’s Room", "areaId": 3, "hideWorld": 0, },1285: { "worldId": 5, "name": "BallroomBattle", "display": "Ballroom", "areaId": 5, "hideWorld": 0, },2304: { "worldId": 9, "name": "Book", "display": "The Hundred Acre Wood", "areaId": 0, "hideWorld": 1, },2306: { "worldId": 9, "name": "PoohHouse", "display": "Pooh Bear’s House", "areaId": 2, "hideWorld": 0, },1542: { "worldId": 6, "name": "HadesChamber", "display": "Hades’ Chamber", "areaId": 6, "hideWorld": 0, },1541: { "worldId": 6, "name": "ValleyOfTheDead", "display": "Valley of the Dead", "areaId": 5, "hideWorld": 0, },1546: { "worldId": 6, "name": "CaveOfTheDeadInnerChamber", "display": "Cave of the Dead: Inner Chamber", "areaId": 10, "hideWorld": 0, },1551: { "worldId": 6, "name": "CaveOfTheDeadPassage", "display": "Cave of the Dead: Passage", "areaId": 15, "hideWorld": 0, },1539: { "worldId": 6, "name": "UnderworldEntrance", "display": "Underworld Entrance", "areaId": 3, "hideWorld": 0, },1543: { "worldId": 6, "name": "CaveOfTheDeadEntrance", "display": "Cave of the Dead: Entrance", "areaId": 7, "hideWorld": 0, },1537: { "worldId": 6, "name": "ColiseumGates", "display": "Coliseum Gates", "areaId": 1, "hideWorld": 0, },1540: { "worldId": 6, "name": "ColiseumFoyer", "display": "Coliseum Foyer", "areaId": 4, "hideWorld": 0, },1536: { "worldId": 6, "name": "Coliseum", "display": "The Coliseum", "areaId": 0, "hideWorld": 0, },1547: { "worldId": 6, "name": "UnderworldCavernsEntrance", "display": "Underworld Caverns: Entrance", "areaId": 11, "hideWorld": 0, },1552: { "worldId": 6, "name": "UnderworldCavernsLostRoad", "display": "Underworld Caverns: The Lost Road", "areaId": 16, "hideWorld": 0, },1553: { "worldId": 6, "name": "UnderworldCavernsAtrium", "display": "Underworld Caverns: Atrium", "areaId": 17, "hideWorld": 0, },1548: { "worldId": 6, "name": "UnderworldLock", "display": "The Lock", "areaId": 12, "hideWorld": 0, },1544: { "worldId": 6, "name": "UnderworldLock2", "display": "The Lock", "areaId": 8, "hideWorld": 0, },1554: { "worldId": 6, "name": "ColiseumGatesRuined", "display": "Coliseum Gates", "areaId": 18, "hideWorld": 0, },3075: { "worldId": 12, "name": "CastleCourtyard", "display": "Courtyard", "areaId": 3, "hideWorld": 0, },3074: { "worldId": 12, "name": "CastleColonnade", "display": "Colonnade", "areaId": 2, "hideWorld": 0, },3073: { "worldId": 12, "name": "CastleLibrary", "display": "Library", "areaId": 1, "hideWorld": 0, },3072: { "worldId": 12, "name": "CastleAudienceChamber", "display": "Audience Chamber", "areaId": 0, "hideWorld": 0, },3076: { "worldId": 12, "name": "CastleCornerstone", "display": "The Hall of the Cornerstone", "areaId": 4, "hideWorld": 0, },3328: { "worldId": 13, "name": "RiverCornerstoneHill", "display": "Cornerstone Hill", "areaId": 0, "hideWorld": 0, },3329: { "worldId": 13, "name": "RiverPier", "display": "Pier", "areaId": 1, "hideWorld": 0, },3335: { "worldId": 13, "name": "MickeyHouse", "display": "Mickey’s House", "areaId": 7, "hideWorld": 0, },3334: { "worldId": 13, "name": "Fire", "display": "Scene of the Fire", "areaId": 6, "hideWorld": 0, },3332: { "worldId": 13, "name": "Lilliput", "display": "Lilliput", "areaId": 4, "hideWorld": 0, },3333: { "worldId": 13, "name": "BuildingSite", "display": "Building Site", "areaId": 5, "hideWorld": 0, },3336: { "worldId": 13, "name": "VillainFlashback", "display": "Villain’s Vale", "areaId": 8, "hideWorld": 1, },3331: { "worldId": 13, "name": "RiverWharf", "display": "Wharf", "areaId": 3, "hideWorld": 0, },3330: { "worldId": 13, "name": "RiverWaterway", "display": "Waterway", "areaId": 2, "hideWorld": 0, },4104: { "worldId": 16, "name": "PortRockFace", "display": "Isla de Muerta: Rock Face", "areaId": 8, "hideWorld": 0, },4105: { "worldId": 16, "name": "PortCaveMouth", "display": "Isla de Muerta: Cave Mouth", "areaId": 9, "hideWorld": 0, },4097: { "worldId": 16, "name": "PortHarbor", "display": "Harbor", "areaId": 1, "hideWorld": 0, },4098: { "worldId": 16, "name": "PortTown", "display": "Town", "areaId": 2, "hideWorld": 0, },4096: { "worldId": 16, "name": "PortRampart", "display": "Rampart", "areaId": 0, "hideWorld": 0, },4099: { "worldId": 16, "name": "PortInterceptor", "display": "The Interceptor", "areaId": 3, "hideWorld": 0, },4100: { "worldId": 16, "name": "PortInterceptorHold", "display": "The Interceptor: Ship’s Hold", "areaId": 4, "hideWorld": 0, },4117: { "worldId": 16, "name": "PortInterceptorBattle", "display": "The Interceptor", "areaId": 21, "hideWorld": 0, },4103: { "worldId": 16, "name": "PortInterceptorDualBattle", "display": "The Interceptor", "areaId": 7, "hideWorld": 0, },4108: { "worldId": 16, "name": "PortPowderStore", "display": "Isla de Muerta: Powder Store", "areaId": 12, "hideWorld": 0, },4109: { "worldId": 16, "name": "PortNook", "display": "Isla de Muerta: Moonlight Nook", "areaId": 13, "hideWorld": 0, },4106: { "worldId": 16, "name": "PortHeap", "display": "Isla de Muerta: Treasure Heap", "areaId": 10, "hideWorld": 0, },3586: { "worldId": 14, "name": "HalloweenGraveyard", "display": "Graveyard", "areaId": 2, "hideWorld": 0, },3585: { "worldId": 14, "name": "HalloweenLab", "display": "Dr. Finkelstein’s Lab", "areaId": 1, "hideWorld": 0, },3584: { "worldId": 14, "name": "HalloweenSquare", "display": "Halloween Town Square", "areaId": 0, "hideWorld": 1, },3588: { "worldId": 14, "name": "HalloweenHinterlands", "display": "Hinterlands", "areaId": 4, "hideWorld": 0, },3589: { "worldId": 14, "name": "HalloweenYuletide", "display": "Christmas Town: Yuletide Hill", "areaId": 5, "hideWorld": 1, },3590: { "worldId": 14, "name": "HalloweenCandyCane", "display": "Christmas Town: Candy Cane Lane", "areaId": 6, "hideWorld": 1, },3592: { "worldId": 14, "name": "HalloweenSanta", "display": "Christmas Town: Santa’s House", "areaId": 8, "hideWorld": 1, },3587: { "worldId": 14, "name": "HalloweenHill", "display": "Curly Hill", "areaId": 3, "hideWorld": 0, },3593: { "worldId": 14, "name": "HalloweenFactory", "display": "Christmas Town: Toy Factory: Shipping and Receiving", "areaId": 9, "hideWorld": 1, },1794: { "worldId": 7, "name": "AgrabahShop", "display": "The Peddler’s Shop", "areaId": 2, "hideWorld": 0, },1792: { "worldId": 7, "name": "Agrabah", "display": "Agrabah", "areaId": 0, "hideWorld": 1, },1793: { "worldId": 7, "name": "AgrabahBazaar", "display": "Bazaar", "areaId": 1, "hideWorld": 0, },1798: { "worldId": 7, "name": "AgrabahWalls", "display": "Palace Walls", "areaId": 6, "hideWorld": 0, },1799: { "worldId": 7, "name": "AgrabahCaveEntrance", "display": "The Cave of Wonders: Entrance", "areaId": 7, "hideWorld": 0, },1804: { "worldId": 7, "name": "AgrabahCaveValley", "display": "The Cave of Wonders: Valley of Stone", "areaId": 12, "hideWorld": 0, },1801: { "worldId": 7, "name": "AgrabahCaveGuardians", "display": "The Cave of Wonders: Stone Guardians", "areaId": 9, "hideWorld": 0, },1805: { "worldId": 7, "name": "AgrabahCaveChasm", "display": "The Cave of Wonders: Chasm of Challenges", "areaId": 13, "hideWorld": 0, },1802: { "worldId": 7, "name": "AgrabahCaveTreasure", "display": "The Cave of Wonders: Treasure Room", "areaId": 10, "hideWorld": 0, },1795: { "worldId": 7, "name": "AgrabahPalace", "display": "The Palace", "areaId": 3, "hideWorld": 0, },2566: { "worldId": 10, "name": "PrideGorge", "display": "Gorge", "areaId": 6, "hideWorld": 0, },2565: { "worldId": 10, "name": "PrideGraveyard", "display": "Elephant Graveyard", "areaId": 5, "hideWorld": 0, },2564: { "worldId": 10, "name": "PrideSavannah", "display": "The Savannah", "areaId": 4, "hideWorld": 0, },2560: { "worldId": 10, "name": "PrideRock", "display": "Pride Rock", "areaId": 0, "hideWorld": 0, },2561: { "worldId": 10, "name": "PrideHollow", "display": "Stone Hollow", "areaId": 1, "hideWorld": 0, },2563: { "worldId": 10, "name": "PrideValley", "display": "Wildebeest Valley", "areaId": 3, "hideWorld": 0, },2567: { "worldId": 10, "name": "PrideWastelands", "display": "Wastelands", "areaId": 7, "hideWorld": 0, },2568: { "worldId": 10, "name": "PrideJungle", "display": "Jungle", "areaId": 8, "hideWorld": 0, },2569: { "worldId": 10, "name": "PrideOasis", "display": "Oasis", "areaId": 9, "hideWorld": 0, },2562: { "worldId": 10, "name": "PrideDen", "display": "King’s Den", "areaId": 2, "hideWorld": 0, },2573: { "worldId": 10, "name": "PridePeak", "display": "Peak", "areaId": 13, "hideWorld": 0, },2574: { "worldId": 10, "name": "PridePeakBattle", "display": "Peak", "areaId": 14, "hideWorld": 0, },
 }
 
-registeredBosses = {
-"Twilight Thorn": { "locationCode": "StationOfAwakening", "eventId": 0x9d, },"Axel": { "locationCode": "BasementHallAxel", "eventId": 0x89, },"Shan-Yu": { "locationCode": "PalaceGate", "eventId": 0x4b, },"Thresholder": { "locationCode": "Undercroft", "eventId": 0x48, },"Dark Thorn": { "locationCode": "BallroomBattle", "eventId": 0x4f, },"Cerberus": { "locationCode": "CaveOfTheDeadEntrance", "eventId": 0x72, },"Olympus Pete": { "locationCode": "UnderworldLock2", "eventId": 0x74, },"Timeless Pete": { "locationCode": "RiverWharf", "eventId": 0x35, },"Hydra": { "locationCode": "ColiseumGatesRuined", "eventId": 0xab, },"Barbossa": { "locationCode": "PortHeap", "eventId": 0x3c, },"Prison Keeper": { "locationCode": "HalloweenHill", "eventId": 0x34, },"Oogie Boogie": { "locationCode": "HalloweenFactory", "eventId": 0x37, },"Volcano and Blizzard": { "locationCode": "AgrabahPalace", "eventId": 0x3b, },"Scar": { "locationCode": "PridePeakBattle", "eventId": 0x37, },
+registeredEvents = {
+"Twilight Thorn": { "locationCode": "StationOfAwakening", "eventId": 0x9d, "score": 5 }, "Axel": { "locationCode": "BasementHallAxel", "eventId": 0x89, "score": 5 }, "Shan-Yu": { "locationCode": "PalaceGate", "eventId": 0x4b, "score": 10 }, "Thresholder": { "locationCode": "Undercroft", "eventId": 0x48, "score": 10 }, "Dark Thorn": { "locationCode": "BallroomBattle", "eventId": 0x4f, "score": 10 }, "Cerberus": { "locationCode": "CaveOfTheDeadEntrance", "eventId": 0x72, "score": 10 }, "Olympus Pete": { "locationCode": "UnderworldLock2", "eventId": 0x74, "score": 5 }, "Timeless Pete": { "locationCode": "RiverWharf", "eventId": 0x35, "score": 10 }, "Hydra": { "locationCode": "ColiseumGatesRuined", "eventId": 0xab, "score": 10 }, "Barbossa": { "locationCode": "PortHeap", "eventId": 0x3c, "score": 25 }, "Prison Keeper": { "locationCode": "HalloweenHill", "eventId": 0x34, "score": 10 }, "Oogie Boogie": { "locationCode": "HalloweenFactory", "eventId": 0x37, "score": 10 }, "Volcano and Blizzard": { "locationCode": "AgrabahPalace", "eventId": 0x3b, "score": 5 }, "Scar": { "locationCode": "PridePeakBattle", "eventId": 0x37, "score": 25 }, 
 }
 
 worlds = {
@@ -32,7 +32,7 @@ worlds = {
 19: "The World That Never Was"
 }
 
-function generateBonusAchievements() => false
+function generateBonusAchievements() => true
 
 function areaId() => byte(0x32bae1)
 function worldId() => byte(0x32bae0)
@@ -238,10 +238,10 @@ function BattleCheckpointReached(location, eventId, when = always_true(), overri
         && once(eventId() == eventId && IsActiveInTheField() && IsInLocation(location) && JustBecameActiveInTheField() && when)
 }
 
-function GetCheckpointForRegisteredBoss(bossCode, when = always_true(), overrideNever = false, neverOverride = always_false())
+function GetCheckpointForRegisteredEvent(eventKey, when = always_true(), overrideNever = false, neverOverride = always_false())
 {
-    boss = registeredBosses[bossCode]
-    return BattleCheckpointReached(location = boss["locationCode"], eventId = boss["eventId"], when = when, overrideNever = overrideNever, neverOverride = neverOverride)
+    event = registeredEvents[eventKey]
+    return BattleCheckpointReached(location = event["locationCode"], eventId = event["eventId"], when = when, overrideNever = overrideNever, neverOverride = neverOverride)
 }
 
 achievement(title = "Doing Everything I Can", description = "Perform all three different aerial skateboard tricks before touching the ground.", points = 1,
@@ -250,7 +250,7 @@ achievement(title = "Doing Everything I Can", description = "Perform all three d
 )
 
 achievement(title = "We Tech Those [m]", description = "Finish off the Twilight Thorn with the Break Raid reaction command.", points = 10,
-    trigger = GetCheckpointForRegisteredBoss("Twilight Thorn")
+    trigger = GetCheckpointForRegisteredEvent("Twilight Thorn")
         // Note that IDs used may be used elsewhere in the game for different purposes. However, this ID is used in this particular area for this purpose and not for anything else.
         && trigger_when(fieldActionId() == 0x102 && BonusObtained())
 )
@@ -284,7 +284,7 @@ function UsedAnyItem()
 }
 
 achievement(title = "Third-Degree Burns [m]", description = "Defeat Axel in the old mansion basement without using items or reaction commands (Proud Mode or higher; Level 4 or below).", points = 10,
-    trigger = GetCheckpointForRegisteredBoss("Axel", when = level() <= 4 && IsAtLeastOnDifficulty("Proud"))
+    trigger = GetCheckpointForRegisteredEvent("Axel", when = level() <= 4 && IsAtLeastOnDifficulty("Proud"))
         && trigger_when(BonusObtained())
         && never(UsedAnyItem())
         && never(fieldActionId() == 0xfe) // Overtaker when playing as dual-wielding Roxas
@@ -310,7 +310,7 @@ achievement(title = "Like Lady Godiva", description = "Reach Medal Level 30 in a
 
 function redMeteorId() => 0x8e
 achievement(title = "Bursting in Air [m]", description = "Finish off Shan-Yu with the Red Meteor Limit finisher (Proud Mode or higher; Level 10 or below; no rescues).", points = 10,
-    trigger = GetCheckpointForRegisteredBoss("Shan-Yu", when = level() <= 10 && IsAtLeastOnDifficulty("Proud"))
+    trigger = GetCheckpointForRegisteredEvent("Shan-Yu", when = level() <= 10 && IsAtLeastOnDifficulty("Proud"))
         && trigger_when(reactionCommandId() == redMeteorId() && BonusObtained())
 )
 
@@ -322,7 +322,7 @@ achievement(title = "Unquestionable Honor", description = "Complete the first vi
 function currentForm() => byte(0x32f054)
 function JustEnteredValorForm() => currentForm() == 1 && Delta(currentForm()) != 1
 achievement(title = "Pure of Mind [m]", description = "Defeat the Thresholder and Possessor without using items or Valor Form (Proud Mode or higher; Level 13 or below; no rescues).", points = 5,
-    trigger = GetCheckpointForRegisteredBoss("Thresholder", when = level() <= 13 && IsAtLeastOnDifficulty("Proud"))
+    trigger = GetCheckpointForRegisteredEvent("Thresholder", when = level() <= 13 && IsAtLeastOnDifficulty("Proud"))
         && trigger_when(BonusObtained())
         && never(UsedAnyItem()) && never(JustEnteredValorForm())
 )
@@ -330,7 +330,7 @@ achievement(title = "Pure of Mind [m]", description = "Defeat the Thresholder an
 function limitPointer() => dword(0x1d48cb0)
 function LimitIsBeingUsed() => limitPointer() != 0
 achievement(title = "Silence Is Golden [m]", description = "Defeat the Dark Thorn without using Limits (Proud Mode or higher; Level 16 or below; no rescues).", points = 25,
-    trigger = GetCheckpointForRegisteredBoss("Dark Thorn", when = level() <= 16 && IsAtLeastOnDifficulty("Proud"))
+    trigger = GetCheckpointForRegisteredEvent("Dark Thorn", when = level() <= 16 && IsAtLeastOnDifficulty("Proud"))
         && trigger_when(BonusObtained())
         && never(LimitIsBeingUsed())
 )
@@ -369,7 +369,7 @@ leaderboard(title = "Tight Deadline", description = "Escape from the Valley of t
 )
 
 achievement(title = "Way of the Pacifist [m]", description = "Defeat Cerberus without using Bushido (Proud Mode or higher; Level 18 or below; no rescues).", points = 5,
-    trigger = GetCheckpointForRegisteredBoss("Cerberus", when = level() <= 18 && IsAtLeastOnDifficulty("Proud"))
+    trigger = GetCheckpointForRegisteredEvent("Cerberus", when = level() <= 18 && IsAtLeastOnDifficulty("Proud"))
         && trigger_when(BonusObtained())
         && never(LimitIsBeingUsed())
 )
@@ -388,14 +388,14 @@ function petePinballTimeLimit() => 40
 function peteHerculesOverallTimeLimit() => 90
 achievement(title = "Skill Shot [m]", description = "Help Hercules defeat Pete at the Lock within " + petePinballTimeLimit() + " seconds (Proud Mode or higher; Level 18 or below; no rescues).",
     points = 5,
-    trigger = GetCheckpointForRegisteredBoss("Olympus Pete", when = level() <= 18 && IsAtLeastOnDifficulty("Proud"))
+    trigger = GetCheckpointForRegisteredEvent("Olympus Pete", when = level() <= 18 && IsAtLeastOnDifficulty("Proud"))
         && trigger_when(BonusObtained())
         && never(timeRemaining() < SecondsToFrames(peteHerculesOverallTimeLimit() - petePinballTimeLimit()))
 )
 
 achievement(title = "Aerophobia [m]", description = "Defeat the Hydra without using the Pegasus Run reaction command (Proud Mode or higher; Level 18 or below; no rescues).",
     points = 5,
-    trigger = GetCheckpointForRegisteredBoss("Hydra", when = level() <= 18 && IsAtLeastOnDifficulty("Proud"))
+    trigger = GetCheckpointForRegisteredEvent("Hydra", when = level() <= 18 && IsAtLeastOnDifficulty("Proud"))
         && trigger_when(BonusObtained())
         && never(reactionCommandId() == 0x14f)
 )
@@ -418,7 +418,7 @@ function healBlockerLimit() => 50
 function peteEnemySlotHP() => dword(0x1c6bdb0)
 achievement(title = "Heal Blocker [m]", description = "Defeat Pete for the second time in Timeless River without letting him restore more than " + healBlockerLimit()
     + " HP (Proud Mode or higher; Level 21 or below).", points = 5,
-    trigger = GetCheckpointForRegisteredBoss("Timeless Pete", when = level() <= 21 && IsAtLeastOnDifficulty("Proud"))
+    trigger = GetCheckpointForRegisteredEvent("Timeless Pete", when = level() <= 21 && IsAtLeastOnDifficulty("Proud"))
         && trigger_when(BonusObtained())
         && never(repeated(healBlockerLimit() + 1, Delta(peteEnemySlotHP()) < peteEnemySlotHP()))
 )
@@ -522,7 +522,7 @@ function UsedAnyMagic()
 
 // Drive Forms, especially Wisdom Form, are still allowed and can be used to projectile camp. Afterwards, liberal use of reaction commands can help turn the tides.
 achievement(title = "Swashbuckler [m]", description = "Defeat Barbossa without using magic (Proud Mode or higher; Level 23 or below).", points = 25,
-    trigger = GetCheckpointForRegisteredBoss("Barbossa", when = level() <= 23 && IsAtLeastOnDifficulty("Proud"))
+    trigger = GetCheckpointForRegisteredEvent("Barbossa", when = level() <= 23 && IsAtLeastOnDifficulty("Proud"))
         && trigger_when(BonusObtained())
         && never(UsedAnyMagic())
 )
@@ -535,13 +535,13 @@ achievement(title = "A Curse Lifted", description = "Complete the first visit to
 function prisonKeeperTimeLimit() => 123
 function PrisonKeeperTimeLimitReached() => repeated(prisonKeeperTimeLimit() * 60, FrameAdvanced())
 achievement(title = "Escape Artist [m]", description = "Defeat the Prison Keeper within " + SecondsToFormat(prisonKeeperTimeLimit()) + " (Proud Mode or higher; Level 24 or below).", points = 10,
-    trigger = GetCheckpointForRegisteredBoss("Prison Keeper", when = level() <= 24 && IsAtLeastOnDifficulty("Proud"))
+    trigger = GetCheckpointForRegisteredEvent("Prison Keeper", when = level() <= 24 && IsAtLeastOnDifficulty("Proud"))
         && never(PrisonKeeperTimeLimitReached())
         && trigger_when(BonusObtained())
 )
 
 leaderboard(title = "Escape Artist", description = "Defeat the Prison Keeper as quickly as possible.",
-    start = GetCheckpointForRegisteredBoss("Prison Keeper", when = level() <= 24 && IsAtLeastOnDifficulty("Proud")),
+    start = GetCheckpointForRegisteredEvent("Prison Keeper", when = level() <= 24 && IsAtLeastOnDifficulty("Proud")),
     cancel = IsDead(),
     submit = BonusObtained(),
     value = measured(FrameAdvanced()),
@@ -550,7 +550,7 @@ leaderboard(title = "Escape Artist", description = "Defeat the Prison Keeper as 
 
 function currentDrivePoints() => byte(0x1c6c901)
 achievement(title = "Sandbagging Clause [m]", description = "Defeat Oogie Boogie without using items or Drive Points (Proud Mode or higher; Level 24 or below).", points = 10,
-    trigger = GetCheckpointForRegisteredBoss("Oogie Boogie", when = level() <= 24 && IsAtLeastOnDifficulty("Proud"))
+    trigger = GetCheckpointForRegisteredEvent("Oogie Boogie", when = level() <= 24 && IsAtLeastOnDifficulty("Proud"))
         && never(AnyItemWasJustUsed())
         && never(Delta(currentDrivePoints()) > currentDrivePoints())
         && trigger_when(BonusObtained())
@@ -600,7 +600,7 @@ achievement(title = "Solo Heist [m]", description = "Defeat the Heartless ambush
 
 achievement(title = "Too Hot Inside, Too Cold Outside [m]", description = "Defeat the Volcano and Blizzard Lords without using magic or the Firagun or Blizzagun reaction commands "
     + "(Proud Mode or higher; Level 25 or below).", points = 5,
-    trigger = GetCheckpointForRegisteredBoss("Volcano and Blizzard", when = level() <= 25 && IsAtLeastOnDifficulty("Proud"))
+    trigger = GetCheckpointForRegisteredEvent("Volcano and Blizzard", when = level() <= 25 && IsAtLeastOnDifficulty("Proud"))
         && never(UsedAnyMagic())
         // Checking the field action ID is needed because the reaction command ID doesn't actually update until after the second part of the combo is active.
         && never(reactionCommandId() == 0x295 || fieldActionId() == 0xfc) // Firagun
@@ -625,7 +625,7 @@ achievement(title = "One-Trick Lion [m]", description = "Protect Timon and Pumba
 
 // This fight sucks, and no number of challenges will make this any more fun or less frustrating, so I'm throwing players a bone here.
 achievement(title = "Dull Claws [m]", description = "Defeat Scar on Proud Mode or higher at Level 27 or below.", points = 10,
-    trigger = GetCheckpointForRegisteredBoss("Scar", when = level() <= 27 && IsAtLeastOnDifficulty("Proud"))
+    trigger = GetCheckpointForRegisteredEvent("Scar", when = level() <= 27 && IsAtLeastOnDifficulty("Proud"))
         && trigger_when(BonusObtained())
 )
 
@@ -656,10 +656,11 @@ achievement(title = "The Corrupted", description = "Activate Anti-Form for the f
 
 if (generateBonusAchievements())
 {
-    for boss in registeredBosses
+    for event in registeredEvents
     {
-        achievement(title = boss + " [m]", description = "Defeat " + boss + " at Level 1 on Critical Mode and without being rescued.", points = 10,
-            trigger = GetCheckpointForRegisteredBoss(boss, when = level() <= 1 && IsAtLeastOnDifficulty("Critical"))
+        dat = registeredEvents[event]
+        achievement(title = event + " [m]", description = "Defeat " + event + " at Level 1 on Critical Mode and without being rescued.", points = dat["score"],
+            trigger = GetCheckpointForRegisteredEvent(event, when = level() <= 1 && IsAtLeastOnDifficulty("Critical"))
                 && trigger_when(BonusObtained())
         )
     }
