@@ -44,6 +44,11 @@ function ConvertClustersToRanges(clusters)
     return ranges
 }
 
+function GetRangesFromList(list)
+{
+    return ConvertClustersToRanges(GenerateClustersFromList(list))
+}
+
 function ArrayToString(array)
 {
     ret = "[ "

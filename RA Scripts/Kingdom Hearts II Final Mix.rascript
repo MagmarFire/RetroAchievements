@@ -3,12 +3,18 @@
 
 function Delta(mem) => prev(mem)
 
+function LMeasured(condition) => measured(repeated(0, condition)) // Legacy `measured` polyfill. measured(A && B) is no longer supported as of v1.10.0.
+
 areas = {
-    65535: { "worldId": 255, "name": "Title", "display": "On the title screen…", "areaId": 255, "hideWorld": 1, },523: { "worldId": 2, "name": "SunsetStation", "display": "Sunset Station", "areaId": 11, "hideWorld": 0, },522: { "worldId": 2, "name": "SunsetTerrace", "display": "Sunset Terrace", "areaId": 10, "hideWorld": 0, },548: { "worldId": 2, "name": "Tunnelway", "display": "Tunnelway", "areaId": 36, "hideWorld": 0, },524: { "worldId": 2, "name": "SunsetHill", "display": "Sunset Hill", "areaId": 12, "hideWorld": 0, },520: { "worldId": 2, "name": "StationPlaza", "display": "Station Plaza", "areaId": 8, "hideWorld": 0, },518: { "worldId": 2, "name": "StationHeights", "display": "Market Street: Station Heights", "areaId": 6, "hideWorld": 0, },515: { "worldId": 2, "name": "BackAlley", "display": "Back Alley", "areaId": 3, "hideWorld": 0, },514: { "worldId": 2, "name": "UsualSpot", "display": "The Usual Spot", "areaId": 2, "hideWorld": 0, },516: { "worldId": 2, "name": "Sandlot", "display": "Sandlot", "areaId": 4, "hideWorld": 0, },519: { "worldId": 2, "name": "TramCommon", "display": "Market Street: Tram Common", "areaId": 7, "hideWorld": 0, },525: { "worldId": 2, "name": "Woods", "display": "The Woods", "areaId": 13, "hideWorld": 0, },513: { "worldId": 2, "name": "RoxasRoom", "display": "Roxas’s Room", "areaId": 1, "hideWorld": 0, },526: { "worldId": 2, "name": "Courtyard", "display": "Mansion: Courtyard", "areaId": 14, "hideWorld": 0, },527: { "worldId": 2, "name": "Foyer", "display": "Mansion: Foyer", "areaId": 15, "hideWorld": 0, },530: { "worldId": 2, "name": "WhiteRoom", "display": "Mansion: The White Room", "areaId": 18, "hideWorld": 0, },529: { "worldId": 2, "name": "Library", "display": "Mansion: Library", "areaId": 17, "hideWorld": 0, },533: { "worldId": 2, "name": "ComputerRoom", "display": "Mansion: Computer Room", "areaId": 21, "hideWorld": 0, },531: { "worldId": 2, "name": "BasementHall", "display": "Mansion: Basement Hall", "areaId": 19, "hideWorld": 0, },532: { "worldId": 2, "name": "BasementHallAxel", "display": "Mansion: Basement Hall", "areaId": 20, "hideWorld": 0, },534: { "worldId": 2, "name": "BasementCorridor", "display": "Mansion: Basement Corridor", "areaId": 22, "hideWorld": 0, },535: { "worldId": 2, "name": "PodRoom", "display": "Mansion: Pod Room", "areaId": 23, "hideWorld": 0, },544: { "worldId": 2, "name": "StationOfSerenity", "display": "Station of Serenity", "areaId": 32, "hideWorld": 1, },545: { "worldId": 2, "name": "StationOfCalling", "display": "Station of Calling", "areaId": 33, "hideWorld": 1, },546: { "worldId": 2, "name": "StationOfAwakening", "display": "Station of Awakening", "areaId": 34, "hideWorld": 1, },517: { "worldId": 2, "name": "SandlotBattlefield", "display": "Sandlot", "areaId": 5, "hideWorld": 0, },521: { "worldId": 2, "name": "CentralStation", "display": "Central Station", "areaId": 9, "hideWorld": 0, },537: { "worldId": 2, "name": "Tower", "display": "The Tower", "areaId": 25, "hideWorld": 1, },541: { "worldId": 2, "name": "StarChamber", "display": "Tower: Star Chamber", "areaId": 29, "hideWorld": 1, },543: { "worldId": 2, "name": "WaywardStairs", "display": "Tower: Wayward Stairs", "areaId": 31, "hideWorld": 1, },550: { "worldId": 2, "name": "WaywardStairs2", "display": "Tower: Wayward Stairs", "areaId": 38, "hideWorld": 1, },542: { "worldId": 2, "name": "MoonChamber", "display": "Tower: Moon Chamber", "areaId": 30, "hideWorld": 1, },551: { "worldId": 2, "name": "WaywardStairs3", "display": "Tower: Wayward Stairs", "areaId": 39, "hideWorld": 1, },539: { "worldId": 2, "name": "SorcererLoft", "display": "Tower: Sorcerer’s Loft", "areaId": 27, "hideWorld": 1, },540: { "worldId": 2, "name": "Wardrobe", "display": "Tower: Wardrobe", "areaId": 28, "hideWorld": 1, },3840: { "worldId": 15, "name": "WorldMap", "display": "World Map", "areaId": 0, "hideWorld": 1, },1024: { "worldId": 4, "name": "VillainVale", "display": "Villain’s Vale", "areaId": 0, "hideWorld": 0, },1034: { "worldId": 4, "name": "Marketplace", "display": "Marketplace", "areaId": 10, "hideWorld": 0, },1033: { "worldId": 4, "name": "Borough", "display": "Borough", "areaId": 9, "hideWorld": 0, },1037: { "worldId": 4, "name": "Merlin", "display": "Merlin’s House", "areaId": 13, "hideWorld": 0, },2048: { "worldId": 8, "name": "BambooGrove", "display": "Bamboo Grove", "areaId": 0, "hideWorld": 0, },2049: { "worldId": 8, "name": "Encampment", "display": "Encampment", "areaId": 1, "hideWorld": 0, },2050: { "worldId": 8, "name": "Checkpoint", "display": "Checkpoint", "areaId": 2, "hideWorld": 0, },2052: { "worldId": 8, "name": "Village", "display": "Village", "areaId": 4, "hideWorld": 0, },2051: { "worldId": 8, "name": "MountainTrail", "display": "Mountain Trail", "areaId": 3, "hideWorld": 0, },2053: { "worldId": 8, "name": "VillageCave", "display": "Village Cave", "areaId": 5, "hideWorld": 0, },2060: { "worldId": 8, "name": "RuinedVillage", "display": "Village", "areaId": 12, "hideWorld": 0, },2054: { "worldId": 8, "name": "Ridge", "display": "Ridge", "areaId": 6, "hideWorld": 0, },2055: { "worldId": 8, "name": "Summit", "display": "Summit", "areaId": 7, "hideWorld": 0, },2056: { "worldId": 8, "name": "ImperialSquare", "display": "Imperial Square", "areaId": 8, "hideWorld": 0, },2057: { "worldId": 8, "name": "PalaceGate", "display": "Palace Gate", "areaId": 9, "hideWorld": 0, },1280: { "worldId": 5, "name": "EntranceHall", "display": "Entrance Hall", "areaId": 0, "hideWorld": 0, },1281: { "worldId": 5, "name": "Parlor", "display": "Parlor", "areaId": 1, "hideWorld": 0, },1286: { "worldId": 5, "name": "BeastCourtyard", "display": "Courtyard", "areaId": 6, "hideWorld": 0, },1282: { "worldId": 5, "name": "BelleRoom", "display": "Belle’s Room", "areaId": 2, "hideWorld": 0, },1287: { "worldId": 5, "name": "EastWing", "display": "The East Wing", "areaId": 7, "hideWorld": 0, },1284: { "worldId": 5, "name": "Ballroom", "display": "Ballroom", "areaId": 4, "hideWorld": 0, },1288: { "worldId": 5, "name": "WestHall", "display": "The West Hall", "areaId": 8, "hideWorld": 0, },1291: { "worldId": 5, "name": "Undercroft", "display": "Undercroft", "areaId": 11, "hideWorld": 0, },1290: { "worldId": 5, "name": "Dungeon", "display": "Dungeon", "areaId": 10, "hideWorld": 0, },1292: { "worldId": 5, "name": "SecretPassage", "display": "Secret Passage", "areaId": 12, "hideWorld": 0, },1289: { "worldId": 5, "name": "WestWing", "display": "The West Wing", "areaId": 9, "hideWorld": 0, },1283: { "worldId": 5, "name": "BeastRoom", "display": "The Beast’s Room", "areaId": 3, "hideWorld": 0, },1285: { "worldId": 5, "name": "BallroomBattle", "display": "Ballroom", "areaId": 5, "hideWorld": 0, },2304: { "worldId": 9, "name": "Book", "display": "The Hundred Acre Wood", "areaId": 0, "hideWorld": 1, },2306: { "worldId": 9, "name": "PoohHouse", "display": "Pooh Bear’s House", "areaId": 2, "hideWorld": 0, },1542: { "worldId": 6, "name": "HadesChamber", "display": "Hades’ Chamber", "areaId": 6, "hideWorld": 0, },1541: { "worldId": 6, "name": "ValleyOfTheDead", "display": "Valley of the Dead", "areaId": 5, "hideWorld": 0, },1546: { "worldId": 6, "name": "CaveOfTheDeadInnerChamber", "display": "Cave of the Dead: Inner Chamber", "areaId": 10, "hideWorld": 0, },1551: { "worldId": 6, "name": "CaveOfTheDeadPassage", "display": "Cave of the Dead: Passage", "areaId": 15, "hideWorld": 0, },1539: { "worldId": 6, "name": "UnderworldEntrance", "display": "Underworld Entrance", "areaId": 3, "hideWorld": 0, },1543: { "worldId": 6, "name": "CaveOfTheDeadEntrance", "display": "Cave of the Dead: Entrance", "areaId": 7, "hideWorld": 0, },1537: { "worldId": 6, "name": "ColiseumGates", "display": "Coliseum Gates", "areaId": 1, "hideWorld": 0, },1540: { "worldId": 6, "name": "ColiseumFoyer", "display": "Coliseum Foyer", "areaId": 4, "hideWorld": 0, },1536: { "worldId": 6, "name": "Coliseum", "display": "The Coliseum", "areaId": 0, "hideWorld": 0, },1547: { "worldId": 6, "name": "UnderworldCavernsEntrance", "display": "Underworld Caverns: Entrance", "areaId": 11, "hideWorld": 0, },1552: { "worldId": 6, "name": "UnderworldCavernsLostRoad", "display": "Underworld Caverns: The Lost Road", "areaId": 16, "hideWorld": 0, },1553: { "worldId": 6, "name": "UnderworldCavernsAtrium", "display": "Underworld Caverns: Atrium", "areaId": 17, "hideWorld": 0, },1548: { "worldId": 6, "name": "UnderworldLock", "display": "The Lock", "areaId": 12, "hideWorld": 0, },1544: { "worldId": 6, "name": "UnderworldLock2", "display": "The Lock", "areaId": 8, "hideWorld": 0, },1554: { "worldId": 6, "name": "ColiseumGatesRuined", "display": "Coliseum Gates", "areaId": 18, "hideWorld": 0, },3075: { "worldId": 12, "name": "CastleCourtyard", "display": "Courtyard", "areaId": 3, "hideWorld": 0, },3074: { "worldId": 12, "name": "CastleColonnade", "display": "Colonnade", "areaId": 2, "hideWorld": 0, },3073: { "worldId": 12, "name": "CastleLibrary", "display": "Library", "areaId": 1, "hideWorld": 0, },3072: { "worldId": 12, "name": "CastleAudienceChamber", "display": "Audience Chamber", "areaId": 0, "hideWorld": 0, },3076: { "worldId": 12, "name": "CastleCornerstone", "display": "The Hall of the Cornerstone", "areaId": 4, "hideWorld": 0, },3328: { "worldId": 13, "name": "RiverCornerstoneHill", "display": "Cornerstone Hill", "areaId": 0, "hideWorld": 0, },3329: { "worldId": 13, "name": "RiverPier", "display": "Pier", "areaId": 1, "hideWorld": 0, },3335: { "worldId": 13, "name": "MickeyHouse", "display": "Mickey’s House", "areaId": 7, "hideWorld": 0, },3334: { "worldId": 13, "name": "Fire", "display": "Scene of the Fire", "areaId": 6, "hideWorld": 0, },3332: { "worldId": 13, "name": "Lilliput", "display": "Lilliput", "areaId": 4, "hideWorld": 0, },3333: { "worldId": 13, "name": "BuildingSite", "display": "Building Site", "areaId": 5, "hideWorld": 0, },3336: { "worldId": 13, "name": "VillainFlashback", "display": "Villain’s Vale", "areaId": 8, "hideWorld": 1, },3331: { "worldId": 13, "name": "RiverWharf", "display": "Wharf", "areaId": 3, "hideWorld": 0, },3330: { "worldId": 13, "name": "RiverWaterway", "display": "Waterway", "areaId": 2, "hideWorld": 0, },4104: { "worldId": 16, "name": "PortRockFace", "display": "Isla de Muerta: Rock Face", "areaId": 8, "hideWorld": 0, },4105: { "worldId": 16, "name": "PortCaveMouth", "display": "Isla de Muerta: Cave Mouth", "areaId": 9, "hideWorld": 0, },4097: { "worldId": 16, "name": "PortHarbor", "display": "Harbor", "areaId": 1, "hideWorld": 0, },4098: { "worldId": 16, "name": "PortTown", "display": "Town", "areaId": 2, "hideWorld": 0, },4096: { "worldId": 16, "name": "PortRampart", "display": "Rampart", "areaId": 0, "hideWorld": 0, },4099: { "worldId": 16, "name": "PortInterceptor", "display": "The Interceptor", "areaId": 3, "hideWorld": 0, },4100: { "worldId": 16, "name": "PortInterceptorHold", "display": "The Interceptor: Ship’s Hold", "areaId": 4, "hideWorld": 0, },4117: { "worldId": 16, "name": "PortInterceptorBattle", "display": "The Interceptor", "areaId": 21, "hideWorld": 0, },4103: { "worldId": 16, "name": "PortInterceptorDualBattle", "display": "The Interceptor", "areaId": 7, "hideWorld": 0, },4108: { "worldId": 16, "name": "PortPowderStore", "display": "Isla de Muerta: Powder Store", "areaId": 12, "hideWorld": 0, },4109: { "worldId": 16, "name": "PortNook", "display": "Isla de Muerta: Moonlight Nook", "areaId": 13, "hideWorld": 0, },4106: { "worldId": 16, "name": "PortHeap", "display": "Isla de Muerta: Treasure Heap", "areaId": 10, "hideWorld": 0, },3586: { "worldId": 14, "name": "HalloweenGraveyard", "display": "Graveyard", "areaId": 2, "hideWorld": 0, },3585: { "worldId": 14, "name": "HalloweenLab", "display": "Dr. Finkelstein’s Lab", "areaId": 1, "hideWorld": 0, },3584: { "worldId": 14, "name": "HalloweenSquare", "display": "Halloween Town Square", "areaId": 0, "hideWorld": 1, },3588: { "worldId": 14, "name": "HalloweenHinterlands", "display": "Hinterlands", "areaId": 4, "hideWorld": 0, },3589: { "worldId": 14, "name": "HalloweenYuletide", "display": "Christmas Town: Yuletide Hill", "areaId": 5, "hideWorld": 1, },3590: { "worldId": 14, "name": "HalloweenCandyCane", "display": "Christmas Town: Candy Cane Lane", "areaId": 6, "hideWorld": 1, },3592: { "worldId": 14, "name": "HalloweenSanta", "display": "Christmas Town: Santa’s House", "areaId": 8, "hideWorld": 1, },3587: { "worldId": 14, "name": "HalloweenHill", "display": "Curly Hill", "areaId": 3, "hideWorld": 0, },3593: { "worldId": 14, "name": "HalloweenFactory", "display": "Christmas Town: Toy Factory: Shipping and Receiving", "areaId": 9, "hideWorld": 1, },1794: { "worldId": 7, "name": "AgrabahShop", "display": "The Peddler’s Shop", "areaId": 2, "hideWorld": 0, },1792: { "worldId": 7, "name": "Agrabah", "display": "Agrabah", "areaId": 0, "hideWorld": 1, },1793: { "worldId": 7, "name": "AgrabahBazaar", "display": "Bazaar", "areaId": 1, "hideWorld": 0, },1798: { "worldId": 7, "name": "AgrabahWalls", "display": "Palace Walls", "areaId": 6, "hideWorld": 0, },1799: { "worldId": 7, "name": "AgrabahCaveEntrance", "display": "The Cave of Wonders: Entrance", "areaId": 7, "hideWorld": 0, },1804: { "worldId": 7, "name": "AgrabahCaveValley", "display": "The Cave of Wonders: Valley of Stone", "areaId": 12, "hideWorld": 0, },1801: { "worldId": 7, "name": "AgrabahCaveGuardians", "display": "The Cave of Wonders: Stone Guardians", "areaId": 9, "hideWorld": 0, },1805: { "worldId": 7, "name": "AgrabahCaveChasm", "display": "The Cave of Wonders: Chasm of Challenges", "areaId": 13, "hideWorld": 0, },1802: { "worldId": 7, "name": "AgrabahCaveTreasure", "display": "The Cave of Wonders: Treasure Room", "areaId": 10, "hideWorld": 0, },1795: { "worldId": 7, "name": "AgrabahPalace", "display": "The Palace", "areaId": 3, "hideWorld": 0, },2566: { "worldId": 10, "name": "PrideGorge", "display": "Gorge", "areaId": 6, "hideWorld": 0, },2565: { "worldId": 10, "name": "PrideGraveyard", "display": "Elephant Graveyard", "areaId": 5, "hideWorld": 0, },2564: { "worldId": 10, "name": "PrideSavannah", "display": "The Savannah", "areaId": 4, "hideWorld": 0, },2560: { "worldId": 10, "name": "PrideRock", "display": "Pride Rock", "areaId": 0, "hideWorld": 0, },2561: { "worldId": 10, "name": "PrideHollow", "display": "Stone Hollow", "areaId": 1, "hideWorld": 0, },2563: { "worldId": 10, "name": "PrideValley", "display": "Wildebeest Valley", "areaId": 3, "hideWorld": 0, },2567: { "worldId": 10, "name": "PrideWastelands", "display": "Wastelands", "areaId": 7, "hideWorld": 0, },2568: { "worldId": 10, "name": "PrideJungle", "display": "Jungle", "areaId": 8, "hideWorld": 0, },2569: { "worldId": 10, "name": "PrideOasis", "display": "Oasis", "areaId": 9, "hideWorld": 0, },2562: { "worldId": 10, "name": "PrideDen", "display": "The King’s Den", "areaId": 2, "hideWorld": 0, },2573: { "worldId": 10, "name": "PridePeak", "display": "Peak", "areaId": 13, "hideWorld": 0, },2574: { "worldId": 10, "name": "PridePeakBattle", "display": "Peak", "areaId": 14, "hideWorld": 0, },1545: { "worldId": 6, "name": "ColiseumTourney1", "display": "The Underdrome", "areaId": 9, "hideWorld": 0, },
+    65535: { "worldId": 255, "name": "Title", "display": "On the title screen…", "areaId": 255, "hideWorld": 1, },523: { "worldId": 2, "name": "SunsetStation", "display": "Sunset Station", "areaId": 11, "hideWorld": 0, },522: { "worldId": 2, "name": "SunsetTerrace", "display": "Sunset Terrace", "areaId": 10, "hideWorld": 0, },548: { "worldId": 2, "name": "Tunnelway", "display": "Tunnelway", "areaId": 36, "hideWorld": 0, },524: { "worldId": 2, "name": "SunsetHill", "display": "Sunset Hill", "areaId": 12, "hideWorld": 0, },520: { "worldId": 2, "name": "StationPlaza", "display": "Station Plaza", "areaId": 8, "hideWorld": 0, },518: { "worldId": 2, "name": "StationHeights", "display": "Market Street: Station Heights", "areaId": 6, "hideWorld": 0, },515: { "worldId": 2, "name": "BackAlley", "display": "Back Alley", "areaId": 3, "hideWorld": 0, },514: { "worldId": 2, "name": "UsualSpot", "display": "The Usual Spot", "areaId": 2, "hideWorld": 0, },516: { "worldId": 2, "name": "Sandlot", "display": "Sandlot", "areaId": 4, "hideWorld": 0, },519: { "worldId": 2, "name": "TramCommon", "display": "Market Street: Tram Common", "areaId": 7, "hideWorld": 0, },525: { "worldId": 2, "name": "Woods", "display": "The Woods", "areaId": 13, "hideWorld": 0, },513: { "worldId": 2, "name": "RoxasRoom", "display": "Roxas’s Room", "areaId": 1, "hideWorld": 0, },526: { "worldId": 2, "name": "Courtyard", "display": "Mansion: Courtyard", "areaId": 14, "hideWorld": 0, },527: { "worldId": 2, "name": "Foyer", "display": "Mansion: Foyer", "areaId": 15, "hideWorld": 0, },530: { "worldId": 2, "name": "WhiteRoom", "display": "Mansion: The White Room", "areaId": 18, "hideWorld": 0, },529: { "worldId": 2, "name": "Library", "display": "Mansion: Library", "areaId": 17, "hideWorld": 0, },533: { "worldId": 2, "name": "ComputerRoom", "display": "Mansion: Computer Room", "areaId": 21, "hideWorld": 0, },531: { "worldId": 2, "name": "BasementHall", "display": "Mansion: Basement Hall", "areaId": 19, "hideWorld": 0, },532: { "worldId": 2, "name": "BasementHallAxel", "display": "Mansion: Basement Hall", "areaId": 20, "hideWorld": 0, },534: { "worldId": 2, "name": "BasementCorridor", "display": "Mansion: Basement Corridor", "areaId": 22, "hideWorld": 0, },535: { "worldId": 2, "name": "PodRoom", "display": "Mansion: Pod Room", "areaId": 23, "hideWorld": 0, },544: { "worldId": 2, "name": "StationOfSerenity", "display": "Station of Serenity", "areaId": 32, "hideWorld": 1, },545: { "worldId": 2, "name": "StationOfCalling", "display": "Station of Calling", "areaId": 33, "hideWorld": 1, },546: { "worldId": 2, "name": "StationOfAwakening", "display": "Station of Awakening", "areaId": 34, "hideWorld": 1, },517: { "worldId": 2, "name": "SandlotBattlefield", "display": "Sandlot", "areaId": 5, "hideWorld": 0, },521: { "worldId": 2, "name": "CentralStation", "display": "Central Station", "areaId": 9, "hideWorld": 0, },537: { "worldId": 2, "name": "Tower", "display": "The Tower", "areaId": 25, "hideWorld": 1, },541: { "worldId": 2, "name": "StarChamber", "display": "Tower: Star Chamber", "areaId": 29, "hideWorld": 1, },543: { "worldId": 2, "name": "WaywardStairs", "display": "Tower: Wayward Stairs", "areaId": 31, "hideWorld": 1, },550: { "worldId": 2, "name": "WaywardStairs2", "display": "Tower: Wayward Stairs", "areaId": 38, "hideWorld": 1, },542: { "worldId": 2, "name": "MoonChamber", "display": "Tower: Moon Chamber", "areaId": 30, "hideWorld": 1, },551: { "worldId": 2, "name": "WaywardStairs3", "display": "Tower: Wayward Stairs", "areaId": 39, "hideWorld": 1, },539: { "worldId": 2, "name": "SorcererLoft", "display": "Tower: Sorcerer’s Loft", "areaId": 27, "hideWorld": 1, },540: { "worldId": 2, "name": "Wardrobe", "display": "Tower: Wardrobe", "areaId": 28, "hideWorld": 1, },3840: { "worldId": 15, "name": "WorldMap", "display": "World Map", "areaId": 0, "hideWorld": 1, },1024: { "worldId": 4, "name": "VillainVale", "display": "Villain’s Vale", "areaId": 0, "hideWorld": 0, },1034: { "worldId": 4, "name": "Marketplace", "display": "Marketplace", "areaId": 10, "hideWorld": 0, },1033: { "worldId": 4, "name": "Borough", "display": "Borough", "areaId": 9, "hideWorld": 0, },1037: { "worldId": 4, "name": "Merlin", "display": "Merlin’s House", "areaId": 13, "hideWorld": 0, },2048: { "worldId": 8, "name": "BambooGrove", "display": "Bamboo Grove", "areaId": 0, "hideWorld": 0, },2049: { "worldId": 8, "name": "Encampment", "display": "Encampment", "areaId": 1, "hideWorld": 0, },2050: { "worldId": 8, "name": "Checkpoint", "display": "Checkpoint", "areaId": 2, "hideWorld": 0, },2052: { "worldId": 8, "name": "Village", "display": "Village", "areaId": 4, "hideWorld": 0, },2051: { "worldId": 8, "name": "MountainTrail", "display": "Mountain Trail", "areaId": 3, "hideWorld": 0, },2053: { "worldId": 8, "name": "VillageCave", "display": "Village Cave", "areaId": 5, "hideWorld": 0, },2060: { "worldId": 8, "name": "RuinedVillage", "display": "Village", "areaId": 12, "hideWorld": 0, },2054: { "worldId": 8, "name": "Ridge", "display": "Ridge", "areaId": 6, "hideWorld": 0, },2055: { "worldId": 8, "name": "Summit", "display": "Summit", "areaId": 7, "hideWorld": 0, },2056: { "worldId": 8, "name": "ImperialSquare", "display": "Imperial Square", "areaId": 8, "hideWorld": 0, },2057: { "worldId": 8, "name": "PalaceGate", "display": "Palace Gate", "areaId": 9, "hideWorld": 0, },1280: { "worldId": 5, "name": "EntranceHall", "display": "Entrance Hall", "areaId": 0, "hideWorld": 0, },1281: { "worldId": 5, "name": "Parlor", "display": "Parlor", "areaId": 1, "hideWorld": 0, },1286: { "worldId": 5, "name": "BeastCourtyard", "display": "Courtyard", "areaId": 6, "hideWorld": 0, },1282: { "worldId": 5, "name": "BelleRoom", "display": "Belle’s Room", "areaId": 2, "hideWorld": 0, },1287: { "worldId": 5, "name": "EastWing", "display": "The East Wing", "areaId": 7, "hideWorld": 0, },1284: { "worldId": 5, "name": "Ballroom", "display": "Ballroom", "areaId": 4, "hideWorld": 0, },1288: { "worldId": 5, "name": "WestHall", "display": "The West Hall", "areaId": 8, "hideWorld": 0, },1291: { "worldId": 5, "name": "Undercroft", "display": "Undercroft", "areaId": 11, "hideWorld": 0, },1290: { "worldId": 5, "name": "Dungeon", "display": "Dungeon", "areaId": 10, "hideWorld": 0, },1292: { "worldId": 5, "name": "SecretPassage", "display": "Secret Passage", "areaId": 12, "hideWorld": 0, },1289: { "worldId": 5, "name": "WestWing", "display": "The West Wing", "areaId": 9, "hideWorld": 0, },1283: { "worldId": 5, "name": "BeastRoom", "display": "The Beast’s Room", "areaId": 3, "hideWorld": 0, },1285: { "worldId": 5, "name": "BallroomBattle", "display": "Ballroom", "areaId": 5, "hideWorld": 0, },2304: { "worldId": 9, "name": "Book", "display": "The Hundred Acre Wood", "areaId": 0, "hideWorld": 1, },2306: { "worldId": 9, "name": "PoohHouse", "display": "Pooh Bear’s House", "areaId": 2, "hideWorld": 0, },1542: { "worldId": 6, "name": "HadesChamber", "display": "Hades’ Chamber", "areaId": 6, "hideWorld": 0, },1541: { "worldId": 6, "name": "ValleyOfTheDead", "display": "Valley of the Dead", "areaId": 5, "hideWorld": 0, },1546: { "worldId": 6, "name": "CaveOfTheDeadInnerChamber", "display": "Cave of the Dead: Inner Chamber", "areaId": 10, "hideWorld": 0, },1551: { "worldId": 6, "name": "CaveOfTheDeadPassage", "display": "Cave of the Dead: Passage", "areaId": 15, "hideWorld": 0, },1539: { "worldId": 6, "name": "UnderworldEntrance", "display": "Underworld Entrance", "areaId": 3, "hideWorld": 0, },1543: { "worldId": 6, "name": "CaveOfTheDeadEntrance", "display": "Cave of the Dead: Entrance", "areaId": 7, "hideWorld": 0, },1537: { "worldId": 6, "name": "ColiseumGates", "display": "Coliseum Gates", "areaId": 1, "hideWorld": 0, },1540: { "worldId": 6, "name": "ColiseumFoyer", "display": "Coliseum Foyer", "areaId": 4, "hideWorld": 0, },1536: { "worldId": 6, "name": "Coliseum", "display": "The Coliseum", "areaId": 0, "hideWorld": 0, },1547: { "worldId": 6, "name": "UnderworldCavernsEntrance", "display": "Underworld Caverns: Entrance", "areaId": 11, "hideWorld": 0, },1552: { "worldId": 6, "name": "UnderworldCavernsLostRoad", "display": "Underworld Caverns: The Lost Road", "areaId": 16, "hideWorld": 0, },1553: { "worldId": 6, "name": "UnderworldCavernsAtrium", "display": "Underworld Caverns: Atrium", "areaId": 17, "hideWorld": 0, },1548: { "worldId": 6, "name": "UnderworldLock", "display": "The Lock", "areaId": 12, "hideWorld": 0, },1544: { "worldId": 6, "name": "UnderworldLock2", "display": "The Lock", "areaId": 8, "hideWorld": 0, },1554: { "worldId": 6, "name": "ColiseumGatesRuined", "display": "Coliseum Gates", "areaId": 18, "hideWorld": 0, },3075: { "worldId": 12, "name": "CastleCourtyard", "display": "Courtyard", "areaId": 3, "hideWorld": 0, },3074: { "worldId": 12, "name": "CastleColonnade", "display": "Colonnade", "areaId": 2, "hideWorld": 0, },3073: { "worldId": 12, "name": "CastleLibrary", "display": "Library", "areaId": 1, "hideWorld": 0, },3072: { "worldId": 12, "name": "CastleAudienceChamber", "display": "Audience Chamber", "areaId": 0, "hideWorld": 0, },3076: { "worldId": 12, "name": "CastleCornerstone", "display": "The Hall of the Cornerstone", "areaId": 4, "hideWorld": 0, },3328: { "worldId": 13, "name": "RiverCornerstoneHill", "display": "Cornerstone Hill", "areaId": 0, "hideWorld": 0, },3329: { "worldId": 13, "name": "RiverPier", "display": "Pier", "areaId": 1, "hideWorld": 0, },3335: { "worldId": 13, "name": "MickeyHouse", "display": "Mickey’s House", "areaId": 7, "hideWorld": 0, },3334: { "worldId": 13, "name": "Fire", "display": "Scene of the Fire", "areaId": 6, "hideWorld": 0, },3332: { "worldId": 13, "name": "Lilliput", "display": "Lilliput", "areaId": 4, "hideWorld": 0, },3333: { "worldId": 13, "name": "BuildingSite", "display": "Building Site", "areaId": 5, "hideWorld": 0, },3336: { "worldId": 13, "name": "VillainFlashback", "display": "Villain’s Vale", "areaId": 8, "hideWorld": 1, },3331: { "worldId": 13, "name": "RiverWharf", "display": "Wharf", "areaId": 3, "hideWorld": 0, },3330: { "worldId": 13, "name": "RiverWaterway", "display": "Waterway", "areaId": 2, "hideWorld": 0, },4104: { "worldId": 16, "name": "PortRockFace", "display": "Isla de Muerta: Rock Face", "areaId": 8, "hideWorld": 0, },4105: { "worldId": 16, "name": "PortCaveMouth", "display": "Isla de Muerta: Cave Mouth", "areaId": 9, "hideWorld": 0, },4097: { "worldId": 16, "name": "PortHarbor", "display": "Harbor", "areaId": 1, "hideWorld": 0, },4098: { "worldId": 16, "name": "PortTown", "display": "Town", "areaId": 2, "hideWorld": 0, },4096: { "worldId": 16, "name": "PortRampart", "display": "Rampart", "areaId": 0, "hideWorld": 0, },4099: { "worldId": 16, "name": "PortInterceptor", "display": "The Interceptor", "areaId": 3, "hideWorld": 0, },4100: { "worldId": 16, "name": "PortInterceptorHold", "display": "The Interceptor: Ship’s Hold", "areaId": 4, "hideWorld": 0, },4117: { "worldId": 16, "name": "PortInterceptorBattle", "display": "The Interceptor", "areaId": 21, "hideWorld": 0, },4103: { "worldId": 16, "name": "PortInterceptorDualBattle", "display": "The Interceptor", "areaId": 7, "hideWorld": 0, },4108: { "worldId": 16, "name": "PortPowderStore", "display": "Isla de Muerta: Powder Store", "areaId": 12, "hideWorld": 0, },4109: { "worldId": 16, "name": "PortNook", "display": "Isla de Muerta: Moonlight Nook", "areaId": 13, "hideWorld": 0, },4106: { "worldId": 16, "name": "PortHeap", "display": "Isla de Muerta: Treasure Heap", "areaId": 10, "hideWorld": 0, },3586: { "worldId": 14, "name": "HalloweenGraveyard", "display": "Graveyard", "areaId": 2, "hideWorld": 0, },3585: { "worldId": 14, "name": "HalloweenLab", "display": "Dr. Finkelstein’s Lab", "areaId": 1, "hideWorld": 0, },3584: { "worldId": 14, "name": "HalloweenSquare", "display": "Halloween Town Square", "areaId": 0, "hideWorld": 1, },3588: { "worldId": 14, "name": "HalloweenHinterlands", "display": "Hinterlands", "areaId": 4, "hideWorld": 0, },3589: { "worldId": 14, "name": "HalloweenYuletide", "display": "Christmas Town: Yuletide Hill", "areaId": 5, "hideWorld": 1, },3590: { "worldId": 14, "name": "HalloweenCandyCane", "display": "Christmas Town: Candy Cane Lane", "areaId": 6, "hideWorld": 1, },3592: { "worldId": 14, "name": "HalloweenSanta", "display": "Christmas Town: Santa’s House", "areaId": 8, "hideWorld": 1, },3587: { "worldId": 14, "name": "HalloweenHill", "display": "Curly Hill", "areaId": 3, "hideWorld": 0, },3593: { "worldId": 14, "name": "HalloweenFactory", "display": "Christmas Town: Toy Factory: Shipping and Receiving", "areaId": 9, "hideWorld": 1, },1794: { "worldId": 7, "name": "AgrabahShop", "display": "The Peddler’s Shop", "areaId": 2, "hideWorld": 0, },1792: { "worldId": 7, "name": "Agrabah", "display": "Agrabah", "areaId": 0, "hideWorld": 1, },1793: { "worldId": 7, "name": "AgrabahBazaar", "display": "Bazaar", "areaId": 1, "hideWorld": 0, },1798: { "worldId": 7, "name": "AgrabahWalls", "display": "Palace Walls", "areaId": 6, "hideWorld": 0, },1799: { "worldId": 7, "name": "AgrabahCaveEntrance", "display": "The Cave of Wonders: Entrance", "areaId": 7, "hideWorld": 0, },1804: { "worldId": 7, "name": "AgrabahCaveValley", "display": "The Cave of Wonders: Valley of Stone", "areaId": 12, "hideWorld": 0, },1801: { "worldId": 7, "name": "AgrabahCaveGuardians", "display": "The Cave of Wonders: Stone Guardians", "areaId": 9, "hideWorld": 0, },1805: { "worldId": 7, "name": "AgrabahCaveChasm", "display": "The Cave of Wonders: Chasm of Challenges", "areaId": 13, "hideWorld": 0, },1802: { "worldId": 7, "name": "AgrabahCaveTreasure", "display": "The Cave of Wonders: Treasure Room", "areaId": 10, "hideWorld": 0, },1795: { "worldId": 7, "name": "AgrabahPalace", "display": "The Palace", "areaId": 3, "hideWorld": 0, },2566: { "worldId": 10, "name": "PrideGorge", "display": "Gorge", "areaId": 6, "hideWorld": 0, },2565: { "worldId": 10, "name": "PrideGraveyard", "display": "Elephant Graveyard", "areaId": 5, "hideWorld": 0, },2564: { "worldId": 10, "name": "PrideSavannah", "display": "The Savannah", "areaId": 4, "hideWorld": 0, },2560: { "worldId": 10, "name": "PrideRock", "display": "Pride Rock", "areaId": 0, "hideWorld": 0, },2561: { "worldId": 10, "name": "PrideHollow", "display": "Stone Hollow", "areaId": 1, "hideWorld": 0, },2563: { "worldId": 10, "name": "PrideValley", "display": "Wildebeest Valley", "areaId": 3, "hideWorld": 0, },2567: { "worldId": 10, "name": "PrideWastelands", "display": "Wastelands", "areaId": 7, "hideWorld": 0, },2568: { "worldId": 10, "name": "PrideJungle", "display": "Jungle", "areaId": 8, "hideWorld": 0, },2569: { "worldId": 10, "name": "PrideOasis", "display": "Oasis", "areaId": 9, "hideWorld": 0, },2562: { "worldId": 10, "name": "PrideDen", "display": "The King’s Den", "areaId": 2, "hideWorld": 0, },2573: { "worldId": 10, "name": "PridePeak", "display": "Peak", "areaId": 13, "hideWorld": 0, },2574: { "worldId": 10, "name": "PridePeakBattle", "display": "Peak", "areaId": 14, "hideWorld": 0, },1545: { "worldId": 6, "name": "ColiseumTourney1", "display": "The Underdrome", "areaId": 9, "hideWorld": 0, },1549: { "worldId": 6, "name": "ColiseumVictory", "display": "The Underdrome", "areaId": 13, "hideWorld": 0, },4112: { "worldId": 16, "name": "PortRockFace2", "display": "Isla de Muerta: Rock Face", "areaId": 16, "hideWorld": 0, },1032: { "worldId": 4, "name": "Bailey", "display": "Bailey", "areaId": 8, "hideWorld": 0, },1031: { "worldId": 4, "name": "RestorationSite", "display": "Restoration Site", "areaId": 7, "hideWorld": 0, },1030: { "worldId": 4, "name": "Postern", "display": "Postern", "areaId": 6, "hideWorld": 0, },1035: { "worldId": 4, "name": "Corridors", "display": "Corridors", "areaId": 11, "hideWorld": 0, },1029: { "worldId": 4, "name": "AnsemStudy", "display": "Ansem’s Study", "areaId": 5, "hideWorld": 0, },4352: { "worldId": 17, "name": "SpaceCell", "display": "Pit Cell", "areaId": 0, "hideWorld": 0, },4353: { "worldId": 17, "name": "SpaceCanyon", "display": "Canyon", "areaId": 1, "hideWorld": 0, },4354: { "worldId": 17, "name": "SpaceGrid", "display": "Game Grid", "areaId": 2, "hideWorld": 0, },4355: { "worldId": 17, "name": "SpaceDataspace", "display": "Dataspace", "areaId": 3, "hideWorld": 0, },4356: { "worldId": 17, "name": "SpaceIOTowerHallway", "display": "I/O Tower: Hallway", "areaId": 4, "hideWorld": 0, },4357: { "worldId": 17, "name": "SpaceIOCommunications", "display": "I/O Tower: Communications Room", "areaId": 5, "hideWorld": 0, },1043: { "worldId": 4, "name": "RestorationSiteCutscene", "display": "Restoration Site", "areaId": 19, "hideWorld": 0, },1044: { "worldId": 4, "name": "CorridorsBattle", "display": "Corridors", "areaId": 20, "hideWorld": 0, },1045: { "worldId": 4, "name": "CavernDepths", "display": "Cavern of Remembrance: Depths", "areaId": 21, "hideWorld": 1, },1042: { "worldId": 4, "name": "RestorationSiteCutscene2", "display": "Restoration Site", "areaId": 18, "hideWorld": 0, },1028: { "worldId": 4, "name": "CastleGate", "display": "Castle Gate", "areaId": 4, "hideWorld": 0, },1040: { "worldId": 4, "name": "RavineTrail", "display": "Ravine Trail", "areaId": 16, "hideWorld": 0, },1027: { "worldId": 4, "name": "CrystalFissure", "display": "Crystal Fissure", "areaId": 3, "hideWorld": 0, },1026: { "worldId": 4, "name": "GreatMawCutscene", "display": "The Great Maw", "areaId": 2, "hideWorld": 0, },1039: { "worldId": 4, "name": "AnsemStudyCutscene", "display": "Ansem’s Study", "areaId": 15, "hideWorld": 0, },1041: { "worldId": 4, "name": "GreatMaw", "display": "The Great Maw", "areaId": 17, "hideWorld": 0, },
 }
 
 registeredEvents = {
-"Twilight Thorn": { "locationCode": "StationOfAwakening", "eventId": 0x9d, "score": 5, "isBoss": 1 }, "Axel": { "locationCode": "BasementHallAxel", "eventId": 0x89, "score": 5, "isBoss": 1 }, "Shan-Yu": { "locationCode": "PalaceGate", "eventId": 0x4b, "score": 10, "isBoss": 1 }, "Thresholder": { "locationCode": "Undercroft", "eventId": 0x48, "score": 10, "isBoss": 1 }, "Dark Thorn": { "locationCode": "BallroomBattle", "eventId": 0x4f, "score": 10, "isBoss": 1 }, "Cerberus": { "locationCode": "CaveOfTheDeadEntrance", "eventId": 0x72, "score": 10, "isBoss": 1 }, "Olympus Pete": { "locationCode": "UnderworldLock2", "eventId": 0x74, "score": 5, "isBoss": 1 }, "Timeless Pete": { "locationCode": "RiverWharf", "eventId": 0x35, "score": 10, "isBoss": 1 }, "Hydra": { "locationCode": "ColiseumGatesRuined", "eventId": 0xab, "score": 10, "isBoss": 1 }, "Barbossa": { "locationCode": "PortHeap", "eventId": 0x3c, "score": 25, "isBoss": 1 }, "Prison Keeper": { "locationCode": "HalloweenHill", "eventId": 0x34, "score": 10, "isBoss": 1 }, "Oogie Boogie": { "locationCode": "HalloweenFactory", "eventId": 0x37, "score": 10, "isBoss": 1 }, "Volcano and Blizzard": { "locationCode": "AgrabahPalace", "eventId": 0x3b, "score": 5, "isBoss": 1 }, "Scar": { "locationCode": "PridePeakBattle", "eventId": 0x37, "score": 25, "isBoss": 1 }, "Pain and Panic Cup": { "locationCode": "ColiseumTourney1", "eventId": 0xbd, "score": 10, "isBoss": 0 }, 
+"Twilight Thorn": { "locationCode": "StationOfAwakening", "eventId": 0x9d, "score": 5, "isBoss": 1, "lv1": 1 },"Axel": { "locationCode": "BasementHallAxel", "eventId": 0x89, "score": 5, "isBoss": 1, "lv1": 1 },"Shan-Yu": { "locationCode": "PalaceGate", "eventId": 0x4b, "score": 10, "isBoss": 1, "lv1": 1 },"Thresholder": { "locationCode": "Undercroft", "eventId": 0x48, "score": 10, "isBoss": 1, "lv1": 1 },"Dark Thorn": { "locationCode": "BallroomBattle", "eventId": 0x4f, "score": 10, "isBoss": 1, "lv1": 1 },"Cerberus": { "locationCode": "CaveOfTheDeadEntrance", "eventId": 0x72, "score": 10, "isBoss": 1, "lv1": 1 },"Olympus Pete": { "locationCode": "UnderworldLock2", "eventId": 0x74, "score": 5, "isBoss": 1, "lv1": 1 },"Timeless Pete": { "locationCode": "RiverWharf", "eventId": 0x35, "score": 10, "isBoss": 1, "lv1": 1 },"Hydra": { "locationCode": "ColiseumGatesRuined", "eventId": 0xab, "score": 10, "isBoss": 1, "lv1": 1 },"Barbossa": { "locationCode": "PortHeap", "eventId": 0x3c, "score": 25, "isBoss": 1, "lv1": 1 },"Prison Keeper": { "locationCode": "HalloweenHill", "eventId": 0x34, "score": 10, "isBoss": 1, "lv1": 1 },"Oogie Boogie": { "locationCode": "HalloweenFactory", "eventId": 0x37, "score": 10, "isBoss": 1, "lv1": 1 },"Volcano and Blizzard": { "locationCode": "AgrabahPalace", "eventId": 0x3b, "score": 5, "isBoss": 1, "lv1": 1 },"Scar": { "locationCode": "PridePeakBattle", "eventId": 0x37, "score": 25, "isBoss": 1, "lv1": 1 },"Pain and Panic Cup": { "locationCode": "ColiseumTourney1", "eventId": 0xbd, "score": 10, "isBoss": 0, "lv1": 0 },"Monitors": { "locationCode": "SpaceDataspace", "eventId": 0x36, "score": 0, "isBoss": 0, "lv1": 0 },"Hostile Program": { "locationCode": "SpaceIOTowerHallway", "eventId": 0x37, "score": 10, "isBoss": 1, "lv1": 1 },"Demyx": { "locationCode": "CastleGate", "eventId": 0x37, "score": 25, "isBoss": 1, "lv1": 1 },"Battle of 1000 Heartless": { "locationCode": "GreatMaw", "eventId": 0x42, "score": 10, "isBoss": 0, "lv1": 1 }, 
+}
+
+abilities = {
+    0x5e: { "name": "High Jump LV1", "type": "Growth", "ap": 2, "id": 0x5e },0x5f: { "name": "High Jump LV2", "type": "Growth", "ap": 2, "id": 0x5f },0x60: { "name": "High Jump LV3", "type": "Growth", "ap": 2, "id": 0x60 },0x61: { "name": "High Jump MAX", "type": "Growth", "ap": 2, "id": 0x61 },0x62: { "name": "Quick Run LV1", "type": "Growth", "ap": 2, "id": 0x62 },0x63: { "name": "Quick Run LV2", "type": "Growth", "ap": 2, "id": 0x63 },0x64: { "name": "Quick Run LV3", "type": "Growth", "ap": 2, "id": 0x64 },0x65: { "name": "Quick Run MAX", "type": "Growth", "ap": 2, "id": 0x65 },0x66: { "name": "Aerial Dodge LV1", "type": "Growth", "ap": 3, "id": 0x66 },0x67: { "name": "Aerial Dodge LV2", "type": "Growth", "ap": 3, "id": 0x67 },0x68: { "name": "Aerial Dodge LV3", "type": "Growth", "ap": 3, "id": 0x68 },0x69: { "name": "Aerial Dodge MAX", "type": "Growth", "ap": 3, "id": 0x69 },0x6a: { "name": "Glide LV1", "type": "Growth", "ap": 3, "id": 0x6a },0x6b: { "name": "Glide LV2", "type": "Growth", "ap": 3, "id": 0x6b },0x6c: { "name": "Glide LV3", "type": "Growth", "ap": 3, "id": 0x6c },0x6d: { "name": "Glide MAX", "type": "Growth", "ap": 3, "id": 0x6d },0x234: { "name": "Dodge Roll LV1", "type": "Growth", "ap": 3, "id": 0x234 },0x235: { "name": "Dodge Roll LV2", "type": "Growth", "ap": 3, "id": 0x235 },0x236: { "name": "Dodge Roll LV3", "type": "Growth", "ap": 3, "id": 0x236 },0x237: { "name": "Dodge Roll MAX", "type": "Growth", "ap": 3, "id": 0x237 },
 }
 
 worlds = {
@@ -32,13 +38,77 @@ worlds = {
 19: "The World That Never Was"
 }
 
-function generateBonusAchievements() => true
+function generateBonusAchievements() => false
 
 function areaId() => byte(0x32bae1)
 function worldId() => byte(0x32bae0)
+function currentRound() => byte(0x0032bae2)
 function level() => byte(0x32e02f)
 
 function difficulty() => byte(0x32dfc8)
+
+function GetIdsFromObjects(objects)
+{
+    ret = []
+    
+    for object in objects
+    {
+        array_push(ret, object["id"])
+    }
+    
+    return ret
+}
+
+// A cluster is defined as an array whose elements all differ by a single quantum value with at least one element.
+// For instance, an array containing the values [ 1, 2, 3, 4, 6, 7, 9 ] has three clusters:
+// [ 1, 2, 3, 4 ], [ 6, 7 ], and [ 9 ]
+function GenerateClustersFromList(data)
+{
+    clusters = []
+    currentElement = -1
+    currentCluster = []
+    for i in data
+    {
+        if (i == currentElement + 1 || currentElement == -1)
+        {
+            currentElement = i
+            array_push(currentCluster, currentElement)
+        }
+        else
+        {
+            array_push(clusters, currentCluster)
+            currentElement = i
+            currentCluster = [ currentElement ]
+        }
+    }
+    
+    // Get the range we were just working on if it has elements.
+    if (length(currentCluster) > 0)
+    {
+        array_push(clusters, currentCluster)
+    }
+    
+    return clusters
+}
+
+function ConvertClustersToRanges(clusters)
+{
+    ranges = []
+    
+    for cluster in clusters
+    {
+        min = cluster[0]
+        max = cluster[length(cluster) - 1]
+        array_push(ranges, { "min": min, "max": max })
+    }
+    
+    return ranges
+}
+
+function GetRangesFromList(list)
+{
+    return ConvertClustersToRanges(GenerateClustersFromList(list))
+}
 
 function WasValueSet(mem, oldValue, newValue)
 {
@@ -187,7 +257,23 @@ function GetRPWorldLookup()
     }
     
     return groups
-} 
+}
+
+function GetAbilitiesByCallback(callback)
+{
+    ret = []
+    for id in abilities
+    {
+        ability = abilities[id]
+        
+        if (callback(ability) == true)
+        {
+            array_push(ret, ability)
+        }
+    }
+    
+    return ret
+}
 
 function IsOnTitleScreen() => IsInLocation("Title")
 
@@ -364,7 +450,7 @@ leaderboard(title = "Tight Deadline", description = "Escape from the Valley of t
     start = BattleCheckpointReached(location = "ValleyOfTheDead", eventId = 0x6f, when = level() <= 18 && IsAtLeastOnDifficulty("Proud")),
     cancel = IsDead(),
     submit = EscapedFromHades(),
-    value = measured(FrameAdvanced()),
+    value = LMeasured(FrameAdvanced()),
     format = "FRAMES"
 )
 
@@ -428,6 +514,7 @@ achievement(title = "Historic Preservation", description = "Complete Disney Cast
     trigger = WasBitflagSetInGame(disneyCastleComplete()) && IsInLocation("WorldMap")
 )
 
+// todo: duplicated code here...
 function HasAbilityWithGivenIdEquipped(id)
 {
     slot1Addr = 0x32e074
@@ -443,6 +530,23 @@ function HasAbilityWithGivenIdEquipped(id)
     
     return trigger
 }
+
+function HasAbilityWithinGivenRangeEquipped(range)
+{
+    slot1Addr = 0x32e074
+    totalSlots = 80
+    trigger = always_false()
+    
+    for i in range(0, totalSlots - 1)
+    {
+        abilityId = byte(slot1Addr + i * 2) + low4(slot1Addr + i * 2 + 1) * 256
+        abilityIsEquipped = high4(slot1Addr + i * 2 + 1) == 8
+        trigger = trigger || abilityId >= range["min"] && abilityId <= range["max"] && abilityIsEquipped
+    }
+    
+    return trigger
+}
+// end of todo
 
 function AnyItemWasJustUsedForBaseAddr(baseAddr)
 {
@@ -544,7 +648,7 @@ leaderboard(title = "Escape Artist", description = "Defeat the Prison Keeper as 
     start = GetCheckpointForRegisteredEvent("Prison Keeper", when = level() <= 24 && IsAtLeastOnDifficulty("Proud")),
     cancel = IsDead(),
     submit = BonusObtained(),
-    value = measured(FrameAdvanced()),
+    value = LMeasured(FrameAdvanced()),
     format = "FRAMES"
 )
 
@@ -574,16 +678,17 @@ achievement(title = "Speedfaller [m]", description = "Complete the Chasm of Chal
         && trigger_when(SpeedfallerTriggered())
 )
 
-function SpeedfallerLeaderboardCanceled() => IsDead() || timeRemaining() == 0 && TimerAdvanced()
+function GlobalTimerCanceled() => IsDead() || timeRemaining() == 0 && TimerAdvanced()
 leaderboard(title = "Speedfaller", description = "Complete the Chasm of Challenges as quickly as you can.",
-    start = SpeedfallerCheckpointReached() && never(SpeedfallerLeaderboardCanceled()), // Adding the cancelation code here to ensure all hit targets are cleared on subsequent retries.
-    cancel = SpeedfallerLeaderboardCanceled(),
+    start = SpeedfallerCheckpointReached() && never(GlobalTimerCanceled()), // Adding the cancelation code here to ensure all hit targets are cleared on subsequent retries.
+    cancel = GlobalTimerCanceled(),
     submit = SpeedfallerTriggered(),
     value = SecondsToFrames(120) - timeRemaining(),
     format = "FRAMES",
     lower_is_better = true
 )
 
+function JustEnteredValorForm() => currentForm() == 1 && Delta(currentForm()) != 1
 function JustEnteredWisdomForm() => currentForm() == 2 && Delta(currentForm()) != 2
 function JustEnteredLimitForm() => currentForm() == 3 && Delta(currentForm()) != 3
 function JustEnteredMasterForm() => currentForm() == 4 && Delta(currentForm()) != 4
@@ -634,10 +739,114 @@ achievement(title = "Return of the King", description = "Complete the first visi
     trigger = WasBitflagSetInGame(prideLandsIComplete())
 )
 
+function forkBomberTimeLimit() => 60
+function ForkBomberCheckpointReached() => GetCheckpointForRegisteredEvent("Monitors", when = level() <= 29 && IsAtLeastOnDifficulty("Proud"))
+achievement(title = "Fork Bomber [m]", description = "Freeze all the security monitors in Space Paranoids within " + forkBomberTimeLimit() + " seconds (Proud Mode or higher; Level 29 or below).",
+    points = 10,
+    trigger = ForkBomberCheckpointReached()
+        && never(timeRemaining() < SecondsToFrames(120 - forkBomberTimeLimit()) && TimerAdvanced())
+        && trigger_when(BonusObtained())
+)
+
+achievement(title = "Resource Hog [m]", description = "Defeat the Hostile Program without using the Freeze reaction command more than once (Proud Mode or higher; Level 29 or below).",
+    points = 10,
+    trigger = GetCheckpointForRegisteredEvent("Hostile Program", when = level() <= 29 && IsAtLeastOnDifficulty("Proud"))
+        && never(repeated(2, reactionCommandId() == 0x267 && Delta(reactionCommandId()) == 0))
+        && trigger_when(BonusObtained())
+)
+
+leaderboard(title = "Fork Bomber", description = "Freeze all the security monitors in the Space Paranoids Dataspace as quickly as you can.",
+    start = ForkBomberCheckpointReached(),
+    cancel = GlobalTimerCanceled(),
+    submit = BonusObtained(),
+    value = SecondsToFrames(120) - timeRemaining(),
+    format = "FRAMES",
+    lower_is_better = true
+)
+
+function BaseSoraHasAnyGivenAbilityEquipped(subset)
+{
+    trigger = always_false()
+    abilityIds = GetIdsFromObjects(subset)
+    abilityIdRanges = GetRangesFromList(abilityIds)
+    for range in abilityIdRanges
+    {
+        trigger = trigger || HasAbilityWithinGivenRangeEquipped(range)
+    }
+    
+    return trigger
+}
+
+growthAbilities = GetAbilitiesByCallback(ability => ability["type"] == "Growth")
+achievement(title = "Two Left Feet [m]", description = "Defeat Demyx without any Growth Abilities equipped (Proud Mode or higher; Level 31 or below).", points = 25,
+    trigger = GetCheckpointForRegisteredEvent("Demyx", when = level() <= 31 && IsAtLeastOnDifficulty("Proud"))
+        && never(BaseSoraHasAnyGivenAbilityEquipped(growthAbilities))
+        && trigger_when(BonusObtained())
+)
+
+function mpChargeTimeRemaining() => float(0x01c6c90c)
+achievement(title = "Vampiricism [m]", description = "Survive the Battle of 1000 Heartless without ever using items or entering MP Charge (Proud Mode or higher; Level 32 or below).", points = 10,
+    trigger = GetCheckpointForRegisteredEvent("Battle of 1000 Heartless", when = level() <= 32 && IsAtLeastOnDifficulty("Proud"))
+        && never(Delta(mpChargeTimeRemaining()) == 0.0 && mpChargeTimeRemaining() > 0.0)
+        && never(AnyItemWasJustUsed())
+        && trigger_when(BonusObtained())
+)
+
+function hollowBastionIIComplete() => bit6(0x0032d84e)
+achievement(title = "Into Their Hands", description = "Complete the second visit to Hollow Bastion.", points = 3,
+    trigger = WasBitflagSetInGame(hollowBastionIIComplete())
+)
+
 function IsUsingFireCheese()
 {
     
 }
+
+function PainAndPanicCupCheckpointReached(when = always_true())
+    => once(eventId() == 0xbd && IsActiveInTheField() && IsInLocation("ColiseumTourney1") && JustBecameActiveInTheField() && currentRound() == 1 && when)
+    && never(IsDead()) && never(IsInLocation("UnderworldEntrance"))
+function WonThePainAndPanicCup() => eventId() == 0xb4 && IsInLocation("ColiseumVictory")
+achievement(title = "Pain and Panic Champion", description = "Win the Pain and Panic Cup.", points = 3,
+    trigger = PainAndPanicCupCheckpointReached() && WonThePainAndPanicCup()
+)
+
+function underdromeCurrentScore() => dword(0x01d48efc)
+achievement(title = "Pain and Panic Recordsetter", description = "Win the Pain and Panic Cup with a score of 2000 or more.", points = 5,
+    trigger = PainAndPanicCupCheckpointReached() && underdromeCurrentScore() >= 2000 && WonThePainAndPanicCup()
+)
+
+achievement(title = "Pain and Panic Title Defender [m]", description = "Win the Pain and Panic Cup without using Limits (Proud Mode or higher; Level 30 or below).", points = 25,
+    trigger = PainAndPanicCupCheckpointReached(when = level() <= 30 && IsAtLeastOnDifficulty("Proud"))
+        && trigger_when(WonThePainAndPanicCup())
+        && never(LimitIsBeingUsed())
+)
+
+function CerberusCupCheckpointReached(when = always_true())
+    => once(eventId() == 0xbe && IsActiveInTheField() && IsInLocation("ColiseumTourney1") && JustBecameActiveInTheField() && currentRound() == 1 && when)
+    && never(IsDead()) && never(IsInLocation("UnderworldEntrance"))
+function WonTheCerberusCup() => eventId() == 0xb6 && IsInLocation("ColiseumVictory")
+achievement(title = "Cerberus Champion", description = "Win the Cerberus Cup.", points = 3,
+    trigger = CerberusCupCheckpointReached() && WonTheCerberusCup()
+)
+
+achievement(title = "Cerberus Recordsetter", description = "Win the Cerberus Cup with a score of 1000 or more.", points = 5,
+    trigger = CerberusCupCheckpointReached() && WonTheCerberusCup() && underdromeCurrentScore() >= 1000
+)
+
+function CurrentRoundHasChanged() => Delta(currentRound()) != currentRound()
+// Checking for whether or not the player is active on the field is so that they can use the Retry option in the middle of Round 1 and not have their uses carry over.
+function ConditionIsTrueMoreThanOncePerRound(condition) => repeated(2, condition && never(CurrentRoundHasChanged()) && never(!IsActiveInTheField()))
+achievement(title = "Cerberus Title Defender [m]", description = "Win the Cerberus Cup without activating the same Drive Form more than once per round (Proud Mode or higher; Level 33 or below).",
+    points = 25,
+    trigger = CerberusCupCheckpointReached(when = level() <= 33 && IsAtLeastOnDifficulty("Proud"))
+        && trigger_when(WonTheCerberusCup())
+        && never(ConditionIsTrueMoreThanOncePerRound(JustEnteredValorForm()))
+        && never(ConditionIsTrueMoreThanOncePerRound(JustEnteredWisdomForm()))
+        && never(ConditionIsTrueMoreThanOncePerRound(JustEnteredLimitForm()))
+        && never(ConditionIsTrueMoreThanOncePerRound(JustEnteredMasterForm()))
+        && never(ConditionIsTrueMoreThanOncePerRound(JustEnteredFinalForm()))
+        && never(ConditionIsTrueMoreThanOncePerRound(JustEnteredAntiForm()))
+)
 
 function valorLevel() => byte(0x32ee26)
 achievement(title = "The Dauntless", description = "Raise Valor Form to the maximum level.", points = 5,
@@ -647,6 +856,11 @@ achievement(title = "The Dauntless", description = "Raise Valor Form to the maxi
 function wisdomLevel() => byte(0x32ee5e)
 achievement(title = "The Erudite", description = "Raise Wisdom Form to the maximum level.", points = 5,
     trigger = WasValueSetInGame(wisdomLevel(), 6, 7) && measured(wisdomLevel() == 7)
+)
+
+function limitLevel() => byte(0x0032ee96)
+achievement(title = "The Renowned", description = "Raise Limit Form to the maximum level.", points = 5,
+    trigger = WasValueSetInGame(limitLevel(), 6, 7) && measured(limitLevel() == 7)
 )
 
 function antiUses() => word(0x32fb10)
@@ -659,20 +873,24 @@ if (generateBonusAchievements())
     for event in registeredEvents
     {
         dat = registeredEvents[event]
-        description = ""
         
-        if (dat["isBoss"] == 1)
+        if (dat["lv1"] == 1)
         {
-            description = "Defeat " + event + " at Level 1 on Critical Mode and without being rescued."
-        }
-        else
-        {
-            description = "Complete the " + event + " at Level 1 on Critical Mode."
-        }
+            description = ""
         
-        achievement(title = event + " [m]", description = description, points = dat["score"],
-            trigger = GetCheckpointForRegisteredEvent(event, when = level() <= 1 && IsAtLeastOnDifficulty("Critical"))
-                && trigger_when(BonusObtained())
-        )
+            if (dat["isBoss"] == 1)
+            {
+                description = "Defeat " + event + " at Level 1 on Critical Mode and without being rescued."
+            }
+            else
+            {
+                description = "Complete the " + event + " at Level 1 on Critical Mode."
+            }
+        
+            achievement(title = event + " [m]", description = description, points = dat["score"],
+                trigger = GetCheckpointForRegisteredEvent(event, when = level() <= 1 && IsAtLeastOnDifficulty("Critical"))
+                    && trigger_when(BonusObtained())
+            )   
+        }
     }
 }
