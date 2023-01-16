@@ -401,10 +401,29 @@ function GymLeaderBattleStarted() => CreateHitTargetedAndNextChain([ Delta(music
 function GetPokemonInBattleSlot(slotId)
 {
     slotBaseAddr = tbyte(PlayerPokemonSlotAddress(slotId))
+    return GetPokemonByPointer(slotBaseAddr)
+}
+
+function GetPokemonByPointer(pointer)
+{
     return {
-        "id": word(slotBaseAddr + 0xc),
-        "level": byte(slotBaseAddr + 0x18)
+        "id": word(pointer + 0xc),
+        "level": byte(pointer + 0x18)
     }
+}
+
+function playerCurrentPokemonPointer() => tbyte(0x25736c)
+function NumberOfGivenPokemonSwitchedIn(number, haystack)
+{
+    needle = GetPokemonByPointer(playerCurrentPokemonPointer())
+    ret = []
+    
+    for pokemon in haystack
+    {
+        array_push(ret, once(Delta(needle["id"]) != pokemon["number"] && needle["id"] == pokemon["number"]))
+    }
+    
+    return tally(number, ret)
 }
 
 function PlayerPokemonSlotAddress(slotId) => playerSlot1PokemonPointerBaseAddr() + slotId * 4
@@ -626,6 +645,19 @@ function quakeBadge() => bit4(0x2266e8)
 achievement(title = "Ground Zero", points = 5, badge = "00000",
     description = "Obtain the Quake Badge.",
     trigger = WasBitflagSetInGame(quakeBadge())
+)
+
+function skylaMaxLevel() => 35
+function skylaMaxParty() => 6
+function SkylaGymMusicIsPlaying() => musicId() == 0x4c4
+electricMons = GetPokemonByType("Electric")
+rockMons = GetPokemonByType("Rock")
+achievement(title = "Meteorological Hazard [m]", points = 10, badge = "00000",
+    description = "Defeat Skyla without using more than one species of Electric-type or Rock-type Pokemon (max Level " + skylaMaxLevel() + "; Set style only).",
+    trigger = VictoriousWhenMaxPartyLevelIsAtMostWhenGymLeaderBattleStarts(skylaMaxLevel(), skylaMaxParty())
+        && never(!IsInLocation("MistraltonGym")) && never(SkylaGymMusicIsPlaying()) // Must be battling the Gym Leader while in the Gym Leader's room
+        && never(!SetStyleActive())
+        && never(NumberOfGivenPokemonSwitchedIn(1, MergeArrays(electricMons, rockMons)))
 )
 
 function jetBadge() => bit5(0x2266e8)
