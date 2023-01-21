@@ -10,7 +10,7 @@ areas = {
 }
 
 registeredEvents = {
-"Twilight Thorn": { "locationCode": "StationOfAwakening", "eventId": 0x9d, "score": 5, "isBoss": 1, "lv1": 1 },"Axel": { "locationCode": "BasementHallAxel", "eventId": 0x89, "score": 5, "isBoss": 1, "lv1": 1 },"Shan-Yu": { "locationCode": "PalaceGate", "eventId": 0x4b, "score": 10, "isBoss": 1, "lv1": 1 },"Thresholder": { "locationCode": "Undercroft", "eventId": 0x48, "score": 10, "isBoss": 1, "lv1": 1 },"Dark Thorn": { "locationCode": "BallroomBattle", "eventId": 0x4f, "score": 10, "isBoss": 1, "lv1": 1 },"Cerberus": { "locationCode": "CaveOfTheDeadEntrance", "eventId": 0x72, "score": 10, "isBoss": 1, "lv1": 1 },"Olympus Pete": { "locationCode": "UnderworldLock2", "eventId": 0x74, "score": 5, "isBoss": 1, "lv1": 1 },"Timeless Pete": { "locationCode": "RiverWharf", "eventId": 0x35, "score": 10, "isBoss": 1, "lv1": 1 },"Hydra": { "locationCode": "ColiseumGatesRuined", "eventId": 0xab, "score": 10, "isBoss": 1, "lv1": 1 },"Barbossa": { "locationCode": "PortHeap", "eventId": 0x3c, "score": 25, "isBoss": 1, "lv1": 1 },"Prison Keeper": { "locationCode": "HalloweenHill", "eventId": 0x34, "score": 10, "isBoss": 1, "lv1": 1 },"Oogie Boogie": { "locationCode": "HalloweenFactory", "eventId": 0x37, "score": 10, "isBoss": 1, "lv1": 1 },"Volcano and Blizzard": { "locationCode": "AgrabahPalace", "eventId": 0x3b, "score": 5, "isBoss": 1, "lv1": 1 },"Scar": { "locationCode": "PridePeakBattle", "eventId": 0x37, "score": 25, "isBoss": 1, "lv1": 1 },"Pain and Panic Cup": { "locationCode": "ColiseumTourney1", "eventId": 0xbd, "score": 10, "isBoss": 0, "lv1": 0 },"Monitors": { "locationCode": "SpaceDataspace", "eventId": 0x36, "score": 0, "isBoss": 0, "lv1": 0 },"Hostile Program": { "locationCode": "SpaceIOTowerHallway", "eventId": 0x37, "score": 10, "isBoss": 1, "lv1": 1 },"Demyx": { "locationCode": "CastleGate", "eventId": 0x37, "score": 25, "isBoss": 1, "lv1": 1 },"Battle of 1000 Heartless": { "locationCode": "GreatMaw", "eventId": 0x42, "score": 10, "isBoss": 0, "lv1": 1 }, 
+"Twilight Thorn": { "locationCode": "StationOfAwakening", "eventId": 0x9d, "score": 5, "isBoss": 1, "lv1": 1 },"Axel": { "locationCode": "BasementHallAxel", "eventId": 0x89, "score": 5, "isBoss": 1, "lv1": 1 },"Shan-Yu": { "locationCode": "PalaceGate", "eventId": 0x4b, "score": 10, "isBoss": 1, "lv1": 1 },"Thresholder": { "locationCode": "Undercroft", "eventId": 0x48, "score": 10, "isBoss": 1, "lv1": 1 },"Dark Thorn": { "locationCode": "BallroomBattle", "eventId": 0x4f, "score": 10, "isBoss": 1, "lv1": 1 },"Cerberus": { "locationCode": "CaveOfTheDeadEntrance", "eventId": 0x72, "score": 10, "isBoss": 1, "lv1": 1 },"Olympus Pete": { "locationCode": "UnderworldLock2", "eventId": 0x74, "score": 5, "isBoss": 1, "lv1": 1 },"Timeless Pete": { "locationCode": "RiverWharf", "eventId": 0x35, "score": 10, "isBoss": 1, "lv1": 1 },"Hydra": { "locationCode": "ColiseumGatesRuined", "eventId": 0xab, "score": 10, "isBoss": 1, "lv1": 1 },"Barbossa": { "locationCode": "PortHeap", "eventId": 0x3c, "score": 25, "isBoss": 1, "lv1": 1 },"Prison Keeper": { "locationCode": "HalloweenHill", "eventId": 0x34, "score": 10, "isBoss": 1, "lv1": 1 },"Oogie Boogie": { "locationCode": "HalloweenFactory", "eventId": 0x37, "score": 10, "isBoss": 1, "lv1": 1 },"Volcano and Blizzard": { "locationCode": "AgrabahPalace", "eventId": 0x3b, "score": 5, "isBoss": 1, "lv1": 1 },"Scar": { "locationCode": "PridePeakBattle", "eventId": 0x37, "score": 25, "isBoss": 1, "lv1": 1 },"Pain and Panic Cup": { "locationCode": "ColiseumTourney1", "eventId": 0xbd, "score": 10, "isBoss": 0, "lv1": 0 },"Monitors": { "locationCode": "SpaceDataspace", "eventId": 0x36, "score": 0, "isBoss": 0, "lv1": 0 },"Hostile Program": { "locationCode": "SpaceIOTowerHallway", "eventId": 0x37, "score": 10, "isBoss": 1, "lv1": 1 },"Demyx": { "locationCode": "CastleGate", "eventId": 0x37, "score": 25, "isBoss": 1, "lv1": 1 },"Battle of 1000 Heartless": { "locationCode": "GreatMaw", "eventId": 0x42, "score": 10, "isBoss": 0, "lv1": 1 },"Storm Rider": { "locationCode": "ImperialSquare", "eventId": 0x4f, "score": 10, "isBoss": 1, "lv1": 1 }, 
 }
 
 abilities = {
@@ -793,8 +793,21 @@ achievement(title = "Vampiricism [m]", description = "Survive the Battle of 1000
 )
 
 function hollowBastionIIComplete() => bit6(0x0032d84e)
-achievement(title = "Into Their Hands", description = "Complete the second visit to Hollow Bastion.", points = 3,
+achievement(title = "Three Pawns", description = "Complete the second visit to Hollow Bastion.", points = 3,
     trigger = WasBitflagSetInGame(hollowBastionIIComplete())
+)
+
+function IsInWisdomForm() => currentForm() == 2
+function IsInAntiForm() => currentForm() == 6
+achievement(title = "Spellblade [m]", description = "Defeat the Storm Rider while Wisdom Form or Anti-Form is active (Proud Mode or higher; Level 34 or below).", points = 10,
+    trigger = GetCheckpointForRegisteredEvent("Storm Rider", when = level() <= 34 && IsAtLeastOnDifficulty("Proud"))
+        && trigger_when(BonusObtained())
+        && trigger_when(IsInWisdomForm() || IsInAntiForm())
+)
+
+function landOfDragonsIIComplete() => bit7(0x0032d8c1)
+achievement(title = "Hand Clenched in Hand", description = "Complete the second visit to the Land of Dragons.", points = 3,
+    trigger = WasBitflagSetInGame(landOfDragonsIIComplete())
 )
 
 function IsUsingFireCheese()
