@@ -1569,7 +1569,7 @@ function HighScoreEarned(mem, target, golf = false)
     if (golf == true)
     {
         // We assume that golf values are set to 0 by default before a new record is set.
-        return (ValueJustDecreasedInGame(mem) || ValueJustIncreasedInGame(mem) && Delta(mem) == 0) && mem <= target
+        return (ValueJustDecreasedInGame(mem) || ValueJustIncreasedInGame(mem) && Delta(mem) == 0) && mem <= target && mem > 0
     }
     else
     {
