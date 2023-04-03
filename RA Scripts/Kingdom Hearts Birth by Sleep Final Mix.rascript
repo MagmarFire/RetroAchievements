@@ -868,6 +868,7 @@ function JustObtainedCommandWithId(id, useTrigger = false)
 }
 
 function informationBarState() => byte(0x1f3d760)
+function informationBarTextPointer() => tbyte(0x01f3d75c)
 function InformationBarJustPoppedUp() => Delta(informationBarState()) == 1 && informationBarState() == 2
 function InformationBarPoppedUpOnce() => once(InformationBarJustPoppedUp())
 function InformationBarJustReset() => Delta(informationBarState()) > 0 && informationBarState() == 0
@@ -1992,31 +1993,34 @@ aquaGuardCommands = GetCommandsByCallback(command => command["name"] == "Barrier
     || command["name"] == "Confuse Barrier" || command["name"] == "Stop Barrier")
 function AquaFinalSegmentSharedConditions() => never(JustUsedAnyGivenCommand(aquaGuardCommands)) && never(CommandDeckSlotsFilledByGivenCommandsIsAtLeast(cureFamilyCommands, 2))
     && equippedKeyblade() == 0x17
+function DefeatBraigInformationDisplayed() => ascii_string_equals(informationBarTextPointer(), "Defeat Braig!")
 
 achievement(title = "Magical Rage [m]", points = 10, id = 187123, badge = "208010",
     description = "Defeat Braig in the Keyblade Graveyard without using Barrier defensive commands and with Pixie Petal and only one Cure-family command"
         + " equipped (Proud Mode or higher, Level 28 or below).",
     trigger = CheckpointPassedForCharacters(InformationBarPoppedUpOnce()
+            && DefeatBraigInformationDisplayed()
             && IsInLocation("Graveyard4") && IsAtLeastOnDifficulty("Proud") && level() <= 28, [ AquaArmoredHelmetless() ], true)
             && TriggerConditionsMetForCharacters({
-                AquaArmoredHelmetless(): MaxHPIncreased()
+                AquaArmoredHelmetless(): BossDefeatTriggered()
             }, true)
         && never(!IsInLocation("Graveyard4"))
+        && never(!DefeatBraigInformationDisplayed())
         && AquaFinalSegmentSharedConditions()
-        && never(defeatedBraigKeybladeGraveyard() == 1)
 )
 
 achievement(title = "Divine Rebellion [m]", points = 25, id = 187124, badge = "208011",
     description = "Defeat the final boss of Aqua's story with the same restrictions as the ones in \"Magical Rage\", but with only four battle command slots filled"
         + " (Proud Mode or higher, Level 28 or below).",
     trigger = CheckpointPassedForCharacters(InformationBarPoppedUpOnce()
+            && !DefeatBraigInformationDisplayed()
             && IsInLocation("Graveyard4") && IsAtLeastOnDifficulty("Proud") && level() <= 28, [ AquaArmoredHelmetless() ], true)
             && TriggerConditionsMetForCharacters({
                 AquaArmoredHelmetless(): BossDefeatTriggered() // Venitas doesn't yield any rewards, of course, being a final boss.
             }, true)
         && never(!IsInLocation("Graveyard4"))
+        && never(DefeatBraigInformationDisplayed())
         && AquaFinalSegmentSharedConditions()
-        && never(defeatedBraigKeybladeGraveyard() != 1)
         && never(CommandDeckSlotsFilledIsAtLeast(5))
 )
 
