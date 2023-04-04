@@ -1251,9 +1251,10 @@ achievement(title = "Consolation Loot [m]", points = 10, id = 130718, badge = "1
 
 earthSwordId = 0x22
 function raquesisRetrievedEarthSword() => bit7(0x0052c4)
+function eldiganWasKilled() => bit2(0x0052c6)
 achievement(title = "Siblings' Last Quarrel [m]", points = 10, id = 130715, badge = "143912",
     description = "Receive the Earth Sword from Eldigan in Chapter 3.",
-    trigger = chapter() == 3 && WasBitflagSetInGame(raquesisRetrievedEarthSword())
+    trigger = chapter() == 3 && WasBitflagSetInGame(raquesisRetrievedEarthSword()) && eldiganWasKilled() == 0
 )
 
 achievement(title = "Arden's Resolve [m]", points = 3, id = 130730, badge = "143927",
