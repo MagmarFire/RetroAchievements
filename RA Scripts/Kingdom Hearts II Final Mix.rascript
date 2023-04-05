@@ -1211,20 +1211,21 @@ leaderboard(title = "Skateboard Street Rave",
 // Fire cheese is defined as a cheese strategy involving the use of non-finisher Fire magic. Only the finisher will increase a boss's revenge value.
 // Every use of regular Fire will add to a hit counter and start a timer for two seconds. After two seconds pass without regular Fire being used, the boss taking damage, or the revenge value
 // remaining unchanged, this hit counter is reset; however, if the hit target of 4 is reached before this happens, then cheese is detected.
-function revenge() => float(fieldPointer() + 0x429c0)
+function enemyPointer() => tbyte(0x00347930)
+function revenge() => float(enemyPointer() - 0x20)
 function bossHp3() => dword(0x01c6c018)
 
-function PlayerRecentlyDealtDamage()
+function BossJustTookDamage()
 {
     bossJustTookDamage = bossHp3() < Delta(bossHp3())
-    return once(bossJustTookDamage && never(repeated(SecondsToFrames(2), TimeIsFlowingNormally())))
+    return bossJustTookDamage
 }
 
-function RevengeJustChanged() => revenge() != Delta(revenge())
+function RevengeJustDecreased() => revenge() < Delta(revenge())
 
 function UsedFireCheese()
 {
-    return repeated(SecondsToFrames(8), never(RevengeJustChanged()) && PlayerRecentlyDealtDamage() && IsUsingFire())
+    return repeated(50, never(RevengeJustDecreased()) && BossJustTookDamage() && IsUsingFire())
 }
 
 achievement(title = "<Cheese Test>", description = "", points = 0,
@@ -1351,4 +1352,3 @@ if (generateBonusAchievements())
         }
     }
 }
-
