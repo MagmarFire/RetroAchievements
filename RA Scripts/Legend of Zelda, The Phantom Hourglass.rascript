@@ -412,7 +412,7 @@ achievement(title = "Seeker of Courage", points = 5,
     trigger = WasValueSetInGame(courageGems(), 9, 10) && measured(courageGems() == 10)
 )
 
-achievement(title = "Omnibenevolence", points = 10,
+achievement(title = "Omnivalor", points = 10, id = 143339, badge = "160085",
     description = "Collect all 20 Courage Gems.",
     trigger = WasValueSetInGame(courageGems(), 19, 20) && measured(courageGems() == 20)
 )
