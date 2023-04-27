@@ -1,3 +1,5 @@
+function LMeasured(condition) => measured(repeated(0, condition)) // Legacy `measured` polyfill. measured(A && B) is no longer supported as of v1.10.0.
+
 // A cluster is defined as an array whose elements all differ by a single quantum value with at least one element.
 // For instance, an array containing the values [ 1, 2, 3, 4, 6, 7, 9 ] has three clusters:
 // [ 1, 2, 3, 4 ], [ 6, 7 ], and [ 9 ]

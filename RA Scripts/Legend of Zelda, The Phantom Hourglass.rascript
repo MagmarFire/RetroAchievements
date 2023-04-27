@@ -22,6 +22,7 @@ function otbyte(addr) => tbyte(addr + GetGlobalOffset())
 function odword(addr) => dword(addr + GetGlobalOffset())
 
 function Delta(addr) => prev(addr)
+function LMeasured(condition) => measured(repeated(0, condition)) // Legacy `measured` polyfill. measured(A && B) is no longer supported as of v1.10.0.
 
 function WasBitflagSetInGame(bit)
 {
@@ -524,7 +525,7 @@ function cyclokState() => obyte(0x255a0c)
 function IsCyclokDying() => cyclokState() == 0x8
 function CyclokStarted() => once(Delta(cyclokState()) == 1 && cyclokState() == 2)
 cyclokFrameLimit = 2700
-function TimeAdvancedAgainstCyclok() => repeated(0, CyclokStarted() && Delta(systemTimer()) != systemTimer())
+function TimeAdvancedAgainstCyclok() => CyclokStarted() && Delta(systemTimer()) != systemTimer()
 achievement(title = "A Short Fuse [m]", points = 10,
     description = "Defeat Cyclok within " + (cyclokFrameLimit / 60) + " seconds.",
     trigger = once(IsInLocation("Cyclok") && WasInLocation("TempleOfWind")) && never(!IsInLocation("Cyclok"))
@@ -611,7 +612,7 @@ function JustSwitchedFromLinkToGongoron() => Delta(characterControlStatus()) == 
 function JustSwitchedFromGongoronToLink() => Delta(characterControlStatus()) == 1 && characterControlStatus() == 0
 function dongorongoState() => obyte(0x269e20)
 function DongorongoFirstPhaseComplete() => dongorongoState() == 0x16
-function SwitchedTooManyTimes() => tally(maxSwitches + 1, [ repeated(0, JustSwitchedFromLinkToGongoron()), repeated(0, JustSwitchedFromGongoronToLink()) ])
+function SwitchedTooManyTimes() => tally(maxSwitches + 1, [ JustSwitchedFromLinkToGongoron(), JustSwitchedFromGongoronToLink() ])
 achievement(title = "Seamless Relay [m]", points = 5, id = 143365, badge = "160111",
     description = "Complete Dongorongo's first phase without switching between Link and Gongoron more than eight times.",
     trigger = once(IsInLocation("Dongorongo") && WasInLocation("GoronTemple")) && never(!IsInLocation("Dongorongo"))
@@ -664,7 +665,7 @@ eoxTimeLimit = 150
 function eoxState() => obyte(0x255bdc)
 function IsEoxDying() => eoxState() == 0xd
 function EoxStarted() => once(Delta(eoxState()) == 0 && eoxState() != 0)
-function TimeAdvancedAgainstEox() => repeated(0, EoxStarted() && Delta(systemTimer()) != systemTimer())
+function TimeAdvancedAgainstEox() => EoxStarted() && Delta(systemTimer()) != systemTimer()
 achievement(title = "Hammer Time! [m]", points = 5,
     description = "Defeat Eox within " + SecondsToFormat(eoxTimeLimit) + ".",
     trigger = once(IsInLocation("Eox") && WasInLocation("Mutoh")) && never(!IsInLocation("Eox"))
@@ -1006,8 +1007,8 @@ function BellumbeckIsDying() => bellumbeckState() == 0x17
 achievement(title = "Defender of the Seas", points = 25,
     description = "Defeat Bellum's final phase while taking less than three hearts of damage and without any spirit abilities equipped.",
     trigger = never(IsInLocation("BellumSeaBattle")) && never(IsInLocation("Sea")) && never(SpiritAbilityEquipped())
-        && never(tally(12, [ repeated(0, TookAtLeastQuarterHeartDamage()), repeated(0, TookAtLeastHalfHeartDamage()),
-            repeated(0, TookAtLeastThreeQuartersHeartDamage()), repeated(0, TookAtLeastHeartDamage()) ])) && BellumbeckIsDying()
+        && never(tally(12, [ TookAtLeastQuarterHeartDamage(), TookAtLeastHalfHeartDamage(),
+           TookAtLeastThreeQuartersHeartDamage(), TookAtLeastHeartDamage() ])) && BellumbeckIsDying()
         && (once(IsInLocation("BellumFinal") && WasInLocation("BellumSeaBattle"))
             || once(IsInLocation("BellumFinal") && WasInLocation("Sea")))
 )
@@ -1021,14 +1022,14 @@ leaderboard(title = "Time Attack - Cyclok", description = "Defeat Cyclok as quic
     start = once(IsInLocation("Cyclok") && WasInLocation("TempleOfWind")) && CyclokStarted(),
     cancel = !IsInLocation("Cyclok"),
     submit = IsCyclokDying(),
-    value = measured(TimeAdvancedAgainstCyclok())
+    value = LMeasured(TimeAdvancedAgainstCyclok())
 )
 
 leaderboard(title = "Time Attack - Eox", description = "Defeat Eox as quickly as you can.",
     start = once(IsInLocation("Eox") && WasInLocation("Mutoh")) && EoxStarted(),
     cancel = !IsInLocation("Eox"),
     submit = IsEoxDying(),
-    value = measured(TimeAdvancedAgainstEox())
+    value = LMeasured(TimeAdvancedAgainstEox())
 )
 
 leaderboard(title = "Goron Game", description = "Finish the Goron Game in the fastest time you can.",
