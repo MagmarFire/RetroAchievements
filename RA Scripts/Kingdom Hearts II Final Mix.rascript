@@ -297,21 +297,26 @@ function GetAbilitiesByCallback(callback)
 }
 
 function IsOnTitleScreen() => IsInLocation("Title")
-
 function GetAreaHash(areaId, worldId) => areaId + worldId * 256
+function difficultyLookup() => {
+    0: "Beginner",
+    1: "Standard",
+    2: "Proud",
+    3: "Critical"
+}
 
 function hollowBastionIIIComplete() => bit7(0x0032d84e)
-rich_presence_conditional_display(!IsOnTitleScreen() && hollowBastionIIIComplete() == 1 && IsInWorld("Hollow Bastion"), "Level {0} | {1}{2} | Play time: {3}",
-    //rich_presence_lookup("Characters", currentCharacter(), CharacterIdToNames()),
+rich_presence_conditional_display(!IsOnTitleScreen() && hollowBastionIIIComplete() == 1 && IsInWorld("Hollow Bastion"), "Level {0}, {1} Mode | {2}{3} | Play time: {4}",
     rich_presence_value("Level", level(), "VALUE"),
+    rich_presence_lookup("Difficulty", difficulty(), difficultyLookup()),
     rich_presence_lookup("RadiantDisplay", GetAreaHash(areaId(), worldId()), GetRPWorldLookup("Radiant Garden")),
     rich_presence_lookup("Areas", GetAreaHash(areaId(), worldId()), GetAreaRPLookup()),
     rich_presence_value("Play Time", playTime() / 60, "SECS")
 )
 
-rich_presence_conditional_display(!IsOnTitleScreen(), "Level {0} | {1}{2} | Play time: {3}",
-    //rich_presence_lookup("Characters", currentCharacter(), CharacterIdToNames()),
+rich_presence_conditional_display(!IsOnTitleScreen(), "Level {0}, {1} Mode | {2}{3} | Play time: {4}",
     rich_presence_value("Level", level(), "VALUE"),
+    rich_presence_lookup("Difficulty", difficulty(), difficultyLookup()),
     rich_presence_lookup("WorldDisplay", GetAreaHash(areaId(), worldId()), GetRPWorldLookup()),
     rich_presence_lookup("Areas", GetAreaHash(areaId(), worldId()), GetAreaRPLookup()),
     rich_presence_value("Play Time", playTime() / 60, "SECS")
