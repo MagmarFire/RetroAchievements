@@ -22,7 +22,7 @@ areas = {
 }
 
 registeredEvents = {
-"Twilight Thorn": { "locationCode": "StationOfAwakening", "eventId": 0x9d, "score": 5, "isBoss": 1, "lv1": 1 },"Axel": { "locationCode": "BasementHallAxel", "eventId": 0x89, "score": 5, "isBoss": 1, "lv1": 1 },"Shan-Yu": { "locationCode": "PalaceGate", "eventId": 0x4b, "score": 10, "isBoss": 1, "lv1": 1 },"Thresholder": { "locationCode": "Undercroft", "eventId": 0x48, "score": 10, "isBoss": 1, "lv1": 1 },"Dark Thorn": { "locationCode": "BallroomBattle", "eventId": 0x4f, "score": 10, "isBoss": 1, "lv1": 1 },"Cerberus": { "locationCode": "CaveOfTheDeadEntrance", "eventId": 0x72, "score": 10, "isBoss": 1, "lv1": 1 },"Olympus Pete": { "locationCode": "UnderworldLock2", "eventId": 0x74, "score": 5, "isBoss": 1, "lv1": 1 },"Timeless Pete": { "locationCode": "RiverWharf", "eventId": 0x35, "score": 10, "isBoss": 1, "lv1": 1 },"Hydra": { "locationCode": "ColiseumGatesRuined", "eventId": 0xab, "score": 10, "isBoss": 1, "lv1": 1 },"Barbossa": { "locationCode": "PortHeap", "eventId": 0x3c, "score": 25, "isBoss": 1, "lv1": 1 },"Prison Keeper": { "locationCode": "HalloweenHill", "eventId": 0x34, "score": 10, "isBoss": 1, "lv1": 1 },"Oogie Boogie": { "locationCode": "HalloweenFactory", "eventId": 0x37, "score": 10, "isBoss": 1, "lv1": 1 },"Volcano and Blizzard": { "locationCode": "AgrabahPalace", "eventId": 0x3b, "score": 5, "isBoss": 1, "lv1": 1 },"Scar": { "locationCode": "PridePeakBattle", "eventId": 0x37, "score": 25, "isBoss": 1, "lv1": 1 },"Pain and Panic Cup": { "locationCode": "ColiseumTourney1", "eventId": 0xbd, "score": 10, "isBoss": 0, "lv1": 0 },"Monitors": { "locationCode": "SpaceDataspace", "eventId": 0x36, "score": 0, "isBoss": 0, "lv1": 0 },"Hostile Program": { "locationCode": "SpaceIOTowerHallway", "eventId": 0x37, "score": 10, "isBoss": 1, "lv1": 1 },"Demyx": { "locationCode": "CastleGate", "eventId": 0x37, "score": 25, "isBoss": 1, "lv1": 1 },"Battle of 1000 Heartless": { "locationCode": "GreatMaw", "eventId": 0x42, "score": 10, "isBoss": 0, "lv1": 1 },"Storm Rider": { "locationCode": "ImperialSquare", "eventId": 0x4f, "score": 10, "isBoss": 1, "lv1": 1 },"Xaldin": { "locationCode": "BeastBridge", "eventId": 0x52, "score": 25, "isBoss": 1, "lv1": 1 },"Hades": { "locationCode": "ColiseumTourneyHades", "eventId": 0xca, "score": 10, "isBoss": 1, "lv1": 1 },"Grim Reaper II": { "locationCode": "PortHarbor", "eventId": 0x36, "score": 5, "isBoss": 1, "lv1": 1 },"Experiment": { "locationCode": "HalloweenPlaza", "eventId": 0x40, "score": 25, "isBoss": 1, "lv1": 1 },"Sandswept Ruins Escape": { "locationCode": "AgrabahSand", "eventId": 0x3d, "score": 0, "isBoss": 0, "lv1": 0 },"Jafar": { "locationCode": "AgrabahAbove", "eventId": 0x3e, "score": 10, "isBoss": 1, "lv1": 1 },"Groundshaker": { "locationCode": "PrideSavannahBattle", "eventId": 0x3b, "score": 10, "isBoss": 1, "lv1": 1 },"Solar Sailer": { "locationCode": "SpaceSailerBattle", "eventId": 0x39, "score": 0, "isBoss": 0, "lv1": 0 },"MCP": { "locationCode": "SpaceCore", "eventId": 0x3b, "score": 10, "isBoss": 1, "lv1": 1 },"Sephiroth": { "locationCode": "DarkDepths", "eventId": 0x4b, "score": 50, "isBoss": 1, "lv1": 1 },"Roxas": { "locationCode": "NeverStation", "eventId": 0x41, "score": 25, "isBoss": 1, "lv1": 1 },"Xigbar": { "locationCode": "NeverHall", "eventId": 0x39, "score": 10, "isBoss": 1, "lv1": 1 },"Luxord": { "locationCode": "NeverDivide", "eventId": 0x3a, "score": 5, "isBoss": 1, "lv1": 1 },"Saïx": { "locationCode": "NeverImpasse", "eventId": 0x38, "score": 10, "isBoss": 1, "lv1": 1 },"Xemnas I": { "locationCode": "NeverContortion", "eventId": 0x3b, "score": 10, "isBoss": 1, "lv1": 1 },"Xemnas Cannons": { "locationCode": "NeverCannons", "eventId": 0x45, "score": 0, "isBoss": 0, "lv1": 0 },"Ending Sequence": { "locationCode": "DarkMargin", "eventId": 0x3a, "score": 0, "isBoss": 0, "lv1": 0 },"Final Xemnas": { "locationCode": "NeverFinal", "eventId": 0x4a, "score": 25, "isBoss": 1, "lv1": 1 },"Mail Delivery": { "locationCode": "StationHeights", "eventId": 0xc3, "score": 0, "isBoss": 0, "lv1": 0 },"Cargo Climb": { "locationCode": "StationHeights", "eventId": 0xc1, "score": 0, "isBoss": 0, "lv1": 0 },"Grandstander": { "locationCode": "StationHeights", "eventId": 0xc2, "score": 0, "isBoss": 0, "lv1": 0 },"Poster Duty": { "locationCode": "TramCommon", "eventId": 0xc9, "score": 0, "isBoss": 0, "lv1": 0 },"Bumble-Buster": { "locationCode": "TramCommon", "eventId": 0xc8, "score": 0, "isBoss": 0, "lv1": 0 },"Junk Sweep": { "locationCode": "TramCommon", "eventId": 0xc7, "score": 0, "isBoss": 0, "lv1": 0 },"Struggle: Hayner": { "locationCode": "Sandlot", "eventId": 0xb6, "score": 0, "isBoss": 0, "lv1": 0 },"Struggle: Setzer": { "locationCode": "Sandlot", "eventId": 0xb7, "score": 0, "isBoss": 0, "lv1": 0 },"Struggle: Seifer": { "locationCode": "Sandlot", "eventId": 0xb8, "score": 0, "isBoss": 0, "lv1": 0 },"Skateboard Street Rave": { "locationCode": "TramCommon", "eventId": 0xbb, "score": 0, "isBoss": 0, "lv1": 0 },"Zexion’s Absent Silhouette": { "locationCode": "DestinyStorm", "eventId": 0x97, "score": 10, "isBoss": 1, "lv1": 1 },"Marluxia’s Absent Silhouette": { "locationCode": "StationOfOblivion", "eventId": 0x91, "score": 10, "isBoss": 1, "lv1": 1 },"Larxene’s Absent Silhouette": { "locationCode": "StationOfOblivion2", "eventId": 0x9b, "score": 10, "isBoss": 1, "lv1": 1 }, "Lexaeus’s Absent Silhouette": { "locationCode": "StationOfOblivion2", "eventId": 0x8e, "score": 10, "isBoss": 1, "lv1": 1 }, "Vexen’s Absent Silhouette": { "locationCode": "StationOfOblivionMansion", "eventId": 0x73, "score": 10, "isBoss": 1, "lv1": 1 }, 
+"Twilight Thorn": { "locationCode": "StationOfAwakening", "eventId": 0x9d, "score": 5, "isBoss": 1, "lv1": 1 },"Axel": { "locationCode": "BasementHallAxel", "eventId": 0x89, "score": 5, "isBoss": 1, "lv1": 1 },"Shan-Yu": { "locationCode": "PalaceGate", "eventId": 0x4b, "score": 10, "isBoss": 1, "lv1": 1 },"Thresholder": { "locationCode": "Undercroft", "eventId": 0x48, "score": 10, "isBoss": 1, "lv1": 1 },"Dark Thorn": { "locationCode": "BallroomBattle", "eventId": 0x4f, "score": 10, "isBoss": 1, "lv1": 1 },"Cerberus": { "locationCode": "CaveOfTheDeadEntrance", "eventId": 0x72, "score": 10, "isBoss": 1, "lv1": 1 },"Olympus Pete": { "locationCode": "UnderworldLock2", "eventId": 0x74, "score": 5, "isBoss": 1, "lv1": 1 },"Timeless Pete": { "locationCode": "RiverWharf", "eventId": 0x35, "score": 10, "isBoss": 1, "lv1": 1 },"Hydra": { "locationCode": "ColiseumGatesRuined", "eventId": 0xab, "score": 10, "isBoss": 1, "lv1": 1 },"Barbossa": { "locationCode": "PortHeap", "eventId": 0x3c, "score": 25, "isBoss": 1, "lv1": 1 },"Prison Keeper": { "locationCode": "HalloweenHill", "eventId": 0x34, "score": 10, "isBoss": 1, "lv1": 1 },"Oogie Boogie": { "locationCode": "HalloweenFactory", "eventId": 0x37, "score": 10, "isBoss": 1, "lv1": 1 },"Volcano and Blizzard": { "locationCode": "AgrabahPalace", "eventId": 0x3b, "score": 5, "isBoss": 1, "lv1": 1 },"Scar": { "locationCode": "PridePeakBattle", "eventId": 0x37, "score": 25, "isBoss": 1, "lv1": 1 },"Pain and Panic Cup": { "locationCode": "ColiseumTourney1", "eventId": 0xbd, "score": 10, "isBoss": 0, "lv1": 0 },"Monitors": { "locationCode": "SpaceDataspace", "eventId": 0x36, "score": 0, "isBoss": 0, "lv1": 0 },"Hostile Program": { "locationCode": "SpaceIOTowerHallway", "eventId": 0x37, "score": 10, "isBoss": 1, "lv1": 1 },"Demyx": { "locationCode": "CastleGate", "eventId": 0x37, "score": 25, "isBoss": 1, "lv1": 1 },"Battle of 1000 Heartless": { "locationCode": "GreatMaw", "eventId": 0x42, "score": 10, "isBoss": 0, "lv1": 1 },"Storm Rider": { "locationCode": "ImperialSquare", "eventId": 0x4f, "score": 10, "isBoss": 1, "lv1": 1 },"Xaldin": { "locationCode": "BeastBridge", "eventId": 0x52, "score": 25, "isBoss": 1, "lv1": 1 },"Hades": { "locationCode": "ColiseumTourneyHades", "eventId": 0xca, "score": 10, "isBoss": 1, "lv1": 1 },"Grim Reaper II": { "locationCode": "PortHarbor", "eventId": 0x36, "score": 5, "isBoss": 1, "lv1": 1 },"Experiment": { "locationCode": "HalloweenPlaza", "eventId": 0x40, "score": 25, "isBoss": 1, "lv1": 1 },"Sandswept Ruins Escape": { "locationCode": "AgrabahSand", "eventId": 0x3d, "score": 0, "isBoss": 0, "lv1": 0 },"Jafar": { "locationCode": "AgrabahAbove", "eventId": 0x3e, "score": 10, "isBoss": 1, "lv1": 1 },"Groundshaker": { "locationCode": "PrideSavannahBattle", "eventId": 0x3b, "score": 10, "isBoss": 1, "lv1": 1 },"Solar Sailer": { "locationCode": "SpaceSailerBattle", "eventId": 0x39, "score": 0, "isBoss": 0, "lv1": 0 },"MCP": { "locationCode": "SpaceCore", "eventId": 0x3b, "score": 10, "isBoss": 1, "lv1": 1 },"Sephiroth": { "locationCode": "DarkDepths", "eventId": 0x4b, "score": 50, "isBoss": 1, "lv1": 1 },"Roxas": { "locationCode": "NeverStation", "eventId": 0x41, "score": 25, "isBoss": 1, "lv1": 1 },"Xigbar": { "locationCode": "NeverHall", "eventId": 0x39, "score": 10, "isBoss": 1, "lv1": 1 },"Luxord": { "locationCode": "NeverDivide", "eventId": 0x3a, "score": 5, "isBoss": 1, "lv1": 1 },"Saïx": { "locationCode": "NeverImpasse", "eventId": 0x38, "score": 10, "isBoss": 1, "lv1": 1 },"Xemnas I": { "locationCode": "NeverContortion", "eventId": 0x3b, "score": 10, "isBoss": 1, "lv1": 1 },"Xemnas Cannons": { "locationCode": "NeverCannons", "eventId": 0x45, "score": 0, "isBoss": 0, "lv1": 0 },"Ending Sequence": { "locationCode": "DarkMargin", "eventId": 0x3a, "score": 0, "isBoss": 0, "lv1": 0 },"Final Xemnas": { "locationCode": "NeverFinal", "eventId": 0x4a, "score": 25, "isBoss": 1, "lv1": 1 },"Mail Delivery": { "locationCode": "StationHeights", "eventId": 0xc3, "score": 0, "isBoss": 0, "lv1": 0 },"Cargo Climb": { "locationCode": "StationHeights", "eventId": 0xc1, "score": 0, "isBoss": 0, "lv1": 0 },"Grandstander": { "locationCode": "StationHeights", "eventId": 0xc2, "score": 0, "isBoss": 0, "lv1": 0 },"Poster Duty": { "locationCode": "TramCommon", "eventId": 0xc9, "score": 0, "isBoss": 0, "lv1": 0 },"Bumble-Buster": { "locationCode": "TramCommon", "eventId": 0xc8, "score": 0, "isBoss": 0, "lv1": 0 },"Junk Sweep": { "locationCode": "TramCommon", "eventId": 0xc7, "score": 0, "isBoss": 0, "lv1": 0 },"Struggle: Hayner": { "locationCode": "Sandlot", "eventId": 0xb6, "score": 0, "isBoss": 0, "lv1": 0 },"Struggle: Setzer": { "locationCode": "Sandlot", "eventId": 0xb7, "score": 0, "isBoss": 0, "lv1": 0 },"Struggle: Seifer": { "locationCode": "Sandlot", "eventId": 0xb8, "score": 0, "isBoss": 0, "lv1": 0 },"Skateboard Street Rave": { "locationCode": "TramCommon", "eventId": 0xbb, "score": 0, "isBoss": 0, "lv1": 0 },"Zexion’s Absent Silhouette": { "locationCode": "DestinyStorm", "eventId": 0x97, "score": 10, "isBoss": 1, "lv1": 1 },"Marluxia’s Absent Silhouette": { "locationCode": "StationOfOblivion", "eventId": 0x91, "score": 10, "isBoss": 1, "lv1": 1 },"Larxene’s Absent Silhouette": { "locationCode": "StationOfOblivion2", "eventId": 0x9b, "score": 10, "isBoss": 1, "lv1": 1 },"Lexaeus’s Absent Silhouette": { "locationCode": "StationOfOblivion2", "eventId": 0x8e, "score": 10, "isBoss": 1, "lv1": 1 },"Vexen’s Absent Silhouette": { "locationCode": "StationOfOblivionMansion", "eventId": 0x73, "score": 10, "isBoss": 1, "lv1": 1 },"Phil’s Training – Maniac Mode": { "locationCode": "ColiseumGatesRuined2", "eventId": 0x8f, "score": 0, "isBoss": 0, "lv1": 0 }, 
 }
 
 abilities = {
@@ -373,7 +373,7 @@ function GetCheckpointForRegisteredEvent(eventKey, when = always_true(), overrid
 
 achievement(title = "Doing Everything I Can", description = "Perform all three different aerial skateboard tricks before touching the ground.", points = 1,
     trigger = IsActiveInTheField() && tally(3, [ DidMethodGrab(), Did360DegreeSpin(), DidAirWalk() ])
-        && never(LandedWithSkateboard()) && never(JustDidGrind()) && never(IdleWithSkateboard()) && IsInWorld("Twilight Town")
+        && never(LandedWithSkateboard()) && never(JustDidGrind()) && never(IdleWithSkateboard())
 )
 
 achievement(title = "We Tech Those [m]", description = "Finish off the Twilight Thorn with the Break Raid reaction command.", points = 10,
@@ -1213,6 +1213,26 @@ leaderboard(title = "Skateboard Street Rave",
     lower_is_better = true
 )
 
+function PhilTrainingIsDone() => timeRemaining() <= 0 && Delta(timeRemaining()) > 0
+function PhilTrainingIsStarting() => timerStateAlpha() == 4 && timerStateBeta() == 0
+achievement(title = "Overachieving Trainee", description = format("Complete Phil's Training on Maniac Mode with a score of {0} or more points.", 1000), points = 3,
+    trigger = trigger_when(currentScore() >= 1000 && PhilTrainingIsDone()) && GivenEventIsHappening("Phil’s Training – Maniac Mode")
+)
+
+achievement(title = "Professional Trainee", description = format("Complete Phil's Training on Maniac Mode with a score of {0} or more points.", 2000), points = 5,
+    trigger = trigger_when(currentScore() >= 2000 && PhilTrainingIsDone()) && GivenEventIsHappening("Phil’s Training – Maniac Mode")
+)
+
+leaderboard(title = "Phil’s Training – Maniac Mode",
+    description = "Get as many points as you can in Phil’s Training on Maniac Mode!",
+    start = GivenEventIsHappening("Phil’s Training – Maniac Mode") && PhilTrainingIsStarting(),
+    cancel = !GivenEventIsHappening("Phil’s Training – Maniac Mode"),
+    submit = PhilTrainingIsDone(),
+    value = currentScore(),
+    format = "VALUE",
+    lower_is_better = false
+)
+
 // /ungenned
 
 // Here we define "cheese" as a first-order optimal strategy that trivializes a fight when used indefinitely. There are multiple different types of usable cheese in KH2, but for our purposes,
@@ -1369,19 +1389,19 @@ achievement(title = "Cerberus Recordsetter", description = "Win the Cerberus Cup
 )
 
 function CurrentRoundHasChanged() => Delta(currentRound()) != currentRound()
-function CerberusCupConditionPassed() => never(ConditionIsTrueMoreThanOncePerRound(JustEnteredValorForm()))
-        && never(ConditionIsTrueMoreThanOncePerRound(JustEnteredWisdomForm()))
-        && never(ConditionIsTrueMoreThanOncePerRound(JustEnteredLimitForm()))
-        && never(ConditionIsTrueMoreThanOncePerRound(JustEnteredMasterForm()))
-        && never(ConditionIsTrueMoreThanOncePerRound(JustEnteredFinalForm()))
-        && never(ConditionIsTrueMoreThanOncePerRound(JustEnteredAntiForm()))
+function ViolatedCerberusCupRules(when = always_true()) => ConditionIsTrueMoreThanOncePerRound(JustEnteredValorForm() && when)
+        || ConditionIsTrueMoreThanOncePerRound(JustEnteredWisdomForm())
+        || ConditionIsTrueMoreThanOncePerRound(JustEnteredLimitForm())
+        || ConditionIsTrueMoreThanOncePerRound(JustEnteredMasterForm())
+        || ConditionIsTrueMoreThanOncePerRound(JustEnteredFinalForm())
+        || ConditionIsTrueMoreThanOncePerRound(JustEnteredAntiForm())
 // Checking for whether or not the player is active on the field is so that they can use the Retry option in the middle of Round 1 and not have their uses carry over.
 function ConditionIsTrueMoreThanOncePerRound(condition) => repeated(2, condition && never(CurrentRoundHasChanged()) && never(!IsActiveInTheField()))
 achievement(title = "Cerberus Title Defender [m]", description = "Win the Cerberus Cup without activating the same Drive Form more than once per round (Proud Mode or higher; Level 33 or below).",
     points = 25,
     trigger = CerberusCupCheckpointReached(when = level() <= 33 && IsAtLeastOnDifficulty("Proud"))
         && trigger_when(WonTheCerberusCup())
-        && CerberusCupConditionPassed()
+        && never(ViolatedCerberusCupRules())
 )
 
 function TitanCupCheckpointReached(when = always_true())
@@ -1438,21 +1458,22 @@ achievement(title = "Pain and Panic Paradox Recordsetter", description = "Win th
     trigger = PainAndPanicParadoxCupCheckpointReached() && trigger_when(underdromeCurrentScore() >= 2500 && WonThePainAndPanicParadoxCup())
 )
 
+function ViolatedPainAndPanicParadoxCupRules() => LimitIsBeingUsed()
 achievement(title = "Pain and Panic Paradox Title Defender [m]", description = "Win the Pain and Panic Paradox Cup without using Limits (Proud Mode or higher; Level 50 or below).", points = 25,
     trigger = PainAndPanicParadoxCupCheckpointReached(when = level() <= 50 && IsAtLeastOnDifficulty("Proud"))
         && trigger_when(WonThePainAndPanicParadoxCup())
-        && never(LimitIsBeingUsed())
+        && never(ViolatedPainAndPanicParadoxCupRules())
 )
 
 function CerberusParadoxCupCheckpointReached(when = always_true())
     => once(eventId() == 0xc2 && IsActiveInTheField() && IsInLocation("ColiseumTourney1") && JustBecameActiveInTheField() && currentRound() == 1 && when)
     && never(IsDead()) && never(IsTransitioningToOrFromBattle())
 function WonTheCerberusParadoxCup() => battleState() == 5 && Delta(battleState()) == 1 && IsInLocation("HadesChamber")
-achievement(title = "Cerberus Champion", description = "Win the Cerberus Paradox Cup.", points = 3,
+achievement(title = "Cerberus Paradox Champion", description = "Win the Cerberus Paradox Cup.", points = 3,
     trigger = CerberusParadoxCupCheckpointReached() && WonTheCerberusParadoxCup()
 )
 
-achievement(title = "Cerberus Recordsetter", description = "Win the Cerberus Paradox Cup with a score of 1300 or more.", points = 5,
+achievement(title = "Cerberus Paradox Recordsetter", description = "Win the Cerberus Paradox Cup with a score of 1300 or more.", points = 5,
     trigger = CerberusParadoxCupCheckpointReached() && trigger_when(WonTheCerberusParadoxCup() && underdromeCurrentScore() >= 1300)
 )
 
@@ -1460,7 +1481,60 @@ achievement(title = "Cerberus Paradox Title Defender [m]", description = "Win th
     points = 25,
     trigger = CerberusParadoxCupCheckpointReached(when = level() <= 60 && IsAtLeastOnDifficulty("Proud"))
         && trigger_when(WonTheCerberusParadoxCup())
-        && CerberusCupConditionPassed()
+        && never(ViolatedCerberusCupRules())
+)
+
+function TitanParadoxCupCheckpointReached(when = always_true())
+    => once(eventId() == 0xc3 && IsActiveInTheField() && IsInLocation("ColiseumTourney1") && JustBecameActiveInTheField() && currentRound() == 1 && when)
+    && never(IsDead()) && never(IsTransitioningToOrFromBattle())
+function WonTheTitanParadoxCup() => battleState() == 5 && Delta(battleState()) == 1 && IsInLocation("HadesChamber")
+achievement(title = "Titan Paradox Champion", description = "Win the Titan Paradox Cup.", points = 3,
+    trigger = TitanParadoxCupCheckpointReached() && WonTheTitanParadoxCup()
+)
+
+achievement(title = "Titan Paradox Recordsetter", description = "Win the Titan Paradox Cup with a score of 10000 or more.", points = 5,
+    trigger = TitanParadoxCupCheckpointReached() && trigger_when(WonTheTitanParadoxCup() && underdromeCurrentScore() >= 10000)
+)
+
+function chickenLittleUses() => word(0x0032fb12)
+function genieUses() => word(0x0032fb14)
+function stitchUses() => word(0x0032fb16)
+function peterPanUses() => word(0x0032fb18)
+function JustUsedChickenLittle() => Delta(chickenLittleUses()) != chickenLittleUses()
+function JustUsedGenie() => Delta(genieUses()) != genieUses()
+function JustUsedStitch() => Delta(stitchUses()) != stitchUses()
+function JustUsedPeterPan() => Delta(peterPanUses()) != peterPanUses()
+
+// `when` is needed here because the Hades Cup also uses these rules for a certain range of rounds, and we don't want the conditions for that achievement to count outside of those rounds.
+// Without this, the OrNexts that would result if we put the round checks outside would be placed before the round checks instead of after.
+function ViolatedTitanParadoxCupRules(when = always_true())
+    => repeated(3, when && (JustUsedChickenLittle()) || repeated(3, JustUsedGenie()) || repeated(3, JustUsedStitch()) || repeated(3, JustUsedPeterPan()))
+achievement(title = "Titan Paradox Title Defender [m]", description = "Win the Titan Paradox Cup without using any individual summon more than twice each (Proud Mode or higher; Level 70 or below).",
+    points = 10,
+    trigger = TitanParadoxCupCheckpointReached(when = level() <= 70 && IsAtLeastOnDifficulty("Proud"))
+        && trigger_when(WonTheTitanParadoxCup())
+        && never(ViolatedTitanParadoxCupRules())
+)
+
+function HadesParadoxCupCheckpointReached(when = always_true())
+    => once(eventId() == 0xc4 && IsActiveInTheField() && IsInLocation("ColiseumTourney1") && JustBecameActiveInTheField() && currentRound() == 1 && when)
+    && never(IsDead()) && never(IsInLocation("UnderworldEntrance"))
+function WonTheHadesParadoxCup() => eventId() == 0xb8 && IsInLocation("ColiseumVictory")
+achievement(title = "Hades Paradox Champion", description = "Win the Hades Paradox Cup.", points = 5,
+    trigger = HadesParadoxCupCheckpointReached() && WonTheHadesParadoxCup()
+)
+
+achievement(title = "Hades Paradox Recordsetter", description = "Win the Hades Paradox Cup with a score of 15000 or more.", points = 10,
+    trigger = HadesParadoxCupCheckpointReached() && trigger_when(WonTheHadesParadoxCup() && underdromeCurrentScore() >= 15000)
+)
+
+achievement(title = "Hades Paradox Title Defender [m]", description = "Win the Hades Paradox Cup on Proud Mode or higher while adhering to the same achievement conditions for each Paradox Cup's "
+    + "respective set of rounds.", points = 50,
+    trigger = HadesParadoxCupCheckpointReached(when = IsAtLeastOnDifficulty("Proud"))
+        && trigger_when(WonTheHadesParadoxCup())
+        && never(ViolatedTitanParadoxCupRules(currentRound() >= 11 && currentRound() <= 20))
+        && never(ViolatedPainAndPanicParadoxCupRules() && currentRound() >= 21 && currentRound() <= 30)
+        && never(ViolatedCerberusCupRules(currentRound() >= 31 && currentRound() <= 40))
 )
 
 function summonLevel() => byte(0x0032f056)
