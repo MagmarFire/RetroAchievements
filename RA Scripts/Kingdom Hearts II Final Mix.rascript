@@ -1815,15 +1815,16 @@ function GummiMissionJustStarted() => gummiGuiState() == 0xa && Delta(gummiGuiSt
 function GummiMissionComplete() => gummiGuiState() == 0x8 && Delta(gummiGuiState()) == 0x5
 function gummiShipRank() => byte(0x01f8038c)
 function gummiShipPointer() => tbyte(0x01f7de44)
+function gummiShipScore() => dword(0x01f8039c)
 
 gummiMissions = {
-2: { "name": "Asteroid Sweep", "gateId": 0, },3: { "name": "Stardust Sweep", "gateId": 1, },4: { "name": "Broken Highway", "gateId": 2, },5: { "name": "Ancient Highway", "gateId": 3, },6: { "name": "Phantom Storm", "gateId": 4, },7: { "name": "Sunlight Storm", "gateId": 5, },8: { "name": "Splash Island", "gateId": 6, },9: { "name": "Floating Island", "gateId": 7, },10: { "name": "Assault of the Dreadnought", "gateId": 8, },
+2: { "name": "Asteroid Sweep", "gateId": 0, "miss1BaseAddr": 0x0033bc10, "miss1EXBaseAddr": 0x0033c2d0, "mission1Score": 1, "mission2Score": 2, "mission3Score": 3, "exMission1Score": 5, "exMission2Score": 5, "exMission3Score": 10 },3: { "name": "Stardust Sweep", "gateId": 1, "miss1BaseAddr": 0x0033bcd0, "miss1EXBaseAddr": 0x0033c390, "mission1Score": 1, "mission2Score": 2, "mission3Score": 3, "exMission1Score": 5, "exMission2Score": 5, "exMission3Score": 10 },4: { "name": "Broken Highway", "gateId": 2, "miss1BaseAddr": 0x0033bd90, "miss1EXBaseAddr": 0x0033c450, "mission1Score": 1, "mission2Score": 2, "mission3Score": 3, "exMission1Score": 5, "exMission2Score": 5, "exMission3Score": 10 },5: { "name": "Ancient Highway", "gateId": 3, "miss1BaseAddr": 0x0033be50, "miss1EXBaseAddr": 0x0033c510, "mission1Score": 1, "mission2Score": 2, "mission3Score": 3, "exMission1Score": 5, "exMission2Score": 5, "exMission3Score": 10 },6: { "name": "Phantom Storm", "gateId": 4, "miss1BaseAddr": 0x0033bf10, "miss1EXBaseAddr": 0x0033c5d0, "mission1Score": 1, "mission2Score": 2, "mission3Score": 3, "exMission1Score": 5, "exMission2Score": 5, "exMission3Score": 10 },7: { "name": "Sunlight Storm", "gateId": 5, "miss1BaseAddr": 0x0033bfd0, "miss1EXBaseAddr": 0x0033c690, "mission1Score": 1, "mission2Score": 2, "mission3Score": 3, "exMission1Score": 5, "exMission2Score": 5, "exMission3Score": 10 },8: { "name": "Splash Island", "gateId": 6, "miss1BaseAddr": 0x0033c090, "miss1EXBaseAddr": 0x0033c750, "mission1Score": 1, "mission2Score": 2, "mission3Score": 3, "exMission1Score": 5, "exMission2Score": 5, "exMission3Score": 10 },9: { "name": "Floating Island", "gateId": 7, "miss1BaseAddr": 0x0033c150, "miss1EXBaseAddr": 0x0033c810, "mission1Score": 1, "mission2Score": 2, "mission3Score": 3, "exMission1Score": 5, "exMission2Score": 5, "exMission3Score": 10 },10: { "name": "Assault of the Dreadnought", "gateId": 8, "miss1BaseAddr": 0x0033c210, "miss1EXBaseAddr": 0x0033c8d0, "mission1Score": 1, "mission2Score": 2, "mission3Score": 3, "exMission1Score": 5, "exMission2Score": 5, "exMission3Score": 10 },
 }
 
 for index in gummiMissions
 {
     mission = gummiMissions[index]
-    achievement(title = mission["name"] + " - Gold Medalist", description = "Achieve an S rank in Mission 1 of " + mission["name"] + ".", points = 1,
+    achievement(title = mission["name"] + " - Gold Medalist", description = "Achieve an S rank in Mission 1 of " + mission["name"] + ".", points = mission["mission1Score"],
         trigger = once(gummiMissionLevel() == 1 && worldGateId() == mission["gateId"] && GummiMissionJustStarted() && !IsEXMission())
             && trigger_when(GummiMissionComplete())
             && trigger_when(gummiShipRank() == 6)
@@ -1831,15 +1832,29 @@ for index in gummiMissions
             && never(gummiShipPointer() == 0)
     )
     
-    achievement(title = mission["name"] + " - Gold Medalist EX", description = "Achieve an S rank in EX Mission 1 of " + mission["name"] + ".", points = 5,
+    leaderboard(title = mission["name"] + " Mission 1", description = "Get the highest score you can in Mission 1 of " + mission["name"] + "!",
+        start = gummiMissionLevel() == 1 && worldGateId() == mission["gateId"] && GummiMissionJustStarted() && !IsEXMission(),
+        cancel = !IsInLocation("WorldMap") || gummiShipPointer() == 0,
+        submit = GummiMissionComplete(),
+        value = gummiShipScore()
+    )
+    
+    achievement(title = mission["name"] + " - Gold Medalist EX", description = "Achieve an S rank in EX Mission 1 of " + mission["name"] + ".", points = mission["exMission1Score"],
         trigger = once(gummiMissionLevel() == 1 && worldGateId() == mission["gateId"] && GummiMissionJustStarted() && IsEXMission())
             && trigger_when(GummiMissionComplete())
             && trigger_when(gummiShipRank() == 6)
             && never(!IsInLocation("WorldMap"))
             && never(gummiShipPointer() == 0)
     )
+    
+    leaderboard(title = mission["name"] + " EX Mission 1", description = "Get the highest score you can in EX Mission 1 of " + mission["name"] + "!",
+        start = gummiMissionLevel() == 1 && worldGateId() == mission["gateId"] && GummiMissionJustStarted() && IsEXMission(),
+        cancel = !IsInLocation("WorldMap") || gummiShipPointer() == 0,
+        submit = GummiMissionComplete(),
+        value = gummiShipScore()
+    )
 
-    achievement(title = mission["name"] + " - Ace Pilot", description = "Achieve an S rank in Mission 2 of " + mission["name"] + ".", points = 1,
+    achievement(title = mission["name"] + " - Ace Pilot", description = "Achieve an S rank in Mission 2 of " + mission["name"] + ".", points = mission["mission2Score"],
         trigger = once(gummiMissionLevel() == 2 && worldGateId() == mission["gateId"] && GummiMissionJustStarted() && !IsEXMission())
             && trigger_when(GummiMissionComplete())
             && trigger_when(gummiShipRank() == 6)
@@ -1847,15 +1862,29 @@ for index in gummiMissions
             && never(gummiShipPointer() == 0)
     )
     
-    achievement(title = mission["name"] + " - Ace Pilot EX", description = "Achieve an S rank in EX Mission 2 of " + mission["name"] + ".", points = 5,
+    leaderboard(title = mission["name"] + " Mission 2", description = "Get the highest score you can in Mission 2 of " + mission["name"] + "!",
+        start = gummiMissionLevel() == 2 && worldGateId() == mission["gateId"] && GummiMissionJustStarted() && !IsEXMission(),
+        cancel = !IsInLocation("WorldMap") || gummiShipPointer() == 0,
+        submit = GummiMissionComplete(),
+        value = gummiShipScore()
+    )
+    
+    achievement(title = mission["name"] + " - Ace Pilot EX", description = "Achieve an S rank in EX Mission 2 of " + mission["name"] + ".", points = mission["exMission1Score"],
         trigger = once(gummiMissionLevel() == 2 && worldGateId() == mission["gateId"] && GummiMissionJustStarted() && IsEXMission())
             && trigger_when(GummiMissionComplete())
             && trigger_when(gummiShipRank() == 6)
             && never(!IsInLocation("WorldMap"))
             && never(gummiShipPointer() == 0)
     )
+    
+    leaderboard(title = mission["name"] + " EX Mission 2", description = "Get the highest score you can in EX Mission 2 of " + mission["name"] + "!",
+        start = gummiMissionLevel() == 2 && worldGateId() == mission["gateId"] && GummiMissionJustStarted() && IsEXMission(),
+        cancel = !IsInLocation("WorldMap") || gummiShipPointer() == 0,
+        submit = GummiMissionComplete(),
+        value = gummiShipScore()
+    )
 
-    achievement(title = mission["name"] + " - Scoresetter", description = "Achieve an S rank in Mission 3 of " + mission["name"] + ".", points = 1,
+    achievement(title = mission["name"] + " - Scoresetter", description = "Achieve an S rank in Mission 3 of " + mission["name"] + ".", points = mission["mission3Score"],
         trigger = once(gummiMissionLevel() == 3 && worldGateId() == mission["gateId"] && GummiMissionJustStarted() && !IsEXMission())
             && trigger_when(GummiMissionComplete())
             && trigger_when(gummiShipRank() == 6)
@@ -1863,13 +1892,31 @@ for index in gummiMissions
             && never(gummiShipPointer() == 0)
     )
     
-    achievement(title = mission["name"] + " - Scoresetter EX", description = "Achieve an S rank in EX Mission 3 of " + mission["name"] + ".", points = 5,
+    leaderboard(title = mission["name"] + " Mission 3", description = "Get the highest score you can in Mission 3 of " + mission["name"] + "!",
+        start = gummiMissionLevel() == 3 && worldGateId() == mission["gateId"] && GummiMissionJustStarted() && !IsEXMission(),
+        cancel = !IsInLocation("WorldMap") || gummiShipPointer() == 0,
+        submit = GummiMissionComplete(),
+        value = gummiShipScore()
+    )
+    
+    achievement(title = mission["name"] + " - Scoresetter EX", description = "Achieve an S rank in EX Mission 3 of " + mission["name"] + ".", points = mission["exMission3Score"],
         trigger = once(gummiMissionLevel() == 3 && worldGateId() == mission["gateId"] && GummiMissionJustStarted() && IsEXMission())
             && trigger_when(GummiMissionComplete())
             && trigger_when(gummiShipRank() == 6)
             && never(!IsInLocation("WorldMap"))
             && never(gummiShipPointer() == 0)
     )
+    
+    leaderboard(title = mission["name"] + " EX Mission 3", description = "Get the highest score you can in EX Mission 3 of " + mission["name"] + "!",
+        start = gummiMissionLevel() == 3 && worldGateId() == mission["gateId"] && GummiMissionJustStarted() && IsEXMission(),
+        cancel = !IsInLocation("WorldMap") || gummiShipPointer() == 0,
+        submit = GummiMissionComplete(),
+        value = gummiShipScore()
+    )
+    
+    //achievement(title = mission["name"] + " - Treasure Hunter", description = "Get 100% treasure in all missions for " + mission["name"] + ".", points = 3,
+    //    trigger = 
+    //)
 }
 
 if (generateBonusAchievements())
