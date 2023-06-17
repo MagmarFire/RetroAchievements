@@ -147,6 +147,48 @@ function WasBitflagSetInGame(mem)
     return WasValueSetInGame(mem, 0, 1)
 }
 
+// This function allows the creation of achievements with built-in save protection that deal with a collection of values being set
+// throughout the game. The schemas for both parameters are as follows:
+//
+// cheevo: "name": title
+//         "description": self-explanatory
+//         "points": self-explanatory
+//         "threshold": how many values in the "addresses" dictionary must be set before this achievement is triggered
+//
+// conditions: "countsWhen": the condition that must be true in order for it to be counted in the total
+//             "recalculateWhen": the condition that indicates that relevant values in the condition have changed,
+//                                and so everything must be recalculated
+//
+// onlyAvailableWhen: A condition that must be true in all conditions for the achievement to trigger.
+function GenerateCheevoFromConditions(cheevo, conditions, onlyAvailableWhen)
+{
+    loadedCounts = []
+    totalCounts = []
+    resetAlt = always_false()
+
+    for i in conditions
+    {
+        condition = conditions[i]
+
+        // This is the score when the game is loaded. If the loaded score is greater than or equal to the threshold--that is,
+        // if the save file would satisfy enough conditions to trigger the achievement on load--this should trigger a
+        // permanant pauselock to serve as save protection.
+        array_push(loadedCounts, once(condition["countsWhen"] && IsLoadingSaveFile()))
+
+        // We want both loaded and session counts here (that is, we don't care if we're loading a save file when these are tallied).
+        // This way, loading a save doesn't invalidate the achievement outright if a player hasn't actually earned it yet.
+        array_push(totalCounts, once(condition["countsWhen"]))
+
+        resetAlt = resetAlt || condition["recalculateWhen"]
+    }
+
+    achievement(title = cheevo["name"], description = cheevo["description"], points = cheevo["points"], badge = cheevo["badge"],
+        trigger = IsAlwaysInGame() &&
+            measured(tally(cheevo["threshold"], totalCounts)) && unless(tally(cheevo["threshold"], loadedCounts))
+            && never(resetAlt) && onlyAvailableWhen && (always_false() || never(MenuIsActive()))
+    )
+}
+
 function SecondsToFormat(value)
 {
     leadingZero = ""
@@ -161,6 +203,7 @@ function menuPointer() => dword(0x35f0c0)
 function MenuIsActive() => menuPointer() != 0
 function gameStarted() => bit0(0x32d803)
 function IsAlwaysInGame() => never(Delta(gameStarted()) == 0) && never(MenuIsActive())
+function IsLoadingSaveFile() => Delta(gameStarted()) == 0 && gameStarted() == 1 && MenuIsActive()
 
 function IsAtLeastOnDifficulty(value)
 {
@@ -1913,6 +1956,23 @@ for index in gummiMissions
         submit = GummiMissionComplete(),
         value = gummiShipScore()
     )
+    
+    mission1Treasure = float(mission["miss1BaseAddr"] + 0x20)
+    mission2Treasure = float(mission["miss1BaseAddr"] + 0x60)
+    mission3Treasure = float(mission["miss1BaseAddr"] + 0xa0)
+    gummiTreasureConditions = {
+        1: { "countsWhen": (mission1Treasure >= 100.0), "recalculateWhen": (Delta(mission1Treasure) != mission1Treasure) },
+        2: { "countsWhen": (mission2Treasure >= 100.0), "recalculateWhen": (Delta(mission2Treasure) != mission2Treasure) },
+        3: { "countsWhen": (mission3Treasure >= 100.0), "recalculateWhen": (Delta(mission3Treasure) != mission3Treasure) }
+    }
+    
+    GenerateCheevoFromConditions({
+        "name": (mission["name"] + " - Treasure Hunter"),
+        "description": ("Get 100% treasure in all missions for " + mission["name"] + "."),
+        "points": 3,
+        "badge": "00000",
+        "threshold": length(gummiTreasureConditions)
+    }, gummiTreasureConditions, always_true())
     
     //achievement(title = mission["name"] + " - Treasure Hunter", description = "Get 100% treasure in all missions for " + mission["name"] + ".", points = 3,
     //    trigger = 
