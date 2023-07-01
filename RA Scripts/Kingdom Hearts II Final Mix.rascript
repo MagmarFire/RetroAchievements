@@ -215,10 +215,11 @@ function SecondsToFormat(value)
 }
 
 function menuPointer() => dword(0x35f0c0)
+function maximumMenuIndex() => byte(menuPointer() - 0xf3a)
 function MenuIsActive() => menuPointer() != 0
 function gameStarted() => bit0(0x32d803)
 function IsAlwaysInGame() => never(Delta(gameStarted()) == 0) && never(MenuIsActive())
-function IsLoadingSaveFile() => Delta(gameStarted()) == 0 && gameStarted() == 1 && MenuIsActive()
+function IsLoadingSaveFile() => Delta(gameStarted()) == 0 && gameStarted() == 1 && MenuIsActive() && maximumMenuIndex() == 99
 
 function IsAtLeastOnDifficulty(value)
 {
@@ -1198,6 +1199,13 @@ achievement(title = "Critical Return", description = "Complete the story on Crit
         && TransitionedToBattleReport() && IsAtLeastOnDifficulty("Critical")
 )
 
+function timesSavedByMickey() => word(0x0032f8e2)
+achievement(title = "No Need for a Hero [m]", description = "Complete the main story on Proud Mode or higher without ever being saved by King Mickey.", points = 25,
+    trigger = IsFinalEvent() && IsInLocation("DarkMargin")
+        && TransitionedToBattleReport() && IsAtLeastOnDifficulty("Proud")
+        && timesSavedByMickey() <= 0
+)
+
 function BeatTargetTime(mem, value) => IsAlwaysInGame() && mem <= value && mem != 0 && (Delta(mem) > value || Delta(mem) == 0)
 function timerStateAlpha() => dword(0x00349dec)
 function timerStateBeta() => dword(0x00349dfc)
@@ -2153,6 +2161,30 @@ GenerateCheevoFromBits(name = "Legendary Puzzler", description = "Collect all " 
     addresses = puzzlePieces,
     threshold = length(puzzlePieces),
     onlyAvailableWhen = always_true())
+    
+GenerateCheevoFromBits(name = "Enigmatologist", description = "Solve all puzzles.", points = 5,
+    addresses = {
+        1: { "addr": 0x0033094c, "bit": 0 },
+        2: { "addr": 0x0033094c, "bit": 1 },
+        3: { "addr": 0x0033094c, "bit": 2 },
+        4: { "addr": 0x0033094c, "bit": 3 },
+        5: { "addr": 0x0033094c, "bit": 4 },
+        6: { "addr": 0x0033094c, "bit": 5 }
+    },
+    threshold = 6
+)
+
+function moogleExp() => dword(0x00330560)
+function JustReachedMaxMoogleLevel() => Delta(moogleExp()) < 0x7bc && measured(moogleExp() >= 0x7bc)
+achievement(title = "Master Alchemist", description = "Max out your Moogle LV in Item Synthesis.", points = 5,
+    trigger = !IsLoadingSaveFile() && JustReachedMaxMoogleLevel()
+)
+
+function ultimaWeaponsEarned() => byte(0x0032f1bf)
+function JustEarnedUltimaWeapon() => Delta(ultimaWeaponsEarned()) == 0 && ultimaWeaponsEarned() == 1
+achievement(title = "Speller of Endings", description = "Obtain Ultima Weapon.", points = 10,
+    trigger = !IsLoadingSaveFile() && JustEarnedUltimaWeapon()
+)
 
 if (generateBonusAchievements())
 {
