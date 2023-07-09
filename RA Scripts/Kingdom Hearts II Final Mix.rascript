@@ -1,9 +1,32 @@
 // Kingdom Hearts II: Final Mix
-// #ID = 2781
+// #core-ID = 2781
+// #ID = 25083
 
 function TRUE() => 1
 function FALSE() => 0
 function Delta(mem) => prev(mem)
+
+function xachievement(title, description, points, trigger, badge = "00000", id = 0)
+{
+    if (!generateBonusAchievements())
+    {
+        achievement(title = title, description = description, points = points, trigger = trigger, badge = badge, id = id)
+    }
+}
+
+function xleaderboard(title, description, start, cancel, submit, value, format, lower_is_better = false, format = "VALUE")
+{
+    if (!generateBonusAchievements())
+    {
+        xleaderboard(title = title, description = description,
+            start = start,
+            cancel = cancel,
+            submit = submit,
+            value = value,
+            format = format
+        )
+    }
+}
 
 function DictionaryKeyExists(dict, key)
 {
@@ -37,7 +60,7 @@ areas = {
 }
 
 registeredEvents = {
-"Twilight Thorn": { "locationCode": "StationOfAwakening", "eventId": 0x9d, "score": 5, "isBoss": 1, "lv1": 1 },"Axel": { "locationCode": "BasementHallAxel", "eventId": 0x89, "score": 5, "isBoss": 1, "lv1": 1 },"Shan-Yu": { "locationCode": "PalaceGate", "eventId": 0x4b, "score": 10, "isBoss": 1, "lv1": 1 },"Thresholder": { "locationCode": "Undercroft", "eventId": 0x48, "score": 10, "isBoss": 1, "lv1": 1 },"Dark Thorn": { "locationCode": "BallroomBattle", "eventId": 0x4f, "score": 10, "isBoss": 1, "lv1": 1 },"Cerberus": { "locationCode": "CaveOfTheDeadEntrance", "eventId": 0x72, "score": 10, "isBoss": 1, "lv1": 1 },"Olympus Pete": { "locationCode": "UnderworldLock2", "eventId": 0x74, "score": 5, "isBoss": 1, "lv1": 1 },"Timeless Pete": { "locationCode": "RiverWharf", "eventId": 0x35, "score": 10, "isBoss": 1, "lv1": 1 },"Hydra": { "locationCode": "ColiseumGatesRuined", "eventId": 0xab, "score": 10, "isBoss": 1, "lv1": 1 },"Barbossa": { "locationCode": "PortHeap", "eventId": 0x3c, "score": 25, "isBoss": 1, "lv1": 1 },"Prison Keeper": { "locationCode": "HalloweenHill", "eventId": 0x34, "score": 10, "isBoss": 1, "lv1": 1 },"Oogie Boogie": { "locationCode": "HalloweenFactory", "eventId": 0x37, "score": 10, "isBoss": 1, "lv1": 1 },"Volcano and Blizzard": { "locationCode": "AgrabahPalace", "eventId": 0x3b, "score": 5, "isBoss": 1, "lv1": 1 },"Scar": { "locationCode": "PridePeakBattle", "eventId": 0x37, "score": 25, "isBoss": 1, "lv1": 1 },"Pain and Panic Cup": { "locationCode": "ColiseumTourney1", "eventId": 0xbd, "score": 10, "isBoss": 0, "lv1": 0 },"Monitors": { "locationCode": "SpaceDataspace", "eventId": 0x36, "score": 0, "isBoss": 0, "lv1": 0 },"Hostile Program": { "locationCode": "SpaceIOTowerHallway", "eventId": 0x37, "score": 10, "isBoss": 1, "lv1": 1 },"Demyx": { "locationCode": "CastleGate", "eventId": 0x37, "score": 25, "isBoss": 1, "lv1": 1 },"Battle of 1000 Heartless": { "locationCode": "GreatMaw", "eventId": 0x42, "score": 10, "isBoss": 0, "lv1": 1 },"Storm Rider": { "locationCode": "ImperialSquare", "eventId": 0x4f, "score": 10, "isBoss": 1, "lv1": 1 },"Xaldin": { "locationCode": "BeastBridge", "eventId": 0x52, "score": 25, "isBoss": 1, "lv1": 1 },"Hades": { "locationCode": "ColiseumTourneyHades", "eventId": 0xca, "score": 10, "isBoss": 1, "lv1": 1 },"Grim Reaper II": { "locationCode": "PortHarbor", "eventId": 0x36, "score": 5, "isBoss": 1, "lv1": 1 },"Experiment": { "locationCode": "HalloweenPlaza", "eventId": 0x40, "score": 25, "isBoss": 1, "lv1": 1 },"Sandswept Ruins Escape": { "locationCode": "AgrabahSand", "eventId": 0x3d, "score": 0, "isBoss": 0, "lv1": 0 },"Jafar": { "locationCode": "AgrabahAbove", "eventId": 0x3e, "score": 10, "isBoss": 1, "lv1": 1 },"Groundshaker": { "locationCode": "PrideSavannahBattle", "eventId": 0x3b, "score": 10, "isBoss": 1, "lv1": 1 },"Solar Sailer": { "locationCode": "SpaceSailerBattle", "eventId": 0x39, "score": 0, "isBoss": 0, "lv1": 0 },"MCP": { "locationCode": "SpaceCore", "eventId": 0x3b, "score": 10, "isBoss": 1, "lv1": 1 },"Sephiroth": { "locationCode": "DarkDepths", "eventId": 0x4b, "score": 50, "isBoss": 1, "lv1": 1 },"Roxas": { "locationCode": "NeverStation", "eventId": 0x41, "score": 25, "isBoss": 1, "lv1": 1 },"Xigbar": { "locationCode": "NeverHall", "eventId": 0x39, "score": 10, "isBoss": 1, "lv1": 1 },"Luxord": { "locationCode": "NeverDivide", "eventId": 0x3a, "score": 5, "isBoss": 1, "lv1": 1 },"Saïx": { "locationCode": "NeverImpasse", "eventId": 0x38, "score": 10, "isBoss": 1, "lv1": 1 },"Xemnas I": { "locationCode": "NeverContortion", "eventId": 0x3b, "score": 10, "isBoss": 1, "lv1": 1 },"Xemnas Cannons": { "locationCode": "NeverCannons", "eventId": 0x45, "score": 0, "isBoss": 0, "lv1": 0 },"Ending Sequence": { "locationCode": "DarkMargin", "eventId": 0x3a, "score": 0, "isBoss": 0, "lv1": 0 },"Final Xemnas": { "locationCode": "NeverFinal", "eventId": 0x4a, "score": 50, "isBoss": 1, "lv1": 1 },"Mail Delivery": { "locationCode": "StationHeights", "eventId": 0xc3, "score": 0, "isBoss": 0, "lv1": 0 },"Cargo Climb": { "locationCode": "StationHeights", "eventId": 0xc1, "score": 0, "isBoss": 0, "lv1": 0 },"Grandstander": { "locationCode": "StationHeights", "eventId": 0xc2, "score": 0, "isBoss": 0, "lv1": 0 },"Poster Duty": { "locationCode": "TramCommon", "eventId": 0xc9, "score": 0, "isBoss": 0, "lv1": 0 },"Bumble-Buster": { "locationCode": "TramCommon", "eventId": 0xc8, "score": 0, "isBoss": 0, "lv1": 0 },"Junk Sweep": { "locationCode": "TramCommon", "eventId": 0xc7, "score": 0, "isBoss": 0, "lv1": 0 },"Struggle: Hayner": { "locationCode": "Sandlot", "eventId": 0xb6, "score": 0, "isBoss": 0, "lv1": 0 },"Struggle: Setzer": { "locationCode": "Sandlot", "eventId": 0xb7, "score": 0, "isBoss": 0, "lv1": 0 },"Struggle: Seifer": { "locationCode": "Sandlot", "eventId": 0xb8, "score": 0, "isBoss": 0, "lv1": 0 },"Skateboard Street Rave": { "locationCode": "TramCommon", "eventId": 0xbb, "score": 0, "isBoss": 0, "lv1": 0 },"Zexion’s Absent Silhouette": { "locationCode": "DestinyStorm", "eventId": 0x97, "score": 10, "isBoss": 1, "lv1": 1 },"Marluxia’s Absent Silhouette": { "locationCode": "StationOfOblivion", "eventId": 0x91, "score": 10, "isBoss": 1, "lv1": 1 },"Larxene’s Absent Silhouette": { "locationCode": "StationOfOblivion2", "eventId": 0x9b, "score": 10, "isBoss": 1, "lv1": 1 },"Lexaeus’s Absent Silhouette": { "locationCode": "StationOfOblivion2", "eventId": 0x8e, "score": 10, "isBoss": 1, "lv1": 1 },"Vexen’s Absent Silhouette": { "locationCode": "StationOfOblivionMansion", "eventId": 0x73, "score": 10, "isBoss": 1, "lv1": 1 },"Phil’s Training – Maniac Mode": { "locationCode": "ColiseumGatesRuined2", "eventId": 0x8f, "score": 0, "isBoss": 0, "lv1": 0 },"Skateboard Freestyle": { "locationCode": "Borough", "eventId": 0x64, "score": 0, "isBoss": 0, "lv1": 0 },"Skateboard Time Attack": { "locationCode": "PortTown", "eventId": 0x58, "score": 0, "isBoss": 0, "lv1": 0 },"Skateboard Sand Slider": { "locationCode": "Agrabah", "eventId": 0x6e, "score": 0, "isBoss": 0, "lv1": 0 },"Skateboard Workshop Rave": { "locationCode": "HalloweenFactory", "eventId": 0x4b, "score": 0, "isBoss": 0, "lv1": 0 },"Light Cycle": { "locationCode": "SpaceGrid", "eventId": 0x3f, "score": 0, "isBoss": 0, "lv1": 0 },"A Blustery Rescue": { "locationCode": "PigletRescue", "eventId": 0x45, "score": 0, "isBoss": 0, "lv1": 0 },"Hunny Slider": { "locationCode": "HunnySlider", "eventId": 0x46, "score": 0, "isBoss": 0, "lv1": 0 },"Balloon Bounce": { "locationCode": "BalloonBounce", "eventId": 0x47, "score": 0, "isBoss": 0, "lv1": 0 },"The Expotition": { "locationCode": "SpookyCave", "eventId": 0x48, "score": 0, "isBoss": 0, "lv1": 0 },"The Hunny Pot": { "locationCode": "StarryHill", "eventId": 0x49, "score": 0, "isBoss": 0, "lv1": 0 },"Swim This Way": { "locationCode": "AtlanticaOrchestra", "eventId": 0x42, "score": 0, "isBoss": 0, "lv1": 0 },"Part of Your World": { "locationCode": "AtlanticaGrotto", "eventId": 0x43, "score": 0, "isBoss": 0, "lv1": 0 },"Under the Sea": { "locationCode": "AtlanticaCourtyard", "eventId": 0x44, "score": 0, "isBoss": 0, "lv1": 0 },"Ursula’s Revenge": { "locationCode": "AtlanticaWrath", "eventId": 0x45, "score": 0, "isBoss": 0, "lv1": 0 },"A New Day Is Dawning": { "locationCode": "AtlanticaOrchestra", "eventId": 0x46, "score": 0, "isBoss": 0, "lv1": 0 },"Gift Wrapping": { "locationCode": "HalloweenWrapping", "eventId": 0x48, "score": 0, "isBoss": 0, "lv1": 0 },"Xemnas Dragon": { "locationCode": "NeverDragon", "eventId": 0x48, "score": 0, "isBoss": 0, "lv1": 0 },"Magic Carpet": { "locationCode": "AgrabahSand", "eventId": 0x6f, "score": 0, "isBoss": 0, "lv1": 0 },"Data Luxord": { "locationCode": "NeverDivide", "eventId": 0x65, "score": 25, "isBoss": 1, "lv1": 1 },"Data Xemnas 1": { "locationCode": "NeverContortion", "eventId": 0x61, "score": 50, "isBoss": 1, "lv1": 1 },"Data Xemnas 2": { "locationCode": "NeverFinal", "eventId": 0x62, "score": 100, "isBoss": 1, "lv1": 1 },"Data Xigbar": { "locationCode": "NeverHall", "eventId": 0x64, "score": 50, "isBoss": 1, "lv1": 1 },"Data Xaldin": { "locationCode": "BeastBridge", "eventId": 0x61, "score": 50, "isBoss": 1, "lv1": 1 },"Data Vexen": { "locationCode": "StationOfOblivionMansion", "eventId": 0x92, "score": 50, "isBoss": 1, "lv1": 1 },"Data Lexaeus": { "locationCode": "StationOfOblivion2", "eventId": 0x93, "score": 25, "isBoss": 1, "lv1": 1 },"Data Zexion": { "locationCode": "DestinyStorm", "eventId": 0x98, "score": 50, "isBoss": 1, "lv1": 1 },"Data Saïx": { "locationCode": "NeverImpasse", "eventId": 0x66, "score": 50, "isBoss": 1, "lv1": 1 },"Data Axel": { "locationCode": "BasementHallAxel", "eventId": 0xd5, "score": 50, "isBoss": 1, "lv1": 1 },"Data Demyx": { "locationCode": "CastleGate", "eventId": 0x72, "score": 50, "isBoss": 1, "lv1": 1 },"Data Marluxia": { "locationCode": "StationOfOblivion", "eventId": 0x96, "score": 100, "isBoss": 1, "lv1": 1 },"Data Larxene": { "locationCode": "StationOfOblivion2", "eventId": 0x94, "score": 50, "isBoss": 1, "lv1": 1 },"Data Roxas": { "locationCode": "NeverStation", "eventId": 0x63, "score": 50, "isBoss": 1, "lv1": 1 },"Lingering Will": { "locationCode": "GraveyardBadlands", "eventId": 0x43, "score": 100, "isBoss": 1, "lv1": 0 }, "Lingering Will 2": { "locationCode": "GraveyardBadlands", "eventId": 0x49, "score": 100, "isBoss": 1, "lv1": 0 }, 
+2: { "eventKey": "Twilight Thorn", "locationCode": "StationOfAwakening", "eventId": 0x9d, "score": 1, "isBoss": 1, "lv1": 1, "isProper": 0 }, 3: { "eventKey": "Axel", "locationCode": "BasementHallAxel", "eventId": 0x89, "score": 5, "isBoss": 1, "lv1": 1, "isProper": 1 }, 4: { "eventKey": "Shan-Yu", "locationCode": "PalaceGate", "eventId": 0x4b, "score": 10, "isBoss": 1, "lv1": 1, "isProper": 1 }, 5: { "eventKey": "Thresholder", "locationCode": "Undercroft", "eventId": 0x48, "score": 10, "isBoss": 1, "lv1": 1, "isProper": 0 }, 6: { "eventKey": "Dark Thorn", "locationCode": "BallroomBattle", "eventId": 0x4f, "score": 10, "isBoss": 1, "lv1": 1, "isProper": 0 }, 7: { "eventKey": "Cerberus", "locationCode": "CaveOfTheDeadEntrance", "eventId": 0x72, "score": 10, "isBoss": 1, "lv1": 1, "isProper": 1 }, 8: { "eventKey": "Olympus Pete", "locationCode": "UnderworldLock2", "eventId": 0x74, "score": 5, "isBoss": 1, "lv1": 1, "isProper": 1 }, 9: { "eventKey": "Timeless Pete", "locationCode": "RiverWharf", "eventId": 0x35, "score": 10, "isBoss": 1, "lv1": 1, "isProper": 1 }, 10: { "eventKey": "Hydra", "locationCode": "ColiseumGatesRuined", "eventId": 0xab, "score": 10, "isBoss": 1, "lv1": 1, "isProper": 0 }, 11: { "eventKey": "Barbossa", "locationCode": "PortHeap", "eventId": 0x3c, "score": 25, "isBoss": 1, "lv1": 1, "isProper": 1 }, 12: { "eventKey": "Prison Keeper", "locationCode": "HalloweenHill", "eventId": 0x34, "score": 10, "isBoss": 1, "lv1": 1, "isProper": 0 }, 13: { "eventKey": "Oogie Boogie", "locationCode": "HalloweenFactory", "eventId": 0x37, "score": 10, "isBoss": 1, "lv1": 1, "isProper": 1 }, 14: { "eventKey": "Volcano and Blizzard Lords", "locationCode": "AgrabahPalace", "eventId": 0x3b, "score": 5, "isBoss": 1, "lv1": 1, "isProper": 0 }, 15: { "eventKey": "Scar", "locationCode": "PridePeakBattle", "eventId": 0x37, "score": 25, "isBoss": 1, "lv1": 1, "isProper": 1 }, 16: { "eventKey": "Pain and Panic Cup", "locationCode": "ColiseumTourney1", "eventId": 0xbd, "score": 10, "isBoss": 0, "lv1": 0, "isProper": 1 }, 17: { "eventKey": "Monitors", "locationCode": "SpaceDataspace", "eventId": 0x36, "score": 0, "isBoss": 0, "lv1": 0, "isProper": 1 }, 18: { "eventKey": "Hostile Program", "locationCode": "SpaceIOTowerHallway", "eventId": 0x37, "score": 10, "isBoss": 1, "lv1": 1, "isProper": 0 }, 19: { "eventKey": "Demyx", "locationCode": "CastleGate", "eventId": 0x37, "score": 25, "isBoss": 1, "lv1": 1, "isProper": 1 }, 20: { "eventKey": "Battle of 1000 Heartless", "locationCode": "GreatMaw", "eventId": 0x42, "score": 10, "isBoss": 0, "lv1": 1, "isProper": 1 }, 21: { "eventKey": "Storm Rider", "locationCode": "ImperialSquare", "eventId": 0x4f, "score": 10, "isBoss": 1, "lv1": 1, "isProper": 0 }, 22: { "eventKey": "Xaldin", "locationCode": "BeastBridge", "eventId": 0x52, "score": 25, "isBoss": 1, "lv1": 1, "isProper": 1 }, 23: { "eventKey": "Hades", "locationCode": "ColiseumTourneyHades", "eventId": 0xca, "score": 10, "isBoss": 1, "lv1": 1, "isProper": 1 }, 24: { "eventKey": "Grim Reaper II", "locationCode": "PortHarbor", "eventId": 0x36, "score": 5, "isBoss": 1, "lv1": 1, "isProper": 0 }, 25: { "eventKey": "Experiment", "locationCode": "HalloweenPlaza", "eventId": 0x40, "score": 25, "isBoss": 1, "lv1": 1, "isProper": 0 }, 26: { "eventKey": "Sandswept Ruins Escape", "locationCode": "AgrabahSand", "eventId": 0x3d, "score": 0, "isBoss": 0, "lv1": 0, "isProper": 1 }, 27: { "eventKey": "Jafar", "locationCode": "AgrabahAbove", "eventId": 0x3e, "score": 10, "isBoss": 1, "lv1": 1, "isProper": 1 }, 28: { "eventKey": "Groundshaker", "locationCode": "PrideSavannahBattle", "eventId": 0x3b, "score": 10, "isBoss": 1, "lv1": 1, "isProper": 0 }, 29: { "eventKey": "Solar Sailer", "locationCode": "SpaceSailerBattle", "eventId": 0x39, "score": 0, "isBoss": 0, "lv1": 0, "isProper": 1 }, 30: { "eventKey": "MCP", "locationCode": "SpaceCore", "eventId": 0x3b, "score": 10, "isBoss": 1, "lv1": 1, "isProper": 0 }, 31: { "eventKey": "Sephiroth", "locationCode": "DarkDepths", "eventId": 0x4b, "score": 50, "isBoss": 1, "lv1": 1, "isProper": 1 }, 32: { "eventKey": "Roxas", "locationCode": "NeverStation", "eventId": 0x41, "score": 25, "isBoss": 1, "lv1": 1, "isProper": 1 }, 33: { "eventKey": "Xigbar", "locationCode": "NeverHall", "eventId": 0x39, "score": 10, "isBoss": 1, "lv1": 1, "isProper": 1 }, 34: { "eventKey": "Luxord", "locationCode": "NeverDivide", "eventId": 0x3a, "score": 5, "isBoss": 1, "lv1": 1, "isProper": 1 }, 35: { "eventKey": "Saïx", "locationCode": "NeverImpasse", "eventId": 0x38, "score": 10, "isBoss": 1, "lv1": 1, "isProper": 1 }, 36: { "eventKey": "Xemnas I", "locationCode": "NeverContortion", "eventId": 0x3b, "score": 10, "isBoss": 1, "lv1": 1, "isProper": 1 }, 37: { "eventKey": "Xemnas Cannons", "locationCode": "NeverCannons", "eventId": 0x45, "score": 0, "isBoss": 0, "lv1": 0, "isProper": 0 }, 38: { "eventKey": "Ending Sequence", "locationCode": "DarkMargin", "eventId": 0x3a, "score": 0, "isBoss": 0, "lv1": 0, "isProper": 1 }, 39: { "eventKey": "Final Xemnas", "locationCode": "NeverFinal", "eventId": 0x4a, "score": 50, "isBoss": 1, "lv1": 1, "isProper": 1 }, 40: { "eventKey": "Mail Delivery", "locationCode": "StationHeights", "eventId": 0xc3, "score": 0, "isBoss": 0, "lv1": 0, "isProper": 0 }, 41: { "eventKey": "Cargo Climb", "locationCode": "StationHeights", "eventId": 0xc1, "score": 0, "isBoss": 0, "lv1": 0, "isProper": 0 }, 42: { "eventKey": "Grandstander", "locationCode": "StationHeights", "eventId": 0xc2, "score": 0, "isBoss": 0, "lv1": 0, "isProper": 0 }, 43: { "eventKey": "Poster Duty", "locationCode": "TramCommon", "eventId": 0xc9, "score": 0, "isBoss": 0, "lv1": 0, "isProper": 0 }, 44: { "eventKey": "Bumble-Buster", "locationCode": "TramCommon", "eventId": 0xc8, "score": 0, "isBoss": 0, "lv1": 0, "isProper": 0 }, 45: { "eventKey": "Junk Sweep", "locationCode": "TramCommon", "eventId": 0xc7, "score": 0, "isBoss": 0, "lv1": 0, "isProper": 0 }, 46: { "eventKey": "Struggle: Hayner", "locationCode": "Sandlot", "eventId": 0xb6, "score": 0, "isBoss": 0, "lv1": 0, "isProper": 0 }, 47: { "eventKey": "Struggle: Setzer", "locationCode": "Sandlot", "eventId": 0xb7, "score": 0, "isBoss": 0, "lv1": 0, "isProper": 0 }, 48: { "eventKey": "Struggle: Seifer", "locationCode": "Sandlot", "eventId": 0xb8, "score": 0, "isBoss": 0, "lv1": 0, "isProper": 0 }, 49: { "eventKey": "Skateboard Street Rave", "locationCode": "TramCommon", "eventId": 0xbb, "score": 0, "isBoss": 0, "lv1": 0, "isProper": 0 }, 50: { "eventKey": "Zexion’s Absent Silhouette", "locationCode": "DestinyStorm", "eventId": 0x97, "score": 10, "isBoss": 1, "lv1": 1, "isProper": 1 }, 51: { "eventKey": "Marluxia’s Absent Silhouette", "locationCode": "StationOfOblivion", "eventId": 0x91, "score": 10, "isBoss": 1, "lv1": 1, "isProper": 1 }, 52: { "eventKey": "Larxene’s Absent Silhouette", "locationCode": "StationOfOblivion2", "eventId": 0x9b, "score": 10, "isBoss": 1, "lv1": 1, "isProper": 1 }, 53: { "eventKey": "Lexaeus’s Absent Silhouette", "locationCode": "StationOfOblivion2", "eventId": 0x8e, "score": 10, "isBoss": 1, "lv1": 1, "isProper": 1 }, 54: { "eventKey": "Vexen’s Absent Silhouette", "locationCode": "StationOfOblivionMansion", "eventId": 0x73, "score": 10, "isBoss": 1, "lv1": 1, "isProper": 1 }, 55: { "eventKey": "Phil’s Training – Maniac Mode", "locationCode": "ColiseumGatesRuined2", "eventId": 0x8f, "score": 0, "isBoss": 0, "lv1": 0, "isProper": 0 }, 56: { "eventKey": "Skateboard Freestyle", "locationCode": "Borough", "eventId": 0x64, "score": 0, "isBoss": 0, "lv1": 0, "isProper": 0 }, 57: { "eventKey": "Skateboard Time Attack", "locationCode": "PortTown", "eventId": 0x58, "score": 0, "isBoss": 0, "lv1": 0, "isProper": 0 }, 58: { "eventKey": "Skateboard Sand Slider", "locationCode": "Agrabah", "eventId": 0x6e, "score": 0, "isBoss": 0, "lv1": 0, "isProper": 0 }, 59: { "eventKey": "Skateboard Workshop Rave", "locationCode": "HalloweenFactory", "eventId": 0x4b, "score": 0, "isBoss": 0, "lv1": 0, "isProper": 0 }, 60: { "eventKey": "Light Cycle", "locationCode": "SpaceGrid", "eventId": 0x3f, "score": 0, "isBoss": 0, "lv1": 0, "isProper": 0 }, 61: { "eventKey": "A Blustery Rescue", "locationCode": "PigletRescue", "eventId": 0x45, "score": 0, "isBoss": 0, "lv1": 0, "isProper": 0 }, 62: { "eventKey": "Hunny Slider", "locationCode": "HunnySlider", "eventId": 0x46, "score": 0, "isBoss": 0, "lv1": 0, "isProper": 0 }, 63: { "eventKey": "Balloon Bounce", "locationCode": "BalloonBounce", "eventId": 0x47, "score": 0, "isBoss": 0, "lv1": 0, "isProper": 0 }, 64: { "eventKey": "The Expotition", "locationCode": "SpookyCave", "eventId": 0x48, "score": 0, "isBoss": 0, "lv1": 0, "isProper": 0 }, 65: { "eventKey": "The Hunny Pot", "locationCode": "StarryHill", "eventId": 0x49, "score": 0, "isBoss": 0, "lv1": 0, "isProper": 0 }, 66: { "eventKey": "Swim This Way", "locationCode": "AtlanticaOrchestra", "eventId": 0x42, "score": 0, "isBoss": 0, "lv1": 0, "isProper": 0 }, 67: { "eventKey": "Part of Your World", "locationCode": "AtlanticaGrotto", "eventId": 0x43, "score": 0, "isBoss": 0, "lv1": 0, "isProper": 0 }, 68: { "eventKey": "Under the Sea", "locationCode": "AtlanticaCourtyard", "eventId": 0x44, "score": 0, "isBoss": 0, "lv1": 0, "isProper": 0 }, 69: { "eventKey": "Ursula’s Revenge", "locationCode": "AtlanticaWrath", "eventId": 0x45, "score": 0, "isBoss": 0, "lv1": 0, "isProper": 0 }, 70: { "eventKey": "A New Day Is Dawning", "locationCode": "AtlanticaOrchestra", "eventId": 0x46, "score": 0, "isBoss": 0, "lv1": 0, "isProper": 0 }, 71: { "eventKey": "Gift Wrapping", "locationCode": "HalloweenWrapping", "eventId": 0x48, "score": 0, "isBoss": 0, "lv1": 0, "isProper": 0 }, 72: { "eventKey": "Xemnas Dragon", "locationCode": "NeverDragon", "eventId": 0x48, "score": 0, "isBoss": 0, "lv1": 0, "isProper": 0 }, 73: { "eventKey": "Magic Carpet", "locationCode": "AgrabahSand", "eventId": 0x6f, "score": 0, "isBoss": 0, "lv1": 0, "isProper": 0 }, 74: { "eventKey": "Data Luxord", "locationCode": "NeverDivide", "eventId": 0x65, "score": 25, "isBoss": 1, "lv1": 1, "isProper": 1 }, 75: { "eventKey": "Data Xemnas 1", "locationCode": "NeverContortion", "eventId": 0x61, "score": 50, "isBoss": 1, "lv1": 1, "isProper": 1 }, 76: { "eventKey": "Data Xemnas 2", "locationCode": "NeverFinal", "eventId": 0x62, "score": 100, "isBoss": 1, "lv1": 1, "isProper": 1 }, 77: { "eventKey": "Data Xigbar", "locationCode": "NeverHall", "eventId": 0x64, "score": 50, "isBoss": 1, "lv1": 1, "isProper": 1 }, 78: { "eventKey": "Data Xaldin", "locationCode": "BeastBridge", "eventId": 0x61, "score": 50, "isBoss": 1, "lv1": 1, "isProper": 1 }, 79: { "eventKey": "Data Vexen", "locationCode": "StationOfOblivionMansion", "eventId": 0x92, "score": 50, "isBoss": 1, "lv1": 1, "isProper": 1 }, 80: { "eventKey": "Data Lexaeus", "locationCode": "StationOfOblivion2", "eventId": 0x93, "score": 25, "isBoss": 1, "lv1": 1, "isProper": 1 }, 81: { "eventKey": "Data Zexion", "locationCode": "DestinyStorm", "eventId": 0x98, "score": 50, "isBoss": 1, "lv1": 1, "isProper": 1 }, 82: { "eventKey": "Data Saïx", "locationCode": "NeverImpasse", "eventId": 0x66, "score": 50, "isBoss": 1, "lv1": 1, "isProper": 1 }, 83: { "eventKey": "Data Axel", "locationCode": "BasementHallAxel", "eventId": 0xd5, "score": 50, "isBoss": 1, "lv1": 1, "isProper": 1 }, 84: { "eventKey": "Data Demyx", "locationCode": "CastleGate", "eventId": 0x72, "score": 50, "isBoss": 1, "lv1": 1, "isProper": 1 }, 85: { "eventKey": "Data Marluxia", "locationCode": "StationOfOblivion", "eventId": 0x96, "score": 100, "isBoss": 1, "lv1": 1, "isProper": 1 }, 86: { "eventKey": "Data Larxene", "locationCode": "StationOfOblivion2", "eventId": 0x94, "score": 50, "isBoss": 1, "lv1": 1, "isProper": 1 }, 87: { "eventKey": "Data Roxas", "locationCode": "NeverStation", "eventId": 0x63, "score": 50, "isBoss": 1, "lv1": 1, "isProper": 1 }, 88: { "eventKey": "Lingering Will", "locationCode": "GraveyardBadlands", "eventId": 0x43, "score": 100, "isBoss": 1, "lv1": 0, "isProper": 0 }, 89: { "eventKey": "Lingering Will 2", "locationCode": "GraveyardBadlands", "eventId": 0x49, "score": 100, "isBoss": 1, "lv1": 0, "isProper": 0 }, 
 }
 
 abilities = {
@@ -70,7 +93,7 @@ worlds = {
 19: "The World That Never Was",
 }
 
-function generateBonusAchievements() => false
+function generateBonusAchievements() => true
 
 function areaId() => byte(0x32bae1)
 function worldId() => byte(0x32bae0)
@@ -197,7 +220,7 @@ function GenerateCheevoFromConditions(cheevo, conditions, onlyAvailableWhen)
         resetAlt = resetAlt || condition["recalculateWhen"]
     }
 
-    achievement(title = cheevo["name"], description = cheevo["description"], points = cheevo["points"], badge = cheevo["badge"],
+    xachievement(title = cheevo["name"], description = cheevo["description"], points = cheevo["points"], badge = cheevo["badge"],
         trigger = IsAlwaysInGame() &&
             measured(tally(cheevo["threshold"], totalCounts)) && unless(tally(cheevo["threshold"], loadedCounts))
             && never(resetAlt) && onlyAvailableWhen && (always_false() || never(MenuIsActive()))
@@ -405,9 +428,22 @@ function bonusLevel() => byte(0x32f230)
 function BonusObtained() => Delta(bonusLevel()) + 1 == bonusLevel()
 
 function eventId() => byte(0x32bae8)
+
+function GetEventByKey(eventKey)
+{
+    for i in registeredEvents
+    {
+        event = registeredEvents[i]
+        if (event["eventKey"] == eventKey)
+        {
+            return event
+        }
+    }
+}
+
 function GivenEventIsHappening(eventKey)
 {
-    event = registeredEvents[eventKey]
+    event = GetEventByKey(eventKey)
     return eventId() == event["eventId"] && IsInLocation(event["locationCode"])
 }
 
@@ -426,16 +462,16 @@ function BattleCheckpointReached(location, eventId, when = always_true(), overri
 
 function GetCheckpointForRegisteredEvent(eventKey, when = always_true(), overrideNever = false, neverOverride = always_false())
 {
-    event = registeredEvents[eventKey]
+    event = GetEventByKey(eventKey)
     return BattleCheckpointReached(location = event["locationCode"], eventId = event["eventId"], when = when, overrideNever = overrideNever, neverOverride = neverOverride)
 }
 
-achievement(title = "Doing Everything I Can", description = "Perform all three different aerial skateboard tricks before touching the ground.", points = 1,
+xachievement(title = "Doing Everything I Can", description = "Perform all three different aerial skateboard tricks before touching the ground.", points = 1,
     trigger = IsActiveInTheField() && tally(3, [ DidMethodGrab(), Did360DegreeSpin(), DidAirWalk() ])
         && never(LandedWithSkateboard()) && never(JustDidGrind()) && never(IdleWithSkateboard())
 )
 
-achievement(title = "We Tech Those [m]", description = "Finish off the Twilight Thorn with the Break Raid reaction command.", points = 10,
+xachievement(title = "We Tech Those [m]", description = "Finish off the Twilight Thorn with the Break Raid reaction command.", points = 10,
     trigger = GetCheckpointForRegisteredEvent("Twilight Thorn")
         // Note that IDs used may be used elsewhere in the game for different purposes. However, this ID is used in this particular area for this purpose and not for anything else.
         && trigger_when(fieldActionId() == 0x102 && BonusObtained())
@@ -469,7 +505,7 @@ function UsedAnyItem()
     return trigger
 }
 
-achievement(title = "Third-Degree Burns [m]", description = "Defeat Axel in the old mansion basement without using items or reaction commands (Proud Mode or higher; Level 4 or below).", points = 10,
+xachievement(title = "Third-Degree Burns [m]", description = "Defeat Axel in the old mansion basement without using items or reaction commands (Proud Mode or higher; Level 4 or below).", points = 10,
     trigger = GetCheckpointForRegisteredEvent("Axel", when = level() <= 4 && IsAtLeastOnDifficulty("Proud"))
         && trigger_when(BonusObtained())
         && never(UsedAnyItem())
@@ -478,31 +514,31 @@ achievement(title = "Third-Degree Burns [m]", description = "Defeat Axel in the 
 )
 
 function prologueComplete() => bit4(0x32d812)
-achievement(title = "Summer Sets", description = "Complete the prologue.", points = 3,
+xachievement(title = "Summer Sets", description = "Complete the prologue.", points = 3,
     trigger = WasBitflagSetInGame(prologueComplete())
 )
 
 function samuraiNobodiesDefeated() => word(0x32f40c)
-achievement(title = "You're Already Dead", description = "Defeat a Samurai Nobody using the Duel Stance reaction command.", points = 3,
+xachievement(title = "You're Already Dead", description = "Defeat a Samurai Nobody using the Duel Stance reaction command.", points = 3,
     trigger = once(reactionCommandId() == 0x12d && Delta(reactionCommandId()) != 0x12d) && trigger_when(once(fieldActionId() == 0xfd && Delta(fieldActionId()) == 0xfc))
         && trigger_when(Delta(samuraiNobodiesDefeated()) < samuraiNobodiesDefeated()) && never(fieldActionId() != 0xfd && Delta(fieldActionId()) == 0xfd)
         && never(!IsActiveInTheField())
 )
 
 function redMeteorId() => 0x8e
-achievement(title = "Bursting in Air [m]", description = "Finish off Shan-Yu with the Red Meteor Limit finisher (Proud Mode or higher; Level 10 or below; no rescues).", points = 10,
+xachievement(title = "Bursting in Air [m]", description = "Finish off Shan-Yu with the Red Meteor Limit finisher (Proud Mode or higher; Level 10 or below; no rescues).", points = 10,
     trigger = GetCheckpointForRegisteredEvent("Shan-Yu", when = level() <= 10 && IsAtLeastOnDifficulty("Proud"))
         && trigger_when(reactionCommandId() == redMeteorId() && BonusObtained())
 )
 
 function landOfDragonsFirstVisitComplete() => bit2(0x32d8c2)
-achievement(title = "Unquestionable Honor", description = "Complete the first visit to the Land of Dragons.", points = 3,
+xachievement(title = "Unquestionable Honor", description = "Complete the first visit to the Land of Dragons.", points = 3,
     trigger = WasBitflagSetInGame(landOfDragonsFirstVisitComplete()) && IsInLocation("WorldMap")
 )
 
 function currentForm() => byte(0x32f054)
 function JustEnteredValorForm() => currentForm() == 1 && Delta(currentForm()) != 1
-achievement(title = "Pure of Mind [m]", description = "Defeat the Thresholder and Possessor without using items or Valor Form (Proud Mode or higher; Level 13 or below; no rescues).", points = 5,
+xachievement(title = "Pure of Mind [m]", description = "Defeat the Thresholder and Possessor without using items or Valor Form (Proud Mode or higher; Level 13 or below; no rescues).", points = 5,
     trigger = GetCheckpointForRegisteredEvent("Thresholder", when = level() <= 13 && IsAtLeastOnDifficulty("Proud"))
         && trigger_when(BonusObtained())
         && never(UsedAnyItem()) && never(JustEnteredValorForm())
@@ -510,14 +546,14 @@ achievement(title = "Pure of Mind [m]", description = "Defeat the Thresholder an
 
 function limitPointer() => dword(0x1d48cb0)
 function LimitIsBeingUsed() => limitPointer() != 0
-achievement(title = "Silence Is Golden [m]", description = "Defeat the Dark Thorn without using Limits (Proud Mode or higher; Level 16 or below; no rescues).", points = 25,
+xachievement(title = "Silence Is Golden [m]", description = "Defeat the Dark Thorn without using Limits (Proud Mode or higher; Level 16 or below; no rescues).", points = 25,
     trigger = GetCheckpointForRegisteredEvent("Dark Thorn", when = level() <= 16 && IsAtLeastOnDifficulty("Proud"))
         && trigger_when(BonusObtained())
         && never(LimitIsBeingUsed())
 )
 
 function beastCastleFirstVisitComplete() => bit7(0x32d861)
-achievement(title = "Tending the Garden", description = "Complete the first visit to Beast's Castle.", points = 3,
+xachievement(title = "Tending the Garden", description = "Complete the first visit to Beast's Castle.", points = 3,
     trigger = WasBitflagSetInGame(beastCastleFirstVisitComplete()) && IsInLocation("WorldMap")
 )
 
@@ -531,7 +567,7 @@ function EscapeFromHadesTimeLimitReached() => repeated(hadesEscapeTimeLimit() * 
 function EscapedFromHades() => trigger_when(Delta(eventId()) == hadesEscapeEventId() && eventId() == escapedFromHadesEventId())
 function hadesEscapeBitflag() => bit3(0x32d889)
 function HadesEscapeBitflagFlipped() => Delta(hadesEscapeBitflag()) != hadesEscapeBitflag()
-achievement(title = "Tight Deadline [m]", description = "Escape from the Valley of the Dead with Auron within " + SecondsToFormat(hadesEscapeTimeLimit())
+xachievement(title = "Tight Deadline [m]", description = "Escape from the Valley of the Dead with Auron within " + SecondsToFormat(hadesEscapeTimeLimit())
     + " (Proud Mode or higher; Level 18 or below).",
     points = 5,
     trigger = BattleCheckpointReached(location = "ValleyOfTheDead", eventId = 0x6f, when = level() <= 18 && IsAtLeastOnDifficulty("Proud"),
@@ -541,7 +577,7 @@ achievement(title = "Tight Deadline [m]", description = "Escape from the Valley 
         && EscapedFromHades()
 )
 
-leaderboard(title = "Tight Deadline", description = "Escape from the Valley of the Dead with Auron as quickly as possible.",
+xleaderboard(title = "Tight Deadline", description = "Escape from the Valley of the Dead with Auron as quickly as possible.",
     start = BattleCheckpointReached(location = "ValleyOfTheDead", eventId = 0x6f, when = level() <= 18 && IsAtLeastOnDifficulty("Proud")),
     cancel = IsDead(),
     submit = EscapedFromHades(),
@@ -549,7 +585,7 @@ leaderboard(title = "Tight Deadline", description = "Escape from the Valley of t
     format = "FRAMES"
 )
 
-achievement(title = "Way of the Pacifist [m]", description = "Defeat Cerberus without using Bushido (Proud Mode or higher; Level 18 or below; no rescues).", points = 5,
+xachievement(title = "Way of the Pacifist [m]", description = "Defeat Cerberus without using Bushido (Proud Mode or higher; Level 18 or below; no rescues).", points = 5,
     trigger = GetCheckpointForRegisteredEvent("Cerberus", when = level() <= 18 && IsAtLeastOnDifficulty("Proud"))
         && trigger_when(BonusObtained())
         && never(LimitIsBeingUsed())
@@ -559,7 +595,7 @@ function SecondsToFrames(seconds) => seconds * 60
 function timeRemaining() => dword(0x349df8)
 function breakneckBreakdanceTimeLimit() => 50
 function demyxITimeLimit() => 80
-achievement(title = "Breakneck Breakdance [m]", description = "Defeat 100 of Demyx's water forms within " + breakneckBreakdanceTimeLimit() + " seconds.", points = 5,
+xachievement(title = "Breakneck Breakdance [m]", description = "Defeat 100 of Demyx's water forms within " + breakneckBreakdanceTimeLimit() + " seconds.", points = 5,
     trigger = BattleCheckpointReached(location = "UnderworldCavernsAtrium", eventId = 0x7b)
         && trigger_when(BonusObtained())
         && never(timeRemaining() < SecondsToFrames(demyxITimeLimit() - breakneckBreakdanceTimeLimit()))
@@ -567,14 +603,14 @@ achievement(title = "Breakneck Breakdance [m]", description = "Defeat 100 of Dem
 
 function petePinballTimeLimit() => 40
 function peteHerculesOverallTimeLimit() => 90
-achievement(title = "Skill Shot [m]", description = "Help Hercules defeat Pete at the Lock within " + petePinballTimeLimit() + " seconds (Proud Mode or higher; Level 18 or below; no rescues).",
+xachievement(title = "Skill Shot [m]", description = "Help Hercules defeat Pete at the Lock within " + petePinballTimeLimit() + " seconds (Proud Mode or higher; Level 18 or below; no rescues).",
     points = 5,
     trigger = GetCheckpointForRegisteredEvent("Olympus Pete", when = level() <= 18 && IsAtLeastOnDifficulty("Proud"))
         && trigger_when(BonusObtained())
         && never(timeRemaining() < SecondsToFrames(peteHerculesOverallTimeLimit() - petePinballTimeLimit()))
 )
 
-achievement(title = "Aerophobia [m]", description = "Defeat the Hydra without using the Pegasus Run reaction command (Proud Mode or higher; Level 18 or below; no rescues).",
+xachievement(title = "Aerophobia [m]", description = "Defeat the Hydra without using the Pegasus Run reaction command (Proud Mode or higher; Level 18 or below; no rescues).",
     points = 5,
     trigger = GetCheckpointForRegisteredEvent("Hydra", when = level() <= 18 && IsAtLeastOnDifficulty("Proud"))
         && trigger_when(BonusObtained())
@@ -582,12 +618,12 @@ achievement(title = "Aerophobia [m]", description = "Defeat the Hydra without us
 )
 
 function olympusColiseumFirstVisitComplete() => bit2(0x32d884)
-achievement(title = "Strength of Guilt", description = "Complete the first visit to Olympus Coliseum.", points = 3,
+xachievement(title = "Strength of Guilt", description = "Complete the first visit to Olympus Coliseum.", points = 3,
     trigger = WasBitflagSetInGame(olympusColiseumFirstVisitComplete()) && IsInLocation("WorldMap")
 )
 
 function faithLimit() => 3
-achievement(title = "O Ye of Little Faith [m]", description = "Escort Queen Minnie through the audience chamber without using the Faith reaction command more than " + faithLimit() + " times "
+xachievement(title = "O Ye of Little Faith [m]", description = "Escort Queen Minnie through the audience chamber without using the Faith reaction command more than " + faithLimit() + " times "
     + "(Proud Mode or higher; Level 20 or below).",
     points = 5,
     trigger = BattleCheckpointReached(location = "CastleAudienceChamber", eventId = 0x33, when = level() <= 20 && IsAtLeastOnDifficulty("Proud"))
@@ -597,7 +633,7 @@ achievement(title = "O Ye of Little Faith [m]", description = "Escort Queen Minn
         
 function healBlockerLimit() => 50
 function peteEnemySlotHP() => dword(0x1c6bdb0)
-achievement(title = "Heal Blocker [m]", description = "Defeat Pete for the second time in Timeless River without letting him restore more than " + healBlockerLimit()
+xachievement(title = "Heal Blocker [m]", description = "Defeat Pete for the second time in Timeless River without letting him restore more than " + healBlockerLimit()
     + " HP (Proud Mode or higher; Level 21 or below).", points = 5,
     trigger = GetCheckpointForRegisteredEvent("Timeless Pete", when = level() <= 21 && IsAtLeastOnDifficulty("Proud"))
         && trigger_when(BonusObtained())
@@ -605,7 +641,7 @@ achievement(title = "Heal Blocker [m]", description = "Defeat Pete for the secon
 )
 
 function disneyCastleComplete() => bit2(0x32d942)
-achievement(title = "Historic Preservation", description = "Complete Disney Castle.", points = 3,
+xachievement(title = "Historic Preservation", description = "Complete Disney Castle.", points = 3,
     trigger = WasBitflagSetInGame(disneyCastleComplete()) && IsInLocation("WorldMap")
 )
 
@@ -668,7 +704,7 @@ function AnyItemWasJustUsed()
 }
 
 function exp() => dword(0x32f210)
-achievement(title = "Pacifism [m]", description = "Survive the one-minute pirate attack at the Isla de Muerta without defeating any enemies and without items"
+xachievement(title = "Pacifism [m]", description = "Survive the one-minute pirate attack at the Isla de Muerta without defeating any enemies and without items"
     + " (Proud Mode or higher; Level 23 or below; No Experience must not be equipped).",
     points = 5,
     trigger = BattleCheckpointReached(location = "PortCaveMouth", eventId = 0x3b, when = level() <= 23 && IsAtLeastOnDifficulty("Proud"))
@@ -678,7 +714,7 @@ achievement(title = "Pacifism [m]", description = "Survive the one-minute pirate
         && never(AnyItemWasJustUsed())
 )
 
-achievement(title = "Sticky Fingers [m]", description = "Protect the cursed medallion from the pirates without it getting stolen (Proud Mode or higher; Level 23 or below).", points = 10,
+xachievement(title = "Sticky Fingers [m]", description = "Protect the cursed medallion from the pirates without it getting stolen (Proud Mode or higher; Level 23 or below).", points = 10,
     trigger = BattleCheckpointReached(location = "PortInterceptorDualBattle", eventId = 0x3a, when = level() <= 23 && IsAtLeastOnDifficulty("Proud"))
         && trigger_when(BonusObtained())
         && never(timeRemaining() < Delta(timeRemaining()))
@@ -721,26 +757,26 @@ function UsedAnyMagic()
 }
 
 // Drive Forms, especially Wisdom Form, are still allowed and can be used to projectile camp. Afterwards, liberal use of reaction commands can help turn the tides.
-achievement(title = "Swashbuckler [m]", description = "Defeat Barbossa without using magic (Proud Mode or higher; Level 23 or below).", points = 25,
+xachievement(title = "Swashbuckler [m]", description = "Defeat Barbossa without using magic (Proud Mode or higher; Level 23 or below).", points = 25,
     trigger = GetCheckpointForRegisteredEvent("Barbossa", when = level() <= 23 && IsAtLeastOnDifficulty("Proud"))
         && trigger_when(BonusObtained())
         && never(UsedAnyMagic())
 )
 
 function portRoyalIComplete() => bit5(0x32d9c9)
-achievement(title = "A Curse Lifted", description = "Complete the first visit to Port Royal.", points = 3,
+xachievement(title = "A Curse Lifted", description = "Complete the first visit to Port Royal.", points = 3,
     trigger = WasBitflagSetInGame(portRoyalIComplete()) && IsInLocation("WorldMap")
 )
 
 function prisonKeeperTimeLimit() => 123
 function PrisonKeeperTimeLimitReached() => repeated(prisonKeeperTimeLimit() * 60, FrameAdvanced())
-achievement(title = "Escape Artist [m]", description = "Defeat the Prison Keeper within " + SecondsToFormat(prisonKeeperTimeLimit()) + " (Proud Mode or higher; Level 24 or below).", points = 10,
+xachievement(title = "Escape Artist [m]", description = "Defeat the Prison Keeper within " + SecondsToFormat(prisonKeeperTimeLimit()) + " (Proud Mode or higher; Level 24 or below).", points = 10,
     trigger = GetCheckpointForRegisteredEvent("Prison Keeper", when = level() <= 24 && IsAtLeastOnDifficulty("Proud"))
         && never(PrisonKeeperTimeLimitReached())
         && trigger_when(BonusObtained())
 )
 
-leaderboard(title = "Escape Artist", description = "Defeat the Prison Keeper as quickly as possible.",
+xleaderboard(title = "Escape Artist", description = "Defeat the Prison Keeper as quickly as possible.",
     start = GetCheckpointForRegisteredEvent("Prison Keeper", when = level() <= 24 && IsAtLeastOnDifficulty("Proud")),
     cancel = IsDead(),
     submit = BonusObtained(),
@@ -749,7 +785,7 @@ leaderboard(title = "Escape Artist", description = "Defeat the Prison Keeper as 
 )
 
 function currentDrivePoints() => byte(0x1c6c901)
-achievement(title = "Sandbagging Clause [m]", description = "Defeat Oogie Boogie without using items or Drive Points (Proud Mode or higher; Level 24 or below).", points = 10,
+xachievement(title = "Sandbagging Clause [m]", description = "Defeat Oogie Boogie without using items or Drive Points (Proud Mode or higher; Level 24 or below).", points = 10,
     trigger = GetCheckpointForRegisteredEvent("Oogie Boogie", when = level() <= 24 && IsAtLeastOnDifficulty("Proud"))
         && never(AnyItemWasJustUsed())
         && never(Delta(currentDrivePoints()) > currentDrivePoints())
@@ -757,7 +793,7 @@ achievement(title = "Sandbagging Clause [m]", description = "Defeat Oogie Boogie
 )
 
 function halloweenTownIComplete() => bit4(0x32d986)
-achievement(title = "A Day in One's Shoes", description = "Complete the first visit to Halloween Town.", points = 3,
+xachievement(title = "A Day in One's Shoes", description = "Complete the first visit to Halloween Town.", points = 3,
     trigger = WasBitflagSetInGame(halloweenTownIComplete()) && IsInLocation("WorldMap")
 )
 
@@ -768,14 +804,14 @@ function TimerAdvanced() => Delta(timeRemaining()) > timeRemaining()
 function SpeedfallerCheckpointReached() => BattleCheckpointReached(location = "AgrabahCaveChasm", eventId = 0x4f, when = level() <= 25 && IsAtLeastOnDifficulty("Proud"))
         || BattleCheckpointReached(location = "AgrabahCaveChasm", eventId = 0x50, when = level() <= 25 && IsAtLeastOnDifficulty("Proud"))
 function SpeedfallerTriggered() => TimedEventEnded() && TimerAdvanced()
-achievement(title = "Speedfaller [m]", description = "Complete the Chasm of Challenges in " + SecondsToFormat(chasmTimeLimit()) + " (Proud Mode or higher; Level 25 or below).", points = 5,
+xachievement(title = "Speedfaller [m]", description = "Complete the Chasm of Challenges in " + SecondsToFormat(chasmTimeLimit()) + " (Proud Mode or higher; Level 25 or below).", points = 5,
     trigger = SpeedfallerCheckpointReached()
         && never(timeRemaining() < SecondsToFrames(120 - chasmTimeLimit()) && TimerAdvanced())
         && trigger_when(SpeedfallerTriggered())
 )
 
 function GlobalTimerCanceled() => IsDead() || timeRemaining() == 0 && TimerAdvanced()
-leaderboard(title = "Speedfaller", description = "Complete the Chasm of Challenges as quickly as you can.",
+xleaderboard(title = "Speedfaller", description = "Complete the Chasm of Challenges as quickly as you can.",
     start = SpeedfallerCheckpointReached() && never(GlobalTimerCanceled()), // Adding the cancelation code here to ensure all hit targets are cleared on subsequent retries.
     cancel = GlobalTimerCanceled(),
     submit = SpeedfallerTriggered(),
@@ -791,7 +827,7 @@ function JustEnteredMasterForm() => currentForm() == 4 && Delta(currentForm()) !
 function JustEnteredFinalForm() => currentForm() == 5 && Delta(currentForm()) != 5
 function JustEnteredAntiForm() => currentForm() == 6 && Delta(currentForm()) != 6
 function JustUsedDriveForm() => JustEnteredValorForm() && JustEnteredWisdomForm() && JustEnteredMasterForm() && JustEnteredLimitForm() && JustEnteredFinalForm() && JustEnteredAntiForm()
-achievement(title = "Solo Heist [m]", description = "Defeat the Heartless ambush in the Cave of Wonders Treasure Room without using Drive Points or Limits (Proud Mode or higher; Level 25 or below).",
+xachievement(title = "Solo Heist [m]", description = "Defeat the Heartless ambush in the Cave of Wonders Treasure Room without using Drive Points or Limits (Proud Mode or higher; Level 25 or below).",
     points = 25,
     trigger = BattleCheckpointReached(location = "AgrabahCaveTreasure", eventId = 0x3a, when = level() <= 25 && IsAtLeastOnDifficulty("Proud"))
         && never(LimitIsBeingUsed())
@@ -799,9 +835,9 @@ achievement(title = "Solo Heist [m]", description = "Defeat the Heartless ambush
         && trigger_when(BonusObtained())
 )
 
-achievement(title = "Too Hot Inside, Too Cold Outside [m]", description = "Defeat the Volcano and Blizzard Lords without using magic or the Firagun or Blizzagun reaction commands "
+xachievement(title = "Too Hot Inside, Too Cold Outside [m]", description = "Defeat the Volcano and Blizzard Lords without using magic or the Firagun or Blizzagun reaction commands "
     + "(Proud Mode or higher; Level 25 or below).", points = 5,
-    trigger = GetCheckpointForRegisteredEvent("Volcano and Blizzard", when = level() <= 25 && IsAtLeastOnDifficulty("Proud"))
+    trigger = GetCheckpointForRegisteredEvent("Volcano and Blizzard Lords", when = level() <= 25 && IsAtLeastOnDifficulty("Proud"))
         && never(UsedAnyMagic())
         // Checking the field action ID is needed because the reaction command ID doesn't actually update until after the second part of the combo is active.
         && never(reactionCommandId() == 0x295 || fieldActionId() == 0xfc) // Firagun
@@ -810,11 +846,11 @@ achievement(title = "Too Hot Inside, Too Cold Outside [m]", description = "Defea
 )
 
 function agrabahIComplete() => bit4(0x32d8a3)
-achievement(title = "Forever Sealed?", description = "Complete the first visit to Agrabah.", points = 3,
+xachievement(title = "Forever Sealed?", description = "Complete the first visit to Agrabah.", points = 3,
     trigger = WasBitflagSetInGame(agrabahIComplete())
 )
 
-achievement(title = "One-Trick Lion [m]", description = "Protect Timon and Pumbaa using only one type of non-Cure magic spell and no items (Proud Mode or higher; Level 27 or below).",
+xachievement(title = "One-Trick Lion [m]", description = "Protect Timon and Pumbaa using only one type of non-Cure magic spell and no items (Proud Mode or higher; Level 27 or below).",
     points = 5,
     trigger = BattleCheckpointReached(location = "PrideDen", eventId = 0x33, when = level() <= 27 && IsAtLeastOnDifficulty("Proud"))
         && trigger_when(BonusObtained())
@@ -825,33 +861,33 @@ achievement(title = "One-Trick Lion [m]", description = "Protect Timon and Pumba
 )
 
 // This fight sucks, and no number of challenges will make this any more fun or less frustrating, so I'm throwing players a bone here.
-achievement(title = "Dull Claws [m]", description = "Defeat Scar on Proud Mode or higher at Level 27 or below.", points = 10,
+xachievement(title = "Dull Claws [m]", description = "Defeat Scar on Proud Mode or higher at Level 27 or below.", points = 10,
     trigger = GetCheckpointForRegisteredEvent("Scar", when = level() <= 27 && IsAtLeastOnDifficulty("Proud"))
         && trigger_when(BonusObtained())
 )
 
 function prideLandsIComplete() => bit5(0x32d905)
-achievement(title = "Return of the King", description = "Complete the first visit to the Pride Lands.", points = 3,
+xachievement(title = "Return of the King", description = "Complete the first visit to the Pride Lands.", points = 3,
     trigger = WasBitflagSetInGame(prideLandsIComplete())
 )
 
 function forkBomberTimeLimit() => 60
 function ForkBomberCheckpointReached() => GetCheckpointForRegisteredEvent("Monitors", when = level() <= 29 && IsAtLeastOnDifficulty("Proud"))
-achievement(title = "Fork Bomber [m]", description = "Freeze all the security monitors in Space Paranoids within " + forkBomberTimeLimit() + " seconds (Proud Mode or higher; Level 29 or below).",
+xachievement(title = "Fork Bomber [m]", description = "Freeze all the security monitors in Space Paranoids within " + forkBomberTimeLimit() + " seconds (Proud Mode or higher; Level 29 or below).",
     points = 10,
     trigger = ForkBomberCheckpointReached()
         && never(timeRemaining() < SecondsToFrames(120 - forkBomberTimeLimit()) && TimerAdvanced())
         && trigger_when(BonusObtained())
 )
 
-achievement(title = "Resource Hog [m]", description = "Defeat the Hostile Program without using the Freeze reaction command more than once (Proud Mode or higher; Level 29 or below).",
+xachievement(title = "Resource Hog [m]", description = "Defeat the Hostile Program without using the Freeze reaction command more than once (Proud Mode or higher; Level 29 or below).",
     points = 10,
     trigger = GetCheckpointForRegisteredEvent("Hostile Program", when = level() <= 29 && IsAtLeastOnDifficulty("Proud"))
         && never(repeated(2, reactionCommandId() == 0x267 && Delta(reactionCommandId()) == 0))
         && trigger_when(BonusObtained())
 )
 
-leaderboard(title = "Fork Bomber", description = "Freeze all the security monitors in the Space Paranoids Dataspace as quickly as you can.",
+xleaderboard(title = "Fork Bomber", description = "Freeze all the security monitors in the Space Paranoids Dataspace as quickly as you can.",
     start = ForkBomberCheckpointReached(),
     cancel = GlobalTimerCanceled(),
     submit = BonusObtained(),
@@ -874,14 +910,14 @@ function BaseSoraHasAnyGivenAbilityEquipped(subset)
 }
 
 growthAbilities = GetAbilitiesByCallback(ability => ability["type"] == "Growth")
-achievement(title = "Two Left Feet [m]", description = "Defeat Demyx without any Growth Abilities equipped (Proud Mode or higher; Level 31 or below).", points = 25,
+xachievement(title = "Two Left Feet [m]", description = "Defeat Demyx without any Growth Abilities equipped (Proud Mode or higher; Level 31 or below).", points = 25,
     trigger = GetCheckpointForRegisteredEvent("Demyx", when = level() <= 31 && IsAtLeastOnDifficulty("Proud"))
         && never(BaseSoraHasAnyGivenAbilityEquipped(growthAbilities))
         && trigger_when(BonusObtained())
 )
 
 function mpChargeTimeRemaining() => float(0x01c6c90c)
-achievement(title = "Vampiricism [m]", description = "Survive the Battle of 1000 Heartless without ever using items or entering MP Charge (Proud Mode or higher; Level 32 or below).", points = 10,
+xachievement(title = "Vampiricism [m]", description = "Survive the Battle of 1000 Heartless without ever using items or entering MP Charge (Proud Mode or higher; Level 32 or below).", points = 10,
     trigger = GetCheckpointForRegisteredEvent("Battle of 1000 Heartless", when = level() <= 32 && IsAtLeastOnDifficulty("Proud"))
         && never(Delta(mpChargeTimeRemaining()) == 0.0 && mpChargeTimeRemaining() > 0.0)
         && never(AnyItemWasJustUsed())
@@ -889,27 +925,27 @@ achievement(title = "Vampiricism [m]", description = "Survive the Battle of 1000
 )
 
 function hollowBastionIIComplete() => bit6(0x0032d84e)
-achievement(title = "Three Pawns", description = "Complete the second visit to Hollow Bastion.", points = 3,
+xachievement(title = "Three Pawns", description = "Complete the second visit to Hollow Bastion.", points = 3,
     trigger = WasBitflagSetInGame(hollowBastionIIComplete())
 )
 
 function IsInWisdomForm() => currentForm() == 2
 function IsInAntiForm() => currentForm() == 6
-achievement(title = "Spellblade [m]", description = "Defeat the Storm Rider while Wisdom Form or Anti-Form is active (Proud Mode or higher; Level 34 or below).", points = 10,
+xachievement(title = "Spellblade [m]", description = "Defeat the Storm Rider while Wisdom Form or Anti-Form is active (Proud Mode or higher; Level 34 or below).", points = 10,
     trigger = GetCheckpointForRegisteredEvent("Storm Rider", when = level() <= 34 && IsAtLeastOnDifficulty("Proud"))
         && trigger_when(BonusObtained())
         && trigger_when(IsInWisdomForm() || IsInAntiForm())
 )
 
 function landOfDragonsIIComplete() => bit7(0x0032d8c1)
-achievement(title = "Hand Clenched in Hand", description = "Complete the second visit to the Land of Dragons.", points = 3,
+xachievement(title = "Hand Clenched in Hand", description = "Complete the second visit to the Land of Dragons.", points = 3,
     trigger = WasBitflagSetInGame(landOfDragonsIIComplete())
 )
 
 function numberOfJumpsStored() => byte(0x01c5fdf8)
 function StoredAJump() => Delta(numberOfJumpsStored()) + 1 == numberOfJumpsStored()
 function jumpLimit() => 10
-achievement(title = "Truancy [m]", description = "Defeat Xaldin without charging up more than " + jumpLimit() + " Jump commands (Proud Mode or higher; Level 37 or below; no rescues).", points = 50,
+xachievement(title = "Truancy [m]", description = "Defeat Xaldin without charging up more than " + jumpLimit() + " Jump commands (Proud Mode or higher; Level 37 or below; no rescues).", points = 50,
     trigger = GetCheckpointForRegisteredEvent("Xaldin", when = level() <= 37 && IsAtLeastOnDifficulty("Proud"))
         && trigger_when(BonusObtained())
         && never(repeated(jumpLimit() + 1, StoredAJump()))
@@ -917,11 +953,11 @@ achievement(title = "Truancy [m]", description = "Defeat Xaldin without charging
 
 // todo: WTF do I even name this achievement???
 function beastCastleIIComplete() => bit2(0x0032d862)
-achievement(title = "Blooming Love", description = "Complete the second visit to Beast's Castle.", points = 3,
+xachievement(title = "Blooming Love", description = "Complete the second visit to Beast's Castle.", points = 3,
     trigger = WasBitflagSetInGame(beastCastleIIComplete())
 )
 
-achievement(title = "Short of Godhood [m]", description = "Defeat Hades without using Aura Sphere or Aura Guard (Proud Mode or higher; Level 38 or below).", points = 5,
+xachievement(title = "Short of Godhood [m]", description = "Defeat Hades without using Aura Sphere or Aura Guard (Proud Mode or higher; Level 38 or below).", points = 5,
     trigger = GetCheckpointForRegisteredEvent("Hades", when = level() <= 38 && IsAtLeastOnDifficulty("Proud"))
         && trigger_when(BonusObtained())
         && never(reactionCommandId() == 0x13b) // Aura Guard
@@ -929,7 +965,7 @@ achievement(title = "Short of Godhood [m]", description = "Defeat Hades without 
 )
 
 function olympusColiseumIIComplete() => bit6(0x0032d884)
-achievement(title = "Phil's Boys", description = "Complete the second visit to Olympus Coliseum.", points = 3,
+xachievement(title = "Phil's Boys", description = "Complete the second visit to Olympus Coliseum.", points = 3,
     trigger = WasBitflagSetInGame(olympusColiseumIIComplete())
 )
 
@@ -939,14 +975,14 @@ function SoraIsHoldingAMedallion() => medallionsBeingHeld() > 0
 function toxicGreedTimeLimit() => 90
 function FrameAdvancedWhileHoldingMedallion() => FrameAdvanced() && SoraIsHoldingAMedallion()
 
-achievement(title = "Creeping Curse [m]", description = "Defeat the Grim Reaper before spending a total of " + SecondsToFormat(toxicGreedTimeLimit()) + " holding a medallion "
+xachievement(title = "Creeping Curse [m]", description = "Defeat the Grim Reaper before spending a total of " + SecondsToFormat(toxicGreedTimeLimit()) + " holding a medallion "
     + "(Proud Mode or higher; Level 40 or below).", points = 10,
     trigger = ToxicGreedCheckpointReached()
         && trigger_when(BonusObtained())
         && never(repeated(SecondsToFrames(toxicGreedTimeLimit()), FrameAdvancedWhileHoldingMedallion()))
 )
 
-leaderboard(title = "Creeping Curse", description = "Defeat the Grim Reaper while holding medallions for as little time as possible.",
+xleaderboard(title = "Creeping Curse", description = "Defeat the Grim Reaper while holding medallions for as little time as possible.",
     start = ToxicGreedCheckpointReached(),
     cancel = IsDead(),
     submit = BonusObtained(),
@@ -956,13 +992,13 @@ leaderboard(title = "Creeping Curse", description = "Defeat the Grim Reaper whil
 )
 
 function portRoyalIIComplete() => bit0(0x0032d9ca)
-achievement(title = "As Free as the Winds", description = "Complete the second visit to Port Royal.", points = 3,
+xachievement(title = "As Free as the Winds", description = "Complete the second visit to Port Royal.", points = 3,
     trigger = WasBitflagSetInGame(portRoyalIIComplete())
 )
 
 function currentSummon() => byte(0x0032f055)
 function JustUsedAnySummon() => Delta(currentSummon()) == 0 && currentSummon() != 0
-achievement(title = "Out of Harm's Way [m]", description = "Defeat the Experiment without using Summons (Proud Mode or higher; Level 41 or below).",
+xachievement(title = "Out of Harm's Way [m]", description = "Defeat the Experiment without using Summons (Proud Mode or higher; Level 41 or below).",
     points = 10,
     trigger = GetCheckpointForRegisteredEvent("Experiment", when = level() <= 41 && IsAtLeastOnDifficulty("Proud"))
         && trigger_when(BonusObtained())
@@ -970,29 +1006,29 @@ achievement(title = "Out of Harm's Way [m]", description = "Defeat the Experimen
 )
 
 function halloweenTownIIComplete() => bit7(0x0032d986)
-achievement(title = "Presence Is the Best Gift", description = "Complete the second visit to Halloween Town.", points = 3,
+xachievement(title = "Presence Is the Best Gift", description = "Complete the second visit to Halloween Town.", points = 3,
     trigger = WasBitflagSetInGame(halloweenTownIIComplete())
 )
 
 function IsAttackingOnCarpet() => fieldActionId() == 0x97 || fieldActionId() == 0x98 || fieldActionId() == 0x9b
-achievement(title = "Merciful Escapist [m]", description = "Escape from the Sandswept Ruins without attacking once (Proud Mode or higher; Level 42 or below).", points = 5,
+xachievement(title = "Merciful Escapist [m]", description = "Escape from the Sandswept Ruins without attacking once (Proud Mode or higher; Level 42 or below).", points = 5,
     trigger = GetCheckpointForRegisteredEvent("Sandswept Ruins Escape", when = level() <= 42 && IsAtLeastOnDifficulty("Proud"))
         && trigger_when(TimedEventEnded())
         && never(IsAttackingOnCarpet())
 )
 
-achievement(title = "Fragile Rotor [m]", description = "Defeat Jafar without using the Spin Burst reaction command more than twice (Proud Mode or higher; Level 42 or below).", points = 10,
+xachievement(title = "Fragile Rotor [m]", description = "Defeat Jafar without using the Spin Burst reaction command more than twice (Proud Mode or higher; Level 42 or below).", points = 10,
     trigger = GetCheckpointForRegisteredEvent("Jafar", when = level() <= 42 && IsAtLeastOnDifficulty("Proud"))
         && trigger_when(BonusObtained())
         && never(repeated(3, reactionCommandId() == 0x281 && Delta(reactionCommandId()) == 0))
 )
 
 function agrabahIIComplete() => bit0(0x0032d8a4)
-achievement(title = "Measure of a Friend", description = "Complete the second visit to Agrabah.", points = 3,
+xachievement(title = "Measure of a Friend", description = "Complete the second visit to Agrabah.", points = 3,
     trigger = WasBitflagSetInGame(agrabahIIComplete())
 )
 
-achievement(title = "Drills Are Not a Weapon [m]", description = "Defeat the Groundshaker without spamming Aerial Impulse (Proud Mode or higher; Level 43 or below).", points = 10,
+xachievement(title = "Drills Are Not a Weapon [m]", description = "Defeat the Groundshaker without spamming Aerial Impulse (Proud Mode or higher; Level 43 or below).", points = 10,
     trigger = GetCheckpointForRegisteredEvent("Groundshaker", when = level() <= 43 && IsAtLeastOnDifficulty("Proud"))
         && trigger_when(BonusObtained())
         // 80 frames allows for a player to use Aerial Impulse two times in succession for the maximum duration without triggering a reset.
@@ -1001,12 +1037,12 @@ achievement(title = "Drills Are Not a Weapon [m]", description = "Defeat the Gro
 )
 
 function prideLandsIIComplete() => bit0(0x0032d906)
-achievement(title = "No Rest for the Weary", description = "Complete the second visit to the Pride Lands.", points = 3,
+xachievement(title = "No Rest for the Weary", description = "Complete the second visit to the Pride Lands.", points = 3,
     trigger = WasBitflagSetInGame(prideLandsIIComplete()) && IsInLocation("WorldMap")
 )
 
 function weightLimit() => float(0x01d48fa4)
-achievement(title = "All Hands on Deck! [m]", description = "Successfully repel the enemies from the solar sailer without it reaching 66% of its weight limit (Proud Mode or higher; Level 44 or below).",
+xachievement(title = "All Hands on Deck! [m]", description = "Successfully repel the enemies from the solar sailer without it reaching 66% of its weight limit (Proud Mode or higher; Level 44 or below).",
     points = 10,
     trigger = GetCheckpointForRegisteredEvent("Solar Sailer", when = level() <= 44 && IsAtLeastOnDifficulty("Proud"))
         && trigger_when(BonusObtained())
@@ -1014,19 +1050,19 @@ achievement(title = "All Hands on Deck! [m]", description = "Successfully repel 
 )
 
 nonBeneficialSoraAbilities = GetAbilitiesByCallback(x => x["name"] != "No Experience")
-achievement(title = "Factory Reset [m]", description = "Defeat the MCP without equipping any beneficial learned abilities on Sora (Proud Mode or higher; Level 44 or below).",
+xachievement(title = "Factory Reset [m]", description = "Defeat the MCP without equipping any beneficial learned abilities on Sora (Proud Mode or higher; Level 44 or below).",
     points = 10,
     trigger = GetCheckpointForRegisteredEvent("MCP", when = level() <= 44 && IsAtLeastOnDifficulty("Proud"))
         && trigger_when(BonusObtained())
         && never(BaseSoraHasAnyGivenAbilityEquipped(nonBeneficialSoraAbilities))
 )
 
-achievement(title = "Glowing Nostalgia", description = "Complete the second visit to Space Paranoids.", points = 3,
+xachievement(title = "Glowing Nostalgia", description = "Complete the second visit to Space Paranoids.", points = 3,
     trigger = WasBitflagSetInGame(hollowBastionIIIComplete())
 )
 
 function hundredAcreWoodComplete() => bit5(0x0032d8e5)
-achievement(title = "Together Apart", description = "Complete the 100-Acre Wood.", points = 3,
+xachievement(title = "Together Apart", description = "Complete the 100-Acre Wood.", points = 3,
     trigger = WasBitflagSetInGame(hundredAcreWoodComplete()) && IsInLocation("Merlin")
 )
 
@@ -1037,28 +1073,28 @@ function maxExcellentComboChain() => dword(0x0035dac8)
 function currentSongScore() => dword(0x0035dac4)
 function currentSongTime() => dword(0x0035de20)
 function SongAdvancedOneFrame() => Delta(currentSongTime()) < currentSongTime()
-swimThisWayEvent = registeredEvents["Swim This Way"]
-achievement(title = "Maestro - \"Swim This Way\"", description = "Complete \"Swim This Way\" with a max Excellent chain of at least 20.", points = 5,
+swimThisWayEvent = GetEventByKey("Swim This Way")
+xachievement(title = "Maestro - \"Swim This Way\"", description = "Complete \"Swim This Way\" with a max Excellent chain of at least 20.", points = 5,
     trigger = eventId() == swimThisWayEvent["eventId"] && trigger_when(currentSongTime() == 5230 && SongAdvancedOneFrame() && maxExcellentComboChain() >= 20)
         && IsInWorld("Atlantica")
 )
 
-partOfYourWorldEvent = registeredEvents["Part of Your World"]
-achievement(title = "Maestro - \"Part of Your World\"", description = "Complete \"Part of Your World\" with all Excellents.", points = 10,
+partOfYourWorldEvent = GetEventByKey("Part of Your World")
+xachievement(title = "Maestro - \"Part of Your World\"", description = "Complete \"Part of Your World\" with all Excellents.", points = 10,
     trigger = eventId() == partOfYourWorldEvent["eventId"] && trigger_when(currentSongTime() == 3977 && SongAdvancedOneFrame() && currentExcellentComboChain() >= 25)
         && IsInWorld("Atlantica")
 )
 
-underTheSeaEvent = registeredEvents["Under the Sea"]
-achievement(title = "Maestro - \"Under the Sea\"", description = "Complete \"Under the Sea\" with Ariel's mood maxed out.", points = 3,
+underTheSeaEvent = GetEventByKey("Under the Sea")
+xachievement(title = "Maestro - \"Under the Sea\"", description = "Complete \"Under the Sea\" with Ariel's mood maxed out.", points = 3,
     trigger = eventId() == underTheSeaEvent["eventId"] && trigger_when(currentSongTime() == 5000 && SongAdvancedOneFrame() && currentSongScore() >= 10000)
         && IsInWorld("Atlantica")
 )
 
 function circleIsPressed() => bit5(0x0034d3c1)
 function TurboIsBeingUsed(buttonBit) => repeated(10, Delta(buttonBit) != buttonBit && never(Delta(buttonBit) == buttonBit))
-ursulaRevengeEvent = registeredEvents["Ursula’s Revenge"]
-achievement(title = "Maestro - \"Ursula's Revenge\"", description = "Empty Ursula's health bar in \"Ursula's revenge\" before the start of the second verse.", points = 25,
+ursulaRevengeEvent = GetEventByKey("Ursula’s Revenge")
+xachievement(title = "Maestro - \"Ursula's Revenge\"", description = "Empty Ursula's health bar in \"Ursula's revenge\" before the start of the second verse.", points = 25,
     trigger = once(eventId() == ursulaRevengeEvent["eventId"] && currentSongTime() == 0) && trigger_when(currentSongTime() <= 2400 && SongAdvancedOneFrame() && currentSongScore() >= 10000)
         && never(currentSongScore() < 10000 && currentSongTime() > 2400 && SongAdvancedOneFrame())
         && never(TurboIsBeingUsed(circleIsPressed()))
@@ -1066,32 +1102,32 @@ achievement(title = "Maestro - \"Ursula's Revenge\"", description = "Empty Ursul
         && IsInWorld("Atlantica")
 )
 
-newDayIsDawningEvent = registeredEvents["A New Day Is Dawning"]
-achievement(title = "Maestro - \"A New Day Is Dawning\"", description = "Complete \"A New Day Is Dawning\" with a score of 100000 points or more.", points = 10,
+newDayIsDawningEvent = GetEventByKey("A New Day Is Dawning")
+xachievement(title = "Maestro - \"A New Day Is Dawning\"", description = "Complete \"A New Day Is Dawning\" with a score of 100000 points or more.", points = 10,
     trigger = eventId() == newDayIsDawningEvent["eventId"] && trigger_when(currentSongTime() == 6300 && SongAdvancedOneFrame() && currentSongScore() >= 100000)
         && IsInWorld("Atlantica")
 )
 
 function atlanticaComplete() => bit5(0x0032d927)
-achievement(title = "Bridged Worlds", description = "Complete Atlantica.", points = 3,
+xachievement(title = "Bridged Worlds", description = "Complete Atlantica.", points = 3,
     trigger = WasBitflagSetInGame(atlanticaComplete()) && IsInLocation("WorldMap")
 )
 
-achievement(title = "I Am Not Roxas!", description = "Defeat Roxas.",
+xachievement(title = "I Am Not Roxas!", description = "Defeat Roxas.",
     points = 10,
     trigger = GetCheckpointForRegisteredEvent("Roxas")
         && trigger_when(BonusObtained())
 )
 
 quickRunAbilities = GetAbilitiesByCallback(x => x["name"] == "Quick Run LV1" || x["name"] == "Quick Run LV2" || x["name"] == "Quick Run LV3" || x["name"] == "Quick Run MAX")
-achievement(title = "The Way of Sloth [m]", description = "Defeat Roxas without Quick Run equipped (Proud Mode or higher; Level 45 or below).",
+xachievement(title = "The Way of Sloth [m]", description = "Defeat Roxas without Quick Run equipped (Proud Mode or higher; Level 45 or below).",
     points = 25,
     trigger = GetCheckpointForRegisteredEvent("Roxas", when = level() <= 45 && IsAtLeastOnDifficulty("Proud"))
         && trigger_when(BonusObtained())
         && never(BaseSoraHasAnyGivenAbilityEquipped(quickRunAbilities))
 )
 
-achievement(title = "Field of Honor [m]", description = "Defeat Xigbar without using Limits (Proud Mode or higher; Level 47 or below).",
+xachievement(title = "Field of Honor [m]", description = "Defeat Xigbar without using Limits (Proud Mode or higher; Level 47 or below).",
     points = 10,
     trigger = GetCheckpointForRegisteredEvent("Xigbar", when = level() <= 47 && IsAtLeastOnDifficulty("Proud"))
         && trigger_when(BonusObtained())
@@ -1099,7 +1135,7 @@ achievement(title = "Field of Honor [m]", description = "Defeat Xigbar without u
 )
 
 function timeBattleTimeRemaining() => float(0x01d48fa4)
-achievement(title = "Distance over Speed [m]", description = "Defeat Luxord with at least 40% of your time remaining (Proud Mode or higher; Level 47 or below).",
+xachievement(title = "Distance over Speed [m]", description = "Defeat Luxord with at least 40% of your time remaining (Proud Mode or higher; Level 47 or below).",
     points = 25,
     trigger = GetCheckpointForRegisteredEvent("Luxord", when = level() <= 47 && IsAtLeastOnDifficulty("Proud"))
         && trigger_when(BonusObtained())
@@ -1107,7 +1143,7 @@ achievement(title = "Distance over Speed [m]", description = "Defeat Luxord with
 )
 
 function saixBerserkRemaining() => float(0x01d48fa4)
-achievement(title = "Lunar Assault [m]", description = "Defeat Saïx without Guard equipped (Proud Mode or higher; Level 47 or below).", points = 10,
+xachievement(title = "Lunar Assault [m]", description = "Defeat Saïx without Guard equipped (Proud Mode or higher; Level 47 or below).", points = 10,
     trigger = GetCheckpointForRegisteredEvent("Saïx", when = level() <= 47 && IsAtLeastOnDifficulty("Proud"))
         && trigger_when(BonusObtained())
         && never(BaseSoraHasAnyGivenAbilityEquipped(GetAbilitiesByCallback(x => x["name"] == "Guard")))
@@ -1118,7 +1154,7 @@ function displayReactionCommandId() => word(0x01c5ff4e)
 // The reaction command ID doesn't appear in the address we've used up to this point, so we need to infer that if Triangle is pressed when the display appears, they've *probably* used it.
 // todo: consider restricting pause buffering
 function IsProbablyUsingReactionCommandWithId(id) => displayReactionCommandId() == id && TriangleIsBeingPressed()
-achievement(title = "Superior Reflexes [m]", description = "While Second Chance and Once More are unequipped, win the first fight against Xemnas without using the Clash and Break Through "
+xachievement(title = "Superior Reflexes [m]", description = "While Second Chance and Once More are unequipped, win the first fight against Xemnas without using the Clash and Break Through "
     + "reaction commands (Proud Mode or higher; Level 48 or below).", points = 10,
     trigger = GetCheckpointForRegisteredEvent("Xemnas I", when = level() <= 48 && IsAtLeastOnDifficulty("Proud"))
         && trigger_when(BonusObtained())
@@ -1133,7 +1169,7 @@ function rightUnitHp() => float(0x01d48fa4)
 function leftUnitHp() => float(0x01d48fd8)
 function rightStuntDodgeId() => 0x264
 function leftStuntDodgeId() => 0x26b
-achievement(title = "Swift Saboteur", description = "Destroy both cannon cylinders of Xemnas's ship in a single cycle.",
+xachievement(title = "Swift Saboteur", description = "Destroy both cannon cylinders of Xemnas's ship in a single cycle.",
     points = 5,
     trigger = GetCheckpointForRegisteredEvent("Xemnas Cannons")
         && trigger_when(reactionCommandId() == leftStuntDodgeId()) // It can only be triggered when the player uses the left-side Stunt Dodge.
@@ -1147,8 +1183,8 @@ function JustWonBattle() => Delta(battleState()) == 0 && battleState() == 1
 function DragonSegmentJustStarted() => Delta(cameraState()) == 1 && cameraState() == 0
 function gliderEnergy() => float(0x01d48fa4)
 function JustUsedMegalaser() => Delta(gliderEnergy()) == 100.0 && gliderEnergy() == 0.0
-dragonXemnasEvent = registeredEvents["Xemnas Dragon"]
-achievement(title = "With Great Power... [m]", description = "Defeat Xemnas's Dragon Form without using Megalaser (Proud Mode or higher; Level 48 or below).", points = 10,
+dragonXemnasEvent = GetEventByKey("Xemnas Dragon")
+xachievement(title = "With Great Power... [m]", description = "Defeat Xemnas's Dragon Form without using Megalaser (Proud Mode or higher; Level 48 or below).", points = 10,
     trigger = once(eventId() == dragonXemnasEvent["eventId"] && level() <= 48 && IsAtLeastOnDifficulty("Proud") && DragonSegmentJustStarted() && IsInLocation(dragonXemnasEvent["locationCode"]))
         && trigger_when(JustWonBattle())
         && never(JustUsedMegalaser())
@@ -1180,7 +1216,7 @@ function HasAccessoriesEquipped()
     return trigger
 }
 
-achievement(title = "Embrace Nothing [m]", description = "Clear the final boss gauntlet without any armor or accessories equipped on Sora (Proud Mode or higher; Level 48 or below).",
+xachievement(title = "Embrace Nothing [m]", description = "Clear the final boss gauntlet without any armor or accessories equipped on Sora (Proud Mode or higher; Level 48 or below).",
     points = 10,
     trigger = GetCheckpointForRegisteredEvent("Final Xemnas", when = level() <= 48 && IsAtLeastOnDifficulty("Proud"))
         && trigger_when(JustWonBattle())
@@ -1190,26 +1226,19 @@ achievement(title = "Embrace Nothing [m]", description = "Clear the final boss g
 
 function IsFinalEvent() => eventId() == 0x3a || eventId() == 0x3c || eventId() == 0x3d
 function TransitionedToBattleReport() => timerState() == 3 && Delta(timerState()) == 2
-achievement(title = "Where the Heart Is", description = "Complete the story.", points = 10,
+xachievement(title = "Where the Heart Is", description = "Complete the story.", points = 10,
     trigger = IsFinalEvent() && IsInLocation("DarkMargin")
         && TransitionedToBattleReport()
 )
 
-achievement(title = "Proudheart", description = "Complete the story on Proud Mode or higher.", points = 10,
+xachievement(title = "Proudheart", description = "Complete the story on Proud Mode or higher.", points = 10,
     trigger = IsFinalEvent() && IsInLocation("DarkMargin")
         && TransitionedToBattleReport() && IsAtLeastOnDifficulty("Proud")
 )
 
-achievement(title = "Grimheart", description = "Complete the story on Critical Mode.", points = 25,
+xachievement(title = "Grimheart", description = "Complete the story on Critical Mode.", points = 25,
     trigger = IsFinalEvent() && IsInLocation("DarkMargin")
         && TransitionedToBattleReport() && IsAtLeastOnDifficulty("Critical")
-)
-
-function timesSavedByMickey() => word(0x0032f8e2)
-achievement(title = "No Need for a Hero [m]", description = "Complete the main story on Proud Mode or higher without ever being saved by King Mickey.", points = 25,
-    trigger = IsFinalEvent() && IsInLocation("DarkMargin")
-        && TransitionedToBattleReport() && IsAtLeastOnDifficulty("Proud")
-        && timesSavedByMickey() <= 0
 )
 
 function BeatTargetTime(mem, value) => IsAlwaysInGame() && mem <= value && mem != 0 && (Delta(mem) > value || Delta(mem) == 0)
@@ -1239,20 +1268,20 @@ for i in minigames
     {
         if (minigame["struggle"] == 1)
         {
-            achievement(title = minigame["basicName"], description = minigame["description"], points = minigame["basicScore"],
+            xachievement(title = minigame["basicName"], description = minigame["description"], points = minigame["basicScore"],
                 trigger = trigger_when(currentScore() - enemyStruggleScore() >= 100 && timeRemaining() <= 0 || WonByKnockout()) && GivenEventIsHappening(minigame["eventKey"])
                     // This is to prevent false triggers if score data was set in another, completely unrelated area in such a way as to meet the conditions as soon as the minigame starts.
                     && IsActiveInTheField()
             )
 
-            achievement(title = minigame["advancedName"],
+            xachievement(title = minigame["advancedName"],
                 description = format(minigame["struggleDesc"], SecondsToFormat(minigame["advancedTarget"])), points = minigame["advancedScore"],
                 trigger = trigger_when(currentScore() == 200 && enemyStruggleScore() == 0) && GivenEventIsHappening(minigame["eventKey"])
                     && timeRemaining() >= SecondsToFrames(60 - minigame["advancedTarget"])
                     && IsActiveInTheField()
             )
 
-            leaderboard(title = minigame["eventKey"],
+            xleaderboard(title = minigame["eventKey"],
                 description = minigame["leaderboardDesc"],
                 start = GivenEventIsHappening(minigame["eventKey"]) && TimedEventIsStarting(),
                 cancel = !GivenEventIsHappening(minigame["eventKey"]) || currentHp() == 0,
@@ -1264,15 +1293,15 @@ for i in minigames
         }
         else if (minigame["useScore"] == 1)
         {
-            achievement(title = minigame["basicName"], description = format(minigame["description"], minigame["basicTarget"]), points = minigame["basicScore"],
+            xachievement(title = minigame["basicName"], description = format(minigame["description"], minigame["basicTarget"]), points = minigame["basicScore"],
                 trigger = trigger_when(currentScore() >= minigame["basicTarget"] && JustWonBattle()) && GivenEventIsHappening(minigame["eventKey"])
             )
 
-            achievement(title = minigame["advancedName"], description = format(minigame["description"], minigame["advancedTarget"]), points = minigame["advancedScore"],
+            xachievement(title = minigame["advancedName"], description = format(minigame["description"], minigame["advancedTarget"]), points = minigame["advancedScore"],
                 trigger = trigger_when(currentScore() >= minigame["advancedTarget"] && JustWonBattle()) && GivenEventIsHappening(minigame["eventKey"])
             )
 
-            leaderboard(title = minigame["eventKey"],
+            xleaderboard(title = minigame["eventKey"],
                 description = minigame["leaderboardDesc"],
                 start = GivenEventIsHappening(minigame["eventKey"]) && IsTransitioningToOrFromMinigame(),
                 cancel = !GivenEventIsHappening(minigame["eventKey"]),
@@ -1284,17 +1313,17 @@ for i in minigames
         }
         else
         {
-            achievement(title = minigame["basicName"], description = format(minigame["description"], minigame["basicTarget"]), points = minigame["basicScore"],
+            xachievement(title = minigame["basicName"], description = format(minigame["description"], minigame["basicTarget"]), points = minigame["basicScore"],
             trigger = trigger_when(ShouldSubmitMinigameScore()) && GivenEventIsHappening(minigame["eventKey"])
                 && timeRemaining() <= SecondsToFrames(minigame["basicTarget"])
             )
     
-            achievement(title = minigame["advancedName"], description = format(minigame["description"], minigame["advancedTarget"]), points = minigame["advancedScore"],
+            xachievement(title = minigame["advancedName"], description = format(minigame["description"], minigame["advancedTarget"]), points = minigame["advancedScore"],
                 trigger = trigger_when(ShouldSubmitMinigameScore()) && GivenEventIsHappening(minigame["eventKey"])
                     && timeRemaining() <= SecondsToFrames(minigame["advancedTarget"])
             )
     
-            leaderboard(title = minigame["eventKey"],
+            xleaderboard(title = minigame["eventKey"],
                 description = minigame["leaderboardDesc"],
                 start = GivenEventIsHappening(minigame["eventKey"]) && !ShouldSubmitMinigameScore(),
                 cancel = MinigameCanceled(minigame),
@@ -1308,15 +1337,15 @@ for i in minigames
 }
 
 //**** This section of achievements and leaderboards have rules and stipulations that don't make them easy to autogen from the spreadsheet. ****//
-achievement(title = "Overachieving Showoff", description = format("Complete the Grandstander minigame with a score of {0} or more.", 100), points = 5,
+xachievement(title = "Overachieving Showoff", description = format("Complete the Grandstander minigame with a score of {0} or more.", 100), points = 5,
     trigger = trigger_when(maxHits() >= 100) && GivenEventIsHappening("Grandstander")
 )
 
-achievement(title = "Professional Showoff", description = format("Complete the Grandstander minigame with a score of {0} or more.", 150), points = 10,
+xachievement(title = "Professional Showoff", description = format("Complete the Grandstander minigame with a score of {0} or more.", 150), points = 10,
     trigger = trigger_when(maxHits() >= 150) && GivenEventIsHappening("Grandstander")
 )
 
-leaderboard(title = "Grandstander",
+xleaderboard(title = "Grandstander",
     description = "Hit the ball as many times as you can before it touches the ground!",
     start = GivenEventIsHappening("Grandstander") && hitsInACombo() == 1,
     cancel = !GivenEventIsHappening("Grandstander") || Delta(currentScore()) < currentScore(),
@@ -1327,15 +1356,15 @@ leaderboard(title = "Grandstander",
 )
 
 function JunkSweepIsDone() => junkRemaining() == 0 && Delta(junkRemaining()) > 0
-achievement(title = "Overachieving Garbageman", description = format("Complete the Junk Sweep minigame in {0} swings or fewer.", 10), points = 3,
+xachievement(title = "Overachieving Garbageman", description = format("Complete the Junk Sweep minigame in {0} swings or fewer.", 10), points = 3,
     trigger = trigger_when(currentScore() <= 10 && JunkSweepIsDone()) && GivenEventIsHappening("Junk Sweep")
 )
 
-achievement(title = "Professional Garbageman", description = format("Complete the Junk Sweep minigame in {0} swings or fewer.", 6), points = 5,
+xachievement(title = "Professional Garbageman", description = format("Complete the Junk Sweep minigame in {0} swings or fewer.", 6), points = 5,
     trigger = trigger_when(currentScore() <= 6 && JunkSweepIsDone()) && GivenEventIsHappening("Junk Sweep")
 )
 
-leaderboard(title = "Junk Sweep",
+xleaderboard(title = "Junk Sweep",
     description = "Get rid of all the junk in as few swings as possible!",
     start = GivenEventIsHappening("Junk Sweep") && currentScore() == 1,
     cancel = !GivenEventIsHappening("Junk Sweep"),
@@ -1348,15 +1377,15 @@ leaderboard(title = "Junk Sweep",
 function triesRemaining() => dword(0x01d48f6c)
 function SBStreetRaveIsDone() => triesRemaining() == 0 && Delta(triesRemaining()) > 0
 function SBSreetRaveIsStarting() => timerStateAlpha() == 4 && timerStateBeta() == 0
-achievement(title = "Overachieving Street Raver", description = format("Complete the Skateboard Street Rave minigame with a score of {0} or more.", 1000), points = 3,
+xachievement(title = "Overachieving Street Raver", description = format("Complete the Skateboard Street Rave minigame with a score of {0} or more.", 1000), points = 3,
     trigger = trigger_when(currentScore() >= 1000 && SBStreetRaveIsDone()) && GivenEventIsHappening("Skateboard Street Rave")
 )
 
-achievement(title = "Professional Street Raver", description = format("Complete the Skateboard Street Rave minigame with a score of {0} or more.", 2000), points = 5,
+xachievement(title = "Professional Street Raver", description = format("Complete the Skateboard Street Rave minigame with a score of {0} or more.", 2000), points = 5,
     trigger = trigger_when(currentScore() >= 2000 && SBStreetRaveIsDone()) && GivenEventIsHappening("Skateboard Street Rave")
 )
 
-leaderboard(title = "Skateboard Street Rave",
+xleaderboard(title = "Skateboard Street Rave",
     description = "Get as many points as you can in the Skateboard Street Rave minigame!",
     start = GivenEventIsHappening("Skateboard Street Rave") && SBSreetRaveIsStarting(),
     cancel = !GivenEventIsHappening("Skateboard Street Rave"),
@@ -1366,15 +1395,15 @@ leaderboard(title = "Skateboard Street Rave",
     lower_is_better = true
 )
 
-achievement(title = "Overachieving Freestyler", description = format("Complete the Skateboard Freestyle minigame with a score of {0} or more.", 200), points = 3,
+xachievement(title = "Overachieving Freestyler", description = format("Complete the Skateboard Freestyle minigame with a score of {0} or more.", 200), points = 3,
     trigger = trigger_when(maxHits() >= 200) && GivenEventIsHappening("Skateboard Freestyle")
 )
 
-achievement(title = "Professional Freestyler", description = format("Complete the Grandstander minigame with a score of {0} or more.", 1000), points = 10,
+xachievement(title = "Professional Freestyler", description = format("Complete the Grandstander minigame with a score of {0} or more.", 1000), points = 10,
     trigger = trigger_when(maxHits() >= 1000) && GivenEventIsHappening("Skateboard Freestyle")
 )
 
-leaderboard(title = "Skateboard Freestyle",
+xleaderboard(title = "Skateboard Freestyle",
     description = "Get as many points as you can in the Skateboard Freestyle minigame!",
     start = GivenEventIsHappening("Skateboard Freestyle") && hitsInACombo() > 0,
     cancel = !GivenEventIsHappening("Skateboard Freestyle"),
@@ -1386,15 +1415,15 @@ leaderboard(title = "Skateboard Freestyle",
 
 function PhilTrainingIsDone() => timeRemaining() <= 0 && Delta(timeRemaining()) > 0
 function PhilTrainingIsStarting() => timerStateAlpha() == 4 && timerStateBeta() == 0
-achievement(title = "Overachieving Trainee", description = format("Complete Phil's Training on Maniac Mode with a score of {0} or more.", 1000), points = 3,
+xachievement(title = "Overachieving Trainee", description = format("Complete Phil's Training on Maniac Mode with a score of {0} or more.", 1000), points = 3,
     trigger = trigger_when(currentScore() >= 1000 && PhilTrainingIsDone()) && GivenEventIsHappening("Phil’s Training – Maniac Mode")
 )
 
-achievement(title = "Professional Trainee", description = format("Complete Phil's Training on Maniac Mode with a score of {0} or more.", 2000), points = 5,
+xachievement(title = "Professional Trainee", description = format("Complete Phil's Training on Maniac Mode with a score of {0} or more.", 2000), points = 5,
     trigger = trigger_when(currentScore() >= 2000 && PhilTrainingIsDone()) && GivenEventIsHappening("Phil’s Training – Maniac Mode")
 )
 
-leaderboard(title = "Phil’s Training – Maniac Mode",
+xleaderboard(title = "Phil’s Training – Maniac Mode",
     description = "Get as many points as you can in Phil’s Training on Maniac Mode!",
     start = GivenEventIsHappening("Phil’s Training – Maniac Mode") && PhilTrainingIsStarting(),
     cancel = !GivenEventIsHappening("Phil’s Training – Maniac Mode"),
@@ -1407,19 +1436,19 @@ leaderboard(title = "Phil’s Training – Maniac Mode",
 function readyGoReactionCommandId() => 0x29c
 function MushroomXIIIAchievements(title1, title2, title3, descriptionFormat, target1, target2, target3, points1, points2, points3, location, trigger)
 {
-    achievement(title = title1, description = format(descriptionFormat, target1), points = points1,
+    xachievement(title = title1, description = format(descriptionFormat, target1), points = points1,
         trigger = once(IsInLocation(location) && reactionCommandId() == readyGoReactionCommandId())
             && trigger_when(trigger(target1))
             && never(!IsInLocation(location))
     )
     
-    achievement(title = title2, description = format(descriptionFormat, target2), points = points2,
+    xachievement(title = title2, description = format(descriptionFormat, target2), points = points2,
         trigger = once(IsInLocation(location) && reactionCommandId() == readyGoReactionCommandId())
             && trigger_when(trigger(target2))
             && never(!IsInLocation(location))
     )
     
-    achievement(title = title3, description = format(descriptionFormat, target3), points = points3,
+    xachievement(title = title3, description = format(descriptionFormat, target3), points = points3,
         trigger = once(IsInLocation(location) && reactionCommandId() == readyGoReactionCommandId())
             && trigger_when(trigger(target3))
             && never(!IsInLocation(location))
@@ -1536,7 +1565,7 @@ MushroomXIIIAchievements(
 )
 
 function proofsOfPeace() => byte(0x0032f1e4)
-achievement(title = "The 13th Appeasement", description = "Obtain the Proof of Peace from No. 13 of Mushroom XIII.", points = 10,
+xachievement(title = "The 13th Appeasement", description = "Obtain the Proof of Peace from No. 13 of Mushroom XIII.", points = 10,
     trigger = WasValueSetInGame(proofsOfPeace(), 0, 1)
 )
 
@@ -1582,38 +1611,38 @@ function UsedCheese(bossHp)
     return UsedFireCheese(bossHp) || UsedNegativeComboCheese(bossHp)
 }
 
-achievement(title = "The Cloaked Schemer I", description = "Defeat Zexion's Absent Silhouette.", points = 5,
+xachievement(title = "The Cloaked Schemer I", description = "Defeat Zexion's Absent Silhouette.", points = 5,
     trigger = GetCheckpointForRegisteredEvent("Zexion’s Absent Silhouette")
         && trigger_when(BonusObtained())
 )
 
-achievement(title = "Bookburner [m]", description = "Defeat Zexion's Absent Silhouette without exploiting the game's revenge mechanics (Proud Mode or higher; Level 25 or below).",
+xachievement(title = "Bookburner [m]", description = "Defeat Zexion's Absent Silhouette without exploiting the game's revenge mechanics (Proud Mode or higher; Level 25 or below).",
     points = 10,
     trigger = GetCheckpointForRegisteredEvent("Zexion’s Absent Silhouette", when = level() <= 25 && IsAtLeastOnDifficulty("Proud"))
         && trigger_when(BonusObtained())
         && never(UsedCheese(dword(0x01c6c018)))
 )
 
-achievement(title = "The Savage Nymph I", description = "Defeat Larxene's Absent Silhouette.", points = 5,
+xachievement(title = "The Savage Nymph I", description = "Defeat Larxene's Absent Silhouette.", points = 5,
     trigger = GetCheckpointForRegisteredEvent("Larxene’s Absent Silhouette")
         && trigger_when(BonusObtained())
 )
 
-achievement(title = "Miragebuster [m]", description = "Defeat Larxene's Absent Silhouette without exploiting the game's revenge mechanics (Proud Mode or higher; Level 32 or below).",
+xachievement(title = "Miragebuster [m]", description = "Defeat Larxene's Absent Silhouette without exploiting the game's revenge mechanics (Proud Mode or higher; Level 32 or below).",
     points = 10,
     trigger = GetCheckpointForRegisteredEvent("Larxene’s Absent Silhouette", when = level() <= 32 && IsAtLeastOnDifficulty("Proud"))
         && trigger_when(BonusObtained())
         && never(UsedCheese(dword(0x01c6c018)))
 )
 
-achievement(title = "The Silent Hero I", description = "Defeat Lexaeus's Absent Silhouette.", points = 5,
+xachievement(title = "The Silent Hero I", description = "Defeat Lexaeus's Absent Silhouette.", points = 5,
     trigger = GetCheckpointForRegisteredEvent("Lexaeus’s Absent Silhouette")
         && trigger_when(BonusObtained())
 )
 
 function megaImpactId() => 0x2c4
 function IsUsingMegaImpact() => reactionCommandId() == megaImpactId()
-achievement(title = "Axebreaker [m]", description = "Finish off Lexaeus's Absent Silhouette with your first use of the Mega Impact reaction command (Proud Mode or higher; Level 40 or below;"
+xachievement(title = "Axebreaker [m]", description = "Finish off Lexaeus's Absent Silhouette with your first use of the Mega Impact reaction command (Proud Mode or higher; Level 40 or below;"
     + "; no revenge exploits).",
     points = 10,
     trigger = GetCheckpointForRegisteredEvent("Lexaeus’s Absent Silhouette", when = level() <= 40 && IsAtLeastOnDifficulty("Proud"))
@@ -1623,13 +1652,13 @@ achievement(title = "Axebreaker [m]", description = "Finish off Lexaeus's Absent
         && never(UsedCheese(dword(0x01c6c018)))
 )
 
-achievement(title = "The Chilly Academic I", description = "Defeat Vexen's Absent Silhouette.", points = 5,
+xachievement(title = "The Chilly Academic I", description = "Defeat Vexen's Absent Silhouette.", points = 5,
     trigger = GetCheckpointForRegisteredEvent("Vexen’s Absent Silhouette")
         && trigger_when(BonusObtained())
 )
 
 function vexenDataLevel() => dword(0x01d48efc)
-achievement(title = "Shieldshatterer [m]", description = "Defeat Vexen's Absent Silhouette before reaching Data Level 2 (Proud Mode or higher; Level 50 or below; no revenge exploits).",
+xachievement(title = "Shieldshatterer [m]", description = "Defeat Vexen's Absent Silhouette before reaching Data Level 2 (Proud Mode or higher; Level 50 or below; no revenge exploits).",
     points = 10,
     trigger = GetCheckpointForRegisteredEvent("Vexen’s Absent Silhouette", when = level() <= 50 && IsAtLeastOnDifficulty("Proud"))
         && trigger_when(BonusObtained())
@@ -1637,14 +1666,14 @@ achievement(title = "Shieldshatterer [m]", description = "Defeat Vexen's Absent 
         && never(UsedCheese(dword(0x01c6c018)))
 )
 
-achievement(title = "The Graceful Assassin I", description = "Defeat Marluxia's Absent Silhouette.", points = 5,
+xachievement(title = "The Graceful Assassin I", description = "Defeat Marluxia's Absent Silhouette.", points = 5,
     trigger = GetCheckpointForRegisteredEvent("Marluxia’s Absent Silhouette")
         && trigger_when(BonusObtained())
 )
 
 function doomCounter() => dword(enemyPointer() + 0x437f4 + 0x1000000)
 function maxDoomCounter() => dword(enemyPointer() + 0x437f0 + 0x1000000)
-achievement(title = "Doomslayer [m]", description = "Defeat Marluxia's Absent Silhouette without your Doom counter reaching more than 15 below its maximum"
+xachievement(title = "Doomslayer [m]", description = "Defeat Marluxia's Absent Silhouette without your Doom counter reaching more than 15 below its maximum"
     + " (Proud Mode or higher; Level 60 or below; no revenge exploits).", points = 10,
     trigger = GetCheckpointForRegisteredEvent("Marluxia’s Absent Silhouette", when = level() <= 60 && IsAtLeastOnDifficulty("Proud"))
         && trigger_when(BonusObtained())
@@ -1653,13 +1682,13 @@ achievement(title = "Doomslayer [m]", description = "Defeat Marluxia's Absent Si
         && never(doomCounter() < maxDoomCounter() - 15 && Delta(doomCounter()) == doomCounter() + 1)
 )
 
-achievement(title = "Thousand-Yard Stare [m]", description = "Survive the final enemy wave in the Cavern of Remembrance (Proud Mode or higher; Level 50 or below).",
+xachievement(title = "Thousand-Yard Stare [m]", description = "Survive the final enemy wave in the Cavern of Remembrance (Proud Mode or higher; Level 50 or below).",
     points = 25,
     trigger = IsInLocation("CavernTransport") && IsAtLeastOnDifficulty("Proud") && level() <= 50
         && trigger_when(BonusObtained())
 )
 
-achievement(title = "Vanilla-Flavored Suffering [m]", description = "Defeat Sephiroth without activating Limit Form (Proud Mode or higher; Level 70 or below).",
+xachievement(title = "Vanilla-Flavored Suffering [m]", description = "Defeat Sephiroth without activating Limit Form (Proud Mode or higher; Level 70 or below).",
     points = 50,
     trigger = GetCheckpointForRegisteredEvent("Sephiroth", when = level() <= 70 && IsAtLeastOnDifficulty("Proud"))
         && trigger_when(BonusObtained())
@@ -1668,85 +1697,85 @@ achievement(title = "Vanilla-Flavored Suffering [m]", description = "Defeat Seph
             || x["name"] == "Dodge Roll MAX")))
 )
 
-achievement(title = "The Superior I", description = "Defeat Data Xemnas's first phase on Proud Mode or higher without exploiting revenge mechanics.", points = 25,
+xachievement(title = "The Superior I", description = "Defeat Data Xemnas's first phase on Proud Mode or higher without exploiting revenge mechanics.", points = 25,
     trigger = GetCheckpointForRegisteredEvent("Data Xemnas 1", when = IsAtLeastOnDifficulty("Proud"))
         && trigger_when(JustWonBattle())
         && never(UsedCheese(dword(0x01c6c4e8)))
 )
 
-achievement(title = "The Superior II", description = "Defeat Data Xemnas's second phase on Proud Mode or higher without exploiting revenge mechanics.", points = 50,
+xachievement(title = "The Superior II", description = "Defeat Data Xemnas's second phase on Proud Mode or higher without exploiting revenge mechanics.", points = 50,
     trigger = GetCheckpointForRegisteredEvent("Data Xemnas 2", when = IsAtLeastOnDifficulty("Proud"))
         && trigger_when(JustWonBattle())
         && never(UsedCheese(dword(0x01c6c280)))
 )
 
-achievement(title = "The Freeshooter", description = "Defeat Data Xigbar on Proud Mode or higher without exploiting revenge mechanics.", points = 50,
+xachievement(title = "The Freeshooter", description = "Defeat Data Xigbar on Proud Mode or higher without exploiting revenge mechanics.", points = 50,
     trigger = GetCheckpointForRegisteredEvent("Data Xigbar", when = IsAtLeastOnDifficulty("Proud"))
         && trigger_when(JustWonBattle())
         && never(UsedCheese(dword(0x01c6c018)))
 )
 
-achievement(title = "The Whirlwind Lancer", description = "Defeat Data Xaldin on Proud Mode or higher without exploiting revenge mechanics.", points = 50,
+xachievement(title = "The Whirlwind Lancer", description = "Defeat Data Xaldin on Proud Mode or higher without exploiting revenge mechanics.", points = 50,
     trigger = GetCheckpointForRegisteredEvent("Data Xaldin", when = IsAtLeastOnDifficulty("Proud"))
         && trigger_when(JustWonBattle())
         && never(UsedCheese(dword(0x01c6c018)))
 )
 
-achievement(title = "The Chilly Academic II", description = "Defeat Data Vexen on Proud Mode or higher without exploiting revenge mechanics.", points = 25,
+xachievement(title = "The Chilly Academic II", description = "Defeat Data Vexen on Proud Mode or higher without exploiting revenge mechanics.", points = 25,
     trigger = GetCheckpointForRegisteredEvent("Data Vexen", when = IsAtLeastOnDifficulty("Proud"))
         && trigger_when(JustWonBattle())
         && never(UsedCheese(dword(0x01c6c018)))
 )
 
-achievement(title = "The Silent Hero II", description = "Defeat Data Lexaeus on Proud Mode or higher without exploiting revenge mechanics.", points = 25,
+xachievement(title = "The Silent Hero II", description = "Defeat Data Lexaeus on Proud Mode or higher without exploiting revenge mechanics.", points = 25,
     trigger = GetCheckpointForRegisteredEvent("Data Lexaeus", when = IsAtLeastOnDifficulty("Proud"))
         && trigger_when(JustWonBattle())
         && never(UsedCheese(dword(0x01c6c018)))
 )
 
-achievement(title = "The Cloaked Schemer II", description = "Defeat Data Zexion on Proud Mode or higher without exploiting revenge mechanics.", points = 25,
+xachievement(title = "The Cloaked Schemer II", description = "Defeat Data Zexion on Proud Mode or higher without exploiting revenge mechanics.", points = 25,
     trigger = GetCheckpointForRegisteredEvent("Data Zexion", when = IsAtLeastOnDifficulty("Proud"))
         && trigger_when(JustWonBattle())
         && never(UsedCheese(dword(0x01c6c018)))
 )
 
-achievement(title = "The Lunar Diviner", description = "Defeat Data Saïx on Proud Mode or higher without exploiting revenge mechanics.", points = 25,
+xachievement(title = "The Lunar Diviner", description = "Defeat Data Saïx on Proud Mode or higher without exploiting revenge mechanics.", points = 25,
     trigger = GetCheckpointForRegisteredEvent("Data Saïx", when = IsAtLeastOnDifficulty("Proud"))
         && trigger_when(JustWonBattle())
         && never(UsedCheese(dword(0x01c6c018)))
 )
 
-achievement(title = "The Flurry of Dancing Flames", description = "Defeat Data Axel on Proud Mode or higher without exploiting revenge mechanics.", points = 25,
+xachievement(title = "The Flurry of Dancing Flames", description = "Defeat Data Axel on Proud Mode or higher without exploiting revenge mechanics.", points = 25,
     trigger = GetCheckpointForRegisteredEvent("Data Axel", when = IsAtLeastOnDifficulty("Proud"))
         && trigger_when(JustWonBattle())
         && never(UsedCheese(dword(0x01c6c4e8)))
 )
 
-achievement(title = "The Melodious Nocturne", description = "Defeat Data Demyx on Proud Mode or higher without exploiting revenge mechanics.", points = 50,
+xachievement(title = "The Melodious Nocturne", description = "Defeat Data Demyx on Proud Mode or higher without exploiting revenge mechanics.", points = 50,
     trigger = GetCheckpointForRegisteredEvent("Data Demyx", when = IsAtLeastOnDifficulty("Proud"))
         && trigger_when(JustWonBattle())
         && never(UsedCheese(dword(0x01c6c018)))
 )
 
-achievement(title = "The Gambler of Fate", description = "Defeat Data Luxord on Proud Mode or higher without exploiting revenge mechanics.", points = 10,
+xachievement(title = "The Gambler of Fate", description = "Defeat Data Luxord on Proud Mode or higher without exploiting revenge mechanics.", points = 10,
     trigger = GetCheckpointForRegisteredEvent("Data Luxord", when = IsAtLeastOnDifficulty("Proud"))
         && trigger_when(JustWonBattle())
         && never(UsedCheese(dword(0x01c6c4e8)))
 )
 
-achievement(title = "The Graceful Assassin II", description = "Defeat Data Marluxia on Proud Mode or higher without exploiting revenge mechanics.", points = 25,
+xachievement(title = "The Graceful Assassin II", description = "Defeat Data Marluxia on Proud Mode or higher without exploiting revenge mechanics.", points = 25,
     trigger = GetCheckpointForRegisteredEvent("Data Marluxia", when = IsAtLeastOnDifficulty("Proud"))
         && trigger_when(JustWonBattle())
         && never(UsedCheese(dword(0x01c6c018)))
 )
 
-achievement(title = "The Savage Nymph II", description = "Defeat Data Larxene on Proud Mode or higher without exploiting revenge mechanics.", points = 50,
+xachievement(title = "The Savage Nymph II", description = "Defeat Data Larxene on Proud Mode or higher without exploiting revenge mechanics.", points = 50,
     trigger = GetCheckpointForRegisteredEvent("Data Larxene", when = IsAtLeastOnDifficulty("Proud"))
         && trigger_when(JustWonBattle())
         && never(UsedCheese(dword(0x01c6c018)))
 )
 
-achievement(title = "The Key of Destiny", description = "Defeat Data Roxas without Quick Run equipped (Proud Mode or higher; no revenge exploits).", points = 50,
+xachievement(title = "The Key of Destiny", description = "Defeat Data Roxas without Quick Run equipped (Proud Mode or higher; no revenge exploits).", points = 50,
     trigger = GetCheckpointForRegisteredEvent("Data Roxas", when = IsAtLeastOnDifficulty("Proud"))
         && trigger_when(JustWonBattle())
         && never(UsedCheese(dword(0x01c6c4ec)))
@@ -1754,16 +1783,16 @@ achievement(title = "The Key of Destiny", description = "Defeat Data Roxas witho
 )
 
 function proofOfNonexistence() => bit3(0x0032df0f)
-achievement(title = "Without a Trace", description = "Obtain the Proof of Nonexistence.", points = 25,
+xachievement(title = "Without a Trace", description = "Obtain the Proof of Nonexistence.", points = 25,
     trigger = WasBitflagSetInGame(proofOfNonexistence())
 )
 
-achievement(title = "But a Shell", description = "Defeat the Lingering Will.", points = 25,
+xachievement(title = "But a Shell", description = "Defeat the Lingering Will.", points = 25,
     trigger = (GetCheckpointForRegisteredEvent("Lingering Will") || GetCheckpointForRegisteredEvent("Lingering Will 2"))
         && trigger_when(JustWonBattle())
 )
 
-achievement(title = "Witness of Mastery", description = "Defeat the Lingering Will without using summons (Proud Mode or higher; no revenge exploits).", points = 100,
+xachievement(title = "Witness of Mastery", description = "Defeat the Lingering Will without using summons (Proud Mode or higher; no revenge exploits).", points = 100,
     trigger = (GetCheckpointForRegisteredEvent("Lingering Will", when = IsAtLeastOnDifficulty("Proud"))
             || GetCheckpointForRegisteredEvent("Lingering Will 2", when = IsAtLeastOnDifficulty("Proud")))
         && trigger_when(JustWonBattle())
@@ -1775,16 +1804,16 @@ function PainAndPanicCupCheckpointReached(when = always_true())
     => once(eventId() == 0xbd && IsActiveInTheField() && IsInLocation("ColiseumTourney1") && JustBecameActiveInTheField() && currentRound() == 1 && when)
     && never(IsDead()) && never(IsInLocation("UnderworldEntrance"))
 function WonThePainAndPanicCup() => eventId() == 0xb4 && IsInLocation("ColiseumVictory")
-achievement(title = "Pain and Panic Champion", description = "Win the Pain and Panic Cup.", points = 3,
+xachievement(title = "Pain and Panic Champion", description = "Win the Pain and Panic Cup.", points = 3,
     trigger = PainAndPanicCupCheckpointReached() && WonThePainAndPanicCup()
 )
 
 function underdromeCurrentScore() => dword(0x01d48efc)
-achievement(title = "Pain and Panic Recordsetter", description = "Win the Pain and Panic Cup with a score of 2000 or more.", points = 5,
+xachievement(title = "Pain and Panic Recordsetter", description = "Win the Pain and Panic Cup with a score of 2000 or more.", points = 5,
     trigger = PainAndPanicCupCheckpointReached() && trigger_when(underdromeCurrentScore() >= 2000 && WonThePainAndPanicCup())
 )
 
-achievement(title = "Pain and Panic Title Defender [m]", description = "Win the Pain and Panic Cup without using Limits (Proud Mode or higher; Level 30 or below).", points = 25,
+xachievement(title = "Pain and Panic Title Defender [m]", description = "Win the Pain and Panic Cup without using Limits (Proud Mode or higher; Level 30 or below).", points = 25,
     trigger = PainAndPanicCupCheckpointReached(when = level() <= 30 && IsAtLeastOnDifficulty("Proud"))
         && trigger_when(WonThePainAndPanicCup())
         && never(LimitIsBeingUsed())
@@ -1794,11 +1823,11 @@ function CerberusCupCheckpointReached(when = always_true())
     => once(eventId() == 0xbe && IsActiveInTheField() && IsInLocation("ColiseumTourney1") && JustBecameActiveInTheField() && currentRound() == 1 && when)
     && never(IsDead()) && never(IsInLocation("UnderworldEntrance"))
 function WonTheCerberusCup() => eventId() == 0xb6 && IsInLocation("ColiseumVictory")
-achievement(title = "Cerberus Champion", description = "Win the Cerberus Cup.", points = 3,
+xachievement(title = "Cerberus Champion", description = "Win the Cerberus Cup.", points = 3,
     trigger = CerberusCupCheckpointReached() && WonTheCerberusCup()
 )
 
-achievement(title = "Cerberus Recordsetter", description = "Win the Cerberus Cup with a score of 1000 or more.", points = 5,
+xachievement(title = "Cerberus Recordsetter", description = "Win the Cerberus Cup with a score of 1000 or more.", points = 5,
     trigger = CerberusCupCheckpointReached() && trigger_when(WonTheCerberusCup() && underdromeCurrentScore() >= 1000)
 )
 
@@ -1811,7 +1840,7 @@ function ViolatedCerberusCupRules(when = always_true()) => ConditionIsTrueMoreTh
         || ConditionIsTrueMoreThanOncePerRound(JustEnteredAntiForm())
 // Checking for whether or not the player is active on the field is so that they can use the Retry option in the middle of Round 1 and not have their uses carry over.
 function ConditionIsTrueMoreThanOncePerRound(condition) => repeated(2, condition && never(CurrentRoundHasChanged()) && never(!IsActiveInTheField()))
-achievement(title = "Cerberus Title Defender [m]", description = "Win the Cerberus Cup without activating the same Drive Form more than once per round (Proud Mode or higher; Level 33 or below).",
+xachievement(title = "Cerberus Title Defender [m]", description = "Win the Cerberus Cup without activating the same Drive Form more than once per round (Proud Mode or higher; Level 33 or below).",
     points = 25,
     trigger = CerberusCupCheckpointReached(when = level() <= 33 && IsAtLeastOnDifficulty("Proud"))
         && trigger_when(WonTheCerberusCup())
@@ -1822,16 +1851,16 @@ function TitanCupCheckpointReached(when = always_true())
     => once(eventId() == 0xbf && IsActiveInTheField() && IsInLocation("ColiseumTourney1") && JustBecameActiveInTheField() && currentRound() == 1 && when)
     && never(IsDead()) && never(IsInLocation("UnderworldEntrance"))
 function WonTheTitanCup() => eventId() == 0xb5 && IsInLocation("ColiseumVictory")
-achievement(title = "Titan Champion", description = "Win the Titan Cup.", points = 3,
+xachievement(title = "Titan Champion", description = "Win the Titan Cup.", points = 3,
     trigger = TitanCupCheckpointReached() && WonTheTitanCup()
 )
 
-achievement(title = "Titan Recordsetter", description = "Win the Titan Cup with a score of 5000 or more.", points = 5,
+xachievement(title = "Titan Recordsetter", description = "Win the Titan Cup with a score of 5000 or more.", points = 5,
     trigger = TitanCupCheckpointReached() && trigger_when(WonTheTitanCup() && underdromeCurrentScore() >= 5000)
 )
 
 function keyScore() => dword(0x01d48f6c)
-achievement(title = "Titan Title Defender [m]", description = "Win the Titan Cup with at least 125 points remaining (Proud Mode or higher; Level 45 or below).",
+xachievement(title = "Titan Title Defender [m]", description = "Win the Titan Cup with at least 125 points remaining (Proud Mode or higher; Level 45 or below).",
     points = 50,
     trigger = TitanCupCheckpointReached(when = level() <= 45 && IsAtLeastOnDifficulty("Proud"))
         && trigger_when(WonTheTitanCup())
@@ -1842,15 +1871,15 @@ function GoddessOfFateCupCheckpointReached(when = always_true())
     => once(eventId() == 0xc0 && IsActiveInTheField() && IsInLocation("ColiseumTourney1") && JustBecameActiveInTheField() && currentRound() == 1 && when)
     && never(IsDead()) && never(IsInLocation("UnderworldEntrance"))
 function WonTheGoddessOfFateCup() => eventId() == 0xb7 && IsInLocation("ColiseumVictory")
-achievement(title = "Goddess of Fate Champion", description = "Win the Goddess of Fate Cup.", points = 3,
+xachievement(title = "Goddess of Fate Champion", description = "Win the Goddess of Fate Cup.", points = 3,
     trigger = GoddessOfFateCupCheckpointReached() && WonTheGoddessOfFateCup()
 )
 
-achievement(title = "Goddess of Fate Recordsetter", description = "Win the Goddess of Fate Cup with a score of 3000 or more.", points = 5,
+xachievement(title = "Goddess of Fate Recordsetter", description = "Win the Goddess of Fate Cup with a score of 3000 or more.", points = 5,
     trigger = GoddessOfFateCupCheckpointReached() && trigger_when(WonTheGoddessOfFateCup() && underdromeCurrentScore() >= 3000)
 )
 
-achievement(title = "Goddess of Fate Title Defender [m]", description = "Win the Goddess of Fate Cup without using Magnet magic (Proud Mode or higher; Level 50 or below).",
+xachievement(title = "Goddess of Fate Title Defender [m]", description = "Win the Goddess of Fate Cup without using Magnet magic (Proud Mode or higher; Level 50 or below).",
     points = 10,
     trigger = GoddessOfFateCupCheckpointReached(when = level() <= 50 && IsAtLeastOnDifficulty("Proud"))
         && trigger_when(WonTheGoddessOfFateCup())
@@ -1863,17 +1892,17 @@ function PainAndPanicParadoxCupCheckpointReached(when = always_true())
     => once(eventId() == 0xc1 && IsActiveInTheField() && IsInLocation("ColiseumTourney1") && JustBecameActiveInTheField() && currentRound() == 1 && when)
     && never(IsDead()) && never(IsTransitioningToOrFromBattle())
 function WonThePainAndPanicParadoxCup() => battleState() == 5 && Delta(battleState()) == 1 && IsInLocation("HadesChamber")
-achievement(title = "Pain and Panic Paradox Champion", description = "Win the Pain and Panic Paradox Cup.", points = 3,
+xachievement(title = "Pain and Panic Paradox Champion", description = "Win the Pain and Panic Paradox Cup.", points = 3,
     trigger = PainAndPanicParadoxCupCheckpointReached() && WonThePainAndPanicParadoxCup()
 )
 
 function underdromeCurrentScore() => dword(0x01d48efc)
-achievement(title = "Pain and Panic Paradox Recordsetter", description = "Win the Pain and Panic Paradox Cup with a score of 2500 or more.", points = 5,
+xachievement(title = "Pain and Panic Paradox Recordsetter", description = "Win the Pain and Panic Paradox Cup with a score of 2500 or more.", points = 5,
     trigger = PainAndPanicParadoxCupCheckpointReached() && trigger_when(underdromeCurrentScore() >= 2500 && WonThePainAndPanicParadoxCup())
 )
 
 function ViolatedPainAndPanicParadoxCupRules() => LimitIsBeingUsed()
-achievement(title = "Pain and Panic Paradox Title Defender [m]", description = "Win the Pain and Panic Paradox Cup without using Limits (Proud Mode or higher; Level 50 or below).", points = 25,
+xachievement(title = "Pain and Panic Paradox Title Defender [m]", description = "Win the Pain and Panic Paradox Cup without using Limits (Proud Mode or higher; Level 50 or below).", points = 25,
     trigger = PainAndPanicParadoxCupCheckpointReached(when = level() <= 50 && IsAtLeastOnDifficulty("Proud"))
         && trigger_when(WonThePainAndPanicParadoxCup())
         && never(ViolatedPainAndPanicParadoxCupRules())
@@ -1883,15 +1912,15 @@ function CerberusParadoxCupCheckpointReached(when = always_true())
     => once(eventId() == 0xc2 && IsActiveInTheField() && IsInLocation("ColiseumTourney1") && JustBecameActiveInTheField() && currentRound() == 1 && when)
     && never(IsDead()) && never(IsTransitioningToOrFromBattle())
 function WonTheCerberusParadoxCup() => battleState() == 5 && Delta(battleState()) == 1 && IsInLocation("HadesChamber")
-achievement(title = "Cerberus Paradox Champion", description = "Win the Cerberus Paradox Cup.", points = 3,
+xachievement(title = "Cerberus Paradox Champion", description = "Win the Cerberus Paradox Cup.", points = 3,
     trigger = CerberusParadoxCupCheckpointReached() && WonTheCerberusParadoxCup()
 )
 
-achievement(title = "Cerberus Paradox Recordsetter", description = "Win the Cerberus Paradox Cup with a score of 1300 or more.", points = 5,
+xachievement(title = "Cerberus Paradox Recordsetter", description = "Win the Cerberus Paradox Cup with a score of 1300 or more.", points = 5,
     trigger = CerberusParadoxCupCheckpointReached() && trigger_when(WonTheCerberusParadoxCup() && underdromeCurrentScore() >= 1300)
 )
 
-achievement(title = "Cerberus Paradox Title Defender [m]", description = "Win the Cerberus Paradox Cup without activating the same Drive Form more than once per round (Proud Mode or higher; Level 60 or below).",
+xachievement(title = "Cerberus Paradox Title Defender [m]", description = "Win the Cerberus Paradox Cup without activating the same Drive Form more than once per round (Proud Mode or higher; Level 60 or below).",
     points = 25,
     trigger = CerberusParadoxCupCheckpointReached(when = level() <= 60 && IsAtLeastOnDifficulty("Proud"))
         && trigger_when(WonTheCerberusParadoxCup())
@@ -1902,11 +1931,11 @@ function TitanParadoxCupCheckpointReached(when = always_true())
     => once(eventId() == 0xc3 && IsActiveInTheField() && IsInLocation("ColiseumTourney1") && JustBecameActiveInTheField() && currentRound() == 1 && when)
     && never(IsDead()) && never(IsTransitioningToOrFromBattle())
 function WonTheTitanParadoxCup() => battleState() == 5 && Delta(battleState()) == 1 && IsInLocation("HadesChamber")
-achievement(title = "Titan Paradox Champion", description = "Win the Titan Paradox Cup.", points = 3,
+xachievement(title = "Titan Paradox Champion", description = "Win the Titan Paradox Cup.", points = 3,
     trigger = TitanParadoxCupCheckpointReached() && WonTheTitanParadoxCup()
 )
 
-achievement(title = "Titan Paradox Recordsetter", description = "Win the Titan Paradox Cup with a score of 10000 or more.", points = 5,
+xachievement(title = "Titan Paradox Recordsetter", description = "Win the Titan Paradox Cup with a score of 10000 or more.", points = 5,
     trigger = TitanParadoxCupCheckpointReached() && trigger_when(WonTheTitanParadoxCup() && underdromeCurrentScore() >= 10000)
 )
 
@@ -1923,7 +1952,7 @@ function JustUsedPeterPan() => Delta(peterPanUses()) != peterPanUses()
 // Without this, the OrNexts that would result if we put the round checks outside would be placed before the round checks instead of after.
 function ViolatedTitanParadoxCupRules(when = always_true())
     => repeated(3, when && (JustUsedChickenLittle()) || repeated(3, JustUsedGenie()) || repeated(3, JustUsedStitch()) || repeated(3, JustUsedPeterPan()))
-achievement(title = "Titan Paradox Title Defender [m]", description = "Win the Titan Paradox Cup without using any individual summon more than twice each (Proud Mode or higher; Level 70 or below).",
+xachievement(title = "Titan Paradox Title Defender [m]", description = "Win the Titan Paradox Cup without using any individual summon more than twice each (Proud Mode or higher; Level 70 or below).",
     points = 10,
     trigger = TitanParadoxCupCheckpointReached(when = level() <= 70 && IsAtLeastOnDifficulty("Proud"))
         && trigger_when(WonTheTitanParadoxCup())
@@ -1934,15 +1963,15 @@ function HadesParadoxCupCheckpointReached(when = always_true())
     => once(eventId() == 0xc4 && IsActiveInTheField() && IsInLocation("ColiseumTourney1") && JustBecameActiveInTheField() && currentRound() == 1 && when)
     && never(IsDead()) && never(IsInLocation("UnderworldEntrance"))
 function WonTheHadesParadoxCup() => eventId() == 0xb8 && IsInLocation("ColiseumVictory")
-achievement(title = "Hades Paradox Champion", description = "Win the Hades Paradox Cup.", points = 5,
+xachievement(title = "Hades Paradox Champion", description = "Win the Hades Paradox Cup.", points = 5,
     trigger = HadesParadoxCupCheckpointReached() && WonTheHadesParadoxCup()
 )
 
-achievement(title = "Hades Paradox Recordsetter", description = "Win the Hades Paradox Cup with a score of 15000 or more.", points = 10,
+xachievement(title = "Hades Paradox Recordsetter", description = "Win the Hades Paradox Cup with a score of 15000 or more.", points = 10,
     trigger = HadesParadoxCupCheckpointReached() && trigger_when(WonTheHadesParadoxCup() && underdromeCurrentScore() >= 15000)
 )
 
-achievement(title = "Hades Paradox Title Defender [m]", description = "Win the Hades Paradox Cup on Proud Mode or higher while adhering to the same achievement conditions for each Paradox Cup's "
+xachievement(title = "Hades Paradox Title Defender [m]", description = "Win the Hades Paradox Cup on Proud Mode or higher while adhering to the same achievement conditions for each Paradox Cup's "
     + "respective set of rounds.", points = 50,
     trigger = HadesParadoxCupCheckpointReached(when = IsAtLeastOnDifficulty("Proud"))
         && trigger_when(WonTheHadesParadoxCup())
@@ -1952,37 +1981,37 @@ achievement(title = "Hades Paradox Title Defender [m]", description = "Win the H
 )
 
 function summonLevel() => byte(0x0032f056)
-achievement(title = "The Comrade", description = "Raise summons to the maximum level.", points = 5,
+xachievement(title = "The Comrade", description = "Raise summons to the maximum level.", points = 5,
     trigger = WasValueSetInGame(summonLevel(), 6, 7) && measured(summonLevel() == 7)
 )
 
 function valorLevel() => byte(0x32ee26)
-achievement(title = "The Dauntless", description = "Raise Valor Form to the maximum level.", points = 5,
+xachievement(title = "The Dauntless", description = "Raise Valor Form to the maximum level.", points = 5,
     trigger = WasValueSetInGame(valorLevel(), 6, 7) && measured(valorLevel() == 7)
 )
 
 function wisdomLevel() => byte(0x32ee5e)
-achievement(title = "The Erudite", description = "Raise Wisdom Form to the maximum level.", points = 5,
+xachievement(title = "The Erudite", description = "Raise Wisdom Form to the maximum level.", points = 5,
     trigger = WasValueSetInGame(wisdomLevel(), 6, 7) && measured(wisdomLevel() == 7)
 )
 
 function limitLevel() => byte(0x0032ee96)
-achievement(title = "The Renowned", description = "Raise Limit Form to the maximum level.", points = 5,
+xachievement(title = "The Renowned", description = "Raise Limit Form to the maximum level.", points = 5,
     trigger = WasValueSetInGame(limitLevel(), 6, 7) && measured(limitLevel() == 7)
 )
 
 function masterLevel() => byte(0x0032eede)
-achievement(title = "The Predominant", description = "Raise Master Form to the maximum level.", points = 5,
+xachievement(title = "The Predominant", description = "Raise Master Form to the maximum level.", points = 5,
     trigger = WasValueSetInGame(masterLevel(), 6, 7) && measured(masterLevel() == 7)
 )
 
 function finalLevel() => byte(0x0032ef06)
-achievement(title = "The Ultimate", description = "Raise Final Form to the maximum level.", points = 5,
+xachievement(title = "The Ultimate", description = "Raise Final Form to the maximum level.", points = 5,
     trigger = WasValueSetInGame(finalLevel(), 6, 7) && measured(finalLevel() == 7)
 )
 
 function antiUses() => word(0x32fb10)
-achievement(title = "The Corrupted", description = "Activate Anti-Form for the first time.", points = 1,
+xachievement(title = "The Corrupted", description = "Activate Anti-Form for the first time.", points = 1,
     trigger = WasValueSetInGame(antiUses(), 0, 1)
 )
 
@@ -2003,7 +2032,7 @@ gummiMissions = {
 for index in gummiMissions
 {
     mission = gummiMissions[index]
-    achievement(title = mission["name"] + " - Gold Medalist", description = "Achieve an S rank in Mission 1 of " + mission["name"] + ".", points = mission["mission1Score"],
+    xachievement(title = mission["name"] + " - Gold Medalist", description = "Achieve an S rank in Mission 1 of " + mission["name"] + ".", points = mission["mission1Score"],
         trigger = once(gummiMissionLevel() == 1 && worldGateId() == mission["gateId"] && GummiMissionJustStarted() && !IsEXMission())
             && trigger_when(GummiMissionComplete())
             && trigger_when(gummiShipRank() == 6)
@@ -2011,14 +2040,14 @@ for index in gummiMissions
             && never(gummiShipPointer() == 0)
     )
     
-    leaderboard(title = mission["name"] + " Mission 1", description = "Get the highest score you can in Mission 1 of " + mission["name"] + "!",
+    xleaderboard(title = mission["name"] + " Mission 1", description = "Get the highest score you can in Mission 1 of " + mission["name"] + "!",
         start = gummiMissionLevel() == 1 && worldGateId() == mission["gateId"] && GummiMissionJustStarted() && !IsEXMission(),
         cancel = !IsInLocation("WorldMap") || gummiShipPointer() == 0,
         submit = GummiMissionComplete(),
         value = gummiShipScore()
     )
     
-    achievement(title = mission["name"] + " - Gold Medalist EX", description = "Achieve an S rank in EX Mission 1 of " + mission["name"] + ".", points = mission["exMission1Score"],
+    xachievement(title = mission["name"] + " - Gold Medalist EX", description = "Achieve an S rank in EX Mission 1 of " + mission["name"] + ".", points = mission["exMission1Score"],
         trigger = once(gummiMissionLevel() == 1 && worldGateId() == mission["gateId"] && GummiMissionJustStarted() && IsEXMission())
             && trigger_when(GummiMissionComplete())
             && trigger_when(gummiShipRank() == 6)
@@ -2026,14 +2055,14 @@ for index in gummiMissions
             && never(gummiShipPointer() == 0)
     )
     
-    leaderboard(title = mission["name"] + " EX Mission 1", description = "Get the highest score you can in EX Mission 1 of " + mission["name"] + "!",
+    xleaderboard(title = mission["name"] + " EX Mission 1", description = "Get the highest score you can in EX Mission 1 of " + mission["name"] + "!",
         start = gummiMissionLevel() == 1 && worldGateId() == mission["gateId"] && GummiMissionJustStarted() && IsEXMission(),
         cancel = !IsInLocation("WorldMap") || gummiShipPointer() == 0,
         submit = GummiMissionComplete(),
         value = gummiShipScore()
     )
 
-    achievement(title = mission["name"] + " - Ace Pilot", description = "Achieve an S rank in Mission 2 of " + mission["name"] + ".", points = mission["mission2Score"],
+    xachievement(title = mission["name"] + " - Ace Pilot", description = "Achieve an S rank in Mission 2 of " + mission["name"] + ".", points = mission["mission2Score"],
         trigger = once(gummiMissionLevel() == 2 && worldGateId() == mission["gateId"] && GummiMissionJustStarted() && !IsEXMission())
             && trigger_when(GummiMissionComplete())
             && trigger_when(gummiShipRank() == 6)
@@ -2041,14 +2070,14 @@ for index in gummiMissions
             && never(gummiShipPointer() == 0)
     )
     
-    leaderboard(title = mission["name"] + " Mission 2", description = "Get the highest score you can in Mission 2 of " + mission["name"] + "!",
+    xleaderboard(title = mission["name"] + " Mission 2", description = "Get the highest score you can in Mission 2 of " + mission["name"] + "!",
         start = gummiMissionLevel() == 2 && worldGateId() == mission["gateId"] && GummiMissionJustStarted() && !IsEXMission(),
         cancel = !IsInLocation("WorldMap") || gummiShipPointer() == 0,
         submit = GummiMissionComplete(),
         value = gummiShipScore()
     )
     
-    achievement(title = mission["name"] + " - Ace Pilot EX", description = "Achieve an S rank in EX Mission 2 of " + mission["name"] + ".", points = mission["exMission1Score"],
+    xachievement(title = mission["name"] + " - Ace Pilot EX", description = "Achieve an S rank in EX Mission 2 of " + mission["name"] + ".", points = mission["exMission1Score"],
         trigger = once(gummiMissionLevel() == 2 && worldGateId() == mission["gateId"] && GummiMissionJustStarted() && IsEXMission())
             && trigger_when(GummiMissionComplete())
             && trigger_when(gummiShipRank() == 6)
@@ -2056,14 +2085,14 @@ for index in gummiMissions
             && never(gummiShipPointer() == 0)
     )
     
-    leaderboard(title = mission["name"] + " EX Mission 2", description = "Get the highest score you can in EX Mission 2 of " + mission["name"] + "!",
+    xleaderboard(title = mission["name"] + " EX Mission 2", description = "Get the highest score you can in EX Mission 2 of " + mission["name"] + "!",
         start = gummiMissionLevel() == 2 && worldGateId() == mission["gateId"] && GummiMissionJustStarted() && IsEXMission(),
         cancel = !IsInLocation("WorldMap") || gummiShipPointer() == 0,
         submit = GummiMissionComplete(),
         value = gummiShipScore()
     )
 
-    achievement(title = mission["name"] + " - Scoresetter", description = "Achieve an S rank in Mission 3 of " + mission["name"] + ".", points = mission["mission3Score"],
+    xachievement(title = mission["name"] + " - Scoresetter", description = "Achieve an S rank in Mission 3 of " + mission["name"] + ".", points = mission["mission3Score"],
         trigger = once(gummiMissionLevel() == 3 && worldGateId() == mission["gateId"] && GummiMissionJustStarted() && !IsEXMission())
             && trigger_when(GummiMissionComplete())
             && trigger_when(gummiShipRank() == 6)
@@ -2071,14 +2100,14 @@ for index in gummiMissions
             && never(gummiShipPointer() == 0)
     )
     
-    leaderboard(title = mission["name"] + " Mission 3", description = "Get the highest score you can in Mission 3 of " + mission["name"] + "!",
+    xleaderboard(title = mission["name"] + " Mission 3", description = "Get the highest score you can in Mission 3 of " + mission["name"] + "!",
         start = gummiMissionLevel() == 3 && worldGateId() == mission["gateId"] && GummiMissionJustStarted() && !IsEXMission(),
         cancel = !IsInLocation("WorldMap") || gummiShipPointer() == 0,
         submit = GummiMissionComplete(),
         value = gummiShipScore()
     )
     
-    achievement(title = mission["name"] + " - Scoresetter EX", description = "Achieve an S rank in EX Mission 3 of " + mission["name"] + ".", points = mission["exMission3Score"],
+    xachievement(title = mission["name"] + " - Scoresetter EX", description = "Achieve an S rank in EX Mission 3 of " + mission["name"] + ".", points = mission["exMission3Score"],
         trigger = once(gummiMissionLevel() == 3 && worldGateId() == mission["gateId"] && GummiMissionJustStarted() && IsEXMission())
             && trigger_when(GummiMissionComplete())
             && trigger_when(gummiShipRank() == 6)
@@ -2086,7 +2115,7 @@ for index in gummiMissions
             && never(gummiShipPointer() == 0)
     )
     
-    leaderboard(title = mission["name"] + " EX Mission 3", description = "Get the highest score you can in EX Mission 3 of " + mission["name"] + "!",
+    xleaderboard(title = mission["name"] + " EX Mission 3", description = "Get the highest score you can in EX Mission 3 of " + mission["name"] + "!",
         start = gummiMissionLevel() == 3 && worldGateId() == mission["gateId"] && GummiMissionJustStarted() && IsEXMission(),
         cancel = !IsInLocation("WorldMap") || gummiShipPointer() == 0,
         submit = GummiMissionComplete(),
@@ -2135,7 +2164,7 @@ function GenerateCheevoFromBits(name, description, points, threshold, addresses,
     // This way, loading a save doesn't invalidate the achievement outright if a player hasn't actually earned it yet.
     trigger = bitcounts >= threshold
 
-    achievement(title = name, description = description, points = points, badge = badge, id = id,
+    xachievement(title = name, description = description, points = points, badge = badge, id = id,
         trigger = IsAlwaysInGame() && measured(trigger) && unless(shouldTriggerPauselock) && onlyAvailableWhen
             && (always_false() || never(MenuIsActive())) // Reset any potential pauselock when changing save files.
     )
@@ -2289,13 +2318,13 @@ GenerateCheevoFromBits(name = "Enigmatologist", description = "Solve all puzzles
 
 function moogleExp() => dword(0x00330560)
 function JustReachedMaxMoogleLevel() => Delta(moogleExp()) < 0x7bc && measured(moogleExp() >= 0x7bc)
-achievement(title = "Master Synthesist", description = "Max out your Moogle LV in Item Synthesis.", points = 5,
+xachievement(title = "Master Synthesist", description = "Max out your Moogle LV in Item Synthesis.", points = 5,
     trigger = !IsLoadingSaveFile() && JustReachedMaxMoogleLevel()
 )
 
 function ultimaWeaponsEarned() => byte(0x0032f1bf)
 function JustEarnedUltimaWeapon() => Delta(ultimaWeaponsEarned()) == 0 && ultimaWeaponsEarned() == 1
-achievement(title = "Speller of Endings", description = "Synthesize Ultima Weapon.", points = 10,
+xachievement(title = "Speller of Endings", description = "Synthesize Ultima Weapon.", points = 10,
     trigger = !IsLoadingSaveFile() && JustEarnedUltimaWeapon()
 )
 
@@ -2308,25 +2337,83 @@ if (generateBonusAchievements())
         if (dat["lv1"] == 1)
         {
             description = ""
+            article = ""
+            
+            if (dat["isProper"] == 0)
+            {
+                article = "the "
+            }
         
             if (dat["isBoss"] == 1)
             {
-                description = "Defeat " + event + " at Level 1 on Critical Mode and without being rescued."
+                description = "Defeat " + article + dat["eventKey"] + " at Level 1 on Critical Mode without dying."
             }
             else
             {
-                description = "Complete the " + event + " at Level 1 on Critical Mode."
+                description = "Complete the " + dat["eventKey"] + " at Level 1 on Critical Mode."
             }
         
-            achievement(title = event + " [m]", description = description, points = dat["score"],
-                trigger = GetCheckpointForRegisteredEvent(event, when = level() <= 1 && IsAtLeastOnDifficulty("Critical"))
+            achievement(title = dat["eventKey"] + " [m]", description = description, points = dat["score"],
+                trigger = GetCheckpointForRegisteredEvent(dat["eventKey"], when = level() <= 1 && IsAtLeastOnDifficulty("Critical"))
                     && trigger_when(BonusObtained())
             )   
         }
     }
     
-    achievement(title = "But a Shell", description = "Defeat the Lingering Will at Level 1 on Critical Mode.", points = 100,
-        trigger = (GetCheckpointForRegisteredEvent("Lingering Will") || GetCheckpointForRegisteredEvent("Lingering Will 2"))
+    achievement(title = "Cavern of Remembrance Gauntlet [m]", description = "Survive the final enemy wave in the Cavern of Remembrance at Level 1 on Critical Mode.",
+        points = 50,
+        trigger = IsInLocation("CavernTransport") && IsAtLeastOnDifficulty("Critical") && level() <= 1
+            && trigger_when(BonusObtained())
+    )
+    
+    achievement(title = "Lingering Will [m]", description = "Defeat the Lingering Will at Level 1 on Critical Mode.", points = 100,
+        trigger = (GetCheckpointForRegisteredEvent("Lingering Will", when = level() <= 1 && IsAtLeastOnDifficulty("Critical"))
+                || GetCheckpointForRegisteredEvent("Lingering Will 2", when = level() <= 1 && IsAtLeastOnDifficulty("Critical")))
             && trigger_when(JustWonBattle())
+    )
+    
+    achievement(title = "Pain and Panic Cup [m]", description = "Win the Pain and Panic Cup at Level 1 on Critical Mode.", points = 25,
+        trigger = PainAndPanicCupCheckpointReached(when = level() <= 1 && IsAtLeastOnDifficulty("Critical"))
+            && trigger_when(WonThePainAndPanicCup())
+    )
+    
+    achievement(title = "Cerberus Cup [m]", description = "Win the Cerberus Cup at Level 1 on Critical Mode.",
+        points = 25,
+        trigger = CerberusCupCheckpointReached(when = level() <= 1 && IsAtLeastOnDifficulty("Critical"))
+            && trigger_when(WonTheCerberusCup())
+    )
+    
+    achievement(title = "Titan Cup [m]", description = "Win the Titan Cup at Level 1 on Critical Mode.",
+        points = 25,
+        trigger = TitanCupCheckpointReached(when = level() <= 1 && IsAtLeastOnDifficulty("Critical"))
+            && trigger_when(WonTheTitanCup())
+    )
+    
+    achievement(title = "Goddess of Fate Cup [m]", description = "Win the Goddess of Fate Cup at Level 1 on Critical Mode.",
+        points = 25,
+        trigger = GoddessOfFateCupCheckpointReached(when = level() <= 1 && IsAtLeastOnDifficulty("Critical"))
+            && trigger_when(WonTheGoddessOfFateCup())
+    )
+    
+    achievement(title = "Pain and Panic Paradox Cup [m]", description = "Win the Pain and Panic Paradox Cup at Level 1 on Critical Mode.", points = 50,
+        trigger = PainAndPanicParadoxCupCheckpointReached(when = level() <= 1 && IsAtLeastOnDifficulty("Critical"))
+            && trigger_when(WonThePainAndPanicParadoxCup())
+    )
+    
+    achievement(title = "Cerberus Paradox Cup [m]", description = "Win the Cerberus Paradox Cup at Level 1 on Critical Mode.",
+        points = 50,
+        trigger = CerberusParadoxCupCheckpointReached(when = level() <= 1 && IsAtLeastOnDifficulty("Critical"))
+            && trigger_when(WonTheCerberusParadoxCup())
+    )
+    
+    achievement(title = "Titan Paradox Cup [m]", description = "Win the Titan Paradox Cup at Level 1 on Critical Mode.",
+        points = 50,
+        trigger = TitanParadoxCupCheckpointReached(when = level() <= 1 && IsAtLeastOnDifficulty("Critical"))
+            && trigger_when(WonTheTitanParadoxCup())
+    )
+    
+    achievement(title = "Hades Paradox Cup [m]", description = "Win the Hades Paradox Cup at Level 1 on Critical Mode.", points = 50,
+        trigger = HadesParadoxCupCheckpointReached(when = level() <= 1 && IsAtLeastOnDifficulty("Critical"))
+            && trigger_when(WonTheHadesParadoxCup())
     )
 }
