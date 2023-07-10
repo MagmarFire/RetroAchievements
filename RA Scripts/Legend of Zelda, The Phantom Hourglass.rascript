@@ -600,7 +600,7 @@ achievement(title = "Petraphobia", points = 3, id = 143362, badge = "160108",
 function grapplingHook() => obit6(0x1ba604)
 function bombchus() => obit7(0x1ba604)
 achievement(title = "Two in a Row [m]", points = 5, id = 143363, badge = "160109",
-    description = "Obtain the Northeastern Sea chart before having obtained both the Bombchu bag and the grappling hook.",
+    description = "Obtain the Northeastern Sea chart while having obtained neither the Bombchu bag nor the grappling hook.",
     trigger = WasBitflagSetInGame(northeasternSeaChart()) && grapplingHook() == 0 && bombchus() == 0 && never(!IsInLocation("OceanKing"))
 )
 
