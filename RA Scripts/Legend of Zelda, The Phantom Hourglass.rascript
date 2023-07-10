@@ -62,9 +62,12 @@ function SecondsToFormat(value)
 
 function IsLoadingSaveFile() => Delta(maxHp()) == 0 && maxHp() > 0
 
+function LanguageIsEnglish() => dword(0x3df018) == 0x220
+
 function IsInGame() => maxHp() > 0 && !IsInLocation("File")
     && !IsInLocation("WFC") && !IsInLocation("Title")
     && !IsInLocation("Battle") && !IsInLocation("Download")
+    && LanguageIsEnglish()
 
 // $1b7f9c: File selection menu (16-bit)
 //          0x1 = File selection
@@ -355,7 +358,7 @@ function WasInLocation(code)
     return Delta(currentLocation()) == location["id"]
 }
 
-achievement(title = "Permission Shmermission", points = 1,
+achievement(title = "Permission Shmermission", points = 1, id = 143332, badge = "160078",
     description = "Learn swordplay from Oshus after raiding his storage.",
     trigger = WasBitflagSetInGame(learnedSwordplay())
 )
@@ -387,27 +390,27 @@ GenerateSaveProtectedAchievementFromConditions({
 
 // Power, Wisdom, and Courage Gem achievements
 
-achievement(title = "Seeker of Power", points = 5,
+achievement(title = "Seeker of Power", points = 5, id = 143334, badge = "160080",
     description = "Collect 10 Power Gems.",
     trigger = WasValueSetInGame(powerGems(), 9, 10) && measured(powerGems() == 10)
 )
 
-achievement(title = "Omnipotence", points = 10,
+achievement(title = "Omnipotence", points = 10, id = 143335, badge = "160081",
     description = "Collect all 20 Power Gems.",
     trigger = WasValueSetInGame(powerGems(), 19, 20) && measured(powerGems() == 20)
 )
 
-achievement(title = "Seeker of Wisdom", points = 5,
+achievement(title = "Seeker of Wisdom", points = 5, id = 143336, badge = "160082",
     description = "Collect 10 Wisdom Gems.",
     trigger = WasValueSetInGame(wisdomGems(), 9, 10) && measured(wisdomGems() == 10)
 )
 
-achievement(title = "Omniscience", points = 10,
+achievement(title = "Omniscience", points = 10, id = 143337, badge = "160083",
     description = "Collect all 20 Wisdom Gems.",
     trigger = WasValueSetInGame(wisdomGems(), 19, 20) && measured(wisdomGems() == 20)
 )
 
-achievement(title = "Seeker of Courage", points = 5,
+achievement(title = "Seeker of Courage", points = 5, id = 143338, badge = "160084",
     description = "Collect 10 Courage Gems.",
     trigger = WasValueSetInGame(courageGems(), 9, 10) && measured(courageGems() == 10)
 )
@@ -443,35 +446,35 @@ GenerateSaveProtectedAchievementFromConditions({
 //          Bit 4: Sea Chart - Northeast quadrant
 seaChartBaseAddr = 0x1ba608
 // The title should reflect Seneca's names for the classical compass winds in Latin, to match the Latin origin for Bellum's name.
-achievement(title = "Africus", points = 3,
+achievement(title = "Africus", points = 3, id = 143340, badge = "160086",
     description = "Acquire the Southwestern Sea chart.",
     trigger = WasBitflagSetInGame(obit1(seaChartBaseAddr))
 )
 
-achievement(title = "Corus", points = 3,
+achievement(title = "Corus", points = 3, id = 143341, badge = "160087",
     description = "Acquire the Northwestern Sea chart.",
     trigger = WasBitflagSetInGame(obit2(seaChartBaseAddr))
 )
 
-achievement(title = "Vulturnus", points = 3,
+achievement(title = "Vulturnus", points = 3, id = 143342, badge = "160088",
     description = "Acquire the Southeastern Sea chart.",
     trigger = WasBitflagSetInGame(obit3(seaChartBaseAddr))
 )
 
 function northeasternSeaChart() => obit4(seaChartBaseAddr)
-achievement(title = "Caecias", points = 3,
+achievement(title = "Caecias", points = 3, id = 143343, badge = "160089",
     description = "Acquire the Northeastern Sea chart.",
     trigger = WasBitflagSetInGame(northeasternSeaChart())
 )
 
 function astridRescued() => obit5(0x1b5544)
-achievement(title = "A Vision of Darkness", points = 1,
+achievement(title = "A Vision of Darkness", points = 1, id = 143346, badge = "160092",
     description = "Rescue Astrid, the fortuneteller on the Isle of Ember.",
     trigger = WasBitflagSetInGame(astridRescued())
 )
 
 function boomerang() => obit2(0x1ba604)
-achievement(title = "Back at Ya!", points = 1,
+achievement(title = "Back at Ya!", points = 1, id = 143347, badge = "160093",
     description = "Acquire the boomerang.",
     trigger = WasBitflagSetInGame(boomerang())
 )
@@ -484,25 +487,25 @@ achievement(title = "Scorching Earth [m]", points = 5,
 )
 
 function leafFreed() => obit3(0x1b5554)
-achievement(title = "Hidden in Flame", points = 3,
+achievement(title = "Hidden in Flame", points = 3, id = 143345, badge = "160091",
     description = "Free the Spirit of Power.",
     trigger = WasBitflagSetInGame(leafFreed())
 )
 
 function phantomHourglass() => obit0(0x1ba608)
-achievement(title = "Tempus Fugit", points = 3,
+achievement(title = "Tempus Fugit", points = 3, id = 143348, badge = "160094",
     description = "Acquire the Phantom Hourglass.",
     trigger = WasBitflagSetInGame(phantomHourglass())
 )
 
 function eddoCannon() => obyte(0x1ba53f)
-achievement(title = "Open Fire!", points = 3,
+achievement(title = "Open Fire!", points = 3, id = 143349, badge = "160095",
     description = "Buy Eddo's cannon.",
     trigger = WasValueSetInGame(eddoCannon(), 0xff, 0x1)
 )
 
 function shovel() => obit3(0x1ba604)
-achievement(title = "Dig to the Center of the Earth!", points = 3,
+achievement(title = "Dig to the Center of the Earth!", points = 3, id = 143350, badge = "160096",
     description = "Obtain the shovel.",
     trigger = WasBitflagSetInGame(shovel())
 )
@@ -516,7 +519,7 @@ achievement(title = "Where the Wind Blows", points = 1,
     trigger = WasInLocation("Sea") && IsInLocation("Gust") && bombs() != 1
 )
 
-achievement(title = "And Kablooey!", points = 3,
+achievement(title = "And Kablooey!", points = 3, id = 143352, badge = "160098",
     description = "Obtain bombs.",
     trigger = WasBitflagSetInGame(bombs())
 )
@@ -533,13 +536,13 @@ achievement(title = "A Short Fuse [m]", points = 10,
 )
 
 function neriFreed() => obit4(0x1b5554)
-achievement(title = "Hidden in Wind", points = 3,
+achievement(title = "Hidden in Wind", points = 3, id = 143354, badge = "160100",
     description = "Free the Spirit of Wisdom.",
     trigger = WasBitflagSetInGame(neriFreed())
 )
 
 function crestPuzzleSolved() => obit2(0x1b554c)
-achievement(title = "Mental Reflection", points = 3,
+achievement(title = "Mental Reflection", points = 3, id = 143356, badge = "160102",
     description = "Solve the crest puzzle in the second section of the Temple of the Ocean King.",
     trigger = WasBitflagSetInGame(crestPuzzleSolved())
 )
@@ -551,7 +554,7 @@ achievement(title = "An Arm and a Leg", points = 1, id = 143357, badge = "160103
 )
 
 function bow() => obit5(0x1ba604)
-achievement(title = "A Bowyer's Pride", points = 3,
+achievement(title = "A Bowyer's Pride", points = 3, id = 143358, badge = "160104",
     description = "Obtain the bow.",
     trigger = WasBitflagSetInGame(bow())
 )
@@ -564,7 +567,7 @@ achievement(title = "Minimalist [m]", points = 10,
 )
 
 function cielaHalfFreed() => obit5(0x1b5554)
-achievement(title = "Hidden in Oblivion", points = 3,
+achievement(title = "Hidden in Oblivion", points = 3, id = 143360, badge = "160106",
     description = "Free the Spirit of Courage.",
     trigger = WasBitflagSetInGame(cielaHalfFreed())
 )
@@ -589,19 +592,19 @@ achievement(title = "Quadruple Break Up [m]", points = 50, id = 143361, badge = 
 )
 
 function endOfGhostShip() => obit1(0x1b555b)
-achievement(title = "Petraphobia", points = 3,
+achievement(title = "Petraphobia", points = 3, id = 143362, badge = "160108",
     description = "Find Tetra.",
     trigger = WasBitflagSetInGame(endOfGhostShip())
 )
 
 function grapplingHook() => obit6(0x1ba604)
 function bombchus() => obit7(0x1ba604)
-achievement(title = "Two in a Row [m]", points = 5,
+achievement(title = "Two in a Row [m]", points = 5, id = 143363, badge = "160109",
     description = "Obtain the Northeastern Sea chart before having obtained both the Bombchu bag and the grappling hook.",
     trigger = WasBitflagSetInGame(northeasternSeaChart()) && grapplingHook() == 0 && bombchus() == 0 && never(!IsInLocation("OceanKing"))
 )
 
-achievement(title = "Precision Demolition", points = 3,
+achievement(title = "Precision Demolition", points = 3, id = 143364, badge = "160110",
     description = "Obtain the Bombchu bag.",
     trigger = WasBitflagSetInGame(bombchus())
 )
@@ -632,12 +635,12 @@ achievement(title = "Why Don't Ya Just Shoot Him? [m]", points = 10,
 )
 
 function crimsonine() => obit6(0x1b554b)
-achievement(title = "Sanguine Ore", points = 3,
+achievement(title = "Sanguine Ore", points = 3, id = 143367, badge = "160113",
     description = "Obtain Crimsonine.",
     trigger = WasBitflagSetInGame(crimsonine())
 )
 
-achievement(title = "The Hooks!", points = 3,
+achievement(title = "The Hooks!", points = 3, id = 143368, badge = "160114",
     description = "Obtain the grappling hook.",
     trigger = WasBitflagSetInGame(grapplingHook())
 )
@@ -650,13 +653,13 @@ achievement(title = "One Head Is Better than Two [m]", points = 5,
 )
 
 function azurine() => obit5(0x1b554b)
-achievement(title = "Lacrimal Ore", points = 3,
+achievement(title = "Lacrimal Ore", points = 3, id = 143370, badge = "160116",
     description = "Obtain Azurine.",
     trigger = WasBitflagSetInGame(azurine())
 )
 
 function hammer() => obit0(0x1ba605)
-achievement(title = "Stop!", points = 3,
+achievement(title = "Stop!", points = 3, id = 143375, badge = "160121",
     description = "Obtain the hammer.",
     trigger = WasBitflagSetInGame(hammer())
 )
@@ -673,13 +676,13 @@ achievement(title = "Hammer Time! [m]", points = 5,
 )
 
 function aquanine() => obit7(0x1b554b)
-achievement(title = "Sudorific Ore", points = 3,
+achievement(title = "Sudorific Ore", points = 3, id = 143377, badge = "160123",
     description = "Obtain Aquanine.",
     trigger = WasBitflagSetInGame(aquanine()) 
 )
 
 function phantomSword() => obit5(0x1ba608)
-achievement(title = "The Phantombuster", points = 3,
+achievement(title = "The Phantombuster", points = 3, id = 143391, badge = "160137",
     description = "Forge the Phantom Sword.",
     trigger = WasBitflagSetInGame(phantomSword())
 )
@@ -785,21 +788,21 @@ achievement(title = "Thorough Exorcism", points = 10, id = 143389, badge = "1601
 function quiverUpgrades() => obyte(0x1ba590)
 function bombUpgrades() => obyte(0x1ba592)
 function bombchuUpgrades() => obyte(0x1ba594)
-achievement(title = "Armed to the Teeth", points = 10,
+achievement(title = "Armed to the Teeth", points = 10, id = 143381, badge = "160127",
     description = "Get all bomb, Bombchu, and quiver upgrades.",
     trigger = quiverUpgrades() == 2 && bombUpgrades() == 2 && WasValueSetInGame(bombchuUpgrades(), 1, 2)
         || quiverUpgrades() == 2 && WasValueSetInGame(bombUpgrades(), 1, 2) && bombchuUpgrades() == 2
         || WasValueSetInGame(quiverUpgrades(), 1, 2) && bombUpgrades() == 2 && bombchuUpgrades() == 2
 )
 
-achievement(title = "Heartthrob [m]", points = 10,
+achievement(title = "Heartthrob [m]", points = 10, id = 143382, badge = "160128",
     description = "Collect all thirteen Heart Containers.",
     trigger = WasValueSetInGame(maxHp(), 0x3c, 0x40)
 )
 
 function phantomHourglassMaxTime() => odword(0x1ba4e8)
 maxTime = 25 * 3600
-achievement(title = "The Sands of Time", points = 10,
+achievement(title = "The Sands of Time", points = 10, id = 143355, badge = "160101",
     description = "Fill the Phantom Hourglass with 25 minutes' worth of Sand of Hours.",
     trigger = Delta(phantomHourglassMaxTime()) < maxTime && measured(phantomHourglassMaxTime() == maxTime) && IsInGame()
         // There was an unexpected trigger on load once when I loaded into the TotOK. I've since been unable to reproduce it, but I don't want it to trigger for anyone else.
@@ -951,7 +954,7 @@ GenerateSaveProtectedAchievementFromConditions({
 // End fish achievement
 
 function swordsmanScroll() => obit5(0x1ba609)
-achievement(title = "Ars Bellica", points = 10,
+achievement(title = "Ars Bellica", points = 10, id = 143390, badge = "160136",
     description = "Obtain the Swordsman's Scroll.",
     trigger = WasBitflagSetInGame(swordsmanScroll())
 )
