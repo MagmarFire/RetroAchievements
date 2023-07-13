@@ -1,7 +1,8 @@
 // Kingdom Hearts II: Final Mix
-// #core-ID = 2781
-// #ID = 25083
+// #ID = 2781
+// #subset-ID = 25083
 
+function generateBonusAchievements() => false
 function TRUE() => 1
 function FALSE() => 0
 function Delta(mem) => prev(mem)
@@ -18,7 +19,7 @@ function xleaderboard(title, description, start, cancel, submit, value, format, 
 {
     if (!generateBonusAchievements())
     {
-        xleaderboard(title = title, description = description,
+        leaderboard(title = title, description = description,
             start = start,
             cancel = cancel,
             submit = submit,
@@ -92,8 +93,6 @@ worlds = {
 18: "The World That Never Was",
 19: "The World That Never Was",
 }
-
-function generateBonusAchievements() => true
 
 function areaId() => byte(0x32bae1)
 function worldId() => byte(0x32bae0)
@@ -1143,10 +1142,12 @@ xachievement(title = "Distance over Speed [m]", description = "Defeat Luxord wit
 )
 
 function saixBerserkRemaining() => float(0x01d48fa4)
-xachievement(title = "Lunar Assault [m]", description = "Defeat Saïx without Guard equipped (Proud Mode or higher; Level 47 or below).", points = 10,
+function IsUsingPeterPan() => currentSummon() == 4
+xachievement(title = "Lunar Assault [m]", description = "Defeat Saïx without Guard equipped and without summoning Peter Pan (Proud Mode or higher; Level 47 or below).", points = 10,
     trigger = GetCheckpointForRegisteredEvent("Saïx", when = level() <= 47 && IsAtLeastOnDifficulty("Proud"))
         && trigger_when(BonusObtained())
         && never(BaseSoraHasAnyGivenAbilityEquipped(GetAbilitiesByCallback(x => x["name"] == "Guard")))
+        && never(IsUsingPeterPan())
 )
 
 function TriangleIsBeingPressed() => bit4(0x0034d3c1) == 1
@@ -1739,10 +1740,11 @@ xachievement(title = "The Cloaked Schemer II", description = "Defeat Data Zexion
         && never(UsedCheese(dword(0x01c6c018)))
 )
 
-xachievement(title = "The Lunar Diviner", description = "Defeat Data Saïx on Proud Mode or higher without exploiting revenge mechanics.", points = 25,
+xachievement(title = "The Lunar Diviner", description = "Defeat Data Saïx on Proud Mode or higher without summoning Peter Pan and exploiting revenge mechanics.", points = 25,
     trigger = GetCheckpointForRegisteredEvent("Data Saïx", when = IsAtLeastOnDifficulty("Proud"))
         && trigger_when(JustWonBattle())
         && never(UsedCheese(dword(0x01c6c018)))
+        && never(IsUsingPeterPan())
 )
 
 xachievement(title = "The Flurry of Dancing Flames", description = "Defeat Data Axel on Proud Mode or higher without exploiting revenge mechanics.", points = 25,
@@ -1787,7 +1789,7 @@ xachievement(title = "Without a Trace", description = "Obtain the Proof of Nonex
     trigger = WasBitflagSetInGame(proofOfNonexistence())
 )
 
-xachievement(title = "But a Shell", description = "Defeat the Lingering Will.", points = 25,
+xachievement(title = "But a Shell", description = "Defeat the Lingering Will.", points = 50,
     trigger = (GetCheckpointForRegisteredEvent("Lingering Will") || GetCheckpointForRegisteredEvent("Lingering Will 2"))
         && trigger_when(JustWonBattle())
 )
@@ -2412,7 +2414,7 @@ if (generateBonusAchievements())
             && trigger_when(WonTheTitanParadoxCup())
     )
     
-    achievement(title = "Hades Paradox Cup [m]", description = "Win the Hades Paradox Cup at Level 1 on Critical Mode.", points = 50,
+    achievement(title = "Hades Paradox Cup [m]", description = "Win the Hades Paradox Cup at Level 1 on Critical Mode.", points = 100,
         trigger = HadesParadoxCupCheckpointReached(when = level() <= 1 && IsAtLeastOnDifficulty("Critical"))
             && trigger_when(WonTheHadesParadoxCup())
     )
