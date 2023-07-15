@@ -779,10 +779,7 @@ achievement(title = "Thorough Exorcism", points = 10, id = 143389, badge = "1601
     description = "Get a score of " + scoreTarget + " or more at the Shooting Range.",
     trigger = never(!IsInLocation("Molida")) && never(shootingRangeTimeRemaining() == 70 * 30)
         && shootingRangeScore() >= scoreTarget && ShootingRangeTimeIsUp()
-        // The hit target doesn't get reset until the player leaves Molida Island, which can result in a false trigger when the player views the cutscene with Oshus
-        // after rescuing the Spirit of Courage. What this line says is, basically, if the player doesn't earn the achievement on the frame the minigame ends,
-        // clear all hit targets on the next frame.
-        && never(repeated(2, CreateHitTargetedAndNextChain([Delta(shootingRangeTimeRemaining()) == 0x1, shootingRangeTimeRemaining() == 0x0])))
+        && never(currentSublocation() != 0xb) // Leaving the room should clear all hit targets.
 )
 
 function quiverUpgrades() => obyte(0x1ba590)
