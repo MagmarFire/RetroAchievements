@@ -241,7 +241,7 @@ function maximumMenuIndex() => byte(menuPointer() - 0xf3a)
 function MenuIsActive() => menuPointer() != 0
 function gameStarted() => bit0(0x32d803)
 function IsAlwaysInGame() => never(Delta(gameStarted()) == 0) && never(MenuIsActive())
-function IsLoadingSaveFile() => Delta(gameStarted()) == 0 && gameStarted() == 1 && MenuIsActive() && maximumMenuIndex() == 99
+function IsLoadingSaveFile() => MenuIsActive() && maximumMenuIndex() == 99
 
 function IsAtLeastOnDifficulty(value)
 {
@@ -703,7 +703,8 @@ function AnyItemWasJustUsed()
 }
 
 function exp() => dword(0x32f210)
-xachievement(title = "Pacifism [m]", description = "Survive the one-minute pirate attack at the Isla de Muerta without defeating any enemies and without items"
+function IsInAntiForm() => currentForm() == 6
+xachievement(title = "Pacifism [m]", description = "Survive the one-minute pirate attack at the Isla de Muerta without defeating any enemies, without items, and without entering Antiform"
     + " (Proud Mode or higher; Level 23 or below; No Experience must not be equipped).",
     points = 5,
     trigger = BattleCheckpointReached(location = "PortCaveMouth", eventId = 0x3b, when = level() <= 23 && IsAtLeastOnDifficulty("Proud"))
@@ -711,6 +712,7 @@ xachievement(title = "Pacifism [m]", description = "Survive the one-minute pirat
         && never(Delta(exp()) < exp())
         && never(HasAbilityWithGivenIdEquipped(0x194))
         && never(AnyItemWasJustUsed())
+        && never(IsInAntiForm())
 )
 
 xachievement(title = "Sticky Fingers [m]", description = "Protect the cursed medallion from the pirates without it getting stolen (Proud Mode or higher; Level 23 or below).", points = 10,
@@ -929,8 +931,7 @@ xachievement(title = "Three Pawns", description = "Complete the second visit to 
 )
 
 function IsInWisdomForm() => currentForm() == 2
-function IsInAntiForm() => currentForm() == 6
-xachievement(title = "Spellblade [m]", description = "Defeat the Storm Rider while Wisdom Form or Anti-Form is active (Proud Mode or higher; Level 34 or below).", points = 10,
+xachievement(title = "Spellblade [m]", description = "Defeat the Storm Rider while Wisdom Form or Antiform is active (Proud Mode or higher; Level 34 or below).", points = 10,
     trigger = GetCheckpointForRegisteredEvent("Storm Rider", when = level() <= 34 && IsAtLeastOnDifficulty("Proud"))
         && trigger_when(BonusObtained())
         && trigger_when(IsInWisdomForm() || IsInAntiForm())
@@ -1784,6 +1785,22 @@ xachievement(title = "The Key of Destiny", description = "Defeat Data Roxas with
         && never(BaseSoraHasAnyGivenAbilityEquipped(quickRunAbilities))
 )
 
+function GetDataBattleCheckpoint(eventKey) => GetCheckpointForRegisteredEvent(eventKey = eventKey,
+        overrideNever = true,
+        neverOverride = never(!IsActiveInTheField()) && never(IsInLocation("CavernAssemblage")) && never(IsDead()))
+xachievement(title = "Predator or Prey", description = "Defeat the data of a member of Organization XIII after having used Antiform in the fight.", points = 50,
+    trigger = (GetDataBattleCheckpoint("Data Xigbar")
+        || GetDataBattleCheckpoint("Data Xaldin")
+        || GetDataBattleCheckpoint("Data Vexen")
+        || GetDataBattleCheckpoint("Data Lexaeus")
+        || GetDataBattleCheckpoint("Data Zexion")
+        || GetDataBattleCheckpoint("Data Saïx")
+        || GetDataBattleCheckpoint("Data Demyx")
+        || GetDataBattleCheckpoint("Data Marluxia")
+        || GetDataBattleCheckpoint("Data Larxene"))
+        && trigger_when(JustWonBattle() && once(JustEnteredAntiForm()))
+)
+
 function proofOfNonexistence() => bit3(0x0032df0f)
 xachievement(title = "Without a Trace", description = "Obtain the Proof of Nonexistence.", points = 25,
     trigger = WasBitflagSetInGame(proofOfNonexistence())
@@ -2013,7 +2030,7 @@ xachievement(title = "The Ultimate", description = "Raise Final Form to the maxi
 )
 
 function antiUses() => word(0x32fb10)
-xachievement(title = "The Corrupted", description = "Activate Anti-Form for the first time.", points = 1,
+xachievement(title = "The Corrupted", description = "Activate Antiform for the first time.", points = 1,
     trigger = WasValueSetInGame(antiUses(), 0, 1)
 )
 
