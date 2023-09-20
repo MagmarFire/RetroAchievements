@@ -46,6 +46,11 @@ function ConvertClustersToRanges(clusters)
     return ranges
 }
 
+function GetRangesFromList(list)
+{
+    return ConvertClustersToRanges(GenerateClustersFromList(list))
+}
+
 function ArrayToString(array)
 {
     ret = "[ "
@@ -186,6 +191,22 @@ function GenerateBitcountFromCountableObjects(addresses)
 function GenerateConditionFromBitflag(bit)
 {
     return { "countsWhen": (bit == 1), "recalculateWhen": (Delta(bit) != bit) }
+}
+
+function TRUE() => 1
+function FALSE() => 0
+
+function DictionaryKeyExists(dict, key)
+{
+    for i in dict
+    {
+        if (i == key)
+        {
+            return TRUE()
+        }
+    }
+    
+    return FALSE()
 }
 
 // Dictionary elements must have "addr" and "bit" fields.
