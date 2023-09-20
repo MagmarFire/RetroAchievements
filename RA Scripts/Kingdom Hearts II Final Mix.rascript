@@ -15,7 +15,7 @@ function xachievement(title, description, points, trigger, badge = "00000", id =
     }
 }
 
-function xleaderboard(title, description, start, cancel, submit, value, format, lower_is_better = false, format = "VALUE")
+function xleaderboard(title, description, start, cancel, submit, value, format, lower_is_better = false, format = "VALUE", id = 0)
 {
     if (!generateBonusAchievements())
     {
@@ -24,7 +24,8 @@ function xleaderboard(title, description, start, cancel, submit, value, format, 
             cancel = cancel,
             submit = submit,
             value = value,
-            format = format
+            format = format,
+            id = id
         )
     }
 }
@@ -581,7 +582,9 @@ xleaderboard(title = "Tight Deadline", description = "Escape from the Valley of 
     cancel = IsDead(),
     submit = EscapedFromHades(),
     value = LMeasured(FrameAdvanced()),
-    format = "FRAMES"
+    format = "FRAMES",
+    lower_is_better = true,
+    id = 77689
 )
 
 xachievement(title = "Way of the Pacifist [m]", description = "Defeat Cerberus without using Bushido (Proud Mode or higher; Level 18 or below; no rescues).", points = 5,
@@ -1401,7 +1404,8 @@ xachievement(title = "Overachieving Freestyler", description = format("Complete 
     trigger = trigger_when(maxHits() >= 200) && GivenEventIsHappening("Skateboard Freestyle")
 )
 
-xachievement(title = "Professional Freestyler", description = format("Complete the Grandstander minigame with a score of {0} or more.", 1000), points = 10,
+xachievement(title = "Professional Freestyler", description = format("Complete the Skateboard Freestyle minigame with a score of {0} or more.", 1000), points = 10,
+    id = 356977, badge = "402174",
     trigger = trigger_when(maxHits() >= 1000) && GivenEventIsHappening("Skateboard Freestyle")
 )
 
@@ -1645,8 +1649,8 @@ xachievement(title = "The Silent Hero I", description = "Defeat Lexaeus's Absent
 function megaImpactId() => 0x2c4
 function IsUsingMegaImpact() => reactionCommandId() == megaImpactId()
 xachievement(title = "Axebreaker [m]", description = "Finish off Lexaeus's Absent Silhouette with your first use of the Mega Impact reaction command (Proud Mode or higher; Level 40 or below;"
-    + "; no revenge exploits).",
-    points = 10,
+    + " no revenge exploits).",
+    points = 10, id = 356950, badge = "402146"
     trigger = GetCheckpointForRegisteredEvent("Lexaeus’s Absent Silhouette", when = level() <= 40 && IsAtLeastOnDifficulty("Proud"))
         && trigger_when(BonusObtained())
         && trigger_when(IsUsingMegaImpact())
