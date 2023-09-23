@@ -614,7 +614,7 @@ xachievement(title = "Breakneck Breakdance [m]", description = "Defeat 100 of De
     id = 356857, badge = "402051",
     trigger = BattleCheckpointReached(location = "UnderworldCavernsAtrium", eventId = 0x7b)
         && trigger_when(BonusObtained())
-        && never(timeRemaining() < SecondsToFrames(demyxITimeLimit() - breakneckBreakdanceTimeLimit()))
+        && never(timeRemaining() < SecondsToFrames(demyxITimeLimit() - breakneckBreakdanceTimeLimit()) && Delta(timeRemaining()) > timeRemaining())
 )
 
 function petePinballTimeLimit() => 40
