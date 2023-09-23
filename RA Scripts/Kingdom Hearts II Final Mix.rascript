@@ -6,6 +6,7 @@ function generateBonusAchievements() => false
 function TRUE() => 1
 function FALSE() => 0
 function Delta(mem) => prev(mem)
+function ToString(val) => val + ""
 
 function xachievement(title, description, points, trigger, badge = "00000", id = 0)
 {
@@ -2045,16 +2046,17 @@ function gummiShipPointer() => tbyte(0x01f7de44)
 function gummiShipScore() => dword(0x01f8039c)
 
 gummiMissions = {
-2: { "name": "Asteroid Sweep", "gateId": 0, "miss1BaseAddr": 0x0033bc10, "miss1EXBaseAddr": 0x0033c2d0, "mission1Score": 1, "mission2Score": 2, "mission3Score": 3, "exMission1Score": 5, "exMission2Score": 5, "exMission3Score": 10 },3: { "name": "Stardust Sweep", "gateId": 1, "miss1BaseAddr": 0x0033bcd0, "miss1EXBaseAddr": 0x0033c390, "mission1Score": 1, "mission2Score": 2, "mission3Score": 3, "exMission1Score": 5, "exMission2Score": 5, "exMission3Score": 10 },4: { "name": "Broken Highway", "gateId": 2, "miss1BaseAddr": 0x0033bd90, "miss1EXBaseAddr": 0x0033c450, "mission1Score": 1, "mission2Score": 2, "mission3Score": 3, "exMission1Score": 5, "exMission2Score": 5, "exMission3Score": 10 },5: { "name": "Ancient Highway", "gateId": 3, "miss1BaseAddr": 0x0033be50, "miss1EXBaseAddr": 0x0033c510, "mission1Score": 1, "mission2Score": 2, "mission3Score": 3, "exMission1Score": 5, "exMission2Score": 5, "exMission3Score": 10 },6: { "name": "Phantom Storm", "gateId": 4, "miss1BaseAddr": 0x0033bf10, "miss1EXBaseAddr": 0x0033c5d0, "mission1Score": 1, "mission2Score": 2, "mission3Score": 3, "exMission1Score": 5, "exMission2Score": 5, "exMission3Score": 10 },7: { "name": "Sunlight Storm", "gateId": 5, "miss1BaseAddr": 0x0033bfd0, "miss1EXBaseAddr": 0x0033c690, "mission1Score": 1, "mission2Score": 2, "mission3Score": 3, "exMission1Score": 5, "exMission2Score": 5, "exMission3Score": 10 },8: { "name": "Splash Island", "gateId": 6, "miss1BaseAddr": 0x0033c090, "miss1EXBaseAddr": 0x0033c750, "mission1Score": 1, "mission2Score": 2, "mission3Score": 3, "exMission1Score": 5, "exMission2Score": 5, "exMission3Score": 10 },9: { "name": "Floating Island", "gateId": 7, "miss1BaseAddr": 0x0033c150, "miss1EXBaseAddr": 0x0033c810, "mission1Score": 1, "mission2Score": 2, "mission3Score": 3, "exMission1Score": 5, "exMission2Score": 5, "exMission3Score": 10 },10: { "name": "Assault of the Dreadnought", "gateId": 8, "miss1BaseAddr": 0x0033c210, "miss1EXBaseAddr": 0x0033c8d0, "mission1Score": 1, "mission2Score": 2, "mission3Score": 3, "exMission1Score": 5, "exMission2Score": 5, "exMission3Score": 10 },
+2: { "name": "Asteroid Sweep", "gateId": 0, "miss1BaseAddr": 0x0033bc10, "miss1EXBaseAddr": 0x0033c2d0, "mission1Score": 1, "mission2Score": 2, "mission3Score": 3, "exMission1Score": 5, "exMission2Score": 5, "exMission3Score": 10, "mission1Id": 357045, "badge1Id": 402244, "mission2Id": 357046, "badge2Id": 402245, "mission3Id": 357047, "badge3Id": 402246, "exMission1Id": 357048, "exBadge1Id": 402247, "exMission2Id": 357049, "exBadge2Id": 402248, "exMission3Id": 357050, "exBadge3Id": 402249 },3: { "name": "Stardust Sweep", "gateId": 1, "miss1BaseAddr": 0x0033bcd0, "miss1EXBaseAddr": 0x0033c390, "mission1Score": 1, "mission2Score": 2, "mission3Score": 3, "exMission1Score": 5, "exMission2Score": 5, "exMission3Score": 10, "mission1Id": 357051, "badge1Id": 402250, "mission2Id": 357053, "badge2Id": 402252, "mission3Id": 357055, "badge3Id": 402254, "exMission1Id": 357052, "exBadge1Id": 402251, "exMission2Id": 357054, "exBadge2Id": 402253, "exMission3Id": 357056, "exBadge3Id": 402255 },4: { "name": "Broken Highway", "gateId": 2, "miss1BaseAddr": 0x0033bd90, "miss1EXBaseAddr": 0x0033c450, "mission1Score": 1, "mission2Score": 2, "mission3Score": 3, "exMission1Score": 5, "exMission2Score": 5, "exMission3Score": 10, "mission1Id": 357057, "badge1Id": 402256, "mission2Id": 357059, "badge2Id": 402258, "mission3Id": 357061, "badge3Id": 402260, "exMission1Id": 357058, "exBadge1Id": 402257, "exMission2Id": 357060, "exBadge2Id": 402259, "exMission3Id": 357062, "exBadge3Id": 402261 },5: { "name": "Ancient Highway", "gateId": 3, "miss1BaseAddr": 0x0033be50, "miss1EXBaseAddr": 0x0033c510, "mission1Score": 1, "mission2Score": 2, "mission3Score": 3, "exMission1Score": 5, "exMission2Score": 5, "exMission3Score": 10, "mission1Id": 357063, "badge1Id": 402262, "mission2Id": 357065, "badge2Id": 402264, "mission3Id": 357067, "badge3Id": 402262, "exMission1Id": 357064, "exBadge1Id": 402263, "exMission2Id": 357066, "exBadge2Id": 402265, "exMission3Id": 357068, "exBadge3Id": 402267 },6: { "name": "Phantom Storm", "gateId": 4, "miss1BaseAddr": 0x0033bf10, "miss1EXBaseAddr": 0x0033c5d0, "mission1Score": 1, "mission2Score": 2, "mission3Score": 3, "exMission1Score": 5, "exMission2Score": 5, "exMission3Score": 10, "mission1Id": 357069, "badge1Id": 402268, "mission2Id": 357071, "badge2Id": 402270, "mission3Id": 357073, "badge3Id": 402272, "exMission1Id": 357070, "exBadge1Id": 402269, "exMission2Id": 357072, "exBadge2Id": 402271, "exMission3Id": 357074, "exBadge3Id": 402273 },7: { "name": "Sunlight Storm", "gateId": 5, "miss1BaseAddr": 0x0033bfd0, "miss1EXBaseAddr": 0x0033c690, "mission1Score": 1, "mission2Score": 2, "mission3Score": 3, "exMission1Score": 5, "exMission2Score": 5, "exMission3Score": 10, "mission1Id": 357075, "badge1Id": 402274, "mission2Id": 357077, "badge2Id": 402276, "mission3Id": 357079, "badge3Id": 402278, "exMission1Id": 357076, "exBadge1Id": 402275, "exMission2Id": 357078, "exBadge2Id": 402277, "exMission3Id": 357080, "exBadge3Id": 402279 },8: { "name": "Splash Island", "gateId": 6, "miss1BaseAddr": 0x0033c090, "miss1EXBaseAddr": 0x0033c750, "mission1Score": 1, "mission2Score": 2, "mission3Score": 3, "exMission1Score": 5, "exMission2Score": 5, "exMission3Score": 10, "mission1Id": 357081, "badge1Id": 402280, "mission2Id": 357083, "badge2Id": 402282, "mission3Id": 357085, "badge3Id": 402284, "exMission1Id": 357082, "exBadge1Id": 402281, "exMission2Id": 357084, "exBadge2Id": 402283, "exMission3Id": 357086, "exBadge3Id": 402285 },9: { "name": "Floating Island", "gateId": 7, "miss1BaseAddr": 0x0033c150, "miss1EXBaseAddr": 0x0033c810, "mission1Score": 1, "mission2Score": 2, "mission3Score": 3, "exMission1Score": 5, "exMission2Score": 5, "exMission3Score": 10, "mission1Id": 357087, "badge1Id": 402286, "mission2Id": 357089, "badge2Id": 402289, "mission3Id": 357091, "badge3Id": 402291, "exMission1Id": 357088, "exBadge1Id": 402287, "exMission2Id": 357090, "exBadge2Id": 402290, "exMission3Id": 357092, "exBadge3Id": 402292 },10: { "name": "Assault of the Dreadnought", "gateId": 8, "miss1BaseAddr": 0x0033c210, "miss1EXBaseAddr": 0x0033c8d0, "mission1Score": 1, "mission2Score": 2, "mission3Score": 3, "exMission1Score": 5, "exMission2Score": 5, "exMission3Score": 10, "mission1Id": 357093, "badge1Id": 402293, "mission2Id": 357095, "badge2Id": 402295, "mission3Id": 357097, "badge3Id": 402297, "exMission1Id": 357094, "exBadge1Id": 402294, "exMission2Id": 357096, "exBadge2Id": 402296, "exMission3Id": 357098, "exBadge3Id": 402298 },
 }
 
 for index in gummiMissions
 {
     mission = gummiMissions[index]
     xachievement(title = mission["name"] + " - Gold Medalist", description = "Achieve an S rank in Mission 1 of " + mission["name"] + ".", points = mission["mission1Score"],
+        id = mission["mission1Id"], badge = ToString(mission["badge1Id"]),
         trigger = once(gummiMissionLevel() == 1 && worldGateId() == mission["gateId"] && GummiMissionJustStarted() && !IsEXMission())
             && trigger_when(GummiMissionComplete())
-            && trigger_when(gummiShipRank() == 6)
+            && trigger_when(gummiShipRank() >= 6)
             && never(!IsInLocation("WorldMap"))
             && never(gummiShipPointer() == 0)
     )
@@ -2067,9 +2069,10 @@ for index in gummiMissions
     )
     
     xachievement(title = mission["name"] + " - Gold Medalist EX", description = "Achieve an S rank in EX Mission 1 of " + mission["name"] + ".", points = mission["exMission1Score"],
+        id = mission["exMission1Id"], badge = ToString(mission["exBadge1Id"]),
         trigger = once(gummiMissionLevel() == 1 && worldGateId() == mission["gateId"] && GummiMissionJustStarted() && IsEXMission())
             && trigger_when(GummiMissionComplete())
-            && trigger_when(gummiShipRank() == 6)
+            && trigger_when(gummiShipRank() >= 6)
             && never(!IsInLocation("WorldMap"))
             && never(gummiShipPointer() == 0)
     )
@@ -2082,9 +2085,10 @@ for index in gummiMissions
     )
 
     xachievement(title = mission["name"] + " - Ace Pilot", description = "Achieve an S rank in Mission 2 of " + mission["name"] + ".", points = mission["mission2Score"],
+        id = mission["mission2Id"], badge = ToString(mission["badge2Id"]),
         trigger = once(gummiMissionLevel() == 2 && worldGateId() == mission["gateId"] && GummiMissionJustStarted() && !IsEXMission())
             && trigger_when(GummiMissionComplete())
-            && trigger_when(gummiShipRank() == 6)
+            && trigger_when(gummiShipRank() >= 6)
             && never(!IsInLocation("WorldMap"))
             && never(gummiShipPointer() == 0)
     )
@@ -2097,9 +2101,10 @@ for index in gummiMissions
     )
     
     xachievement(title = mission["name"] + " - Ace Pilot EX", description = "Achieve an S rank in EX Mission 2 of " + mission["name"] + ".", points = mission["exMission1Score"],
+        id = mission["exMission2Id"], badge = ToString(mission["exBadge2Id"]),
         trigger = once(gummiMissionLevel() == 2 && worldGateId() == mission["gateId"] && GummiMissionJustStarted() && IsEXMission())
             && trigger_when(GummiMissionComplete())
-            && trigger_when(gummiShipRank() == 6)
+            && trigger_when(gummiShipRank() >= 6)
             && never(!IsInLocation("WorldMap"))
             && never(gummiShipPointer() == 0)
     )
@@ -2112,6 +2117,7 @@ for index in gummiMissions
     )
 
     xachievement(title = mission["name"] + " - Scoresetter", description = "Achieve an S rank in Mission 3 of " + mission["name"] + ".", points = mission["mission3Score"],
+        id = mission["mission3Id"], badge = ToString(mission["badge3Id"]),
         trigger = once(gummiMissionLevel() == 3 && worldGateId() == mission["gateId"] && GummiMissionJustStarted() && !IsEXMission())
             && trigger_when(GummiMissionComplete())
             && trigger_when(gummiShipRank() >= 6)
@@ -2127,6 +2133,7 @@ for index in gummiMissions
     )
     
     xachievement(title = mission["name"] + " - Scoresetter EX", description = "Achieve an S rank in EX Mission 3 of " + mission["name"] + ".", points = mission["exMission3Score"],
+        id = mission["exMission3Id"], badge = ToString(mission["exBadge3Id"]),
         trigger = once(gummiMissionLevel() == 3 && worldGateId() == mission["gateId"] && GummiMissionJustStarted() && IsEXMission())
             && trigger_when(GummiMissionComplete())
             && trigger_when(gummiShipRank() >= 6)
