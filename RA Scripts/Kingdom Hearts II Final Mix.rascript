@@ -466,6 +466,30 @@ function GetCheckpointForRegisteredEvent(eventKey, when = always_true(), overrid
     return BattleCheckpointReached(location = event["locationCode"], eventId = event["eventId"], when = when, overrideNever = overrideNever, neverOverride = neverOverride)
 }
 
+function AnyItemWasJustUsedForBaseAddr(baseAddr)
+{
+    trigger = always_false()
+    for i in range(0, 7)
+    {
+        item = word(baseAddr + i * 2)
+        trigger = trigger || Delta(item) > 0 && item == 0
+    }
+    
+    return trigger
+}
+
+function AnyItemWasJustUsed()
+{
+    soraSlot1Addr = 0x32e054
+    donaldSlot1Addr = 0x32e168
+    goofySlot1Addr = 0x32e27c
+    jackSlot1Addr = 0x32ea08
+    trigger = AnyItemWasJustUsedForBaseAddr(soraSlot1Addr) || AnyItemWasJustUsedForBaseAddr(donaldSlot1Addr) || AnyItemWasJustUsedForBaseAddr(goofySlot1Addr)
+        || AnyItemWasJustUsedForBaseAddr(jackSlot1Addr)
+    
+    return trigger
+}
+
 xachievement(title = "Doing Everything I Can", description = "Perform all three different aerial skateboard tricks before touching the ground.", points = 1,
     trigger = IsActiveInTheField() && tally(3, [ DidMethodGrab(), Did360DegreeSpin(), DidAirWalk() ])
         && never(LandedWithSkateboard()) && never(JustDidGrind()) && never(IdleWithSkateboard())
@@ -491,24 +515,10 @@ function UsedItem(itemIndex)
     return trigger
 }
 
-// todo: deprecated; use AnyItemWasJustUsed instead
-function UsedAnyItem()
-{
-    trigger = always_false()
-    playerItemSlotBaseAddr = 0x32e054
-    for i in range(0, 7)
-    {
-        slot = word(playerItemSlotBaseAddr + 2 * i)
-        trigger = trigger || Delta(slot) != 0 && slot == 0
-    }
-    
-    return trigger
-}
-
 xachievement(title = "Third-Degree Burns [m]", description = "Defeat Axel in the old mansion basement without using items or reaction commands (Proud Mode or higher; Level 4 or below).", points = 10,
     trigger = GetCheckpointForRegisteredEvent("Axel", when = level() <= 4 && IsAtLeastOnDifficulty("Proud"))
         && trigger_when(BonusObtained())
-        && never(UsedAnyItem())
+        && never(AnyItemWasJustUsed())
         && never(fieldActionId() == 0xfe) // Overtaker when playing as dual-wielding Roxas
         && never(fieldActionId() == 0xfc) // Burst Frontier
 )
@@ -539,9 +549,10 @@ xachievement(title = "Unquestionable Honor", description = "Complete the first v
 function currentForm() => byte(0x32f054)
 function JustEnteredValorForm() => currentForm() == 1 && Delta(currentForm()) != 1
 xachievement(title = "Pure of Mind [m]", description = "Defeat the Thresholder and Possessor without using items or Valor Form (Proud Mode or higher; Level 13 or below; no rescues).", points = 5,
+    id = 356852, badge = "402046",
     trigger = GetCheckpointForRegisteredEvent("Thresholder", when = level() <= 13 && IsAtLeastOnDifficulty("Proud"))
         && trigger_when(BonusObtained())
-        && never(UsedAnyItem()) && never(JustEnteredValorForm())
+        && never(AnyItemWasJustUsed()) && never(JustEnteredValorForm())
 )
 
 function limitPointer() => dword(0x1d48cb0)
@@ -598,6 +609,7 @@ function timeRemaining() => dword(0x349df8)
 function breakneckBreakdanceTimeLimit() => 50
 function demyxITimeLimit() => 80
 xachievement(title = "Breakneck Breakdance [m]", description = "Defeat 100 of Demyx's water forms within " + breakneckBreakdanceTimeLimit() + " seconds.", points = 5,
+    id = 356857, badge = "402051",
     trigger = BattleCheckpointReached(location = "UnderworldCavernsAtrium", eventId = 0x7b)
         && trigger_when(BonusObtained())
         && never(timeRemaining() < SecondsToFrames(demyxITimeLimit() - breakneckBreakdanceTimeLimit()))
@@ -680,30 +692,6 @@ function HasAbilityWithinGivenRangeEquipped(range)
     return trigger
 }
 // end of todo
-
-function AnyItemWasJustUsedForBaseAddr(baseAddr)
-{
-    trigger = always_false()
-    for i in range(0, 7)
-    {
-        item = word(baseAddr + i * 2)
-        trigger = trigger || Delta(item) > 0 && item == 0
-    }
-    
-    return trigger
-}
-
-function AnyItemWasJustUsed()
-{
-    soraSlot1Addr = 0x32e054
-    donaldSlot1Addr = 0x32e168
-    goofySlot1Addr = 0x32e27c
-    jackSlot1Addr = 0x32ea08
-    trigger = AnyItemWasJustUsedForBaseAddr(soraSlot1Addr) || AnyItemWasJustUsedForBaseAddr(donaldSlot1Addr) || AnyItemWasJustUsedForBaseAddr(goofySlot1Addr)
-        || AnyItemWasJustUsedForBaseAddr(jackSlot1Addr)
-    
-    return trigger
-}
 
 function exp() => dword(0x32f210)
 function IsInAntiForm() => currentForm() == 6
@@ -839,13 +827,14 @@ xachievement(title = "Solo Heist [m]", description = "Defeat the Heartless ambus
         && trigger_when(BonusObtained())
 )
 
-xachievement(title = "Too Hot Inside, Too Cold Outside [m]", description = "Defeat the Volcano and Blizzard Lords without using magic or the Firagun or Blizzagun reaction commands "
-    + "(Proud Mode or higher; Level 25 or below).", points = 5,
+xachievement(title = "Too Hot Inside, Too Cold Outside [m]", description = "Defeat the Volcano and Blizzard Lords without using MP or the Firagun or Blizzagun reaction commands "
+    + "(Proud Mode or higher; Level 25 or below).", points = 5, id = 356875, badge = "402069",
     trigger = GetCheckpointForRegisteredEvent("Volcano and Blizzard Lords", when = level() <= 25 && IsAtLeastOnDifficulty("Proud"))
         && never(UsedAnyMagic())
         // Checking the field action ID is needed because the reaction command ID doesn't actually update until after the second part of the combo is active.
         && never(reactionCommandId() == 0x295 || fieldActionId() == 0xfc) // Firagun
         && never(reactionCommandId() == 0x296 || fieldActionId() == 0xfc) // Blizzagun
+        && never(fieldMp() < Delta(fieldMp()))
         && trigger_when(BonusObtained())
 )
 
@@ -1650,7 +1639,7 @@ function megaImpactId() => 0x2c4
 function IsUsingMegaImpact() => reactionCommandId() == megaImpactId()
 xachievement(title = "Axebreaker [m]", description = "Finish off Lexaeus's Absent Silhouette with your first use of the Mega Impact reaction command (Proud Mode or higher; Level 40 or below;"
     + " no revenge exploits).",
-    points = 10, id = 356950, badge = "402146"
+    points = 10, id = 356950, badge = "402146",
     trigger = GetCheckpointForRegisteredEvent("Lexaeus’s Absent Silhouette", when = level() <= 40 && IsAtLeastOnDifficulty("Proud"))
         && trigger_when(BonusObtained())
         && trigger_when(IsUsingMegaImpact())
@@ -1765,9 +1754,12 @@ xachievement(title = "The Melodious Nocturne", description = "Defeat Data Demyx 
 )
 
 xachievement(title = "The Gambler of Fate", description = "Defeat Data Luxord on Proud Mode or higher without exploiting revenge mechanics.", points = 10,
+    id = 357114, badge = "402314",
     trigger = GetCheckpointForRegisteredEvent("Data Luxord", when = IsAtLeastOnDifficulty("Proud"))
         && trigger_when(JustWonBattle())
         && never(UsedCheese(dword(0x01c6c4e8)))
+        // Running out of time triggers the achievement because the battle state flickers from 0 to 1 (victory) before being set to 3 (nonstandard game over).
+        && never(timeBattleTimeRemaining() <= 0.0)
 )
 
 xachievement(title = "The Graceful Assassin II", description = "Defeat Data Marluxia on Proud Mode or higher without exploiting revenge mechanics.", points = 25,
@@ -2023,8 +2015,8 @@ xachievement(title = "The Renowned", description = "Raise Limit Form to the maxi
     trigger = WasValueSetInGame(limitLevel(), 6, 7) && measured(limitLevel() == 7)
 )
 
-function masterLevel() => byte(0x0032eede)
-xachievement(title = "The Predominant", description = "Raise Master Form to the maximum level.", points = 5,
+function masterLevel() => byte(0x0032eece)
+xachievement(title = "The Predominant", description = "Raise Master Form to the maximum level.", points = 5, id = 356911, badge = "402106",
     trigger = WasValueSetInGame(masterLevel(), 6, 7) && measured(masterLevel() == 7)
 )
 
@@ -2118,7 +2110,7 @@ for index in gummiMissions
     xachievement(title = mission["name"] + " - Scoresetter", description = "Achieve an S rank in Mission 3 of " + mission["name"] + ".", points = mission["mission3Score"],
         trigger = once(gummiMissionLevel() == 3 && worldGateId() == mission["gateId"] && GummiMissionJustStarted() && !IsEXMission())
             && trigger_when(GummiMissionComplete())
-            && trigger_when(gummiShipRank() == 6)
+            && trigger_when(gummiShipRank() >= 6)
             && never(!IsInLocation("WorldMap"))
             && never(gummiShipPointer() == 0)
     )
@@ -2133,7 +2125,7 @@ for index in gummiMissions
     xachievement(title = mission["name"] + " - Scoresetter EX", description = "Achieve an S rank in EX Mission 3 of " + mission["name"] + ".", points = mission["exMission3Score"],
         trigger = once(gummiMissionLevel() == 3 && worldGateId() == mission["gateId"] && GummiMissionJustStarted() && IsEXMission())
             && trigger_when(GummiMissionComplete())
-            && trigger_when(gummiShipRank() == 6)
+            && trigger_when(gummiShipRank() >= 6)
             && never(!IsInLocation("WorldMap"))
             && never(gummiShipPointer() == 0)
     )
@@ -2440,3 +2432,4 @@ if (generateBonusAchievements())
             && trigger_when(WonTheHadesParadoxCup())
     )
 }
+
