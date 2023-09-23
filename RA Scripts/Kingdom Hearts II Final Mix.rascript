@@ -515,7 +515,8 @@ function UsedItem(itemIndex)
     return trigger
 }
 
-xachievement(title = "Third-Degree Burns [m]", description = "Defeat Axel in the old mansion basement without using items or reaction commands (Proud Mode or higher; Level 4 or below).", points = 10,
+xachievement(title = "Third-Degree Burns [m]", description = "Defeat Axel in the old mansion basement without using items or reaction commands (Proud Mode or higher; Level 4 or below).",
+    points = 10, id = 356847, badge = "402041",
     trigger = GetCheckpointForRegisteredEvent("Axel", when = level() <= 4 && IsAtLeastOnDifficulty("Proud"))
         && trigger_when(BonusObtained())
         && never(AnyItemWasJustUsed())
@@ -697,9 +698,9 @@ function exp() => dword(0x32f210)
 function IsInAntiForm() => currentForm() == 6
 xachievement(title = "Pacifism [m]", description = "Survive the one-minute pirate attack at the Isla de Muerta without defeating any enemies, without items, and without entering Antiform"
     + " (Proud Mode or higher; Level 23 or below; No Experience must not be equipped).",
-    points = 5,
+    points = 5, id = 356866, badge = "402060",
     trigger = BattleCheckpointReached(location = "PortCaveMouth", eventId = 0x3b, when = level() <= 23 && IsAtLeastOnDifficulty("Proud"))
-        && trigger_when(timeRemaining() <= 0)
+        && trigger_when(timeRemaining() <= 0 && Delta(timeRemaining()) > 0)
         && never(Delta(exp()) < exp())
         && never(HasAbilityWithGivenIdEquipped(0x194))
         && never(AnyItemWasJustUsed())
@@ -796,20 +797,23 @@ function TimerAdvanced() => Delta(timeRemaining()) > timeRemaining()
 function SpeedfallerCheckpointReached() => BattleCheckpointReached(location = "AgrabahCaveChasm", eventId = 0x4f, when = level() <= 25 && IsAtLeastOnDifficulty("Proud"))
         || BattleCheckpointReached(location = "AgrabahCaveChasm", eventId = 0x50, when = level() <= 25 && IsAtLeastOnDifficulty("Proud"))
 function SpeedfallerTriggered() => TimedEventEnded() && TimerAdvanced()
-xachievement(title = "Speedfaller [m]", description = "Complete the Chasm of Challenges in " + SecondsToFormat(chasmTimeLimit()) + " (Proud Mode or higher; Level 25 or below).", points = 5,
+xachievement(title = "Speedfaller [m]", description = "Complete the Chasm of Challenges in " + SecondsToFormat(chasmTimeLimit()) + " (Proud Mode or higher; Level 25 or below; no Limits).",
+    points = 5, id = 356873, badge = "402067",
     trigger = SpeedfallerCheckpointReached()
         && never(timeRemaining() < SecondsToFrames(120 - chasmTimeLimit()) && TimerAdvanced())
         && trigger_when(SpeedfallerTriggered())
+        && never(LimitIsBeingUsed())
 )
 
 function GlobalTimerCanceled() => IsDead() || timeRemaining() == 0 && TimerAdvanced()
-xleaderboard(title = "Speedfaller", description = "Complete the Chasm of Challenges as quickly as you can.",
+xleaderboard(title = "Speedfaller", description = "Complete the Chasm of Challenges as quickly as you can without using Limits.",
     start = SpeedfallerCheckpointReached() && never(GlobalTimerCanceled()), // Adding the cancelation code here to ensure all hit targets are cleared on subsequent retries.
-    cancel = GlobalTimerCanceled(),
+    cancel = (GlobalTimerCanceled() || LimitIsBeingUsed()),
     submit = SpeedfallerTriggered(),
     value = SecondsToFrames(120) - timeRemaining(),
     format = "FRAMES",
-    lower_is_better = true
+    lower_is_better = true,
+    id = 77691
 )
 
 function JustEnteredValorForm() => currentForm() == 1 && Delta(currentForm()) != 1
