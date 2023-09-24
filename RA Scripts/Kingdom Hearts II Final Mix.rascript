@@ -1688,8 +1688,8 @@ xachievement(title = "Thousand-Yard Stare [m]", description = "Survive the final
         && trigger_when(BonusObtained())
 )
 
-xachievement(title = "Vanilla-Flavored Suffering [m]", description = "Defeat Sephiroth without activating Limit Form (Proud Mode or higher; Level 70 or below).",
-    points = 50,
+xachievement(title = "Vanilla-Flavored Suffering [m]", description = "Defeat Sephiroth without activating Limit Form or having Dodge Roll equipped (Proud Mode or higher; Level 70 or below).",
+    points = 50, id = 356925, badge = "402121",
     trigger = GetCheckpointForRegisteredEvent("Sephiroth", when = level() <= 70 && IsAtLeastOnDifficulty("Proud"))
         && trigger_when(BonusObtained())
         && never(JustEnteredLimitForm())
