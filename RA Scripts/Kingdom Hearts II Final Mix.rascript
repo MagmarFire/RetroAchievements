@@ -6,6 +6,7 @@ function generateBonusAchievements() => false
 function TRUE() => 1
 function FALSE() => 0
 function Delta(mem) => prev(mem)
+function ToString(val) => val + ""
 
 function xachievement(title, description, points, trigger, badge = "00000", id = 0)
 {
@@ -466,6 +467,30 @@ function GetCheckpointForRegisteredEvent(eventKey, when = always_true(), overrid
     return BattleCheckpointReached(location = event["locationCode"], eventId = event["eventId"], when = when, overrideNever = overrideNever, neverOverride = neverOverride)
 }
 
+function AnyItemWasJustUsedForBaseAddr(baseAddr)
+{
+    trigger = always_false()
+    for i in range(0, 7)
+    {
+        item = word(baseAddr + i * 2)
+        trigger = trigger || Delta(item) > 0 && item == 0
+    }
+    
+    return trigger
+}
+
+function AnyItemWasJustUsed()
+{
+    soraSlot1Addr = 0x32e054
+    donaldSlot1Addr = 0x32e168
+    goofySlot1Addr = 0x32e27c
+    jackSlot1Addr = 0x32ea08
+    trigger = AnyItemWasJustUsedForBaseAddr(soraSlot1Addr) || AnyItemWasJustUsedForBaseAddr(donaldSlot1Addr) || AnyItemWasJustUsedForBaseAddr(goofySlot1Addr)
+        || AnyItemWasJustUsedForBaseAddr(jackSlot1Addr)
+    
+    return trigger
+}
+
 xachievement(title = "Doing Everything I Can", description = "Perform all three different aerial skateboard tricks before touching the ground.", points = 1,
     trigger = IsActiveInTheField() && tally(3, [ DidMethodGrab(), Did360DegreeSpin(), DidAirWalk() ])
         && never(LandedWithSkateboard()) && never(JustDidGrind()) && never(IdleWithSkateboard())
@@ -491,24 +516,11 @@ function UsedItem(itemIndex)
     return trigger
 }
 
-// todo: deprecated; use AnyItemWasJustUsed instead
-function UsedAnyItem()
-{
-    trigger = always_false()
-    playerItemSlotBaseAddr = 0x32e054
-    for i in range(0, 7)
-    {
-        slot = word(playerItemSlotBaseAddr + 2 * i)
-        trigger = trigger || Delta(slot) != 0 && slot == 0
-    }
-    
-    return trigger
-}
-
-xachievement(title = "Third-Degree Burns [m]", description = "Defeat Axel in the old mansion basement without using items or reaction commands (Proud Mode or higher; Level 4 or below).", points = 10,
+xachievement(title = "Third-Degree Burns [m]", description = "Defeat Axel in the old mansion basement without using items or reaction commands (Proud Mode or higher; Level 4 or below).",
+    points = 10, id = 356847, badge = "402041",
     trigger = GetCheckpointForRegisteredEvent("Axel", when = level() <= 4 && IsAtLeastOnDifficulty("Proud"))
         && trigger_when(BonusObtained())
-        && never(UsedAnyItem())
+        && never(AnyItemWasJustUsed())
         && never(fieldActionId() == 0xfe) // Overtaker when playing as dual-wielding Roxas
         && never(fieldActionId() == 0xfc) // Burst Frontier
 )
@@ -539,9 +551,10 @@ xachievement(title = "Unquestionable Honor", description = "Complete the first v
 function currentForm() => byte(0x32f054)
 function JustEnteredValorForm() => currentForm() == 1 && Delta(currentForm()) != 1
 xachievement(title = "Pure of Mind [m]", description = "Defeat the Thresholder and Possessor without using items or Valor Form (Proud Mode or higher; Level 13 or below; no rescues).", points = 5,
+    id = 356852, badge = "402046",
     trigger = GetCheckpointForRegisteredEvent("Thresholder", when = level() <= 13 && IsAtLeastOnDifficulty("Proud"))
         && trigger_when(BonusObtained())
-        && never(UsedAnyItem()) && never(JustEnteredValorForm())
+        && never(AnyItemWasJustUsed()) && never(JustEnteredValorForm())
 )
 
 function limitPointer() => dword(0x1d48cb0)
@@ -598,9 +611,10 @@ function timeRemaining() => dword(0x349df8)
 function breakneckBreakdanceTimeLimit() => 50
 function demyxITimeLimit() => 80
 xachievement(title = "Breakneck Breakdance [m]", description = "Defeat 100 of Demyx's water forms within " + breakneckBreakdanceTimeLimit() + " seconds.", points = 5,
+    id = 356857, badge = "402051",
     trigger = BattleCheckpointReached(location = "UnderworldCavernsAtrium", eventId = 0x7b)
         && trigger_when(BonusObtained())
-        && never(timeRemaining() < SecondsToFrames(demyxITimeLimit() - breakneckBreakdanceTimeLimit()))
+        && never(timeRemaining() < SecondsToFrames(demyxITimeLimit() - breakneckBreakdanceTimeLimit()) && Delta(timeRemaining()) > timeRemaining())
 )
 
 function petePinballTimeLimit() => 40
@@ -681,37 +695,13 @@ function HasAbilityWithinGivenRangeEquipped(range)
 }
 // end of todo
 
-function AnyItemWasJustUsedForBaseAddr(baseAddr)
-{
-    trigger = always_false()
-    for i in range(0, 7)
-    {
-        item = word(baseAddr + i * 2)
-        trigger = trigger || Delta(item) > 0 && item == 0
-    }
-    
-    return trigger
-}
-
-function AnyItemWasJustUsed()
-{
-    soraSlot1Addr = 0x32e054
-    donaldSlot1Addr = 0x32e168
-    goofySlot1Addr = 0x32e27c
-    jackSlot1Addr = 0x32ea08
-    trigger = AnyItemWasJustUsedForBaseAddr(soraSlot1Addr) || AnyItemWasJustUsedForBaseAddr(donaldSlot1Addr) || AnyItemWasJustUsedForBaseAddr(goofySlot1Addr)
-        || AnyItemWasJustUsedForBaseAddr(jackSlot1Addr)
-    
-    return trigger
-}
-
 function exp() => dword(0x32f210)
 function IsInAntiForm() => currentForm() == 6
 xachievement(title = "Pacifism [m]", description = "Survive the one-minute pirate attack at the Isla de Muerta without defeating any enemies, without items, and without entering Antiform"
     + " (Proud Mode or higher; Level 23 or below; No Experience must not be equipped).",
-    points = 5,
+    points = 5, id = 356866, badge = "402060",
     trigger = BattleCheckpointReached(location = "PortCaveMouth", eventId = 0x3b, when = level() <= 23 && IsAtLeastOnDifficulty("Proud"))
-        && trigger_when(timeRemaining() <= 0)
+        && trigger_when(timeRemaining() <= 0 && Delta(timeRemaining()) > 0)
         && never(Delta(exp()) < exp())
         && never(HasAbilityWithGivenIdEquipped(0x194))
         && never(AnyItemWasJustUsed())
@@ -808,20 +798,23 @@ function TimerAdvanced() => Delta(timeRemaining()) > timeRemaining()
 function SpeedfallerCheckpointReached() => BattleCheckpointReached(location = "AgrabahCaveChasm", eventId = 0x4f, when = level() <= 25 && IsAtLeastOnDifficulty("Proud"))
         || BattleCheckpointReached(location = "AgrabahCaveChasm", eventId = 0x50, when = level() <= 25 && IsAtLeastOnDifficulty("Proud"))
 function SpeedfallerTriggered() => TimedEventEnded() && TimerAdvanced()
-xachievement(title = "Speedfaller [m]", description = "Complete the Chasm of Challenges in " + SecondsToFormat(chasmTimeLimit()) + " (Proud Mode or higher; Level 25 or below).", points = 5,
+xachievement(title = "Speedfaller [m]", description = "Complete the Chasm of Challenges in " + SecondsToFormat(chasmTimeLimit()) + " (Proud Mode or higher; Level 25 or below; no Limits).",
+    points = 5, id = 356873, badge = "402067",
     trigger = SpeedfallerCheckpointReached()
         && never(timeRemaining() < SecondsToFrames(120 - chasmTimeLimit()) && TimerAdvanced())
         && trigger_when(SpeedfallerTriggered())
+        && never(LimitIsBeingUsed())
 )
 
 function GlobalTimerCanceled() => IsDead() || timeRemaining() == 0 && TimerAdvanced()
-xleaderboard(title = "Speedfaller", description = "Complete the Chasm of Challenges as quickly as you can.",
+xleaderboard(title = "Speedfaller", description = "Complete the Chasm of Challenges as quickly as you can without using Limits.",
     start = SpeedfallerCheckpointReached() && never(GlobalTimerCanceled()), // Adding the cancelation code here to ensure all hit targets are cleared on subsequent retries.
-    cancel = GlobalTimerCanceled(),
+    cancel = (GlobalTimerCanceled() || LimitIsBeingUsed()),
     submit = SpeedfallerTriggered(),
     value = SecondsToFrames(120) - timeRemaining(),
     format = "FRAMES",
-    lower_is_better = true
+    lower_is_better = true,
+    id = 77691
 )
 
 function JustEnteredValorForm() => currentForm() == 1 && Delta(currentForm()) != 1
@@ -839,13 +832,14 @@ xachievement(title = "Solo Heist [m]", description = "Defeat the Heartless ambus
         && trigger_when(BonusObtained())
 )
 
-xachievement(title = "Too Hot Inside, Too Cold Outside [m]", description = "Defeat the Volcano and Blizzard Lords without using magic or the Firagun or Blizzagun reaction commands "
-    + "(Proud Mode or higher; Level 25 or below).", points = 5,
+xachievement(title = "Too Hot Inside, Too Cold Outside [m]", description = "Defeat the Volcano and Blizzard Lords without using MP or the Firagun or Blizzagun reaction commands "
+    + "(Proud Mode or higher; Level 25 or below).", points = 5, id = 356875, badge = "402069",
     trigger = GetCheckpointForRegisteredEvent("Volcano and Blizzard Lords", when = level() <= 25 && IsAtLeastOnDifficulty("Proud"))
         && never(UsedAnyMagic())
         // Checking the field action ID is needed because the reaction command ID doesn't actually update until after the second part of the combo is active.
         && never(reactionCommandId() == 0x295 || fieldActionId() == 0xfc) // Firagun
         && never(reactionCommandId() == 0x296 || fieldActionId() == 0xfc) // Blizzagun
+        && never(fieldMp() < Delta(fieldMp()))
         && trigger_when(BonusObtained())
 )
 
@@ -1650,7 +1644,7 @@ function megaImpactId() => 0x2c4
 function IsUsingMegaImpact() => reactionCommandId() == megaImpactId()
 xachievement(title = "Axebreaker [m]", description = "Finish off Lexaeus's Absent Silhouette with your first use of the Mega Impact reaction command (Proud Mode or higher; Level 40 or below;"
     + " no revenge exploits).",
-    points = 10, id = 356950, badge = "402146"
+    points = 10, id = 356950, badge = "402146",
     trigger = GetCheckpointForRegisteredEvent("Lexaeus’s Absent Silhouette", when = level() <= 40 && IsAtLeastOnDifficulty("Proud"))
         && trigger_when(BonusObtained())
         && trigger_when(IsUsingMegaImpact())
@@ -1694,8 +1688,8 @@ xachievement(title = "Thousand-Yard Stare [m]", description = "Survive the final
         && trigger_when(BonusObtained())
 )
 
-xachievement(title = "Vanilla-Flavored Suffering [m]", description = "Defeat Sephiroth without activating Limit Form (Proud Mode or higher; Level 70 or below).",
-    points = 50,
+xachievement(title = "Vanilla-Flavored Suffering [m]", description = "Defeat Sephiroth without activating Limit Form or having Dodge Roll equipped (Proud Mode or higher; Level 70 or below).",
+    points = 50, id = 356925, badge = "402121",
     trigger = GetCheckpointForRegisteredEvent("Sephiroth", when = level() <= 70 && IsAtLeastOnDifficulty("Proud"))
         && trigger_when(BonusObtained())
         && never(JustEnteredLimitForm())
@@ -1765,9 +1759,12 @@ xachievement(title = "The Melodious Nocturne", description = "Defeat Data Demyx 
 )
 
 xachievement(title = "The Gambler of Fate", description = "Defeat Data Luxord on Proud Mode or higher without exploiting revenge mechanics.", points = 10,
+    id = 357114, badge = "402314",
     trigger = GetCheckpointForRegisteredEvent("Data Luxord", when = IsAtLeastOnDifficulty("Proud"))
         && trigger_when(JustWonBattle())
         && never(UsedCheese(dword(0x01c6c4e8)))
+        // Running out of time triggers the achievement because the battle state flickers from 0 to 1 (victory) before being set to 3 (nonstandard game over).
+        && never(timeBattleTimeRemaining() <= 0.0)
 )
 
 xachievement(title = "The Graceful Assassin II", description = "Defeat Data Marluxia on Proud Mode or higher without exploiting revenge mechanics.", points = 25,
@@ -1823,20 +1820,27 @@ xachievement(title = "Witness of Mastery", description = "Defeat the Lingering W
         && never(JustUsedAnySummon())
 )
 
+function maxClearAnimationTime() => dword(0x0035de28)
+// An 0xf value is for the slowdown effect at the end of the round. It switches to 0x1f4 afterwards if it's the "Clear!" animation; otherwise, it would be set to -1.
+function ClearAnimationStarted() => Delta(maxClearAnimationTime()) == 0xf && maxClearAnimationTime() == 0x1f4
 function PainAndPanicCupCheckpointReached(when = always_true())
     => once(eventId() == 0xbd && IsActiveInTheField() && IsInLocation("ColiseumTourney1") && JustBecameActiveInTheField() && currentRound() == 1 && when)
     && never(IsDead()) && never(IsInLocation("UnderworldEntrance"))
-function WonThePainAndPanicCup() => eventId() == 0xb4 && IsInLocation("ColiseumVictory")
+function WonThePainAndPanicCup() => eventId() == 0xb4 && IsInLocation("ColiseumVictory") || ClearAnimationStarted()
 xachievement(title = "Pain and Panic Champion", description = "Win the Pain and Panic Cup.", points = 3,
+    id = 356881, badge = "402075",
     trigger = PainAndPanicCupCheckpointReached() && WonThePainAndPanicCup()
 )
 
 function underdromeCurrentScore() => dword(0x01d48efc)
 xachievement(title = "Pain and Panic Recordsetter", description = "Win the Pain and Panic Cup with a score of 2000 or more.", points = 5,
-    trigger = PainAndPanicCupCheckpointReached() && trigger_when(underdromeCurrentScore() >= 2000 && WonThePainAndPanicCup())
+    id = 356882, badge = "402076",
+    trigger = PainAndPanicCupCheckpointReached() && trigger_when(underdromeCurrentScore() >= 2000)
+        && trigger_when(WonThePainAndPanicCup())
 )
 
 xachievement(title = "Pain and Panic Title Defender [m]", description = "Win the Pain and Panic Cup without using Limits (Proud Mode or higher; Level 30 or below).", points = 25,
+    id = 356883, badge = "402077",
     trigger = PainAndPanicCupCheckpointReached(when = level() <= 30 && IsAtLeastOnDifficulty("Proud"))
         && trigger_when(WonThePainAndPanicCup())
         && never(LimitIsBeingUsed())
@@ -1845,13 +1849,16 @@ xachievement(title = "Pain and Panic Title Defender [m]", description = "Win the
 function CerberusCupCheckpointReached(when = always_true())
     => once(eventId() == 0xbe && IsActiveInTheField() && IsInLocation("ColiseumTourney1") && JustBecameActiveInTheField() && currentRound() == 1 && when)
     && never(IsDead()) && never(IsInLocation("UnderworldEntrance"))
-function WonTheCerberusCup() => eventId() == 0xb6 && IsInLocation("ColiseumVictory")
+function WonTheCerberusCup() => eventId() == 0xb6 && IsInLocation("ColiseumVictory") || ClearAnimationStarted()
 xachievement(title = "Cerberus Champion", description = "Win the Cerberus Cup.", points = 3,
+    id = 356885, badge = "402079",
     trigger = CerberusCupCheckpointReached() && WonTheCerberusCup()
 )
 
 xachievement(title = "Cerberus Recordsetter", description = "Win the Cerberus Cup with a score of 1000 or more.", points = 5,
-    trigger = CerberusCupCheckpointReached() && trigger_when(WonTheCerberusCup() && underdromeCurrentScore() >= 1000)
+    id = 356886, badge = "402080",
+    trigger = CerberusCupCheckpointReached() && trigger_when(underdromeCurrentScore() >= 1000)
+        && trigger_when(WonTheCerberusCup())
 )
 
 function CurrentRoundHasChanged() => Delta(currentRound()) != currentRound()
@@ -1864,7 +1871,7 @@ function ViolatedCerberusCupRules(when = always_true()) => ConditionIsTrueMoreTh
 // Checking for whether or not the player is active on the field is so that they can use the Retry option in the middle of Round 1 and not have their uses carry over.
 function ConditionIsTrueMoreThanOncePerRound(condition) => repeated(2, condition && never(CurrentRoundHasChanged()) && never(!IsActiveInTheField()))
 xachievement(title = "Cerberus Title Defender [m]", description = "Win the Cerberus Cup without activating the same Drive Form more than once per round (Proud Mode or higher; Level 33 or below).",
-    points = 25,
+    points = 25, id = 356884, badge = "402078",
     trigger = CerberusCupCheckpointReached(when = level() <= 33 && IsAtLeastOnDifficulty("Proud"))
         && trigger_when(WonTheCerberusCup())
         && never(ViolatedCerberusCupRules())
@@ -1873,18 +1880,21 @@ xachievement(title = "Cerberus Title Defender [m]", description = "Win the Cerbe
 function TitanCupCheckpointReached(when = always_true())
     => once(eventId() == 0xbf && IsActiveInTheField() && IsInLocation("ColiseumTourney1") && JustBecameActiveInTheField() && currentRound() == 1 && when)
     && never(IsDead()) && never(IsInLocation("UnderworldEntrance"))
-function WonTheTitanCup() => eventId() == 0xb5 && IsInLocation("ColiseumVictory")
+function WonTheTitanCup() => eventId() == 0xb5 && IsInLocation("ColiseumVictory") || ClearAnimationStarted()
 xachievement(title = "Titan Champion", description = "Win the Titan Cup.", points = 3,
+    id = 356955, badge = "402152",
     trigger = TitanCupCheckpointReached() && WonTheTitanCup()
 )
 
 xachievement(title = "Titan Recordsetter", description = "Win the Titan Cup with a score of 5000 or more.", points = 5,
-    trigger = TitanCupCheckpointReached() && trigger_when(WonTheTitanCup() && underdromeCurrentScore() >= 5000)
+    id = 356956, badge = "402153",
+    trigger = TitanCupCheckpointReached() && trigger_when(underdromeCurrentScore() >= 5000)
+        && trigger_when(WonTheTitanCup())
 )
 
 function keyScore() => dword(0x01d48f6c)
 xachievement(title = "Titan Title Defender [m]", description = "Win the Titan Cup with at least 125 points remaining (Proud Mode or higher; Level 45 or below).",
-    points = 50,
+    points = 50, id = 356957, badge = "402154",
     trigger = TitanCupCheckpointReached(when = level() <= 45 && IsAtLeastOnDifficulty("Proud"))
         && trigger_when(WonTheTitanCup())
         && never(keyScore() < 125)
@@ -1893,17 +1903,20 @@ xachievement(title = "Titan Title Defender [m]", description = "Win the Titan Cu
 function GoddessOfFateCupCheckpointReached(when = always_true())
     => once(eventId() == 0xc0 && IsActiveInTheField() && IsInLocation("ColiseumTourney1") && JustBecameActiveInTheField() && currentRound() == 1 && when)
     && never(IsDead()) && never(IsInLocation("UnderworldEntrance"))
-function WonTheGoddessOfFateCup() => eventId() == 0xb7 && IsInLocation("ColiseumVictory")
+function WonTheGoddessOfFateCup() => eventId() == 0xb7 && IsInLocation("ColiseumVictory") || ClearAnimationStarted()
 xachievement(title = "Goddess of Fate Champion", description = "Win the Goddess of Fate Cup.", points = 3,
+    id = 356958, badge = "402155",
     trigger = GoddessOfFateCupCheckpointReached() && WonTheGoddessOfFateCup()
 )
 
 xachievement(title = "Goddess of Fate Recordsetter", description = "Win the Goddess of Fate Cup with a score of 3000 or more.", points = 5,
-    trigger = GoddessOfFateCupCheckpointReached() && trigger_when(WonTheGoddessOfFateCup() && underdromeCurrentScore() >= 3000)
+    id = 356959, badge = "402156",
+    trigger = GoddessOfFateCupCheckpointReached() && trigger_when(underdromeCurrentScore() >= 3000)
+        && trigger_when(WonTheGoddessOfFateCup())
 )
 
 xachievement(title = "Goddess of Fate Title Defender [m]", description = "Win the Goddess of Fate Cup without using Magnet magic (Proud Mode or higher; Level 50 or below).",
-    points = 10,
+    points = 10, id = 356960, badge = "402157",
     trigger = GoddessOfFateCupCheckpointReached(when = level() <= 50 && IsAtLeastOnDifficulty("Proud"))
         && trigger_when(WonTheGoddessOfFateCup())
         && never(JustUsedMagnet())
@@ -1914,18 +1927,22 @@ function IsTransitioningToOrFromBattle() => battleState() == 4
 function PainAndPanicParadoxCupCheckpointReached(when = always_true())
     => once(eventId() == 0xc1 && IsActiveInTheField() && IsInLocation("ColiseumTourney1") && JustBecameActiveInTheField() && currentRound() == 1 && when)
     && never(IsDead()) && never(IsTransitioningToOrFromBattle())
-function WonThePainAndPanicParadoxCup() => battleState() == 5 && Delta(battleState()) == 1 && IsInLocation("HadesChamber")
+function WonThePainAndPanicParadoxCup() => battleState() == 5 && Delta(battleState()) == 1 && IsInLocation("HadesChamber") || ClearAnimationStarted()
 xachievement(title = "Pain and Panic Paradox Champion", description = "Win the Pain and Panic Paradox Cup.", points = 3,
+    id = 356962, badge = "402159",
     trigger = PainAndPanicParadoxCupCheckpointReached() && WonThePainAndPanicParadoxCup()
 )
 
 function underdromeCurrentScore() => dword(0x01d48efc)
 xachievement(title = "Pain and Panic Paradox Recordsetter", description = "Win the Pain and Panic Paradox Cup with a score of 2500 or more.", points = 5,
-    trigger = PainAndPanicParadoxCupCheckpointReached() && trigger_when(underdromeCurrentScore() >= 2500 && WonThePainAndPanicParadoxCup())
+    id = 356963, badge = "402160",
+    trigger = PainAndPanicParadoxCupCheckpointReached() && trigger_when(underdromeCurrentScore() >= 2500)
+        && trigger_when(WonThePainAndPanicParadoxCup())
 )
 
 function ViolatedPainAndPanicParadoxCupRules() => LimitIsBeingUsed()
 xachievement(title = "Pain and Panic Paradox Title Defender [m]", description = "Win the Pain and Panic Paradox Cup without using Limits (Proud Mode or higher; Level 50 or below).", points = 25,
+    id = 356964, badge = "402161",
     trigger = PainAndPanicParadoxCupCheckpointReached(when = level() <= 50 && IsAtLeastOnDifficulty("Proud"))
         && trigger_when(WonThePainAndPanicParadoxCup())
         && never(ViolatedPainAndPanicParadoxCupRules())
@@ -1934,17 +1951,20 @@ xachievement(title = "Pain and Panic Paradox Title Defender [m]", description = 
 function CerberusParadoxCupCheckpointReached(when = always_true())
     => once(eventId() == 0xc2 && IsActiveInTheField() && IsInLocation("ColiseumTourney1") && JustBecameActiveInTheField() && currentRound() == 1 && when)
     && never(IsDead()) && never(IsTransitioningToOrFromBattle())
-function WonTheCerberusParadoxCup() => battleState() == 5 && Delta(battleState()) == 1 && IsInLocation("HadesChamber")
+function WonTheCerberusParadoxCup() => battleState() == 5 && Delta(battleState()) == 1 && IsInLocation("HadesChamber") || ClearAnimationStarted()
 xachievement(title = "Cerberus Paradox Champion", description = "Win the Cerberus Paradox Cup.", points = 3,
+    id = 356965, badge = "402162",
     trigger = CerberusParadoxCupCheckpointReached() && WonTheCerberusParadoxCup()
 )
 
 xachievement(title = "Cerberus Paradox Recordsetter", description = "Win the Cerberus Paradox Cup with a score of 1300 or more.", points = 5,
-    trigger = CerberusParadoxCupCheckpointReached() && trigger_when(WonTheCerberusParadoxCup() && underdromeCurrentScore() >= 1300)
+    id = 356966, badge = "402163",
+    trigger = CerberusParadoxCupCheckpointReached() && trigger_when(underdromeCurrentScore() >= 1300)
+        && trigger_when(WonTheCerberusParadoxCup())
 )
 
 xachievement(title = "Cerberus Paradox Title Defender [m]", description = "Win the Cerberus Paradox Cup without activating the same Drive Form more than once per round (Proud Mode or higher; Level 60 or below).",
-    points = 25,
+    points = 25, id = 356967, badge = "402164",
     trigger = CerberusParadoxCupCheckpointReached(when = level() <= 60 && IsAtLeastOnDifficulty("Proud"))
         && trigger_when(WonTheCerberusParadoxCup())
         && never(ViolatedCerberusCupRules())
@@ -1953,13 +1973,16 @@ xachievement(title = "Cerberus Paradox Title Defender [m]", description = "Win t
 function TitanParadoxCupCheckpointReached(when = always_true())
     => once(eventId() == 0xc3 && IsActiveInTheField() && IsInLocation("ColiseumTourney1") && JustBecameActiveInTheField() && currentRound() == 1 && when)
     && never(IsDead()) && never(IsTransitioningToOrFromBattle())
-function WonTheTitanParadoxCup() => battleState() == 5 && Delta(battleState()) == 1 && IsInLocation("HadesChamber")
+function WonTheTitanParadoxCup() => battleState() == 5 && Delta(battleState()) == 1 && IsInLocation("HadesChamber") || ClearAnimationStarted()
 xachievement(title = "Titan Paradox Champion", description = "Win the Titan Paradox Cup.", points = 3,
+    id = 356968, badge = "402165",
     trigger = TitanParadoxCupCheckpointReached() && WonTheTitanParadoxCup()
 )
 
 xachievement(title = "Titan Paradox Recordsetter", description = "Win the Titan Paradox Cup with a score of 10000 or more.", points = 5,
-    trigger = TitanParadoxCupCheckpointReached() && trigger_when(WonTheTitanParadoxCup() && underdromeCurrentScore() >= 10000)
+    id = 356969, badge = "402166",
+    trigger = TitanParadoxCupCheckpointReached() && trigger_when(underdromeCurrentScore() >= 10000)
+        && trigger_when(WonTheTitanParadoxCup())
 )
 
 function chickenLittleUses() => word(0x0032fb12)
@@ -1976,7 +1999,7 @@ function JustUsedPeterPan() => Delta(peterPanUses()) != peterPanUses()
 function ViolatedTitanParadoxCupRules(when = always_true())
     => repeated(3, when && (JustUsedChickenLittle()) || repeated(3, JustUsedGenie()) || repeated(3, JustUsedStitch()) || repeated(3, JustUsedPeterPan()))
 xachievement(title = "Titan Paradox Title Defender [m]", description = "Win the Titan Paradox Cup without using any individual summon more than twice each (Proud Mode or higher; Level 70 or below).",
-    points = 10,
+    points = 10, id = 356970, badge = "402167",
     trigger = TitanParadoxCupCheckpointReached(when = level() <= 70 && IsAtLeastOnDifficulty("Proud"))
         && trigger_when(WonTheTitanParadoxCup())
         && never(ViolatedTitanParadoxCupRules())
@@ -1985,17 +2008,21 @@ xachievement(title = "Titan Paradox Title Defender [m]", description = "Win the 
 function HadesParadoxCupCheckpointReached(when = always_true())
     => once(eventId() == 0xc4 && IsActiveInTheField() && IsInLocation("ColiseumTourney1") && JustBecameActiveInTheField() && currentRound() == 1 && when)
     && never(IsDead()) && never(IsInLocation("UnderworldEntrance"))
-function WonTheHadesParadoxCup() => eventId() == 0xb8 && IsInLocation("ColiseumVictory")
+function WonTheHadesParadoxCup() => eventId() == 0xb8 && IsInLocation("ColiseumVictory") || ClearAnimationStarted()
 xachievement(title = "Hades Paradox Champion", description = "Win the Hades Paradox Cup.", points = 5,
+    id = 356971, badge = "402168",
     trigger = HadesParadoxCupCheckpointReached() && WonTheHadesParadoxCup()
 )
 
 xachievement(title = "Hades Paradox Recordsetter", description = "Win the Hades Paradox Cup with a score of 15000 or more.", points = 10,
-    trigger = HadesParadoxCupCheckpointReached() && trigger_when(WonTheHadesParadoxCup() && underdromeCurrentScore() >= 15000)
+    id = 356972, badge = "402169",
+    trigger = HadesParadoxCupCheckpointReached() && trigger_when(underdromeCurrentScore() >= 15000)
+        && trigger_when(WonTheHadesParadoxCup())
 )
 
 xachievement(title = "Hades Paradox Title Defender [m]", description = "Win the Hades Paradox Cup on Proud Mode or higher while adhering to the same achievement conditions for each Paradox Cup's "
     + "respective set of rounds.", points = 50,
+    id = 356973, badge = "402170",
     trigger = HadesParadoxCupCheckpointReached(when = IsAtLeastOnDifficulty("Proud"))
         && trigger_when(WonTheHadesParadoxCup())
         && never(ViolatedTitanParadoxCupRules(currentRound() >= 11 && currentRound() <= 20))
@@ -2023,8 +2050,8 @@ xachievement(title = "The Renowned", description = "Raise Limit Form to the maxi
     trigger = WasValueSetInGame(limitLevel(), 6, 7) && measured(limitLevel() == 7)
 )
 
-function masterLevel() => byte(0x0032eede)
-xachievement(title = "The Predominant", description = "Raise Master Form to the maximum level.", points = 5,
+function masterLevel() => byte(0x0032eece)
+xachievement(title = "The Predominant", description = "Raise Master Form to the maximum level.", points = 5, id = 356911, badge = "402106",
     trigger = WasValueSetInGame(masterLevel(), 6, 7) && measured(masterLevel() == 7)
 )
 
@@ -2049,16 +2076,17 @@ function gummiShipPointer() => tbyte(0x01f7de44)
 function gummiShipScore() => dword(0x01f8039c)
 
 gummiMissions = {
-2: { "name": "Asteroid Sweep", "gateId": 0, "miss1BaseAddr": 0x0033bc10, "miss1EXBaseAddr": 0x0033c2d0, "mission1Score": 1, "mission2Score": 2, "mission3Score": 3, "exMission1Score": 5, "exMission2Score": 5, "exMission3Score": 10 },3: { "name": "Stardust Sweep", "gateId": 1, "miss1BaseAddr": 0x0033bcd0, "miss1EXBaseAddr": 0x0033c390, "mission1Score": 1, "mission2Score": 2, "mission3Score": 3, "exMission1Score": 5, "exMission2Score": 5, "exMission3Score": 10 },4: { "name": "Broken Highway", "gateId": 2, "miss1BaseAddr": 0x0033bd90, "miss1EXBaseAddr": 0x0033c450, "mission1Score": 1, "mission2Score": 2, "mission3Score": 3, "exMission1Score": 5, "exMission2Score": 5, "exMission3Score": 10 },5: { "name": "Ancient Highway", "gateId": 3, "miss1BaseAddr": 0x0033be50, "miss1EXBaseAddr": 0x0033c510, "mission1Score": 1, "mission2Score": 2, "mission3Score": 3, "exMission1Score": 5, "exMission2Score": 5, "exMission3Score": 10 },6: { "name": "Phantom Storm", "gateId": 4, "miss1BaseAddr": 0x0033bf10, "miss1EXBaseAddr": 0x0033c5d0, "mission1Score": 1, "mission2Score": 2, "mission3Score": 3, "exMission1Score": 5, "exMission2Score": 5, "exMission3Score": 10 },7: { "name": "Sunlight Storm", "gateId": 5, "miss1BaseAddr": 0x0033bfd0, "miss1EXBaseAddr": 0x0033c690, "mission1Score": 1, "mission2Score": 2, "mission3Score": 3, "exMission1Score": 5, "exMission2Score": 5, "exMission3Score": 10 },8: { "name": "Splash Island", "gateId": 6, "miss1BaseAddr": 0x0033c090, "miss1EXBaseAddr": 0x0033c750, "mission1Score": 1, "mission2Score": 2, "mission3Score": 3, "exMission1Score": 5, "exMission2Score": 5, "exMission3Score": 10 },9: { "name": "Floating Island", "gateId": 7, "miss1BaseAddr": 0x0033c150, "miss1EXBaseAddr": 0x0033c810, "mission1Score": 1, "mission2Score": 2, "mission3Score": 3, "exMission1Score": 5, "exMission2Score": 5, "exMission3Score": 10 },10: { "name": "Assault of the Dreadnought", "gateId": 8, "miss1BaseAddr": 0x0033c210, "miss1EXBaseAddr": 0x0033c8d0, "mission1Score": 1, "mission2Score": 2, "mission3Score": 3, "exMission1Score": 5, "exMission2Score": 5, "exMission3Score": 10 },
+2: { "name": "Asteroid Sweep", "gateId": 0, "miss1BaseAddr": 0x0033bc10, "miss1EXBaseAddr": 0x0033c2d0, "mission1Score": 1, "mission2Score": 2, "mission3Score": 3, "exMission1Score": 5, "exMission2Score": 5, "exMission3Score": 10, "mission1Id": 357045, "badge1Id": 402244, "mission2Id": 357046, "badge2Id": 402245, "mission3Id": 357047, "badge3Id": 402246, "exMission1Id": 357048, "exBadge1Id": 402247, "exMission2Id": 357049, "exBadge2Id": 402248, "exMission3Id": 357050, "exBadge3Id": 402249 },3: { "name": "Stardust Sweep", "gateId": 1, "miss1BaseAddr": 0x0033bcd0, "miss1EXBaseAddr": 0x0033c390, "mission1Score": 1, "mission2Score": 2, "mission3Score": 3, "exMission1Score": 5, "exMission2Score": 5, "exMission3Score": 10, "mission1Id": 357051, "badge1Id": 402250, "mission2Id": 357053, "badge2Id": 402252, "mission3Id": 357055, "badge3Id": 402254, "exMission1Id": 357052, "exBadge1Id": 402251, "exMission2Id": 357054, "exBadge2Id": 402253, "exMission3Id": 357056, "exBadge3Id": 402255 },4: { "name": "Broken Highway", "gateId": 2, "miss1BaseAddr": 0x0033bd90, "miss1EXBaseAddr": 0x0033c450, "mission1Score": 1, "mission2Score": 2, "mission3Score": 3, "exMission1Score": 5, "exMission2Score": 5, "exMission3Score": 10, "mission1Id": 357057, "badge1Id": 402256, "mission2Id": 357059, "badge2Id": 402258, "mission3Id": 357061, "badge3Id": 402260, "exMission1Id": 357058, "exBadge1Id": 402257, "exMission2Id": 357060, "exBadge2Id": 402259, "exMission3Id": 357062, "exBadge3Id": 402261 },5: { "name": "Ancient Highway", "gateId": 3, "miss1BaseAddr": 0x0033be50, "miss1EXBaseAddr": 0x0033c510, "mission1Score": 1, "mission2Score": 2, "mission3Score": 3, "exMission1Score": 5, "exMission2Score": 5, "exMission3Score": 10, "mission1Id": 357063, "badge1Id": 402262, "mission2Id": 357065, "badge2Id": 402264, "mission3Id": 357067, "badge3Id": 402262, "exMission1Id": 357064, "exBadge1Id": 402263, "exMission2Id": 357066, "exBadge2Id": 402265, "exMission3Id": 357068, "exBadge3Id": 402267 },6: { "name": "Phantom Storm", "gateId": 4, "miss1BaseAddr": 0x0033bf10, "miss1EXBaseAddr": 0x0033c5d0, "mission1Score": 1, "mission2Score": 2, "mission3Score": 3, "exMission1Score": 5, "exMission2Score": 5, "exMission3Score": 10, "mission1Id": 357069, "badge1Id": 402268, "mission2Id": 357071, "badge2Id": 402270, "mission3Id": 357073, "badge3Id": 402272, "exMission1Id": 357070, "exBadge1Id": 402269, "exMission2Id": 357072, "exBadge2Id": 402271, "exMission3Id": 357074, "exBadge3Id": 402273 },7: { "name": "Sunlight Storm", "gateId": 5, "miss1BaseAddr": 0x0033bfd0, "miss1EXBaseAddr": 0x0033c690, "mission1Score": 1, "mission2Score": 2, "mission3Score": 3, "exMission1Score": 5, "exMission2Score": 5, "exMission3Score": 10, "mission1Id": 357075, "badge1Id": 402274, "mission2Id": 357077, "badge2Id": 402276, "mission3Id": 357079, "badge3Id": 402278, "exMission1Id": 357076, "exBadge1Id": 402275, "exMission2Id": 357078, "exBadge2Id": 402277, "exMission3Id": 357080, "exBadge3Id": 402279 },8: { "name": "Splash Island", "gateId": 6, "miss1BaseAddr": 0x0033c090, "miss1EXBaseAddr": 0x0033c750, "mission1Score": 1, "mission2Score": 2, "mission3Score": 3, "exMission1Score": 5, "exMission2Score": 5, "exMission3Score": 10, "mission1Id": 357081, "badge1Id": 402280, "mission2Id": 357083, "badge2Id": 402282, "mission3Id": 357085, "badge3Id": 402284, "exMission1Id": 357082, "exBadge1Id": 402281, "exMission2Id": 357084, "exBadge2Id": 402283, "exMission3Id": 357086, "exBadge3Id": 402285 },9: { "name": "Floating Island", "gateId": 7, "miss1BaseAddr": 0x0033c150, "miss1EXBaseAddr": 0x0033c810, "mission1Score": 1, "mission2Score": 2, "mission3Score": 3, "exMission1Score": 5, "exMission2Score": 5, "exMission3Score": 10, "mission1Id": 357087, "badge1Id": 402286, "mission2Id": 357089, "badge2Id": 402289, "mission3Id": 357091, "badge3Id": 402291, "exMission1Id": 357088, "exBadge1Id": 402287, "exMission2Id": 357090, "exBadge2Id": 402290, "exMission3Id": 357092, "exBadge3Id": 402292 },10: { "name": "Assault of the Dreadnought", "gateId": 8, "miss1BaseAddr": 0x0033c210, "miss1EXBaseAddr": 0x0033c8d0, "mission1Score": 1, "mission2Score": 2, "mission3Score": 3, "exMission1Score": 5, "exMission2Score": 5, "exMission3Score": 10, "mission1Id": 357093, "badge1Id": 402293, "mission2Id": 357095, "badge2Id": 402295, "mission3Id": 357097, "badge3Id": 402297, "exMission1Id": 357094, "exBadge1Id": 402294, "exMission2Id": 357096, "exBadge2Id": 402296, "exMission3Id": 357098, "exBadge3Id": 402298 },
 }
 
 for index in gummiMissions
 {
     mission = gummiMissions[index]
     xachievement(title = mission["name"] + " - Gold Medalist", description = "Achieve an S rank in Mission 1 of " + mission["name"] + ".", points = mission["mission1Score"],
+        id = mission["mission1Id"], badge = ToString(mission["badge1Id"]),
         trigger = once(gummiMissionLevel() == 1 && worldGateId() == mission["gateId"] && GummiMissionJustStarted() && !IsEXMission())
             && trigger_when(GummiMissionComplete())
-            && trigger_when(gummiShipRank() == 6)
+            && trigger_when(gummiShipRank() >= 6)
             && never(!IsInLocation("WorldMap"))
             && never(gummiShipPointer() == 0)
     )
@@ -2071,9 +2099,10 @@ for index in gummiMissions
     )
     
     xachievement(title = mission["name"] + " - Gold Medalist EX", description = "Achieve an S rank in EX Mission 1 of " + mission["name"] + ".", points = mission["exMission1Score"],
+        id = mission["exMission1Id"], badge = ToString(mission["exBadge1Id"]),
         trigger = once(gummiMissionLevel() == 1 && worldGateId() == mission["gateId"] && GummiMissionJustStarted() && IsEXMission())
             && trigger_when(GummiMissionComplete())
-            && trigger_when(gummiShipRank() == 6)
+            && trigger_when(gummiShipRank() >= 6)
             && never(!IsInLocation("WorldMap"))
             && never(gummiShipPointer() == 0)
     )
@@ -2086,9 +2115,10 @@ for index in gummiMissions
     )
 
     xachievement(title = mission["name"] + " - Ace Pilot", description = "Achieve an S rank in Mission 2 of " + mission["name"] + ".", points = mission["mission2Score"],
+        id = mission["mission2Id"], badge = ToString(mission["badge2Id"]),
         trigger = once(gummiMissionLevel() == 2 && worldGateId() == mission["gateId"] && GummiMissionJustStarted() && !IsEXMission())
             && trigger_when(GummiMissionComplete())
-            && trigger_when(gummiShipRank() == 6)
+            && trigger_when(gummiShipRank() >= 6)
             && never(!IsInLocation("WorldMap"))
             && never(gummiShipPointer() == 0)
     )
@@ -2101,9 +2131,10 @@ for index in gummiMissions
     )
     
     xachievement(title = mission["name"] + " - Ace Pilot EX", description = "Achieve an S rank in EX Mission 2 of " + mission["name"] + ".", points = mission["exMission1Score"],
+        id = mission["exMission2Id"], badge = ToString(mission["exBadge2Id"]),
         trigger = once(gummiMissionLevel() == 2 && worldGateId() == mission["gateId"] && GummiMissionJustStarted() && IsEXMission())
             && trigger_when(GummiMissionComplete())
-            && trigger_when(gummiShipRank() == 6)
+            && trigger_when(gummiShipRank() >= 6)
             && never(!IsInLocation("WorldMap"))
             && never(gummiShipPointer() == 0)
     )
@@ -2116,9 +2147,10 @@ for index in gummiMissions
     )
 
     xachievement(title = mission["name"] + " - Scoresetter", description = "Achieve an S rank in Mission 3 of " + mission["name"] + ".", points = mission["mission3Score"],
+        id = mission["mission3Id"], badge = ToString(mission["badge3Id"]),
         trigger = once(gummiMissionLevel() == 3 && worldGateId() == mission["gateId"] && GummiMissionJustStarted() && !IsEXMission())
             && trigger_when(GummiMissionComplete())
-            && trigger_when(gummiShipRank() == 6)
+            && trigger_when(gummiShipRank() >= 6)
             && never(!IsInLocation("WorldMap"))
             && never(gummiShipPointer() == 0)
     )
@@ -2131,9 +2163,10 @@ for index in gummiMissions
     )
     
     xachievement(title = mission["name"] + " - Scoresetter EX", description = "Achieve an S rank in EX Mission 3 of " + mission["name"] + ".", points = mission["exMission3Score"],
+        id = mission["exMission3Id"], badge = ToString(mission["exBadge3Id"]),
         trigger = once(gummiMissionLevel() == 3 && worldGateId() == mission["gateId"] && GummiMissionJustStarted() && IsEXMission())
             && trigger_when(GummiMissionComplete())
-            && trigger_when(gummiShipRank() == 6)
+            && trigger_when(gummiShipRank() >= 6)
             && never(!IsInLocation("WorldMap"))
             && never(gummiShipPointer() == 0)
     )
@@ -2440,3 +2473,4 @@ if (generateBonusAchievements())
             && trigger_when(WonTheHadesParadoxCup())
     )
 }
+
