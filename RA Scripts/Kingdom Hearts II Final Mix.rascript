@@ -1091,7 +1091,8 @@ xachievement(title = "Maestro - \"Under the Sea\"", description = "Complete \"Un
 function circleIsPressed() => bit5(0x0034d3c1)
 function TurboIsBeingUsed(buttonBit) => repeated(10, Delta(buttonBit) != buttonBit && never(Delta(buttonBit) == buttonBit))
 ursulaRevengeEvent = GetEventByKey("Ursula’s Revenge")
-xachievement(title = "Maestro - \"Ursula's Revenge\"", description = "Empty Ursula's health bar in \"Ursula's revenge\" before the start of the second verse.", points = 25,
+xachievement(title = "Maestro - \"Ursula's Revenge\"", description = "Empty Ursula's health bar in \"Ursula's Revenge\" before the start of the second verse.", points = 25,
+    id = 357001, badge = "402199",
     trigger = once(eventId() == ursulaRevengeEvent["eventId"] && currentSongTime() == 0) && trigger_when(currentSongTime() <= 2400 && SongAdvancedOneFrame() && currentSongScore() >= 10000)
         && never(currentSongScore() < 10000 && currentSongTime() > 2400 && SongAdvancedOneFrame())
         && never(TurboIsBeingUsed(circleIsPressed()))
@@ -2411,7 +2412,9 @@ if (generateBonusAchievements())
         
             achievement(title = dat["eventKey"] + " [m]", description = description, points = dat["score"],
                 trigger = GetCheckpointForRegisteredEvent(dat["eventKey"], when = level() <= 1 && IsAtLeastOnDifficulty("Critical"))
-                    && trigger_when(BonusObtained())
+                    && trigger_when(JustWonBattle())
+                    // Running out of time against Luxord triggers the achievement because the battle state flickers from 0 to 1 (victory) before being set to 3 (nonstandard game over).
+                    && never(timeBattleTimeRemaining() <= 0.0)
             )   
         }
     }
