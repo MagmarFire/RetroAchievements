@@ -385,26 +385,31 @@ function AllCombatantsInGivenSlotAddrsWereJustDefeated(slots, useTrigger = true,
 {
     allGivenCombatantsDefeated = always_true()
     anyGivenCombatantWasJustDefeated = always_false()
+    ret = always_false()
     for slot in slots
     {
         combatant = GetCombatantInGivenSlotAddr(slot)
         allGivenCombatantsDefeated = allGivenCombatantsDefeated && combatant["hp"] == 0 && PointerIsValid(slot)
         wasJustDefeated = CombatantInSlotAddrWasJustDefeated(slot)
         
-        if (useTrigger == true)
-        {
-            wasJustDefeated = trigger_when(wasJustDefeated)
-        }
-        
         anyGivenCombatantWasJustDefeated = anyGivenCombatantWasJustDefeated || wasJustDefeated
+    }
+    
+    if (deferTime > 0)
+    {
+        ret = repeated(deferTime, allGivenCombatantsDefeated) && anyGivenCombatantWasJustDefeated
+    }
+    else
+    {
+        ret = allGivenCombatantsDefeated && anyGivenCombatantWasJustDefeated
     }
     
     if (useTrigger == true)
     {
-        allGivenCombatantsDefeated = trigger_when(allGivenCombatantsDefeated)
+        ret = trigger_when(ret)
     }
     
-    return repeated(deferTime, allGivenCombatantsDefeated) && anyGivenCombatantWasJustDefeated
+    return ret
 }
 
 function slot1DragoonTurnsRemaining() => byte(0x06e62c)
@@ -987,12 +992,12 @@ achievement(
                (word(0x0CCDEC) == 0x0000 && word(0x0BC95C) == 0x1770 && word(0x0BC920) == 0x012C))
 )
 
+function DivineDragonSpirit() => enemySlot2Addr()
 achievement(
     title = "Ful, Losei Dovahkiin?", description = "Defeat the spirit of the Divine Dragon in Mayfil.", points = 25,
     id = 96124, badge = "106736", published = "1/26/2020 9:17:07 PM", modified = "2/3/2020 2:53:03 AM",
-    trigger = word(0x0BB0F8) == 0x01BF && word(0x052C30) == 0x0222 && word(0x0BB0F4) == 0x0044 &&
-              ((prev(word(0x0BC95C)) == 0x1F40 && word(0x0BC95C) == 0x0000) ||
-               (word(0x0CCDEC) == 0x0000 && word(0x0BC95C) == 0x1F40 && word(0x0BC920) == 0x0190))
+    trigger = mapId() == 0x0222 && enemyId() == 0x01BF && EnteredBattleOnce() && never(!IsInBattle())
+        && AllCombatantsInGivenSlotAddrsWereJustDefeated([ DivineDragonSpirit() ], false)
 )
 
 achievement(
