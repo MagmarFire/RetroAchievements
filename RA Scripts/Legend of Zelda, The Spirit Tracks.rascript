@@ -479,7 +479,8 @@ function GenerateSaveProtectedAchievementFromBits(cheevo, bits)
 hyruleField = GetLocationByCode("ForestRealm")
 castleTown = GetLocationByCode("CastleTown")
 Aboda = GetLocationByCode("Aboda")
-achievement(title = "Extra Credit [m]", description = "Pass your final exam with at least 128 seconds left on the clock.", points = 1,
+achievement(title = "Extra Credit [m]", description = "Starting in Aboda Village, pass your final exam with at least 128 seconds left on the clock.", points = 1,
+    id = 110291, badge = "120385",
     trigger = once(Delta(currentLocation()) == Aboda["id"] && currentLocation() == hyruleField["id"])
         && never(timeRemainingInFinalExam() < 128)
         && currentLocation() == castleTown["id"]
