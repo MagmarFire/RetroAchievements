@@ -2021,7 +2021,7 @@ xachievement(title = "Hades Paradox Recordsetter", description = "Win the Hades 
         && trigger_when(WonTheHadesParadoxCup())
 )
 
-xachievement(title = "Hades Paradox Title Defender [m]", description = "Win the Hades Paradox Cup on Proud Mode or higher while adhering to the same achievement conditions for each Paradox Cup's "
+xachievement(title = "Hades Paradox Title Defender", description = "Win the Hades Paradox Cup on Proud Mode or higher while adhering to the same achievement conditions for each Paradox Cup's "
     + "respective set of rounds.", points = 50,
     id = 356973, badge = "402170",
     trigger = HadesParadoxCupCheckpointReached(when = IsAtLeastOnDifficulty("Proud"))
