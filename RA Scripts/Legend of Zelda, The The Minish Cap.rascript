@@ -602,14 +602,14 @@ function CreditsLoaded() => MusicId() == 0x09 && Delta(MusicId()) == 0x00
 
 function ScreenId() => word_be(0x000BF4)
 
-function TookDamage() => byte(0x00AAEA) < Delta(byte(0x00AAEA))
+function JustTookDamage() => byte(0x00AAEA) < Delta(byte(0x00AAEA))
 
 achievement(
     title = "Bested Gyorg Pair[m]", description = "Defeat the Gyorg Pair without taking damage", points = 25,
     id = 2257, badge = "155782", published = "8/16/2013 8:24:47 AM", modified = "1/30/2021 2:29:51 PM",
     trigger = byte(0x0015AC) == 9 && once(byte(0x0015AC) == 1) && once(byte(0x0015AC) == 2) && once(byte(0x0015AC) == 3) && 
               once(byte(0x0015AC) == 4) && once(byte(0x0015AC) == 5) && once(byte(0x0015AC) == 6) && once(byte(0x0015AC) == 7) && 
-              once(byte(0x0015AC) == 8) && ScreenId() == 0x7100 && never(TookDamage()) && 
+              once(byte(0x0015AC) == 8) && ScreenId() == 0x7100 && never(JustTookDamage()) && 
               never(byte(0x0015AC) < Delta(byte(0x0015AC)))
 )
 
@@ -1119,7 +1119,7 @@ achievement(
     title = "Bested Big Green Chuchu [m]", description = "Defeat the Big Green Chuchu without taking damage", points = 10,
     id = 2078, badge = "155845", published = "8/5/2013 5:15:22 AM", modified = "8/5/2013 5:31:38 AM",
     trigger = once(ScreenId() == 0x4900 && MusicId() == 0x2E && Delta(MusicId()) != 0x2E) &&
-              never(TookDamage()) &&
+              never(JustTookDamage()) &&
               trigger_when(bit0(0x00AB42) > Delta(bit0(0x00AB42)))
 )
 
@@ -1142,7 +1142,7 @@ achievement(
     title = "Bested Gleerok [m]", description = "Defeat Gleerok without taking damage", points = 25,
     id = 2086, badge = "155847", published = "8/7/2013 9:26:09 AM", modified = "8/16/2021 2:22:15 AM",
     trigger = once(Delta(ScreenId()) == 0x5012 && ScreenId() == 0x5100 && bit2(0x00AB42) == 0) &&
-              never(TookDamage()) &&
+              never(JustTookDamage()) &&
               trigger_when(bit2(0x00AB42) > Delta(bit2(0x00AB42)))
 )
 
@@ -1150,7 +1150,7 @@ achievement(
     title = "Bested Mazaal [m]", description = "Defeat Mazaal without taking damage", points = 25,
     id = 2188, badge = "155849", published = "8/12/2013 7:16:01 PM", modified = "1/30/2021 2:31:16 PM",
     trigger = once(bit6(0x00ab37) == 0 && ScreenId() == 0x5801 && Delta(ScreenId()) == 0x5816) &&
-              never(TookDamage()) &&
+              never(JustTookDamage()) &&
               trigger_when(bit6(0x00AB37) > Delta(bit6(0x00AB37)))
 )
 
@@ -1168,7 +1168,7 @@ achievement(
               trigger_when(bit0(0x03C364) == 0) &&
               trigger_when(once(bit0(0x03C364) < Delta(bit0(0x03C364)))) &&
               never(byte(0x000BF5) == 15) && 
-              never(TookDamage())
+              never(JustTookDamage())
 )
 
 achievement(
@@ -1178,7 +1178,7 @@ achievement(
               never(ScreenId() == 0x6003) && once(ScreenId() == 0x6008) && ScreenId() == 0x600E && bit4(0x00AB42) == 1 && 
               once(bit4(0x00AB42) > Delta(bit4(0x00AB42))) && never(bit4(0x00AB42) < Delta(bit4(0x00AB42))) && never(byte(0x00AAEB) > Delta(byte(0x00AAEB))) && 
               once(byte(0x0017B4) == 1) && once(byte(0x0017B4) == 2) && once(byte(0x0017B4) == 3) && once(byte(0x0017B4) == 4) && 
-              byte(0x0017B4) == 0 && byte(0x00177D) == 0 && never(TookDamage())
+              byte(0x0017B4) == 0 && byte(0x00177D) == 0 && never(JustTookDamage())
 )
 
 achievement(
@@ -1186,7 +1186,7 @@ achievement(
     id = 2313, badge = "155853", published = "8/19/2013 11:38:00 PM", modified = "1/30/2021 2:31:20 PM",
     trigger = once(ScreenId() == 0x8806) && once(byte(0x00ADC3) == 96) &&
               trigger_when(byte(0x00ADC3) == 239) &&
-              never(TookDamage()) &&
+              never(JustTookDamage()) &&
               never(byte(0x00ADC3) < 0x60) &&
               never(byte(0x00ADC3) == 0x70) &&
               never(MusicId() == 7)
@@ -1207,3 +1207,4 @@ rich_presence_display("{0}{1}{2}{3}{4}{5} [❤️{6}] [🗽{7}] [🧿{8}]",
     rich_presence_value("Figurines", byte(0x00AAF0)),
     rich_presence_value("Fusions", byte(0x00AB57))
 )
+
