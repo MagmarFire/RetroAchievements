@@ -257,7 +257,8 @@ function IsInGame()
     boot = GetLocationByCode("Boot")
     title = GetLocationByCode("Title")
     battle = GetLocationByCode("Battle")
-    return currentLocation() != boot["id"] && currentLocation() != title["id"] && currentLocation() != battle["id"]
+    isInEnglish = word(0x25f584) == 0x300
+    return currentLocation() != boot["id"] && currentLocation() != title["id"] && currentLocation() != battle["id"] && isInEnglish
 }
 
 // $261654: Current location (US) (changes when level is done loading)
@@ -478,7 +479,8 @@ function GenerateSaveProtectedAchievementFromBits(cheevo, bits)
 hyruleField = GetLocationByCode("ForestRealm")
 castleTown = GetLocationByCode("CastleTown")
 Aboda = GetLocationByCode("Aboda")
-achievement(title = "Extra Credit [m]", description = "Pass your final exam with at least 128 seconds left on the clock.", points = 1,
+achievement(title = "Extra Credit [m]", description = "Starting in Aboda Village, pass your final exam with at least 128 seconds left on the clock.", points = 1,
+    id = 110291, badge = "120385",
     trigger = once(Delta(currentLocation()) == Aboda["id"] && currentLocation() == hyruleField["id"])
         && never(timeRemainingInFinalExam() < 128)
         && currentLocation() == castleTown["id"]
@@ -487,42 +489,42 @@ achievement(title = "Extra Credit [m]", description = "Pass your final exam with
 )
 
 // "Fresh from the Academy"
-achievement(title = "Fresh from the Academy",
+achievement(title = "Fresh from the Academy", id = 110292, badge = "120387",
     description = "Acquire the Recruit's Sword and train under Russell, the Captain of the Guard.", points = 1,
     trigger = WasBitflagSetInGame(trainedWithTheRoyalGuard())
         && IsInLocationWithCode("Castle")
 )
 
 // Teamwork Makes the Dream Work
-achievement(title = "Teamwork Makes the Dream Work",
+achievement(title = "Teamwork Makes the Dream Work", id = 110293, badge = "120388",
     description = "Have Zelda possess a Phantom for the first time.", points = 1,
     trigger = WasBitflagSetInGame(possessedAPhantomForTheFirstTime())
         && IsInLocationWithCode("TowerDungeon")
 )
 
 // Forest Mapper
-achievement(title = "Forest Mapper",
+achievement(title = "Forest Mapper", id = 110295, badge = "120389",
     description = "Obtain the Forest Railmap.", points = 3,
     trigger = WasBitflagSetInGame(hasForestRailmap())
         && IsInLocationWithCode("TowerDungeon")
 )
 
 // Snow Mapper
-achievement(title = "Snow Mapper",
+achievement(title = "Snow Mapper", id = 110301, badge = "120396",
     description = "Obtain the Snow Railmap.", points = 3,
     trigger = WasBitflagSetInGame(hasSnowRailmap())
         && IsInLocationWithCode("TowerDungeon")
 )
 
 // Ocean Mapper
-achievement(title = "Ocean Mapper",
+achievement(title = "Ocean Mapper", id = 110388, badge = "120418",
     description = "Obtain the Ocean Railmap.", points = 3,
     trigger = WasBitflagSetInGame(hasOceanRailmap())
         && IsInLocationWithCode("TowerDungeon")
 )
 
 // Fire Mapper
-achievement(title = "Fire Mapper",
+achievement(title = "Fire Mapper", id = 110393, badge = "120423",
     description = "Obtain the Fire Railmap.", points = 3,
     trigger = WasBitflagSetInGame(hasFireRailmap())
         && IsInLocationWithCode("TowerDungeon")
@@ -530,7 +532,7 @@ achievement(title = "Fire Mapper",
 
 // "The Tunnel at the End of the Light"
 function darkRealmRevealed() => bit5(0x264cf5)
-achievement(title = "The Tunnel at the End of the Light",
+achievement(title = "The Tunnel at the End of the Light", id = 110444, badge = "120544",
     description = "Obtain the Compass of Light and reveal the location of the Dark Realm.", points = 3,
     trigger = WasBitflagSetInGame(darkRealmRevealed())
         && IsInLocationWithCode("TowerDungeon")
@@ -550,7 +552,7 @@ achievement(title = "Up-and-Coming Musician",
 // "Duet with the Cellist"
 achievement(title = "Duet with the Cellist",
     description = "Complete your duet with Gage and open the path to the Forest Temple.",
-    points = 3,
+    points = 3, id = 110298, badge = "120392",
     trigger = WasBitflagSetInGame(completedDuetWithGage())
         && IsInLocationWithCode("ForestSanctuary")
 )
@@ -891,7 +893,7 @@ achievement(title = "Third Intention", points = 10,
         && never(TrainingGameIsOver())
 )
 
-leaderboard(title = "Training with the Royal Guard",
+leaderboard(title = "Training with the Royal Guard", id = 7906,
     description = "Get as many strikes in as you can before you yourself get hit three times.",
     start = IsInLocationWithCode("Castle") && StartedTrainingGame(),
     cancel = !IsInLocationWithCode("Castle") || TrainingGameIsOver(),
@@ -1053,9 +1055,9 @@ function GauntletLevel2DoorState() => bit4(0x264d17)
 function GauntletLevel3DoorState() => bit5(0x264d17)
 
 gauntletLevels = [
-    { "level": 1, "doorAddr": GauntletLevel1DoorState(), "timeLimit": 370, "name": "Blitz upon the Few", "points": 5 },
-    { "level": 2, "doorAddr": GauntletLevel2DoorState(), "timeLimit": 730, "name": "Blitz upon the Many", "points": 10 },
-    { "level": 3, "doorAddr": GauntletLevel3DoorState(), "timeLimit": 1650, "name": "Blitz upon All", "points": 25 }
+    { "level": 1, "doorAddr": GauntletLevel1DoorState(), "timeLimit": 370, "name": "Blitz upon the Few", "points": 5, "leaderboardId": 8024 },
+    { "level": 2, "doorAddr": GauntletLevel2DoorState(), "timeLimit": 730, "name": "Blitz upon the Many", "points": 10, "leaderboardId": 8025 },
+    { "level": 3, "doorAddr": GauntletLevel3DoorState(), "timeLimit": 1650, "name": "Blitz upon All", "points": 25, "leaderboardId": 8122 }
 ]
 
 function GauntletIsComplete() => Delta(gauntletState()) == 0x2 && gauntletState() == 0x0
@@ -1069,7 +1071,7 @@ for level in gauntletLevels
             && gauntletTime() / framesPerSecond <= level["timeLimit"]
     )
     
-    leaderboard(title = "Take 'Em All On! - Level " + level["level"],
+    leaderboard(title = "Take 'Em All On! - Level " + level["level"], id = level["leaderboardId"],
         description = "Reach the end of Take 'Em All On! Level " + level["level"] + " as quickly as you can!",
         start = level["doorAddr"] == 0x1 && GauntletCountingDown(),
         cancel = ForfeitedGauntlet(),
@@ -1282,7 +1284,7 @@ gateAddresses = [
 ]
 
 GenerateSaveProtectedAchievementFromBits({
-    "name": "Where We're Going, We Don't Need Tracks",
+    "name": "Where We're Going, We Don't Need Railroads",
     "description": "Activate all Spacetime Gates.",
     "points": 5,
     "threshold": 8,
