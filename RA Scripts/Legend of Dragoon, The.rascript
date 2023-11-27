@@ -29,6 +29,7 @@ function EnteredBattleOnce() => once(Delta(battleMarker()) != battleMarker() && 
 //          0x8005 = world map(?)
 function battleMarker() => word(0xccdec)
 function IsInBattle() => battleMarker() == 0x1021
+function JustLeftBattle() => !IsInBattle() && Delta(battleMarker()) == 0x1021
 
 // $0badae: Total items in inventory
 function itemsInInventory() => byte(0x0badae)
@@ -886,12 +887,23 @@ achievement(
                (word(0x1AD824) == 0x0000 && prev(word(0x1AD824)) == 0x0003))
 )
 
+function slot1DragoonTurnsRemaining() => byte(0x06E62C)
+function slot2DragoonTurnsRemaining() => byte(0x06E630)
+function slot3DragoonTurnsRemaining() => byte(0x06E634)
+function slotIdOfDragoonSpecial() => byte(0x06E648)
+function DragoonLloyd() => enemySlot1Addr()
+
+// This achievement needs a rework. We need to ensure the player actually spends at least six turns in a Dragoon Special. The player can simply wait to pop the special until the end, which
+// was not intended.
+// Additionally, we need to specify 0 HP instead of defeating him because Lloyd will always do an AoE attack when he's brought to 0 HP. This will have to be specified until I can revise this
+// further and trigger the achievement after the cutscene like before.
 achievement(
-    title = "Confidence, or Recklessness?", description = "Defeat Lloyd after triggering at least a second-level Dragoon Special at least once.", points = 10,
+    title = "Confidence, or Recklessness?", description = "Bring Lloyd down to 0 HP after triggering at least a second-level Dragoon Special at least once.", points = 10,
     id = 98127, badge = "108055", published = "2/9/2020 9:25:08 PM", modified = "2/13/2020 10:38:38 PM",
-    trigger = word(0x0BC95C) == 0x2EE0 && once(byte(0x06E62C) > 0x01 && byte(0x06E630) > 0x01 && byte(0x06E634) > 0x01
-               && prev(byte(0x06E648)) == 0xFF && byte(0x06E648) != 0xFF) && 
-              never(prev(word(0x0CCDEC)) != 0x1021 && word(0x0CCDEC) == 0x1021) && word(0x0BB0F8) == 0x0188
+    trigger = trigger_when(once(slot1DragoonTurnsRemaining() > 1 && slot2DragoonTurnsRemaining() > 1 && slot3DragoonTurnsRemaining() > 1
+              && Delta(slotIdOfDragoonSpecial()) == 0xFF && slotIdOfDragoonSpecial() != 0xFF))
+              && never(JustLeftBattle()) && enemyId() == 0x0188
+              && AllCombatantsInGivenSlotAddrsWereJustDefeated([ DragoonLloyd() ], true)
 )
 
 achievement(
