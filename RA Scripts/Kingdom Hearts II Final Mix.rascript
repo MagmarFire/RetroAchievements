@@ -8,6 +8,28 @@ function FALSE() => 0
 function Delta(mem) => prev(mem)
 function ToString(val) => val + ""
 
+function apBoostsUsedOnSora() => byte(0x0032e028)
+function powerBoostsUsedOnSora() => byte(0x0032e029)
+function magicBoostsUsedOnSora() => byte(0x0032e02a)
+function defenseBoostsUsedOnSora() => byte(0x0032e02b)
+
+// The player starts with 50 AP on Critical Mode (and get 2 additional AP depending on how much munny they grind in the prologue, totaling to 52).
+// The single boosts are gained depending on the weapon Roxas chooses at the beginning, so any one battle stat may be 1 or 0 depending on this choice.
+// Checking for all three different combinations, unfortunately, is too complicated for RATools to handle, so I'm *technically* going to allow players to
+// use one stat boost in both of the stats they didn't choose at the beginning to simplify the logic. It's not ideal, obviously, but in the long run, a single
+// stat boost in each stat probably won't make much of a difference anyway.
+function IsLevel1() => level() <= 1
+function IsOnCriticalMode() => IsAtLeastOnDifficulty("Critical")
+function HasLowEnoughAP() => apBoostsUsedOnSora() <= 52
+function HasFewPowerBoosts() => powerBoostsUsedOnSora() <= 1
+function HasFewMagicBoosts() => magicBoostsUsedOnSora() <= 1
+function HasFewDefenseBoosts() => defenseBoostsUsedOnSora() <= 1
+
+function IsSatisfyingLevel1CriticalModeConditions()
+{
+    return IsLevel1() && IsOnCriticalMode() && HasLowEnoughAP() && HasFewPowerBoosts() && HasFewMagicBoosts() && HasFewDefenseBoosts()
+}
+
 function xachievement(title, description, points, trigger, badge = "00000", id = 0)
 {
     if (!generateBonusAchievements())
@@ -63,7 +85,7 @@ areas = {
 }
 
 registeredEvents = {
-2: { "eventKey": "Twilight Thorn", "locationCode": "StationOfAwakening", "eventId": 0x9d, "score": 1, "isBoss": 1, "lv1": 1, "isProper": 0 }, 3: { "eventKey": "Axel", "locationCode": "BasementHallAxel", "eventId": 0x89, "score": 5, "isBoss": 1, "lv1": 1, "isProper": 1 }, 4: { "eventKey": "Shan-Yu", "locationCode": "PalaceGate", "eventId": 0x4b, "score": 10, "isBoss": 1, "lv1": 1, "isProper": 1 }, 5: { "eventKey": "Thresholder", "locationCode": "Undercroft", "eventId": 0x48, "score": 10, "isBoss": 1, "lv1": 1, "isProper": 0 }, 6: { "eventKey": "Dark Thorn", "locationCode": "BallroomBattle", "eventId": 0x4f, "score": 10, "isBoss": 1, "lv1": 1, "isProper": 0 }, 7: { "eventKey": "Cerberus", "locationCode": "CaveOfTheDeadEntrance", "eventId": 0x72, "score": 10, "isBoss": 1, "lv1": 1, "isProper": 1 }, 8: { "eventKey": "Olympus Pete", "locationCode": "UnderworldLock2", "eventId": 0x74, "score": 5, "isBoss": 1, "lv1": 1, "isProper": 1 }, 9: { "eventKey": "Timeless Pete", "locationCode": "RiverWharf", "eventId": 0x35, "score": 10, "isBoss": 1, "lv1": 1, "isProper": 1 }, 10: { "eventKey": "Hydra", "locationCode": "ColiseumGatesRuined", "eventId": 0xab, "score": 10, "isBoss": 1, "lv1": 1, "isProper": 0 }, 11: { "eventKey": "Barbossa", "locationCode": "PortHeap", "eventId": 0x3c, "score": 25, "isBoss": 1, "lv1": 1, "isProper": 1 }, 12: { "eventKey": "Prison Keeper", "locationCode": "HalloweenHill", "eventId": 0x34, "score": 10, "isBoss": 1, "lv1": 1, "isProper": 0 }, 13: { "eventKey": "Oogie Boogie", "locationCode": "HalloweenFactory", "eventId": 0x37, "score": 10, "isBoss": 1, "lv1": 1, "isProper": 1 }, 14: { "eventKey": "Volcano and Blizzard Lords", "locationCode": "AgrabahPalace", "eventId": 0x3b, "score": 5, "isBoss": 1, "lv1": 1, "isProper": 0 }, 15: { "eventKey": "Scar", "locationCode": "PridePeakBattle", "eventId": 0x37, "score": 25, "isBoss": 1, "lv1": 1, "isProper": 1 }, 16: { "eventKey": "Pain and Panic Cup", "locationCode": "ColiseumTourney1", "eventId": 0xbd, "score": 10, "isBoss": 0, "lv1": 0, "isProper": 1 }, 17: { "eventKey": "Monitors", "locationCode": "SpaceDataspace", "eventId": 0x36, "score": 0, "isBoss": 0, "lv1": 0, "isProper": 1 }, 18: { "eventKey": "Hostile Program", "locationCode": "SpaceIOTowerHallway", "eventId": 0x37, "score": 10, "isBoss": 1, "lv1": 1, "isProper": 0 }, 19: { "eventKey": "Demyx", "locationCode": "CastleGate", "eventId": 0x37, "score": 25, "isBoss": 1, "lv1": 1, "isProper": 1 }, 20: { "eventKey": "Battle of 1000 Heartless", "locationCode": "GreatMaw", "eventId": 0x42, "score": 10, "isBoss": 0, "lv1": 1, "isProper": 1 }, 21: { "eventKey": "Storm Rider", "locationCode": "ImperialSquare", "eventId": 0x4f, "score": 10, "isBoss": 1, "lv1": 1, "isProper": 0 }, 22: { "eventKey": "Xaldin", "locationCode": "BeastBridge", "eventId": 0x52, "score": 25, "isBoss": 1, "lv1": 1, "isProper": 1 }, 23: { "eventKey": "Hades", "locationCode": "ColiseumTourneyHades", "eventId": 0xca, "score": 10, "isBoss": 1, "lv1": 1, "isProper": 1 }, 24: { "eventKey": "Grim Reaper II", "locationCode": "PortHarbor", "eventId": 0x36, "score": 5, "isBoss": 1, "lv1": 1, "isProper": 0 }, 25: { "eventKey": "Experiment", "locationCode": "HalloweenPlaza", "eventId": 0x40, "score": 25, "isBoss": 1, "lv1": 1, "isProper": 0 }, 26: { "eventKey": "Sandswept Ruins Escape", "locationCode": "AgrabahSand", "eventId": 0x3d, "score": 0, "isBoss": 0, "lv1": 0, "isProper": 1 }, 27: { "eventKey": "Jafar", "locationCode": "AgrabahAbove", "eventId": 0x3e, "score": 10, "isBoss": 1, "lv1": 1, "isProper": 1 }, 28: { "eventKey": "Groundshaker", "locationCode": "PrideSavannahBattle", "eventId": 0x3b, "score": 10, "isBoss": 1, "lv1": 1, "isProper": 0 }, 29: { "eventKey": "Solar Sailer", "locationCode": "SpaceSailerBattle", "eventId": 0x39, "score": 0, "isBoss": 0, "lv1": 0, "isProper": 1 }, 30: { "eventKey": "MCP", "locationCode": "SpaceCore", "eventId": 0x3b, "score": 10, "isBoss": 1, "lv1": 1, "isProper": 0 }, 31: { "eventKey": "Sephiroth", "locationCode": "DarkDepths", "eventId": 0x4b, "score": 50, "isBoss": 1, "lv1": 1, "isProper": 1 }, 32: { "eventKey": "Roxas", "locationCode": "NeverStation", "eventId": 0x41, "score": 25, "isBoss": 1, "lv1": 1, "isProper": 1 }, 33: { "eventKey": "Xigbar", "locationCode": "NeverHall", "eventId": 0x39, "score": 10, "isBoss": 1, "lv1": 1, "isProper": 1 }, 34: { "eventKey": "Luxord", "locationCode": "NeverDivide", "eventId": 0x3a, "score": 5, "isBoss": 1, "lv1": 1, "isProper": 1 }, 35: { "eventKey": "Saïx", "locationCode": "NeverImpasse", "eventId": 0x38, "score": 10, "isBoss": 1, "lv1": 1, "isProper": 1 }, 36: { "eventKey": "Xemnas I", "locationCode": "NeverContortion", "eventId": 0x3b, "score": 10, "isBoss": 1, "lv1": 1, "isProper": 1 }, 37: { "eventKey": "Xemnas Cannons", "locationCode": "NeverCannons", "eventId": 0x45, "score": 0, "isBoss": 0, "lv1": 0, "isProper": 0 }, 38: { "eventKey": "Ending Sequence", "locationCode": "DarkMargin", "eventId": 0x3a, "score": 0, "isBoss": 0, "lv1": 0, "isProper": 1 }, 39: { "eventKey": "Final Xemnas", "locationCode": "NeverFinal", "eventId": 0x4a, "score": 50, "isBoss": 1, "lv1": 1, "isProper": 1 }, 40: { "eventKey": "Mail Delivery", "locationCode": "StationHeights", "eventId": 0xc3, "score": 0, "isBoss": 0, "lv1": 0, "isProper": 0 }, 41: { "eventKey": "Cargo Climb", "locationCode": "StationHeights", "eventId": 0xc1, "score": 0, "isBoss": 0, "lv1": 0, "isProper": 0 }, 42: { "eventKey": "Grandstander", "locationCode": "StationHeights", "eventId": 0xc2, "score": 0, "isBoss": 0, "lv1": 0, "isProper": 0 }, 43: { "eventKey": "Poster Duty", "locationCode": "TramCommon", "eventId": 0xc9, "score": 0, "isBoss": 0, "lv1": 0, "isProper": 0 }, 44: { "eventKey": "Bumble-Buster", "locationCode": "TramCommon", "eventId": 0xc8, "score": 0, "isBoss": 0, "lv1": 0, "isProper": 0 }, 45: { "eventKey": "Junk Sweep", "locationCode": "TramCommon", "eventId": 0xc7, "score": 0, "isBoss": 0, "lv1": 0, "isProper": 0 }, 46: { "eventKey": "Struggle: Hayner", "locationCode": "Sandlot", "eventId": 0xb6, "score": 0, "isBoss": 0, "lv1": 0, "isProper": 0 }, 47: { "eventKey": "Struggle: Setzer", "locationCode": "Sandlot", "eventId": 0xb7, "score": 0, "isBoss": 0, "lv1": 0, "isProper": 0 }, 48: { "eventKey": "Struggle: Seifer", "locationCode": "Sandlot", "eventId": 0xb8, "score": 0, "isBoss": 0, "lv1": 0, "isProper": 0 }, 49: { "eventKey": "Skateboard Street Rave", "locationCode": "TramCommon", "eventId": 0xbb, "score": 0, "isBoss": 0, "lv1": 0, "isProper": 0 }, 50: { "eventKey": "Zexion’s Absent Silhouette", "locationCode": "DestinyStorm", "eventId": 0x97, "score": 10, "isBoss": 1, "lv1": 1, "isProper": 1 }, 51: { "eventKey": "Marluxia’s Absent Silhouette", "locationCode": "StationOfOblivion", "eventId": 0x91, "score": 10, "isBoss": 1, "lv1": 1, "isProper": 1 }, 52: { "eventKey": "Larxene’s Absent Silhouette", "locationCode": "StationOfOblivion2", "eventId": 0x9b, "score": 10, "isBoss": 1, "lv1": 1, "isProper": 1 }, 53: { "eventKey": "Lexaeus’s Absent Silhouette", "locationCode": "StationOfOblivion2", "eventId": 0x8e, "score": 10, "isBoss": 1, "lv1": 1, "isProper": 1 }, 54: { "eventKey": "Vexen’s Absent Silhouette", "locationCode": "StationOfOblivionMansion", "eventId": 0x73, "score": 10, "isBoss": 1, "lv1": 1, "isProper": 1 }, 55: { "eventKey": "Phil’s Training – Maniac Mode", "locationCode": "ColiseumGatesRuined2", "eventId": 0x8f, "score": 0, "isBoss": 0, "lv1": 0, "isProper": 0 }, 56: { "eventKey": "Skateboard Freestyle", "locationCode": "Borough", "eventId": 0x64, "score": 0, "isBoss": 0, "lv1": 0, "isProper": 0 }, 57: { "eventKey": "Skateboard Time Attack", "locationCode": "PortTown", "eventId": 0x58, "score": 0, "isBoss": 0, "lv1": 0, "isProper": 0 }, 58: { "eventKey": "Skateboard Sand Slider", "locationCode": "Agrabah", "eventId": 0x6e, "score": 0, "isBoss": 0, "lv1": 0, "isProper": 0 }, 59: { "eventKey": "Skateboard Workshop Rave", "locationCode": "HalloweenFactory", "eventId": 0x4b, "score": 0, "isBoss": 0, "lv1": 0, "isProper": 0 }, 60: { "eventKey": "Light Cycle", "locationCode": "SpaceGrid", "eventId": 0x3f, "score": 0, "isBoss": 0, "lv1": 0, "isProper": 0 }, 61: { "eventKey": "A Blustery Rescue", "locationCode": "PigletRescue", "eventId": 0x45, "score": 0, "isBoss": 0, "lv1": 0, "isProper": 0 }, 62: { "eventKey": "Hunny Slider", "locationCode": "HunnySlider", "eventId": 0x46, "score": 0, "isBoss": 0, "lv1": 0, "isProper": 0 }, 63: { "eventKey": "Balloon Bounce", "locationCode": "BalloonBounce", "eventId": 0x47, "score": 0, "isBoss": 0, "lv1": 0, "isProper": 0 }, 64: { "eventKey": "The Expotition", "locationCode": "SpookyCave", "eventId": 0x48, "score": 0, "isBoss": 0, "lv1": 0, "isProper": 0 }, 65: { "eventKey": "The Hunny Pot", "locationCode": "StarryHill", "eventId": 0x49, "score": 0, "isBoss": 0, "lv1": 0, "isProper": 0 }, 66: { "eventKey": "Swim This Way", "locationCode": "AtlanticaOrchestra", "eventId": 0x42, "score": 0, "isBoss": 0, "lv1": 0, "isProper": 0 }, 67: { "eventKey": "Part of Your World", "locationCode": "AtlanticaGrotto", "eventId": 0x43, "score": 0, "isBoss": 0, "lv1": 0, "isProper": 0 }, 68: { "eventKey": "Under the Sea", "locationCode": "AtlanticaCourtyard", "eventId": 0x44, "score": 0, "isBoss": 0, "lv1": 0, "isProper": 0 }, 69: { "eventKey": "Ursula’s Revenge", "locationCode": "AtlanticaWrath", "eventId": 0x45, "score": 0, "isBoss": 0, "lv1": 0, "isProper": 0 }, 70: { "eventKey": "A New Day Is Dawning", "locationCode": "AtlanticaOrchestra", "eventId": 0x46, "score": 0, "isBoss": 0, "lv1": 0, "isProper": 0 }, 71: { "eventKey": "Gift Wrapping", "locationCode": "HalloweenWrapping", "eventId": 0x48, "score": 0, "isBoss": 0, "lv1": 0, "isProper": 0 }, 72: { "eventKey": "Xemnas Dragon", "locationCode": "NeverDragon", "eventId": 0x48, "score": 0, "isBoss": 0, "lv1": 0, "isProper": 0 }, 73: { "eventKey": "Magic Carpet", "locationCode": "AgrabahSand", "eventId": 0x6f, "score": 0, "isBoss": 0, "lv1": 0, "isProper": 0 }, 74: { "eventKey": "Data Luxord", "locationCode": "NeverDivide", "eventId": 0x65, "score": 25, "isBoss": 1, "lv1": 1, "isProper": 1 }, 75: { "eventKey": "Data Xemnas 1", "locationCode": "NeverContortion", "eventId": 0x61, "score": 50, "isBoss": 1, "lv1": 1, "isProper": 1 }, 76: { "eventKey": "Data Xemnas 2", "locationCode": "NeverFinal", "eventId": 0x62, "score": 100, "isBoss": 1, "lv1": 1, "isProper": 1 }, 77: { "eventKey": "Data Xigbar", "locationCode": "NeverHall", "eventId": 0x64, "score": 50, "isBoss": 1, "lv1": 1, "isProper": 1 }, 78: { "eventKey": "Data Xaldin", "locationCode": "BeastBridge", "eventId": 0x61, "score": 50, "isBoss": 1, "lv1": 1, "isProper": 1 }, 79: { "eventKey": "Data Vexen", "locationCode": "StationOfOblivionMansion", "eventId": 0x92, "score": 50, "isBoss": 1, "lv1": 1, "isProper": 1 }, 80: { "eventKey": "Data Lexaeus", "locationCode": "StationOfOblivion2", "eventId": 0x93, "score": 25, "isBoss": 1, "lv1": 1, "isProper": 1 }, 81: { "eventKey": "Data Zexion", "locationCode": "DestinyStorm", "eventId": 0x98, "score": 50, "isBoss": 1, "lv1": 1, "isProper": 1 }, 82: { "eventKey": "Data Saïx", "locationCode": "NeverImpasse", "eventId": 0x66, "score": 50, "isBoss": 1, "lv1": 1, "isProper": 1 }, 83: { "eventKey": "Data Axel", "locationCode": "BasementHallAxel", "eventId": 0xd5, "score": 50, "isBoss": 1, "lv1": 1, "isProper": 1 }, 84: { "eventKey": "Data Demyx", "locationCode": "CastleGate", "eventId": 0x72, "score": 50, "isBoss": 1, "lv1": 1, "isProper": 1 }, 85: { "eventKey": "Data Marluxia", "locationCode": "StationOfOblivion", "eventId": 0x96, "score": 100, "isBoss": 1, "lv1": 1, "isProper": 1 }, 86: { "eventKey": "Data Larxene", "locationCode": "StationOfOblivion2", "eventId": 0x94, "score": 50, "isBoss": 1, "lv1": 1, "isProper": 1 }, 87: { "eventKey": "Data Roxas", "locationCode": "NeverStation", "eventId": 0x63, "score": 50, "isBoss": 1, "lv1": 1, "isProper": 1 }, 88: { "eventKey": "Lingering Will", "locationCode": "GraveyardBadlands", "eventId": 0x43, "score": 100, "isBoss": 1, "lv1": 0, "isProper": 0 }, 89: { "eventKey": "Lingering Will 2", "locationCode": "GraveyardBadlands", "eventId": 0x49, "score": 100, "isBoss": 1, "lv1": 0, "isProper": 0 }, 
+2: { "eventKey": "Twilight Thorn", "locationCode": "StationOfAwakening", "eventId": 0x9d, "score": 1, "isBoss": 1, "lv1": 1, "isProper": 0, "achId": 375937, "badgeId": "422503", "timeBattle": 0 }, 3: { "eventKey": "Axel", "locationCode": "BasementHallAxel", "eventId": 0x89, "score": 5, "isBoss": 1, "lv1": 1, "isProper": 1, "achId": 375938, "badgeId": "422504", "timeBattle": 0 }, 4: { "eventKey": "Shan-Yu", "locationCode": "PalaceGate", "eventId": 0x4b, "score": 10, "isBoss": 1, "lv1": 1, "isProper": 1, "achId": 375939, "badgeId": "422505", "timeBattle": 0 }, 5: { "eventKey": "Thresholder", "locationCode": "Undercroft", "eventId": 0x48, "score": 10, "isBoss": 1, "lv1": 1, "isProper": 0, "achId": 375940, "badgeId": "422506", "timeBattle": 0 }, 6: { "eventKey": "Dark Thorn", "locationCode": "BallroomBattle", "eventId": 0x4f, "score": 10, "isBoss": 1, "lv1": 1, "isProper": 0, "achId": 375941, "badgeId": "422507", "timeBattle": 0 }, 7: { "eventKey": "Cerberus", "locationCode": "CaveOfTheDeadEntrance", "eventId": 0x72, "score": 10, "isBoss": 1, "lv1": 1, "isProper": 1, "achId": 375942, "badgeId": "422508", "timeBattle": 0 }, 8: { "eventKey": "Olympus Pete", "locationCode": "UnderworldLock2", "eventId": 0x74, "score": 5, "isBoss": 1, "lv1": 1, "isProper": 1, "achId": 375943, "badgeId": "422509", "timeBattle": 0 }, 9: { "eventKey": "Timeless Pete", "locationCode": "RiverWharf", "eventId": 0x35, "score": 10, "isBoss": 1, "lv1": 1, "isProper": 1, "achId": 375944, "badgeId": "422510", "timeBattle": 0 }, 10: { "eventKey": "Hydra", "locationCode": "ColiseumGatesRuined", "eventId": 0xab, "score": 10, "isBoss": 1, "lv1": 1, "isProper": 0, "achId": 375945, "badgeId": "422511", "timeBattle": 0 }, 11: { "eventKey": "Barbossa", "locationCode": "PortHeap", "eventId": 0x3c, "score": 25, "isBoss": 1, "lv1": 1, "isProper": 1, "achId": 375946, "badgeId": "422512", "timeBattle": 0 }, 12: { "eventKey": "Prison Keeper", "locationCode": "HalloweenHill", "eventId": 0x34, "score": 10, "isBoss": 1, "lv1": 1, "isProper": 0, "achId": 375947, "badgeId": "422513", "timeBattle": 0 }, 13: { "eventKey": "Oogie Boogie", "locationCode": "HalloweenFactory", "eventId": 0x37, "score": 10, "isBoss": 1, "lv1": 1, "isProper": 1, "achId": 375948, "badgeId": "422514", "timeBattle": 0 }, 14: { "eventKey": "Volcano and Blizzard Lords", "locationCode": "AgrabahPalace", "eventId": 0x3b, "score": 5, "isBoss": 1, "lv1": 1, "isProper": 0, "achId": 375949, "badgeId": "422515", "timeBattle": 0 }, 15: { "eventKey": "Scar", "locationCode": "PridePeakBattle", "eventId": 0x37, "score": 25, "isBoss": 1, "lv1": 1, "isProper": 1, "achId": 375950, "badgeId": "422516", "timeBattle": 0 }, 16: { "eventKey": "Pain and Panic Cup", "locationCode": "ColiseumTourney1", "eventId": 0xbd, "score": 10, "isBoss": 0, "lv1": 0, "isProper": 1, "achId": 0, "badgeId": "0", "timeBattle": 0 }, 17: { "eventKey": "Monitors", "locationCode": "SpaceDataspace", "eventId": 0x36, "score": 0, "isBoss": 0, "lv1": 0, "isProper": 1, "achId": 0, "badgeId": "0", "timeBattle": 0 }, 18: { "eventKey": "Hostile Program", "locationCode": "SpaceIOTowerHallway", "eventId": 0x37, "score": 10, "isBoss": 1, "lv1": 1, "isProper": 0, "achId": 375951, "badgeId": "422517", "timeBattle": 0 }, 19: { "eventKey": "Demyx", "locationCode": "CastleGate", "eventId": 0x37, "score": 25, "isBoss": 1, "lv1": 1, "isProper": 1, "achId": 375952, "badgeId": "422518", "timeBattle": 0 }, 20: { "eventKey": "Battle of 1000 Heartless", "locationCode": "GreatMaw", "eventId": 0x42, "score": 10, "isBoss": 0, "lv1": 1, "isProper": 1, "achId": 375953, "badgeId": "422519", "timeBattle": 0 }, 21: { "eventKey": "Storm Rider", "locationCode": "ImperialSquare", "eventId": 0x4f, "score": 10, "isBoss": 1, "lv1": 1, "isProper": 0, "achId": 375954, "badgeId": "422520", "timeBattle": 0 }, 22: { "eventKey": "Xaldin", "locationCode": "BeastBridge", "eventId": 0x52, "score": 25, "isBoss": 1, "lv1": 1, "isProper": 1, "achId": 375955, "badgeId": "422521", "timeBattle": 0 }, 23: { "eventKey": "Hades", "locationCode": "ColiseumTourneyHades", "eventId": 0xca, "score": 10, "isBoss": 1, "lv1": 1, "isProper": 1, "achId": 375956, "badgeId": "422522", "timeBattle": 0 }, 24: { "eventKey": "Grim Reaper II", "locationCode": "PortHarbor", "eventId": 0x36, "score": 5, "isBoss": 1, "lv1": 1, "isProper": 0, "achId": 375957, "badgeId": "422523", "timeBattle": 0 }, 25: { "eventKey": "Experiment", "locationCode": "HalloweenPlaza", "eventId": 0x40, "score": 25, "isBoss": 1, "lv1": 1, "isProper": 0, "achId": 375958, "badgeId": "422524", "timeBattle": 0 }, 26: { "eventKey": "Sandswept Ruins Escape", "locationCode": "AgrabahSand", "eventId": 0x3d, "score": 0, "isBoss": 0, "lv1": 0, "isProper": 1, "achId": 0, "badgeId": "0", "timeBattle": 0 }, 27: { "eventKey": "Jafar", "locationCode": "AgrabahAbove", "eventId": 0x3e, "score": 10, "isBoss": 1, "lv1": 1, "isProper": 1, "achId": 375959, "badgeId": "422525", "timeBattle": 0 }, 28: { "eventKey": "Groundshaker", "locationCode": "PrideSavannahBattle", "eventId": 0x3b, "score": 10, "isBoss": 1, "lv1": 1, "isProper": 0, "achId": 375960, "badgeId": "422526", "timeBattle": 0 }, 29: { "eventKey": "Solar Sailer", "locationCode": "SpaceSailerBattle", "eventId": 0x39, "score": 0, "isBoss": 0, "lv1": 0, "isProper": 1, "achId": 0, "badgeId": "0", "timeBattle": 0 }, 30: { "eventKey": "MCP", "locationCode": "SpaceCore", "eventId": 0x3b, "score": 10, "isBoss": 1, "lv1": 1, "isProper": 0, "achId": 375961, "badgeId": "422527", "timeBattle": 0 }, 31: { "eventKey": "Sephiroth", "locationCode": "DarkDepths", "eventId": 0x4b, "score": 50, "isBoss": 1, "lv1": 1, "isProper": 1, "achId": 375962, "badgeId": "422528", "timeBattle": 0 }, 32: { "eventKey": "Roxas", "locationCode": "NeverStation", "eventId": 0x41, "score": 25, "isBoss": 1, "lv1": 1, "isProper": 1, "achId": 375963, "badgeId": "422529", "timeBattle": 0 }, 33: { "eventKey": "Xigbar", "locationCode": "NeverHall", "eventId": 0x39, "score": 10, "isBoss": 1, "lv1": 1, "isProper": 1, "achId": 375964, "badgeId": "422530", "timeBattle": 0 }, 34: { "eventKey": "Luxord", "locationCode": "NeverDivide", "eventId": 0x3a, "score": 5, "isBoss": 1, "lv1": 1, "isProper": 1, "achId": 375965, "badgeId": "422531", "timeBattle": 1 }, 35: { "eventKey": "Saïx", "locationCode": "NeverImpasse", "eventId": 0x38, "score": 10, "isBoss": 1, "lv1": 1, "isProper": 1, "achId": 375967, "badgeId": "422532", "timeBattle": 0 }, 36: { "eventKey": "Xemnas I", "locationCode": "NeverContortion", "eventId": 0x3b, "score": 10, "isBoss": 1, "lv1": 1, "isProper": 1, "achId": 375975, "badgeId": "422540", "timeBattle": 0 }, 37: { "eventKey": "Xemnas Cannons", "locationCode": "NeverCannons", "eventId": 0x45, "score": 0, "isBoss": 0, "lv1": 0, "isProper": 0, "achId": 0, "badgeId": "0", "timeBattle": 0 }, 38: { "eventKey": "Ending Sequence", "locationCode": "DarkMargin", "eventId": 0x3a, "score": 0, "isBoss": 0, "lv1": 0, "isProper": 1, "achId": 0, "badgeId": "0", "timeBattle": 0 }, 39: { "eventKey": "Final Xemnas", "locationCode": "NeverFinal", "eventId": 0x4a, "score": 50, "isBoss": 1, "lv1": 1, "isProper": 1, "achId": 375969, "badgeId": "422534", "timeBattle": 0 }, 40: { "eventKey": "Mail Delivery", "locationCode": "StationHeights", "eventId": 0xc3, "score": 0, "isBoss": 0, "lv1": 0, "isProper": 0, "achId": 0, "badgeId": "0", "timeBattle": 0 }, 41: { "eventKey": "Cargo Climb", "locationCode": "StationHeights", "eventId": 0xc1, "score": 0, "isBoss": 0, "lv1": 0, "isProper": 0, "achId": 0, "badgeId": "0", "timeBattle": 0 }, 42: { "eventKey": "Grandstander", "locationCode": "StationHeights", "eventId": 0xc2, "score": 0, "isBoss": 0, "lv1": 0, "isProper": 0, "achId": 0, "badgeId": "0", "timeBattle": 0 }, 43: { "eventKey": "Poster Duty", "locationCode": "TramCommon", "eventId": 0xc9, "score": 0, "isBoss": 0, "lv1": 0, "isProper": 0, "achId": 0, "badgeId": "0", "timeBattle": 0 }, 44: { "eventKey": "Bumble-Buster", "locationCode": "TramCommon", "eventId": 0xc8, "score": 0, "isBoss": 0, "lv1": 0, "isProper": 0, "achId": 0, "badgeId": "0", "timeBattle": 0 }, 45: { "eventKey": "Junk Sweep", "locationCode": "TramCommon", "eventId": 0xc7, "score": 0, "isBoss": 0, "lv1": 0, "isProper": 0, "achId": 0, "badgeId": "0", "timeBattle": 0 }, 46: { "eventKey": "Struggle: Hayner", "locationCode": "Sandlot", "eventId": 0xb6, "score": 0, "isBoss": 0, "lv1": 0, "isProper": 0, "achId": 0, "badgeId": "0", "timeBattle": 0 }, 47: { "eventKey": "Struggle: Setzer", "locationCode": "Sandlot", "eventId": 0xb7, "score": 0, "isBoss": 0, "lv1": 0, "isProper": 0, "achId": 0, "badgeId": "0", "timeBattle": 0 }, 48: { "eventKey": "Struggle: Seifer", "locationCode": "Sandlot", "eventId": 0xb8, "score": 0, "isBoss": 0, "lv1": 0, "isProper": 0, "achId": 0, "badgeId": "0", "timeBattle": 0 }, 49: { "eventKey": "Skateboard Street Rave", "locationCode": "TramCommon", "eventId": 0xbb, "score": 0, "isBoss": 0, "lv1": 0, "isProper": 0, "achId": 0, "badgeId": "0", "timeBattle": 0 }, 50: { "eventKey": "Zexion’s Absent Silhouette", "locationCode": "DestinyStorm", "eventId": 0x97, "score": 10, "isBoss": 1, "lv1": 1, "isProper": 1, "achId": 375970, "badgeId": "422535", "timeBattle": 0 }, 51: { "eventKey": "Marluxia’s Absent Silhouette", "locationCode": "StationOfOblivion", "eventId": 0x91, "score": 10, "isBoss": 1, "lv1": 1, "isProper": 1, "achId": 375971, "badgeId": "422536", "timeBattle": 0 }, 52: { "eventKey": "Larxene’s Absent Silhouette", "locationCode": "StationOfOblivion2", "eventId": 0x9b, "score": 10, "isBoss": 1, "lv1": 1, "isProper": 1, "achId": 375972, "badgeId": "422537", "timeBattle": 0 }, 53: { "eventKey": "Lexaeus’s Absent Silhouette", "locationCode": "StationOfOblivion2", "eventId": 0x8e, "score": 10, "isBoss": 1, "lv1": 1, "isProper": 1, "achId": 375973, "badgeId": "422538", "timeBattle": 0 }, 54: { "eventKey": "Vexen’s Absent Silhouette", "locationCode": "StationOfOblivionMansion", "eventId": 0x73, "score": 10, "isBoss": 1, "lv1": 1, "isProper": 1, "achId": 375974, "badgeId": "422539", "timeBattle": 0 }, 55: { "eventKey": "Phil’s Training – Maniac Mode", "locationCode": "ColiseumGatesRuined2", "eventId": 0x8f, "score": 0, "isBoss": 0, "lv1": 0, "isProper": 0, "achId": 0, "badgeId": "0", "timeBattle": 0 }, 56: { "eventKey": "Skateboard Freestyle", "locationCode": "Borough", "eventId": 0x64, "score": 0, "isBoss": 0, "lv1": 0, "isProper": 0, "achId": 0, "badgeId": "0", "timeBattle": 0 }, 57: { "eventKey": "Skateboard Time Attack", "locationCode": "PortTown", "eventId": 0x58, "score": 0, "isBoss": 0, "lv1": 0, "isProper": 0, "achId": 0, "badgeId": "0", "timeBattle": 0 }, 58: { "eventKey": "Skateboard Sand Slider", "locationCode": "Agrabah", "eventId": 0x6e, "score": 0, "isBoss": 0, "lv1": 0, "isProper": 0, "achId": 0, "badgeId": "0", "timeBattle": 0 }, 59: { "eventKey": "Skateboard Workshop Rave", "locationCode": "HalloweenFactory", "eventId": 0x4b, "score": 0, "isBoss": 0, "lv1": 0, "isProper": 0, "achId": 0, "badgeId": "0", "timeBattle": 0 }, 60: { "eventKey": "Light Cycle", "locationCode": "SpaceGrid", "eventId": 0x3f, "score": 0, "isBoss": 0, "lv1": 0, "isProper": 0, "achId": 0, "badgeId": "0", "timeBattle": 0 }, 61: { "eventKey": "A Blustery Rescue", "locationCode": "PigletRescue", "eventId": 0x45, "score": 0, "isBoss": 0, "lv1": 0, "isProper": 0, "achId": 0, "badgeId": "0", "timeBattle": 0 }, 62: { "eventKey": "Hunny Slider", "locationCode": "HunnySlider", "eventId": 0x46, "score": 0, "isBoss": 0, "lv1": 0, "isProper": 0, "achId": 0, "badgeId": "0", "timeBattle": 0 }, 63: { "eventKey": "Balloon Bounce", "locationCode": "BalloonBounce", "eventId": 0x47, "score": 0, "isBoss": 0, "lv1": 0, "isProper": 0, "achId": 0, "badgeId": "0", "timeBattle": 0 }, 64: { "eventKey": "The Expotition", "locationCode": "SpookyCave", "eventId": 0x48, "score": 0, "isBoss": 0, "lv1": 0, "isProper": 0, "achId": 0, "badgeId": "0", "timeBattle": 0 }, 65: { "eventKey": "The Hunny Pot", "locationCode": "StarryHill", "eventId": 0x49, "score": 0, "isBoss": 0, "lv1": 0, "isProper": 0, "achId": 0, "badgeId": "0", "timeBattle": 0 }, 66: { "eventKey": "Swim This Way", "locationCode": "AtlanticaOrchestra", "eventId": 0x42, "score": 0, "isBoss": 0, "lv1": 0, "isProper": 0, "achId": 0, "badgeId": "0", "timeBattle": 0 }, 67: { "eventKey": "Part of Your World", "locationCode": "AtlanticaGrotto", "eventId": 0x43, "score": 0, "isBoss": 0, "lv1": 0, "isProper": 0, "achId": 0, "badgeId": "0", "timeBattle": 0 }, 68: { "eventKey": "Under the Sea", "locationCode": "AtlanticaCourtyard", "eventId": 0x44, "score": 0, "isBoss": 0, "lv1": 0, "isProper": 0, "achId": 0, "badgeId": "0", "timeBattle": 0 }, 69: { "eventKey": "Ursula’s Revenge", "locationCode": "AtlanticaWrath", "eventId": 0x45, "score": 0, "isBoss": 0, "lv1": 0, "isProper": 0, "achId": 0, "badgeId": "0", "timeBattle": 0 }, 70: { "eventKey": "A New Day Is Dawning", "locationCode": "AtlanticaOrchestra", "eventId": 0x46, "score": 0, "isBoss": 0, "lv1": 0, "isProper": 0, "achId": 0, "badgeId": "0", "timeBattle": 0 }, 71: { "eventKey": "Gift Wrapping", "locationCode": "HalloweenWrapping", "eventId": 0x48, "score": 0, "isBoss": 0, "lv1": 0, "isProper": 0, "achId": 0, "badgeId": "0", "timeBattle": 0 }, 72: { "eventKey": "Xemnas Dragon", "locationCode": "NeverDragon", "eventId": 0x48, "score": 0, "isBoss": 0, "lv1": 0, "isProper": 0, "achId": 0, "badgeId": "0", "timeBattle": 0 }, 73: { "eventKey": "Magic Carpet", "locationCode": "AgrabahSand", "eventId": 0x6f, "score": 0, "isBoss": 0, "lv1": 0, "isProper": 0, "achId": 0, "badgeId": "0", "timeBattle": 0 }, 74: { "eventKey": "Data Luxord", "locationCode": "NeverDivide", "eventId": 0x65, "score": 25, "isBoss": 1, "lv1": 1, "isProper": 1, "achId": 375966, "badgeId": "422531", "timeBattle": 1 }, 75: { "eventKey": "Data Xemnas I", "locationCode": "NeverContortion", "eventId": 0x61, "score": 50, "isBoss": 1, "lv1": 1, "isProper": 1, "achId": 375975, "badgeId": "422533", "timeBattle": 0 }, 76: { "eventKey": "Data Xemnas II", "locationCode": "NeverFinal", "eventId": 0x62, "score": 100, "isBoss": 1, "lv1": 1, "isProper": 1, "achId": 375976, "badgeId": "422541", "timeBattle": 0 }, 77: { "eventKey": "Data Xigbar", "locationCode": "NeverHall", "eventId": 0x64, "score": 50, "isBoss": 1, "lv1": 1, "isProper": 1, "achId": 375977, "badgeId": "422542", "timeBattle": 0 }, 78: { "eventKey": "Data Xaldin", "locationCode": "BeastBridge", "eventId": 0x61, "score": 50, "isBoss": 1, "lv1": 1, "isProper": 1, "achId": 375978, "badgeId": "422543", "timeBattle": 0 }, 79: { "eventKey": "Data Vexen", "locationCode": "StationOfOblivionMansion", "eventId": 0x92, "score": 50, "isBoss": 1, "lv1": 1, "isProper": 1, "achId": 375979, "badgeId": "422544", "timeBattle": 0 }, 80: { "eventKey": "Data Lexaeus", "locationCode": "StationOfOblivion2", "eventId": 0x93, "score": 25, "isBoss": 1, "lv1": 1, "isProper": 1, "achId": 375980, "badgeId": "422545", "timeBattle": 0 }, 81: { "eventKey": "Data Zexion", "locationCode": "DestinyStorm", "eventId": 0x98, "score": 50, "isBoss": 1, "lv1": 1, "isProper": 1, "achId": 375981, "badgeId": "422546", "timeBattle": 0 }, 82: { "eventKey": "Data Saïx", "locationCode": "NeverImpasse", "eventId": 0x66, "score": 50, "isBoss": 1, "lv1": 1, "isProper": 1, "achId": 375982, "badgeId": "422547", "timeBattle": 0 }, 83: { "eventKey": "Data Axel", "locationCode": "BasementHallAxel", "eventId": 0xd5, "score": 50, "isBoss": 1, "lv1": 1, "isProper": 1, "achId": 375983, "badgeId": "422548", "timeBattle": 0 }, 84: { "eventKey": "Data Demyx", "locationCode": "CastleGate", "eventId": 0x72, "score": 50, "isBoss": 1, "lv1": 1, "isProper": 1, "achId": 375984, "badgeId": "422549", "timeBattle": 0 }, 85: { "eventKey": "Data Marluxia", "locationCode": "StationOfOblivion", "eventId": 0x96, "score": 100, "isBoss": 1, "lv1": 1, "isProper": 1, "achId": 375985, "badgeId": "422550", "timeBattle": 0 }, 86: { "eventKey": "Data Larxene", "locationCode": "StationOfOblivion2", "eventId": 0x94, "score": 50, "isBoss": 1, "lv1": 1, "isProper": 1, "achId": 375986, "badgeId": "422551", "timeBattle": 0 }, 87: { "eventKey": "Data Roxas", "locationCode": "NeverStation", "eventId": 0x63, "score": 50, "isBoss": 1, "lv1": 1, "isProper": 1, "achId": 375987, "badgeId": "422552", "timeBattle": 0 }, 88: { "eventKey": "Lingering Will", "locationCode": "GraveyardBadlands", "eventId": 0x43, "score": 100, "isBoss": 1, "lv1": 0, "isProper": 0, "achId": 0, "badgeId": "0", "timeBattle": 0 }, 89: { "eventKey": "Lingering Will 2", "locationCode": "GraveyardBadlands", "eventId": 0x49, "score": 100, "isBoss": 1, "lv1": 0, "isProper": 0, "achId": 0, "badgeId": "0", "timeBattle": 0 }, 
 }
 
 abilities = {
@@ -387,6 +409,30 @@ function difficultyLookup() => {
     2: "Proud",
     3: "Critical"
 }
+
+rich_presence_conditional_display(generateBonusAchievements() && !IsLevel1(), "Achievements disabled! Sora is on Level {0}.",
+    rich_presence_value("Level", level(), "VALUE")
+)
+
+rich_presence_conditional_display(generateBonusAchievements() && !IsOnCriticalMode(), "Achievements disabled! The file is being played on {0} Mode.",
+    rich_presence_lookup("Difficulty", difficulty(), difficultyLookup())
+)
+
+rich_presence_conditional_display(generateBonusAchievements() && !HasLowEnoughAP(), "Achievements disabled! Sora got {0} AP Boosts, which is too many.",
+    rich_presence_value("APBoosts", apBoostsUsedOnSora(), "VALUE")
+)
+
+rich_presence_conditional_display(generateBonusAchievements() && !HasFewPowerBoosts(), "Achievements disabled! Sora got {0} Power Boosts, which is too many.",
+    rich_presence_value("PowerBoosts", powerBoostsUsedOnSora(), "VALUE")
+)
+
+rich_presence_conditional_display(generateBonusAchievements() && !HasFewMagicBoosts(), "Achievements disabled! Sora got {0} Magic Boosts, which is too many.",
+    rich_presence_value("MagicBoosts", magicBoostsUsedOnSora(), "VALUE")
+)
+
+rich_presence_conditional_display(generateBonusAchievements() && !HasFewDefenseBoosts(), "Achievements disabled! Sora got {0} Defense Boosts, which is too many.",
+    rich_presence_value("DefenseBoosts", defenseBoostsUsedOnSora(), "VALUE")
+)
 
 function hollowBastionIIIComplete() => bit7(0x0032d84e)
 rich_presence_conditional_display(!IsOnTitleScreen() && hollowBastionIIIComplete() == 1 && IsInWorld("Hollow Bastion"), "Level {0}, {1} Mode | {2}{3} | Play time: {4}",
@@ -1699,13 +1745,13 @@ xachievement(title = "Vanilla-Flavored Suffering [m]", description = "Defeat Sep
 )
 
 xachievement(title = "The Superior I", description = "Defeat Data Xemnas's first phase on Proud Mode or higher without exploiting revenge mechanics.", points = 25,
-    trigger = GetCheckpointForRegisteredEvent("Data Xemnas 1", when = IsAtLeastOnDifficulty("Proud"))
+    trigger = GetCheckpointForRegisteredEvent("Data Xemnas I", when = IsAtLeastOnDifficulty("Proud"))
         && trigger_when(JustWonBattle())
         && never(UsedCheese(dword(0x01c6c4e8)))
 )
 
 xachievement(title = "The Superior II", description = "Defeat Data Xemnas's second phase on Proud Mode or higher without exploiting revenge mechanics.", points = 50,
-    trigger = GetCheckpointForRegisteredEvent("Data Xemnas 2", when = IsAtLeastOnDifficulty("Proud"))
+    trigger = GetCheckpointForRegisteredEvent("Data Xemnas II", when = IsAtLeastOnDifficulty("Proud"))
         && trigger_when(JustWonBattle())
         && never(UsedCheese(dword(0x01c6c280)))
 )
@@ -2395,6 +2441,19 @@ if (generateBonusAchievements())
         {
             description = ""
             article = ""
+            timeBattleCondition = always_true()
+            lv1Id = 0
+            lv1Badge = ""
+            
+            if (dat["achId"] != 0)
+            {
+                lv1Id = dat["achId"]
+            }
+            
+            if (dat["badgeId"] != "")
+            {
+                lv1Badge = dat["badgeId"]
+            }
             
             if (dat["isProper"] == 0)
             {
@@ -2403,77 +2462,97 @@ if (generateBonusAchievements())
         
             if (dat["isBoss"] == 1)
             {
-                description = "Defeat " + article + dat["eventKey"] + " at Level 1 on Critical Mode without dying."
+                description = "Defeat " + article + dat["eventKey"] + " at Level 1 on Critical Mode."
             }
             else
             {
                 description = "Complete the " + dat["eventKey"] + " at Level 1 on Critical Mode."
             }
+            
+            if (dat["timeBattle"] == 1)
+            {
+                timeBattleCondition = never(timeBattleTimeRemaining() <= 0.0)
+            }
         
-            achievement(title = dat["eventKey"] + " [m]", description = description, points = dat["score"],
-                trigger = GetCheckpointForRegisteredEvent(dat["eventKey"], when = level() <= 1 && IsAtLeastOnDifficulty("Critical"))
+            achievement(title = dat["eventKey"] + " [m]", description = description, points = dat["score"], id = lv1Id, badge = lv1Badge,
+                trigger = GetCheckpointForRegisteredEvent(dat["eventKey"], when = IsSatisfyingLevel1CriticalModeConditions())
                     && trigger_when(JustWonBattle())
+                    && never(level() > 1) // The core code gives players leniency on whether or not they leveled up during an achievement attempt. No such leniency is allowed in LV1 Crit.
                     // Running out of time against Luxord triggers the achievement because the battle state flickers from 0 to 1 (victory) before being set to 3 (nonstandard game over).
-                    && never(timeBattleTimeRemaining() <= 0.0)
+                    && timeBattleCondition
             )   
         }
     }
     
     achievement(title = "Cavern of Remembrance Gauntlet [m]", description = "Survive the final enemy wave in the Cavern of Remembrance at Level 1 on Critical Mode.",
-        points = 50,
-        trigger = IsInLocation("CavernTransport") && IsAtLeastOnDifficulty("Critical") && level() <= 1
+        points = 50, id = 375988, badge = "422553",
+        trigger = IsInLocation("CavernTransport") && IsSatisfyingLevel1CriticalModeConditions()
             && trigger_when(BonusObtained())
+            && never(level() > 1)
     )
     
-    achievement(title = "Lingering Will [m]", description = "Defeat the Lingering Will at Level 1 on Critical Mode.", points = 100,
-        trigger = (GetCheckpointForRegisteredEvent("Lingering Will", when = level() <= 1 && IsAtLeastOnDifficulty("Critical"))
-                || GetCheckpointForRegisteredEvent("Lingering Will 2", when = level() <= 1 && IsAtLeastOnDifficulty("Critical")))
+    achievement(title = "Lingering Will [m]", description = "Defeat the Lingering Will at Level 1 on Critical Mode.",
+        points = 100, id = 375989, badge = "422554",
+        trigger = (GetCheckpointForRegisteredEvent("Lingering Will", when = IsSatisfyingLevel1CriticalModeConditions())
+                || GetCheckpointForRegisteredEvent("Lingering Will 2", when = IsSatisfyingLevel1CriticalModeConditions()))
             && trigger_when(JustWonBattle())
+            && never(level() > 1)
     )
     
-    achievement(title = "Pain and Panic Cup [m]", description = "Win the Pain and Panic Cup at Level 1 on Critical Mode.", points = 25,
-        trigger = PainAndPanicCupCheckpointReached(when = level() <= 1 && IsAtLeastOnDifficulty("Critical"))
+    achievement(title = "Pain and Panic Cup [m]", description = "Win the Pain and Panic Cup at Level 1 on Critical Mode.",
+        points = 25, id = 375990, badge = "422555",
+        trigger = PainAndPanicCupCheckpointReached(when = IsSatisfyingLevel1CriticalModeConditions())
             && trigger_when(WonThePainAndPanicCup())
+            && never(level() > 1)
     )
     
     achievement(title = "Cerberus Cup [m]", description = "Win the Cerberus Cup at Level 1 on Critical Mode.",
-        points = 25,
-        trigger = CerberusCupCheckpointReached(when = level() <= 1 && IsAtLeastOnDifficulty("Critical"))
+        points = 25, id = 375991, badge = "422556",
+        trigger = CerberusCupCheckpointReached(when = IsSatisfyingLevel1CriticalModeConditions())
             && trigger_when(WonTheCerberusCup())
+            && never(level() > 1)
     )
     
     achievement(title = "Titan Cup [m]", description = "Win the Titan Cup at Level 1 on Critical Mode.",
-        points = 25,
-        trigger = TitanCupCheckpointReached(when = level() <= 1 && IsAtLeastOnDifficulty("Critical"))
+        points = 25, id = 375992, badge = "422557",
+        trigger = TitanCupCheckpointReached(when = IsSatisfyingLevel1CriticalModeConditions())
             && trigger_when(WonTheTitanCup())
+            && never(level() > 1)
     )
     
     achievement(title = "Goddess of Fate Cup [m]", description = "Win the Goddess of Fate Cup at Level 1 on Critical Mode.",
-        points = 25,
-        trigger = GoddessOfFateCupCheckpointReached(when = level() <= 1 && IsAtLeastOnDifficulty("Critical"))
+        points = 25, id = 375994, badge = "422558",
+        trigger = GoddessOfFateCupCheckpointReached(when = IsSatisfyingLevel1CriticalModeConditions())
             && trigger_when(WonTheGoddessOfFateCup())
+            && never(level() > 1)
     )
     
-    achievement(title = "Pain and Panic Paradox Cup [m]", description = "Win the Pain and Panic Paradox Cup at Level 1 on Critical Mode.", points = 50,
-        trigger = PainAndPanicParadoxCupCheckpointReached(when = level() <= 1 && IsAtLeastOnDifficulty("Critical"))
+    achievement(title = "Pain and Panic Paradox Cup [m]", description = "Win the Pain and Panic Paradox Cup at Level 1 on Critical Mode.",
+        points = 50, id = 375995, badge = "422559",
+        trigger = PainAndPanicParadoxCupCheckpointReached(when = IsSatisfyingLevel1CriticalModeConditions())
             && trigger_when(WonThePainAndPanicParadoxCup())
+            && never(level() > 1)
     )
     
     achievement(title = "Cerberus Paradox Cup [m]", description = "Win the Cerberus Paradox Cup at Level 1 on Critical Mode.",
-        points = 50,
-        trigger = CerberusParadoxCupCheckpointReached(when = level() <= 1 && IsAtLeastOnDifficulty("Critical"))
+        points = 50, id = 375996, badge = "422560",
+        trigger = CerberusParadoxCupCheckpointReached(when = IsSatisfyingLevel1CriticalModeConditions())
             && trigger_when(WonTheCerberusParadoxCup())
+            && never(level() > 1)
     )
     
     achievement(title = "Titan Paradox Cup [m]", description = "Win the Titan Paradox Cup at Level 1 on Critical Mode.",
-        points = 50,
-        trigger = TitanParadoxCupCheckpointReached(when = level() <= 1 && IsAtLeastOnDifficulty("Critical"))
+        points = 50, id = 375993, badge = "422557",
+        trigger = TitanParadoxCupCheckpointReached(when = IsSatisfyingLevel1CriticalModeConditions())
             && trigger_when(WonTheTitanParadoxCup())
+            && never(level() > 1)
     )
     
-    achievement(title = "Hades Paradox Cup [m]", description = "Win the Hades Paradox Cup at Level 1 on Critical Mode.", points = 100,
-        trigger = HadesParadoxCupCheckpointReached(when = level() <= 1 && IsAtLeastOnDifficulty("Critical"))
+    achievement(title = "Hades Paradox Cup [m]", description = "Win the Hades Paradox Cup at Level 1 on Critical Mode.",
+        points = 100, id = 375997, badge = "422561",
+        trigger = HadesParadoxCupCheckpointReached(when = IsSatisfyingLevel1CriticalModeConditions())
             && trigger_when(WonTheHadesParadoxCup())
+            && never(level() > 1)
     )
 }
 
