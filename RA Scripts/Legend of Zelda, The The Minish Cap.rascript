@@ -605,15 +605,6 @@ function screenId() => word_be(0x000BF4)
 function JustTookDamage() => byte(0x00AAEA) < Delta(byte(0x00AAEA))
 
 achievement(
-    title = "Bested Gyorg Pair[m]", description = "Defeat the Gyorg Pair without taking damage", points = 25,
-    id = 2257, badge = "155782", published = "8/16/2013 8:24:47 AM", modified = "1/30/2021 2:29:51 PM",
-    trigger = byte(0x0015AC) == 9 && once(byte(0x0015AC) == 1) && once(byte(0x0015AC) == 2) && once(byte(0x0015AC) == 3) && 
-              once(byte(0x0015AC) == 4) && once(byte(0x0015AC) == 5) && once(byte(0x0015AC) == 6) && once(byte(0x0015AC) == 7) && 
-              once(byte(0x0015AC) == 8) && screenId() == 0x7100 && never(JustTookDamage()) && 
-              never(byte(0x0015AC) < Delta(byte(0x0015AC)))
-)
-
-achievement(
     title = "Earth", description = "Obtain the Earth Element.", points = 5,
     id = 2034, badge = "155783", published = "8/4/2013 8:00:28 AM", modified = "1/30/2021 2:29:52 PM",
     trigger = screenId() == 0x4900 && bit0(0x00AB42) > Delta(bit0(0x00AB42))
@@ -1179,6 +1170,15 @@ achievement(
               once(bit4(0x00AB42) > Delta(bit4(0x00AB42))) && never(bit4(0x00AB42) < Delta(bit4(0x00AB42))) && never(byte(0x00AAEB) > Delta(byte(0x00AAEB))) && 
               once(byte(0x0017B4) == 1) && once(byte(0x0017B4) == 2) && once(byte(0x0017B4) == 3) && once(byte(0x0017B4) == 4) && 
               byte(0x0017B4) == 0 && byte(0x00177D) == 0 && never(JustTookDamage())
+)
+
+achievement(
+    title = "Bested Gyorg Pair [m]", description = "Defeat the Gyorg Pair without taking damage", points = 25,
+    id = 2257, badge = "155782", published = "8/16/2013 8:24:47 AM", modified = "1/30/2021 2:29:51 PM",
+    trigger = byte(0x0015AC) == 9 && once(byte(0x0015AC) == 1) && once(byte(0x0015AC) == 2) && once(byte(0x0015AC) == 3) && 
+              once(byte(0x0015AC) == 4) && once(byte(0x0015AC) == 5) && once(byte(0x0015AC) == 6) && once(byte(0x0015AC) == 7) && 
+              once(byte(0x0015AC) == 8) && screenId() == 0x7100 && never(JustTookDamage()) && 
+              never(byte(0x0015AC) < Delta(byte(0x0015AC)))
 )
 
 achievement(
