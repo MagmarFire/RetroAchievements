@@ -43,8 +43,36 @@ function IsValueSet(mem, oldValue, newValue)
 }
 
 areas = {
-    859204975: { "name": "Forest of Fairies", "internalName": "A_mori", "hash": 859204975 },660955487: { "name": "Title Screen", "internalName": "sea_T", "hash": 660955487 },1315007845: { "name": "File Select", "internalName": "Name", "hash": 1315007845 },1936023852: { "name": "Outset Island", "internalName": "sea", "hash": 1936023852 },974743663: { "name": "Orca and Sturgeon's House (1F)", "internalName": "Ojhous", "hash": 974743663 },974740079: { "name": "Orca and Sturgeon's House (2F)", "internalName": "Ojhous2", "hash": 974740079 },
+    859204975: { "name": "Forest of Fairies", "internalName": "A_mori", "hash": 859204975 },660955487: { "name": "Title Screen", "internalName": "sea_T", "hash": 660955487 },1315007845: { "name": "File Select", "internalName": "Name", "hash": 1315007845 },1936023852: { "name": "Outset Island", "internalName": "sea", "hash": 1936023852 },974743663: { "name": "Orca and Sturgeon's House (1F)", "internalName": "Ojhous", "hash": 974743663 },974740079: { "name": "Orca and Sturgeon's House (2F)", "internalName": "Ojhous2", "hash": 974740079 },771907955: { "name": "Mesa's House", "internalName": "Omasao", "hash": 771907955 },974786146: { "name": "Abe and Rose's House", "internalName": "Onobuta", "hash": 974786146 },505704043: { "name": "Link's House", "internalName": "LinkRM", "hash": 505704043 },
 }
+
+// Create lookup mappings for subareas
+function GetAreaByHash(inHash)
+{
+    return areas[inHash]
+}
+
+function GetLookupKey(internalName) => internalName + "Lookup"
+
+lookups = {}
+
+// Create one lookup mapping for each internal name used in the `areas` dictionary.
+for hash in areas
+{
+    area = GetAreaByHash(hash)
+    internalName = area["internalName"]
+    
+    lookupKey = GetLookupKey(internalName)
+    lookups[lookupKey] = {}
+    
+    // Find all areas that use the same internal name and add them to the lookup mapping.
+    for hash in areas
+    {
+        lookups[lookupKey][hash] = area
+    }
+}
+
+// /lookups
 
 function GetAreaByName(name)
 {
@@ -58,11 +86,6 @@ function GetAreaByName(name)
     }
 }
 
-function GetAreaByHash(inHash)
-{
-    return areas[inHash]
-}
-
 function GetAreaRPLookup()
 {
     ret = {}
@@ -74,6 +97,7 @@ function GetAreaRPLookup()
     return ret
 }
 
+function mapNameAddr() => 0x003d1664
 function mapNamePart1() => dword_be(0x003d1664)
 function mapNamePart2() => dword_be(0x003d1668)
 function roomId() => byte(0x003cccd8)
@@ -85,7 +109,7 @@ function GetAreaHash()
 function IsInArea(name)
 {
     area = GetAreaByName(name)
-    return IsInAreaByHash(area["hash"])
+    return ascii_string_equals(mapNameAddr(), area["internalName"])
 }
 
 function IsInAreaByHash(hash)
@@ -97,10 +121,10 @@ function IsOnTitleScreen() => IsInArea("Title Screen")
 for hash in areas
 {
     area = GetAreaByHash(hash)
-    rich_presence_conditional_display(IsInAreaByHash(GetAreaHash()), area["name"])
+    rich_presence_conditional_display(IsInArea(area["name"]), area["name"])
 }
 
-//rich_presence_conditional_display(IsOnTitleScreen(), "On the title screen...")
+rich_presence_conditional_display(IsOnTitleScreen(), "On the title screen...")
 
 rich_presence_display("Somewhere on the Great Sea...")
 
@@ -155,7 +179,6 @@ achievement(title = "Hog Wild [m]", points = 5, description = "Wrangle all three
         && (always_false() || never(AreaJustChanged()))
 )
 
-function mapNameAddr() => 0x003d1664
 function bokoblinsDroppedIn() => bit0(0x003cccaf) // when stageId is 0xb
 function tetraAwakens() => bit1(0x003cccaf) // when stageId is 0xb
 achievement(title = "With Enemies Like These [m]", points = 25, description = "Rescue Tetra from the two Bokoblins without using your sword and without leaving the area.",
