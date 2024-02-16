@@ -4,6 +4,11 @@
 // UTILITY
 function Delta(addr) => prev(addr)
 
+function Debug(text)
+{
+    achievement(title = text + "", description = "", points = 0, trigger = always_false())
+}
+
 function WasBitflagSetInGame(bit)
 {
     return IsValueSet(bit, 0, 1)
@@ -41,15 +46,34 @@ function IsValueSet(mem, oldValue, newValue)
 {
     return Delta(mem) == oldValue && mem == newValue
 }
+// /utility
+
+superareas = {
+    2: { "id":2, "internalName":"sea", "displayName":"The Great Sea"},
+}
 
 areas = {
-    859204975: { "name": "Forest of Fairies", "internalName": "A_mori", "hash": 859204975 },660955487: { "name": "Title Screen", "internalName": "sea_T", "hash": 660955487 },1315007845: { "name": "File Select", "internalName": "Name", "hash": 1315007845 },1936023852: { "name": "Outset Island", "internalName": "sea", "hash": 1936023852 },974743663: { "name": "Orca and Sturgeon's House (1F)", "internalName": "Ojhous", "hash": 974743663 },974740079: { "name": "Orca and Sturgeon's House (2F)", "internalName": "Ojhous2", "hash": 974740079 },771907955: { "name": "Mesa's House", "internalName": "Omasao", "hash": 771907955 },974786146: { "name": "Abe and Rose's House", "internalName": "Onobuta", "hash": 974786146 },505704043: { "name": "Link's House", "internalName": "LinkRM", "hash": 505704043 },
+    859204975: { "name": "Forest of Fairies", "internalName": "A_mori", "roomId": 0 },660955507: { "name": "Title Screen", "internalName": "sea_T", "roomId": 44 },1315007817: { "name": "File Select", "internalName": "Name", "roomId": 44 },1936023852: { "name": "Outset Island", "internalName": "sea", "roomId": 44 },974743663: { "name": "Orca and Sturgeon's House (1F)", "internalName": "Ojhous", "roomId": 0 },974740078: { "name": "Orca and Sturgeon's House (2F)", "internalName": "Ojhous2", "roomId": 1 },771907955: { "name": "Mesa's House", "internalName": "Omasao", "roomId": 0 },974786146: { "name": "Abe and Rose's House", "internalName": "Onobuta", "roomId": 0 },505704043: { "name": "Link's House", "internalName": "LinkRM", "roomId": 0 },538080106: { "name": "Beedle's Shop Ship", "internalName": "Obshop", "roomId": 2 },674500461: { "name": "Tetra's Ship, On Deck", "internalName": "A_umikz", "roomId": 0 },779317099: { "name": "Tetra's Ship, Below Deck", "internalName": "Asoko", "roomId": 0 },
 }
 
 // Create lookup mappings for subareas
 function GetAreaByHash(inHash)
 {
     return areas[inHash]
+}
+
+function GetSuperareaNameByName(name)
+{
+    for i in superareas
+    {
+        superarea = superareas[i]
+        if (superarea["internalName"] == name)
+        {
+            return superarea["displayName"] + ": "
+        }
+    }
+    
+    return ""
 }
 
 function GetLookupKey(internalName) => internalName + "Lookup"
@@ -59,16 +83,22 @@ lookups = {}
 // Create one lookup mapping for each internal name used in the `areas` dictionary.
 for hash in areas
 {
-    area = GetAreaByHash(hash)
-    internalName = area["internalName"]
+    i = GetAreaByHash(hash)
     
-    lookupKey = GetLookupKey(internalName)
+    lookupKey = GetLookupKey(i["internalName"])
     lookups[lookupKey] = {}
     
     // Find all areas that use the same internal name and add them to the lookup mapping.
     for hash in areas
     {
-        lookups[lookupKey][hash] = area
+        j = areas[hash]
+        if (j["internalName"] == i["internalName"])
+        {
+            lookup = lookups[lookupKey]
+            lookup[j["roomId"]] = j["name"]
+            
+            lookups[lookupKey] = lookup
+        }
     }
 }
 
@@ -121,7 +151,12 @@ function IsOnTitleScreen() => IsInArea("Title Screen")
 for hash in areas
 {
     area = GetAreaByHash(hash)
-    rich_presence_conditional_display(IsInArea(area["name"]), area["name"])
+    superareaName = GetSuperareaNameByName(area["internalName"])
+    lookupForArea = lookups[GetLookupKey(area["internalName"])]
+
+    rich_presence_conditional_display(IsInArea(area["name"]), superareaName + "{0}",
+        rich_presence_lookup(GetLookupKey(area["internalName"]), roomId(), lookupForArea)
+    )
 }
 
 rich_presence_conditional_display(IsOnTitleScreen(), "On the title screen...")
@@ -147,7 +182,7 @@ function framesCounter() => dword_be(0x3ffc3c)
 
 function frameIncremented() => prev(framesCounter()) != framesCounter()
 
-function SecondsToFrames(seconds) => seconds * 60 // Assuming a 60 FPS framerate
+function SecondsToFrames(seconds) => seconds * 50 // Assuming a 50 FPS framerate on PAL
 
 function stageId() => byte(0x003ccccc)
 function layerId() => byte(0x003ccd24)
@@ -188,3 +223,9 @@ achievement(title = "With Enemies Like These [m]", points = 25, description = "R
         && never(swordAnimationId() != 0)
         && never(!IsInArea("Forest of Fairies"))
 )
+
+niko1TimeLimit = 15
+achievement(title = "Ninja Warrior I [m]", points = 10, description = "Complete Niko's obstacle course within " + niko1TimeLimit + " seconds.",
+    trigger = always_false()
+)
+
