@@ -4,10 +4,15 @@
 // UTILITY
 function Delta(addr) => prev(addr)
 
+function Debug(text)
+{
+    achievement(title = text + "", description = "", points = 0, trigger = always_false())
+}
+
 function WasBitflagSetInGame(bit)
 {
-    return once(Delta(bit) != bit && bit == 1)
-        && never(IsLoadingSaveFile())
+    return IsValueSet(bit, 0, 1)
+        && FileIsLoaded()
 }
 
 function IsBitflagSetInGame(bit)
@@ -17,19 +22,19 @@ function IsBitflagSetInGame(bit)
 
 function WasValueSetInGame(mem, oldValue, newValue)
 {
-    return WasValueSet(mem, oldValue, newValue)
-        && never(IsLoadingSaveFile())
+    return IsValueSet(mem, oldValue, newValue)
+        && FileIsLoaded()
 }
 
 function IsValueSetInGame(mem, oldValue, newValue)
 {
     return IsValueSet(mem, oldValue, newValue)
-        && never(IsLoadingSaveFile())
+        && FileIsLoaded()
 }
 
 function WasValueSet(mem, oldValue, newValue)
 {
-    return once(Delta(mem) == oldValue && mem == newValue)
+    return once(IsValueSet(mem, oldValue, newValue))
 }
 
 function WasBitflagSet(mem)
@@ -41,14 +46,126 @@ function IsValueSet(mem, oldValue, newValue)
 {
     return Delta(mem) == oldValue && mem == newValue
 }
+// /utility
 
-function DidValueBecomeGreaterThanGivenInGame(mem, value)
-{
-    return once(Delta(mem) <= value && mem > value) && never(IsLoadingSaveFile())
+superareas = {
+    2: { "id":2, "internalName":"sea", "displayName":"The Great Sea"},
 }
+
+areas = {
+    859204975: { "name": "Forest of Fairies", "internalName": "A_mori", "roomId": 0 },660955507: { "name": "Title Screen", "internalName": "sea_T", "roomId": 44 },1315007817: { "name": "File Select", "internalName": "Name", "roomId": 44 },1936023852: { "name": "Outset Island", "internalName": "sea", "roomId": 44 },974743663: { "name": "Orca and Sturgeon's House (1F)", "internalName": "Ojhous", "roomId": 0 },974740078: { "name": "Orca and Sturgeon's House (2F)", "internalName": "Ojhous2", "roomId": 1 },771907955: { "name": "Mesa's House", "internalName": "Omasao", "roomId": 0 },974786146: { "name": "Abe and Rose's House", "internalName": "Onobuta", "roomId": 0 },505704043: { "name": "Link's House", "internalName": "LinkRM", "roomId": 0 },538080106: { "name": "Beedle's Shop Ship", "internalName": "Obshop", "roomId": 2 },674500461: { "name": "Tetra's Ship, On Deck", "internalName": "A_umikz", "roomId": 0 },779317099: { "name": "Tetra's Ship, Below Deck", "internalName": "Asoko", "roomId": 0 },
+}
+
+// Create lookup mappings for subareas
+function GetAreaByHash(inHash)
+{
+    return areas[inHash]
+}
+
+function GetSuperareaNameByName(name)
+{
+    for i in superareas
+    {
+        superarea = superareas[i]
+        if (superarea["internalName"] == name)
+        {
+            return superarea["displayName"] + ": "
+        }
+    }
+    
+    return ""
+}
+
+function GetLookupKey(internalName) => internalName + "Lookup"
+
+lookups = {}
+
+// Create one lookup mapping for each internal name used in the `areas` dictionary.
+for hash in areas
+{
+    i = GetAreaByHash(hash)
+    
+    lookupKey = GetLookupKey(i["internalName"])
+    lookups[lookupKey] = {}
+    
+    // Find all areas that use the same internal name and add them to the lookup mapping.
+    for hash in areas
+    {
+        j = areas[hash]
+        if (j["internalName"] == i["internalName"])
+        {
+            lookup = lookups[lookupKey]
+            lookup[j["roomId"]] = j["name"]
+            
+            lookups[lookupKey] = lookup
+        }
+    }
+}
+
+// /lookups
+
+function GetAreaByName(name)
+{
+    for hash in areas
+    {
+        area = areas[hash]
+        if (area["name"] == name)
+        {
+            return area
+        }
+    }
+}
+
+function GetAreaRPLookup()
+{
+    ret = {}
+    for hash in areas
+    {
+        area = areas[hash]
+        ret[hash] = area["name"]
+    }
+    return ret
+}
+
+function mapNameAddr() => 0x003d1664
+function mapNamePart1() => dword_be(0x003d1664)
+function mapNamePart2() => dword_be(0x003d1668)
+function roomId() => byte(0x003cccd8)
+function GetAreaHash()
+{
+    return (mapNamePart1() ^ mapNamePart2()) + roomId()
+}
+
+function IsInArea(name)
+{
+    area = GetAreaByName(name)
+    return ascii_string_equals(mapNameAddr(), area["internalName"])
+}
+
+function IsInAreaByHash(hash)
+{
+    return hash == GetAreaHash()
+}
+
+function IsOnTitleScreen() => IsInArea("Title Screen")
+for hash in areas
+{
+    area = GetAreaByHash(hash)
+    superareaName = GetSuperareaNameByName(area["internalName"])
+    lookupForArea = lookups[GetLookupKey(area["internalName"])]
+
+    rich_presence_conditional_display(IsInArea(area["name"]), superareaName + "{0}",
+        rich_presence_lookup(GetLookupKey(area["internalName"]), roomId(), lookupForArea)
+    )
+}
+
+rich_presence_conditional_display(IsOnTitleScreen(), "On the title screen...")
+
+rich_presence_display("Somewhere on the Great Sea...")
 
 function outsetIslandCutscenePlayed() => bit4(0x003ccb89)
 function IsLoadingSaveFile() => IsValueSet(outsetIslandCutscenePlayed(), 0, 1)
+function FileIsLoaded() => Delta(outsetIslandCutscenePlayed()) == 1
 
 function SecondsToFormat(value)
 {
@@ -65,12 +182,14 @@ function framesCounter() => dword_be(0x3ffc3c)
 
 function frameIncremented() => prev(framesCounter()) != framesCounter()
 
-function SecondsToFrames(seconds) => seconds * 60 // Assuming a 60 FPS framerate
+function SecondsToFrames(seconds) => seconds * 50 // Assuming a 50 FPS framerate on PAL
 
-function mapId() => byte(0x003ccccc)
-function roomId() => byte(0x003cccd8)
+function stageId() => byte(0x003ccccc)
 function layerId() => byte(0x003ccd24)
-function JustChangedRooms() => Delta(roomId()) != 0xff && roomId() == 0xff
+function swordActionPointer() => dword_be(0x003c1060)
+function swordAnimationId() => byte(swordActionPointer() + 0x1b8 + 0x80000000)
+function swordSwingState() => byte(swordActionPointer() + 0x1cf + 0x80000000)
+function AreaJustChanged() => swordActionPointer() != Delta(swordActionPointer()) && Delta(swordActionPointer()) == 0
 
 function dialoguePointer() => dword_be(0x003c21b8)
 function messageId() => word_be(dialoguePointer() + 0x40 + 0x80000000)
@@ -78,7 +197,7 @@ function DisplayingMessageWithId(id) => messageId() == id
 
 function baitBagSlot() => byte(0x003cc577)
 achievement(title = "Ready for Hunting", points = 3, description = "Obtain the Bait Bag.",
-    trigger = WasValueSetInGame(baitBagSlot(), 0xff, 0x2c)
+    trigger = IsValueSetInGame(baitBagSlot(), 0xff, 0x2c)
 )
 
 function rupees() => word_be(0x003cc534)
@@ -92,5 +211,21 @@ function gaveSpottedPig() => bit1(0x003ccc0a)
 function gaveBlackPig() => bit2(0x003ccc0a)
 achievement(title = "Hog Wild [m]", points = 5, description = "Wrangle all three pigs on Outset Island and claim all three Rupee rewards without crawling or going indoors.",
     trigger = WasBitflagSetInGame(gavePinkPig()) && WasBitflagSetInGame(gaveSpottedPig()) && WasBitflagSetInGame(gaveBlackPig()) && unless(once(crawlingStatus() == 1))
-        && (always_false() || never(JustChangedRooms()))
+        && (always_false() || never(AreaJustChanged()))
 )
+
+function bokoblinsDroppedIn() => bit0(0x003cccaf) // when stageId is 0xb
+function tetraAwakens() => bit1(0x003cccaf) // when stageId is 0xb
+achievement(title = "With Enemies Like These [m]", points = 25, description = "Rescue Tetra from the two Bokoblins without using your sword and without leaving the area.",
+    trigger = trigger_when(once(IsInArea("Forest of Fairies") && IsValueSet(bokoblinsDroppedIn(), 0, 1)) && stageId() == 0xb)
+        && WasBitflagSetInGame(tetraAwakens())
+        && never(swordActionPointer() == 0)
+        && never(swordAnimationId() != 0)
+        && never(!IsInArea("Forest of Fairies"))
+)
+
+niko1TimeLimit = 15
+achievement(title = "Ninja Warrior I [m]", points = 10, description = "Complete Niko's obstacle course within " + niko1TimeLimit + " seconds.",
+    trigger = always_false()
+)
+
