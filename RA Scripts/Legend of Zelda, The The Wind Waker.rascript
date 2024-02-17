@@ -9,7 +9,7 @@ function Debug(text)
     achievement(title = text + "", description = "", points = 0, trigger = always_false())
 }
 
-function WasBitflagSetInGame(bit)
+function WasBitflagJustSetInGame(bit)
 {
     return IsValueSet(bit, 0, 1)
         && FileIsLoaded()
@@ -22,8 +22,8 @@ function IsBitflagSetInGame(bit)
 
 function WasValueSetInGame(mem, oldValue, newValue)
 {
-    return IsValueSet(mem, oldValue, newValue)
-        && FileIsLoaded()
+    return once(IsValueSet(mem, oldValue, newValue)
+        && FileIsLoaded())
 }
 
 function IsValueSetInGame(mem, oldValue, newValue)
@@ -40,6 +40,11 @@ function WasValueSet(mem, oldValue, newValue)
 function WasBitflagSet(mem)
 {
     return WasValueSet(mem, 0, 1)
+}
+
+function WasBitflagSetInGame(mem)
+{
+    return once(WasBitflagSet(mem))
 }
 
 function IsValueSet(mem, oldValue, newValue)
@@ -218,7 +223,7 @@ function bokoblinsDroppedIn() => bit0(0x003cccaf) // when stageId is 0xb
 function tetraAwakens() => bit1(0x003cccaf) // when stageId is 0xb
 achievement(title = "With Enemies Like These [m]", points = 25, description = "Rescue Tetra from the two Bokoblins without using your sword and without leaving the area.",
     trigger = trigger_when(once(IsInArea("Forest of Fairies") && IsValueSet(bokoblinsDroppedIn(), 0, 1)) && stageId() == 0xb)
-        && WasBitflagSetInGame(tetraAwakens())
+        && WasBitflagJustSetInGame(tetraAwakens())
         && never(swordActionPointer() == 0)
         && never(swordAnimationId() != 0)
         && never(!IsInArea("Forest of Fairies"))
