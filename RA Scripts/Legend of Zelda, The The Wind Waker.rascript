@@ -57,7 +57,7 @@ superareas = {
 }
 
 areas = {
-    859204975: { "name": "Forest of Fairies", "internalName": "A_mori", "roomId": 0 },660955507: { "name": "Title Screen", "internalName": "sea_T", "roomId": 44 },1315007817: { "name": "File Select", "internalName": "Name", "roomId": 44 },1936023852: { "name": "Outset Island", "internalName": "sea", "roomId": 44 },974743663: { "name": "Orca and Sturgeon's House (1F)", "internalName": "Ojhous", "roomId": 0 },974740078: { "name": "Orca and Sturgeon's House (2F)", "internalName": "Ojhous2", "roomId": 1 },771907955: { "name": "Mesa's House", "internalName": "Omasao", "roomId": 0 },974786146: { "name": "Abe and Rose's House", "internalName": "Onobuta", "roomId": 0 },505704043: { "name": "Link's House", "internalName": "LinkRM", "roomId": 0 },538080106: { "name": "Beedle's Shop Ship", "internalName": "Obshop", "roomId": 2 },674500461: { "name": "Tetra's Ship, On Deck", "internalName": "A_umikz", "roomId": 0 },779317099: { "name": "Tetra's Ship, Below Deck", "internalName": "Asoko", "roomId": 0 },
+    859204975: { "name": "Forest of Fairies", "internalName": "A_mori", "roomId": 0 },660955507: { "name": "Title Screen", "internalName": "sea_T", "roomId": 44 },1315007817: { "name": "File Select", "internalName": "Name", "roomId": 44 },1936023852: { "name": "Outset Island", "internalName": "sea", "roomId": 44 },974743663: { "name": "Orca and Sturgeon's House (1F)", "internalName": "Ojhous", "roomId": 0 },974740078: { "name": "Orca and Sturgeon's House (2F)", "internalName": "Ojhous2", "roomId": 1 },771907955: { "name": "Mesa's House", "internalName": "Omasao", "roomId": 0 },974786146: { "name": "Abe and Rose's House", "internalName": "Onobuta", "roomId": 0 },505704043: { "name": "Link's House", "internalName": "LinkRM", "roomId": 0 },538080106: { "name": "Beedle's Shop Ship", "internalName": "Obshop", "roomId": 2 },674500461: { "name": "Tetra's Ship, On Deck", "internalName": "A_umikz", "roomId": 0 },779317099: { "name": "Tetra's Ship, Below Deck", "internalName": "Asoko", "roomId": 0 },941910649: { "name": "Tetra's Ship, On Deck", "internalName": "MajyuE", "roomId": 0 },
 }
 
 // Create lookup mappings for subareas
@@ -186,7 +186,7 @@ function framesCounter() => dword_be(0x3ffc3c)
 
 function frameIncremented() => prev(framesCounter()) != framesCounter()
 
-function SecondsToFrames(seconds) => seconds * 50 // Assuming a 50 FPS framerate on PAL
+function SecondsToFrames(seconds) => seconds * 60 // Assuming a 60 FPS framerate (yes, apparently, this game assumes 60FPS on PAL, too)
 
 function stageId() => byte(0x003ccccc)
 function layerId() => byte(0x003ccd24)
@@ -228,8 +228,24 @@ achievement(title = "With Enemies Like These [m]", points = 25, description = "R
         && never(!IsInArea("Forest of Fairies"))
 )
 
-niko1TimeLimit = 15
+
+niko1TimeLimit = 25
+tetraPlatformMaxTime = 0x708
+function tetraPlatformPointer() => dword_be(0x003c0d7c) // todo: Even more narrowing down of potential pointers needs to be done, but I haven't figured out what causes memory to shift...
+function tetraPlatformTimeRemaining() => word_be(tetraPlatformPointer() + 0x1be + 0x80000000)
+function TetraPlatformTimerFrozen() => byte(tetraPlatformPointer() + 0x1c0 + 0x80000000) > 0
+function TetraPlatformTimeElapsed() => (tetraPlatformMaxTime - tetraPlatformTimeRemaining()) * 2
+function WithinPlatformTimeLimit() => TetraPlatformTimeElapsed() <= SecondsToFrames(niko1TimeLimit)
+function TetraPlatformsAreUp() => bit0(tetraPlatformPointer() + 0x1bb + 0x80000000) == 1
+function NinjaWarriorChallengeActive() => TetraPlatformsAreUp()
 achievement(title = "Ninja Warrior I [m]", points = 10, description = "Complete Niko's obstacle course within " + niko1TimeLimit + " seconds.",
-    trigger = always_false()
+    trigger = trigger_when(NinjaWarriorChallengeActive() && TetraPlatformTimerFrozen()) && WithinPlatformTimeLimit()
 )
 
+leaderboard(title = "Ninja Warrior I", description = "Reach the end of Niko's first obstacle course as quickly as you can.",
+    start = NinjaWarriorChallengeActive(),
+    cancel = !NinjaWarriorChallengeActive(),
+    submit = NinjaWarriorChallengeActive() && TetraPlatformTimerFrozen(),
+    value = TetraPlatformTimeElapsed(),
+    format = "FRAMES"
+)
