@@ -22,8 +22,7 @@ function IsBitflagSetInGame(bit)
 
 function WasValueSetInGame(mem, oldValue, newValue)
 {
-    return once(IsValueSet(mem, oldValue, newValue)
-        && FileIsLoaded())
+    return once(IsValueSet(mem, oldValue, newValue) && FileIsLoaded())
 }
 
 function IsValueSetInGame(mem, oldValue, newValue)
@@ -44,7 +43,7 @@ function WasBitflagSet(mem)
 
 function WasBitflagSetInGame(mem)
 {
-    return once(WasBitflagSet(mem))
+    return once(IsBitflagSetInGame(mem) && FileIsLoaded())
 }
 
 function IsValueSet(mem, oldValue, newValue)
