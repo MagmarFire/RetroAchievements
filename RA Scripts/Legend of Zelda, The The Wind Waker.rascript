@@ -53,11 +53,11 @@ function IsValueSet(mem, oldValue, newValue)
 // /utility
 
 superareas = {
-    2: { "id":2, "internalName":"sea", "displayName":"The Great Sea"},
+    2: { "id":2, "internalName":"sea", "displayName":"The Great Sea"},3: { "id":3, "internalName":"majroom", "displayName":"Forsaken Fortress"},
 }
 
 areas = {
-    859204975: { "name": "Forest of Fairies", "internalName": "A_mori", "roomId": 0 },660955507: { "name": "Title Screen", "internalName": "sea_T", "roomId": 44 },1315007817: { "name": "File Select", "internalName": "Name", "roomId": 44 },1936023852: { "name": "Outset Island", "internalName": "sea", "roomId": 44 },974743663: { "name": "Orca and Sturgeon's House (1F)", "internalName": "Ojhous", "roomId": 0 },974740078: { "name": "Orca and Sturgeon's House (2F)", "internalName": "Ojhous2", "roomId": 1 },771907955: { "name": "Mesa's House", "internalName": "Omasao", "roomId": 0 },974786146: { "name": "Abe and Rose's House", "internalName": "Onobuta", "roomId": 0 },505704043: { "name": "Link's House", "internalName": "LinkRM", "roomId": 0 },538080106: { "name": "Beedle's Shop Ship", "internalName": "Obshop", "roomId": 2 },674500461: { "name": "Tetra's Ship, On Deck", "internalName": "A_umikz", "roomId": 0 },779317099: { "name": "Tetra's Ship, Below Deck", "internalName": "Asoko", "roomId": 0 },941910649: { "name": "Tetra's Ship, On Deck", "internalName": "MajyuE", "roomId": 0 },
+    859204975: { "name": "Forest of Fairies", "internalName": "A_mori", "roomId": 0, "key": "" },660955507: { "name": "Title Screen", "internalName": "sea_T", "roomId": 44, "key": "" },1315007817: { "name": "File Select", "internalName": "Name", "roomId": 44, "key": "" },1936023852: { "name": "Outset Island", "internalName": "sea", "roomId": 44, "key": "" },974743663: { "name": "Orca and Sturgeon's House (1F)", "internalName": "Ojhous", "roomId": 0, "key": "" },974740078: { "name": "Orca and Sturgeon's House (2F)", "internalName": "Ojhous2", "roomId": 1, "key": "" },771907955: { "name": "Mesa's House", "internalName": "Omasao", "roomId": 0, "key": "" },974786146: { "name": "Abe and Rose's House", "internalName": "Onobuta", "roomId": 0, "key": "" },505704043: { "name": "Link's House", "internalName": "LinkRM", "roomId": 0, "key": "" },538080106: { "name": "Beedle's Shop Ship", "internalName": "Obshop", "roomId": 2, "key": "" },674500461: { "name": "Tetra's Ship, On Deck", "internalName": "A_umikz", "roomId": 0, "key": "" },779317099: { "name": "Tetra's Ship, Below Deck", "internalName": "Asoko", "roomId": 0, "key": "" },941910649: { "name": "Forsaken Fortress", "internalName": "MajyuE", "roomId": 0, "key": "ForsakenFortressBailey" },34473840: { "name": "Gallery", "internalName": "majroom", "roomId": 2, "key": "ForsakenFortressGallery" },34473842: { "name": "Prison", "internalName": "majroom", "roomId": 0, "key": "ForsakenFortressPrison" },34473846: { "name": "Barracks", "internalName": "majroom", "roomId": 4, "key": "ForsakenFortressBarracks" },34473841: { "name": "Docks", "internalName": "majroom", "roomId": 3, "key": "ForsakenFortressDocks" },34473843: { "name": "Dining Area", "internalName": "majroom", "roomId": 1, "key": "ForsakenFortressDining" },974063215: { "name": "Forsaken Fortress: Tower", "internalName": "Mjtower", "roomId": 0, "key": "ForsakenFortressTower" },1936023819: { "name": "Windfall Island", "internalName": "sea", "roomId": 11, "key": "" },
 }
 
 // Create lookup mappings for subareas
@@ -120,6 +120,18 @@ function GetAreaByName(name)
     }
 }
 
+function GetAreaByKey(key)
+{
+    for hash in areas
+    {
+        area = areas[hash]
+        if (area["key"] == key)
+        {
+            return area
+        }
+    }
+}
+
 function GetAreaRPLookup()
 {
     ret = {}
@@ -146,24 +158,37 @@ function IsInArea(name)
     return ascii_string_equals(mapNameAddr(), area["internalName"])
 }
 
+function IsInAreaByKey(key)
+{
+    area = GetAreaByKey(key)
+    return ascii_string_equals(mapNameAddr(), area["internalName"])
+}
+
 function IsInAreaByHash(hash)
 {
     return hash == GetAreaHash()
 }
 
 function IsOnTitleScreen() => IsInArea("Title Screen")
+internalNamesAddedToRP = []
 for hash in areas
 {
     area = GetAreaByHash(hash)
     superareaName = GetSuperareaNameByName(area["internalName"])
     lookupForArea = lookups[GetLookupKey(area["internalName"])]
-
-    rich_presence_conditional_display(IsInArea(area["name"]), superareaName + "{0}",
-        rich_presence_lookup(GetLookupKey(area["internalName"]), roomId(), lookupForArea)
-    )
+    
+    if (!any_of(internalNamesAddedToRP, input => input == area["internalName"]))
+    {
+        rich_presence_conditional_display(IsInArea(area["name"]), superareaName + "{0}",
+            rich_presence_lookup(GetLookupKey(area["internalName"]), roomId(), lookupForArea)
+        )
+    }
+    
+    array_push(internalNamesAddedToRP, area["internalName"])
 }
 
 rich_presence_conditional_display(IsOnTitleScreen(), "On the title screen...")
+
 
 rich_presence_display("Somewhere on the Great Sea...")
 
@@ -248,4 +273,9 @@ leaderboard(title = "Ninja Warrior I", description = "Reach the end of Niko's fi
     submit = NinjaWarriorChallengeActive() && TetraPlatformTimerFrozen(),
     value = TetraPlatformTimeElapsed(),
     format = "FRAMES"
+)
+
+function metKoRL() => bit2(0x003cc8b6)
+achievement(title = "Carried by the Currents", description = "Meet the King of Red Lions.", points = 3,
+    trigger = WasBitflagJustSetInGame(metKoRL())
 )
