@@ -57,7 +57,7 @@ superareas = {
 }
 
 areas = {
-    859204975: { "name": "Forest of Fairies", "internalName": "A_mori", "roomId": 0, "key": "" },660955507: { "name": "Title Screen", "internalName": "sea_T", "roomId": 44, "key": "" },1315007817: { "name": "File Select", "internalName": "Name", "roomId": 44, "key": "" },1936023852: { "name": "Outset Island", "internalName": "sea", "roomId": 44, "key": "" },974743663: { "name": "Orca and Sturgeon's House (1F)", "internalName": "Ojhous", "roomId": 0, "key": "" },974740078: { "name": "Orca and Sturgeon's House (2F)", "internalName": "Ojhous2", "roomId": 1, "key": "" },771907955: { "name": "Mesa's House", "internalName": "Omasao", "roomId": 0, "key": "" },974786146: { "name": "Abe and Rose's House", "internalName": "Onobuta", "roomId": 0, "key": "" },505704043: { "name": "Link's House", "internalName": "LinkRM", "roomId": 0, "key": "" },538080106: { "name": "Beedle's Shop Ship", "internalName": "Obshop", "roomId": 2, "key": "" },674500461: { "name": "Tetra's Ship, On Deck", "internalName": "A_umikz", "roomId": 0, "key": "" },779317099: { "name": "Tetra's Ship, Below Deck", "internalName": "Asoko", "roomId": 0, "key": "" },941910649: { "name": "Forsaken Fortress", "internalName": "MajyuE", "roomId": 0, "key": "ForsakenFortressBailey" },34473840: { "name": "Gallery", "internalName": "majroom", "roomId": 2, "key": "ForsakenFortressGallery" },34473842: { "name": "Prison", "internalName": "majroom", "roomId": 0, "key": "ForsakenFortressPrison" },34473846: { "name": "Barracks", "internalName": "majroom", "roomId": 4, "key": "ForsakenFortressBarracks" },34473841: { "name": "Docks", "internalName": "majroom", "roomId": 3, "key": "ForsakenFortressDocks" },34473843: { "name": "Dining Area", "internalName": "majroom", "roomId": 1, "key": "ForsakenFortressDining" },974063215: { "name": "Forsaken Fortress: Tower", "internalName": "Mjtower", "roomId": 0, "key": "ForsakenFortressTower" },1936023819: { "name": "Windfall Island", "internalName": "sea", "roomId": 11, "key": "" },588018279: { "name": "Chu Jelly Juice Shop", "internalName": "Pdrgsh", "roomId": 0, "key": "" },656042339: { "name": "Auction House", "internalName": "Orichh", "roomId": 0, "key": "" },1332770146: { "name": "Cafe Bar", "internalName": "Opub", "roomId": 0, "key": "" },1023569253: { "name": "Lenzo's House", "internalName": "Ocmera", "roomId": 0, "key": "" },923140457: { "name": "Mrs. Marie's School of Joy", "internalName": "Nitiyou", "roomId": 0, "key": "" },772761971: { "name": "Lighthouse", "internalName": "Kaisen", "roomId": 0, "key": "" },620956794: { "name": "Jail", "internalName": "Pnezumi", "roomId": 0, "key": "" },755658605: { "name": "Bomb Shop", "internalName": "Obombh", "roomId": 0, "key": "" },
+    859204975: { "name": "Forest of Fairies", "internalName": "A_mori", "roomId": 0, "key": "" },660955507: { "name": "Title Screen", "internalName": "sea_T", "roomId": 44, "key": "" },1315007817: { "name": "File Select", "internalName": "Name", "roomId": 44, "key": "" },1936023852: { "name": "Outset Island", "internalName": "sea", "roomId": 44, "key": "" },974743663: { "name": "Orca and Sturgeon's House (1F)", "internalName": "Ojhous", "roomId": 0, "key": "" },974740078: { "name": "Orca and Sturgeon's House (2F)", "internalName": "Ojhous2", "roomId": 1, "key": "" },771907955: { "name": "Mesa's House", "internalName": "Omasao", "roomId": 0, "key": "" },974786146: { "name": "Abe and Rose's House", "internalName": "Onobuta", "roomId": 0, "key": "" },505704043: { "name": "Link's House", "internalName": "LinkRM", "roomId": 0, "key": "" },538080106: { "name": "Beedle's Shop Ship", "internalName": "Obshop", "roomId": 2, "key": "" },674500461: { "name": "Tetra's Ship, On Deck", "internalName": "A_umikz", "roomId": 0, "key": "" },779317099: { "name": "Tetra's Ship, Below Deck", "internalName": "Asoko", "roomId": 0, "key": "" },941910649: { "name": "Forsaken Fortress", "internalName": "MajyuE", "roomId": 0, "key": "ForsakenFortressBailey" },34473840: { "name": "Gallery", "internalName": "majroom", "roomId": 2, "key": "ForsakenFortressGallery" },34473842: { "name": "Prison", "internalName": "majroom", "roomId": 0, "key": "ForsakenFortressPrison" },34473846: { "name": "Barracks", "internalName": "majroom", "roomId": 4, "key": "ForsakenFortressBarracks" },34473841: { "name": "Docks", "internalName": "majroom", "roomId": 3, "key": "ForsakenFortressDocks" },34473843: { "name": "Dining Area", "internalName": "majroom", "roomId": 1, "key": "ForsakenFortressDining" },974063215: { "name": "Forsaken Fortress: Tower", "internalName": "Mjtower", "roomId": 0, "key": "ForsakenFortressTower" },1936023819: { "name": "Windfall Island", "internalName": "sea", "roomId": 11, "key": "" },588018279: { "name": "Chu Jelly Juice Shop", "internalName": "Pdrgsh", "roomId": 0, "key": "" },656042339: { "name": "House of Wealth", "internalName": "Orichh", "roomId": 0, "key": "" },1332770146: { "name": "Cafe", "internalName": "Opub", "roomId": 0, "key": "" },1023569253: { "name": "Lenzo's Studio", "internalName": "Ocmera", "roomId": 0, "key": "" },923140457: { "name": "Joy School", "internalName": "Nitiyou", "roomId": 0, "key": "" },772761971: { "name": "Game Room", "internalName": "Kaisen", "roomId": 0, "key": "" },620956794: { "name": "Jail", "internalName": "Pnezumi", "roomId": 0, "key": "" },755658605: { "name": "Bomb Shop", "internalName": "Obombh", "roomId": 0, "key": "" },672007282: { "name": "test1", "internalName": "Atorizk", "roomId": 0, "key": "" },738526318: { "name": "test2", "internalName": "Adanmae", "roomId": 0, "key": "" },974879845: { "name": "test3", "internalName": "M_NewD2", "roomId": 0, "key": "" },1936023820: { "name": "Pawprint Isle", "internalName": "sea", "roomId": 12, "key": "" },1936023821: { "name": "Dragon Roost Island", "internalName": "sea", "roomId": 13, "key": "" },
 }
 
 // Create lookup mappings for subareas
@@ -66,18 +66,32 @@ function GetAreaByHash(inHash)
     return areas[inHash]
 }
 
-function GetSuperareaNameByName(name)
+function GetSuperareaByName(name)
 {
     for i in superareas
     {
         superarea = superareas[i]
         if (superarea["internalName"] == name)
         {
-            return superarea["displayName"] + ": "
+            return superarea
         }
     }
-    
-    return ""
+	
+    return false
+}
+
+function DoesSuperareaExist(name)
+{
+    for i in superareas
+    {
+        superarea = superareas[i]
+        if (superarea["internalName"] == name)
+        {
+            return true
+        }
+    }
+	
+    return false
 }
 
 function GetLookupKey(internalName) => internalName + "Lookup"
@@ -147,6 +161,7 @@ function mapNameAddr() => 0x003d1664
 function mapNamePart1() => dword_be(0x003d1664)
 function mapNamePart2() => dword_be(0x003d1668)
 function roomId() => byte(0x003cccd8)
+function greatSeaRoomId() => byte(0x00ab78c9) // Dynamic but is one of the few room ID values that updates in real time, not just when the player changes rooms.
 function GetAreaHash()
 {
     return (mapNamePart1() ^ mapNamePart2()) + roomId()
@@ -171,25 +186,35 @@ function IsInAreaByHash(hash)
 
 function IsOnTitleScreen() => IsInArea("Title Screen")
 internalNamesAddedToRP = []
+
 for hash in areas
 {
     area = GetAreaByHash(hash)
-    superareaName = GetSuperareaNameByName(area["internalName"])
+    superarea = GetSuperareaByName(area["internalName"])
     lookupForArea = lookups[GetLookupKey(area["internalName"])]
-    
+    display = ""
+    roomIdToUse = roomId()
+
+    if (DoesSuperareaExist(area["internalName"]))
+    {
+        display = superarea["displayName"] + ": "
+
+        if (superarea["addrOverride"] != 0)
+        {
+            roomIdToUse = byte(superarea["addrOverride"])
+        }
+    }
+
     if (!any_of(internalNamesAddedToRP, input => input == area["internalName"]))
     {
-        rich_presence_conditional_display(IsInArea(area["name"]), superareaName + "{0}",
-            rich_presence_lookup(GetLookupKey(area["internalName"]), roomId(), lookupForArea)
+        rich_presence_conditional_display(IsInArea(area["name"]), display + "{0}",
+            rich_presence_lookup(GetLookupKey(area["internalName"]), roomIdToUse, lookupForArea)
         )
+        array_push(internalNamesAddedToRP, area["internalName"])
     }
-    
-    array_push(internalNamesAddedToRP, area["internalName"])
 }
 
 rich_presence_conditional_display(IsOnTitleScreen(), "On the title screen...")
-
-
 rich_presence_display("Somewhere on the Great Sea...")
 
 function outsetIslandCutscenePlayed() => bit4(0x003ccb89)
