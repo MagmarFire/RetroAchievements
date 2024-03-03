@@ -284,7 +284,7 @@ achievement(title = "With Enemies Like These [m]", points = 25, description = "R
 )
 
 
-niko1TimeLimit = 25
+niko1TimeLimit = 20
 tetraPlatformMaxTime = 0x708
 function tetraPlatformPointer() => dword_be(0x003c0d7c) // todo: Even more narrowing down of potential pointers needs to be done, but I haven't figured out what causes memory to shift...
 function tetraPlatformTimeRemaining() => word_be(tetraPlatformPointer() + 0x1be + 0x80000000)
@@ -293,12 +293,13 @@ function TetraPlatformTimeElapsed() => (tetraPlatformMaxTime - tetraPlatformTime
 function WithinPlatformTimeLimit() => TetraPlatformTimeElapsed() <= SecondsToFrames(niko1TimeLimit)
 function TetraPlatformsAreUp() => bit0(tetraPlatformPointer() + 0x1bb + 0x80000000) == 1
 function NinjaWarriorChallengeActive() => TetraPlatformsAreUp()
+function CompletedFirstObstacleCourse() => bit4(0x003ccb5b) == 1
 achievement(title = "Ninja Warrior I [m]", points = 10, description = "Complete Niko's obstacle course within " + niko1TimeLimit + " seconds.", id = 402395,
-    trigger = trigger_when(NinjaWarriorChallengeActive() && TetraPlatformTimerFrozen()) && WithinPlatformTimeLimit()
+    trigger = trigger_when(NinjaWarriorChallengeActive() && TetraPlatformTimerFrozen()) && WithinPlatformTimeLimit() && !CompletedFirstObstacleCourse()
 )
 
 leaderboard(title = "Ninja Warrior I", description = "Reach the end of Niko's first obstacle course as quickly as you can.", id = 90099,
-    start = NinjaWarriorChallengeActive(),
+    start = NinjaWarriorChallengeActive() && !CompletedFirstObstacleCourse(),
     cancel = !NinjaWarriorChallengeActive(),
     submit = NinjaWarriorChallengeActive() && TetraPlatformTimerFrozen(),
     value = TetraPlatformTimeElapsed(),
@@ -311,7 +312,7 @@ achievement(title = "Carried by the Currents", description = "Meet the King of R
 )
 
 function pictographSidequestProgress() => byte(0x003ccc18)
-achievement(title = "Apprentice Pictographer", description = "Complete Lenzo's pictograph sidequest.", points = 5,
+achievement(title = "Apprentice Pictographer", description = "Complete Lenzo's pictograph sidequest.", points = 5, id = 404243,
     trigger = WasValueJustSetInGame(pictographSidequestProgress(), 5, 6)
         && measured(pictographSidequestProgress() == 6)
 )
