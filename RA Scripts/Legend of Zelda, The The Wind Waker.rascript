@@ -20,9 +20,14 @@ function IsBitflagSetInGame(bit)
     return IsValueSetInGame(bit, 0, 1)
 }
 
+function WasValueJustSetInGame(mem, oldValue, newValue)
+{
+    return IsValueSet(mem, oldValue, newValue) && FileIsLoaded()
+}
+
 function WasValueSetInGame(mem, oldValue, newValue)
 {
-    return once(IsValueSet(mem, oldValue, newValue) && FileIsLoaded())
+    return once(WasValueJustSetInGame(mem, oldValue, newValue))
 }
 
 function IsValueSetInGame(mem, oldValue, newValue)
@@ -303,4 +308,10 @@ leaderboard(title = "Ninja Warrior I", description = "Reach the end of Niko's fi
 function metKoRL() => bit2(0x003cc8b6)
 achievement(title = "Carried by the Currents", description = "Meet the King of Red Lions.", points = 3, id = 402396,
     trigger = WasBitflagJustSetInGame(metKoRL())
+)
+
+function pictographSidequestProgress() => byte(0x003ccc18)
+achievement(title = "Apprentice Pictographer", description = "Complete Lenzo's pictograph sidequest.", points = 5,
+    trigger = WasValueJustSetInGame(pictographSidequestProgress(), 5, 6)
+        && measured(pictographSidequestProgress() == 6)
 )
