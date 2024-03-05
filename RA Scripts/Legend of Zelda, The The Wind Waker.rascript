@@ -255,7 +255,7 @@ achievement(title = "Ready for Hunting", points = 3, description = "Obtain the B
 )
 
 function rupees() => word_be(0x003cc534)
-achievement(title = "Birthday Fine [m]", points = 1, description = "Destroy the pot Sue-Belle's carrying and pay the full fine.", id = 402392,
+achievement(title = "Birthday Fine", points = 1, description = "Destroy the pot Sue-Belle's carrying and pay the full fine.", id = 402392, type = "missable",
     trigger = once(DisplayingMessageWithId(2207)) && Delta(rupees()) == rupees() + 10
 )
 
@@ -263,14 +263,16 @@ function crawlingStatus() => bit3(0x3d21f8)
 function gavePinkPig() => bit0(0x003ccc0a)
 function gaveSpottedPig() => bit1(0x003ccc0a)
 function gaveBlackPig() => bit2(0x003ccc0a)
-achievement(title = "Hog Wild [m]", points = 5, description = "Wrangle all three pigs on Outset Island and claim all three Rupee rewards without crawling or going indoors.", id = 402393,
+achievement(title = "Hog Wild", points = 5, description = "Wrangle all three pigs on Outset Island and claim all three Rupee rewards without crawling or going indoors.", id = 402393,
+    type = "missable",
     trigger = WasBitflagSetInGame(gavePinkPig()) && WasBitflagSetInGame(gaveSpottedPig()) && WasBitflagSetInGame(gaveBlackPig()) && unless(once(crawlingStatus() == 1))
         && (always_false() || never(AreaJustChanged()))
 )
 
 function bokoblinsDroppedIn() => bit0(0x003cccaf) // when stageId is 0xb
 function tetraAwakens() => bit1(0x003cccaf) // when stageId is 0xb
-achievement(title = "With Enemies Like These [m]", points = 25, description = "Rescue Tetra from the two Bokoblins without using your sword and without leaving the area.", id = 402394,
+achievement(title = "With Enemies Like These", points = 25, description = "Rescue Tetra from the two Bokoblins without using your sword and without leaving the area.", id = 402394,
+    type = "missable",
     trigger = trigger_when(once(IsInArea("Forest of Fairies") && IsValueSet(bokoblinsDroppedIn(), 0, 1)) && stageId() == 0xb)
         && WasBitflagJustSetInGame(tetraAwakens())
         && never(swordActionPointer() == 0)
@@ -289,7 +291,7 @@ function WithinPlatformTimeLimit() => TetraPlatformTimeElapsed() <= SecondsToFra
 function TetraPlatformsAreUp() => bit0(tetraPlatformPointer() + 0x1bb + 0x80000000) == 1
 function NinjaWarriorChallengeActive() => TetraPlatformsAreUp()
 function CompletedFirstObstacleCourse() => bit4(0x003ccb5b) == 1
-achievement(title = "Ninja Warrior I [m]", points = 10, description = "Complete Niko's obstacle course within " + niko1TimeLimit + " seconds.", id = 402395,
+achievement(title = "Ninja Warrior I", points = 10, description = "Complete Niko's obstacle course within " + niko1TimeLimit + " seconds.", id = 402395, type = "missable",
     trigger = trigger_when(NinjaWarriorChallengeActive() && TetraPlatformTimerFrozen()) && WithinPlatformTimeLimit() && !CompletedFirstObstacleCourse()
 )
 
@@ -302,7 +304,7 @@ leaderboard(title = "Ninja Warrior I", description = "Reach the end of Niko's fi
 )
 
 function metKoRL() => bit2(0x003cc8b6)
-achievement(title = "Carried by the Currents", description = "Meet the King of Red Lions.", points = 3, id = 402396,
+achievement(title = "Carried by the Currents", description = "Meet the King of Red Lions.", points = 3, id = 402396, type = "progression",
     trigger = WasBitflagJustSetInGame(metKoRL())
 )
 
