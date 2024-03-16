@@ -611,14 +611,6 @@ function GetLocationsForRichPresence()
 
 rich_presence_conditional_display((IsOutsideGameplay() || actualAreaId() == 0), "Title Screen/Main Menu")
 
-rich_presence_display("{0}{1}{2}{3}{4}{5}{6}{7} is {8}",
-    rich_presence_lookup("Characters", char1(), GetCharactersForRichPresence()),
-    rich_presence_lookup("Characters", char2(), GetCharactersForRichPresence()),
-    rich_presence_lookup("Characters", char3(), GetCharactersForRichPresence()),
-    rich_presence_lookup("Characters", char4(), GetCharactersForRichPresence()),
-    rich_presence_lookup("Characters", char5(), GetCharactersForRichPresence()),
-    rich_presence_lookup("Characters", char6(), GetCharactersForRichPresence()),
-    rich_presence_lookup("Characters", char7(), GetCharactersForRichPresence()),
-    rich_presence_lookup("Characters", char8(), GetCharactersForRichPresence()),
+rich_presence_display("Link is {0}",
     rich_presence_lookup("Locations", areaId(), GetLocationsForRichPresence(), "somewhere in the world")
 )
