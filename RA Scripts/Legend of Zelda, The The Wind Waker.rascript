@@ -55,14 +55,167 @@ function IsValueSet(mem, oldValue, newValue)
 {
     return Delta(mem) == oldValue && mem == newValue
 }
+
+function DictionaryKeyExists(dict, key)
+{
+    for i in dict
+    {
+        if (i == key)
+        {
+            return true
+        }
+    }
+    
+    return false
+}
+
+// Dictionary elements must have "addr" and "bit" fields.
+// Returns a result like the following:
+// {
+//    <address>: [ <bit indices> ]
+// }
+function AggregateBitsFromAddressBits(dict)
+{
+    ret = {}
+    for i in dict
+    {
+        element = dict[i]
+        
+        if (element["addr"] != -1)
+        {
+            if (DictionaryKeyExists(ret, element["addr"]) == true)
+            {
+                arr = ret[element["addr"]]
+                array_push(arr, element["bit"])
+                ret[element["addr"]] = arr
+            }
+            else
+            {
+                ret[element["addr"]] = [ element["bit"] ]
+            }
+        }
+    }
+    
+    return ret
+}
+
+// BEGINNING OF BITFLAG AGGREGATION REGION
+
+// Converts an aggregate dictionary to an array of objects like the following:
+// {
+//    "type": "bitX"/"byte"
+//    "mem": <memory accessor>
+//    "address": <memory address>
+// }
+function ConvertBitAggregatesToBitCountableMemoryAccessors(aggregates)
+{
+    accessors = []
+    for address in aggregates
+    {
+        agg = aggregates[address]
+        if (length(agg) == 8)
+        {
+            array_push(accessors, { "type": "byte", "mem": byte(address), "address": address })
+        }
+        else
+        {
+            // Simply return each bit instead, since we can't use bitcount() on anything but bytes.
+            for bit in agg
+            {
+                if (bit != -1 && address != -1)
+                {
+                    array_push(accessors, { "type": "bit", "mem": bit(bit, address), "address": address })
+                }
+            }
+        }
+    }
+    
+    return accessors
+}
+
+function GetCountableAccessorArrayFromAddressBits(dict)
+{
+    return ConvertBitAggregatesToBitCountableMemoryAccessors(AggregateBitsFromAddressBits(dict))
+}
+
+function GenerateBitcountFromCountableObjects(addresses)
+{
+    finalBitcount = 0
+    for address in addresses
+    {
+        if (address["type"] == "byte")
+        {
+            finalBitcount = finalBitcount + bitcount(address["address"])
+        }
+        else
+        {
+            finalBitcount = finalBitcount + address["mem"]
+        }
+    }
+    return finalBitcount
+}
+
+function GenerateBitcountFromAddressBits(dict)
+{
+    GenerateBitcountFromCountableObjects(GetCountableAccessorArrayFromAddressBits(dict))
+}
+
+// END OF BITFLAG AGGREGATION REGION
+
+// This function allows the creation of achievements with built-in save protection that deal with a collection of values being set
+// throughout the game. The schemas for both parameters are as follows:
+//
+// name: title
+// description: self-explanatory
+// points: self-explanatory
+// addresses: a list of address accessors that need to have their bits summed (each address must have an "addr" and "bit" value in order to be properly aggregated)
+// threshold: how many values in the "conditions" dictionary must be set before this achievement is triggered; uses the number of addresses if left at 0
+// resetWhen: a condition that, when true, will reset the entire achievement, including pauselocks
+// onlyAvailableWhen: a condition that must be true in all conditions for the achievement to trigger
+// id: self-explanatory
+// badge: self-explanatory
+// type: self-explanatory
+// oneAtATime: indicates that bits will only ever get flipped one at a time, meaning the achievement will check one below the threshold before triggering
+function GenerateCheevoFromBits(name, description, points, addresses, threshold = 0, onlyAvailableWhen = always_true(), resetWhen = always_false(), id = 0, badge = "00000", type = "",
+    oneAtATime = false)
+{
+    shouldTriggerPauselock = always_false()
+    bitcounts = GenerateBitcountFromCountableObjects(GetCountableAccessorArrayFromAddressBits(addresses))
+    
+    if (threshold == 0)
+    {
+        threshold = length(addresses)
+    }
+    
+    
+    // We want both loaded and session counts here (that is, we don't care if we're loading a save file when these are tallied).
+    // This way, loading a save doesn't invalidate the achievement outright if a player hasn't actually earned it yet.
+    if (oneAtATime)
+    {
+        trigger = measured(bitcounts >= threshold) && Delta(bitcounts) == threshold - 1
+    }
+    else
+    {
+        // This is the score when the game is loaded. If the loaded score is greater than or equal to the threshold--that is,
+        // if the save file would satisfy enough conditions to trigger the achievement on load--this should trigger a
+        // permanant pauselock to serve as save protection.
+        shouldTriggerPauselock = once(bitcounts >= threshold && IsOnTitleScreen())
+        trigger = measured(bitcounts >= threshold)
+    }    
+
+    achievement(title = name, description = description, points = points, badge = badge, id = id,
+        trigger = FileIsLoaded() && trigger && unless(shouldTriggerPauselock) && onlyAvailableWhen
+            && (resetWhen || never(IsOnTitleScreen())) // Reset any potential pauselock when exiting to the title screen.
+    )
+}
 // /utility
 
 superareas = {
-    2: { "id":2, "internalName":"sea", "displayName":"The Great Sea", "addrOverride": 0x00ab78c9},3: { "id":3, "internalName":"majroom", "displayName":"Forsaken Fortress", "addrOverride": 0},
+    2: { "id":2, "internalName":"sea", "displayName":"The Great Sea", "addrOverride": 0x00ab78c9},3: { "id":3, "internalName":"majroom", "displayName":"Forsaken Fortress", "addrOverride": 0},4: { "id":4, "internalName":"M_NewD2", "displayName":"Dragon Roost Cavern", "addrOverride": 0},
 }
 
 areas = {
-    859204975: { "name": "Forest of Fairies", "internalName": "A_mori", "roomId": 0, "key": "" },660955507: { "name": "Title Screen", "internalName": "sea_T", "roomId": 44, "key": "" },1315007817: { "name": "File Select", "internalName": "Name", "roomId": 44, "key": "" },1936023852: { "name": "Outset Island", "internalName": "sea", "roomId": 44, "key": "" },974743663: { "name": "Orca and Sturgeon's House (1F)", "internalName": "Ojhous", "roomId": 0, "key": "" },974740078: { "name": "Orca and Sturgeon's House (2F)", "internalName": "Ojhous2", "roomId": 1, "key": "" },771907955: { "name": "Mesa's House", "internalName": "Omasao", "roomId": 0, "key": "" },974786146: { "name": "Abe and Rose's House", "internalName": "Onobuta", "roomId": 0, "key": "" },505704043: { "name": "Link's House", "internalName": "LinkRM", "roomId": 0, "key": "" },538080106: { "name": "Beedle's Shop Ship", "internalName": "Obshop", "roomId": 2, "key": "" },674500461: { "name": "Tetra's Ship, On Deck", "internalName": "A_umikz", "roomId": 0, "key": "" },779317099: { "name": "Tetra's Ship, Below Deck", "internalName": "Asoko", "roomId": 0, "key": "" },941910649: { "name": "Forsaken Fortress", "internalName": "MajyuE", "roomId": 0, "key": "ForsakenFortressBailey" },34473840: { "name": "Gallery", "internalName": "majroom", "roomId": 2, "key": "ForsakenFortressGallery" },34473842: { "name": "Prison", "internalName": "majroom", "roomId": 0, "key": "ForsakenFortressPrison" },34473846: { "name": "Barracks", "internalName": "majroom", "roomId": 4, "key": "ForsakenFortressBarracks" },34473841: { "name": "Docks", "internalName": "majroom", "roomId": 3, "key": "ForsakenFortressDocks" },34473843: { "name": "Dining Area", "internalName": "majroom", "roomId": 1, "key": "ForsakenFortressDining" },974063215: { "name": "Forsaken Fortress: Tower", "internalName": "Mjtower", "roomId": 0, "key": "ForsakenFortressTower" },1936023819: { "name": "Windfall Island", "internalName": "sea", "roomId": 11, "key": "" },588018279: { "name": "Chu Jelly Juice Shop", "internalName": "Pdrgsh", "roomId": 0, "key": "" },656042339: { "name": "House of Wealth", "internalName": "Orichh", "roomId": 0, "key": "" },1332770146: { "name": "Cafe", "internalName": "Opub", "roomId": 0, "key": "" },1023569253: { "name": "Lenzo's Studio", "internalName": "Ocmera", "roomId": 0, "key": "" },923140457: { "name": "Joy School", "internalName": "Nitiyou", "roomId": 0, "key": "" },772761971: { "name": "Game Room", "internalName": "Kaisen", "roomId": 0, "key": "" },620956794: { "name": "Windfall Island Jail", "internalName": "Pnezumi", "roomId": 0, "key": "" },755658605: { "name": "Bomb Shop", "internalName": "Obombh", "roomId": 0, "key": "" },672007282: { "name": "test1", "internalName": "Atorizk", "roomId": 0, "key": "" },738526318: { "name": "test2", "internalName": "Adanmae", "roomId": 0, "key": "" },974879845: { "name": "test3", "internalName": "M_NewD2", "roomId": 0, "key": "" },1936023820: { "name": "Pawprint Isle", "internalName": "sea", "roomId": 12, "key": "" },1936023821: { "name": "Dragon Roost Island", "internalName": "sea", "roomId": 13, "key": "" },538080104: { "name": "Beedle's Shop Ship", "internalName": "Obshop", "roomId": 0, "key": "" },
+859204975: { "name": "Forest of Fairies", "internalName": "A_mori", "roomId": 0, "key": "", "isStatic": 0 },660955507: { "name": "Title Screen", "internalName": "sea_T", "roomId": 44, "key": "", "isStatic": 1 },1315007817: { "name": "File Select", "internalName": "Name", "roomId": 44, "key": "", "isStatic": 1 },1315007845: { "name": "File Select", "internalName": "Name", "roomId": 0, "key": "", "isStatic": 1 },1936023852: { "name": "Outset Island", "internalName": "sea", "roomId": 44, "key": "", "isStatic": 0 },974743663: { "name": "Orca and Sturgeon's House (1F)", "internalName": "Ojhous", "roomId": 0, "key": "", "isStatic": 0 },974740078: { "name": "Orca and Sturgeon's House (2F)", "internalName": "Ojhous2", "roomId": 1, "key": "", "isStatic": 0 },771907955: { "name": "Mesa's House", "internalName": "Omasao", "roomId": 0, "key": "", "isStatic": 0 },974786146: { "name": "Abe and Rose's House", "internalName": "Onobuta", "roomId": 0, "key": "", "isStatic": 0 },505704043: { "name": "Link's House", "internalName": "LinkRM", "roomId": 0, "key": "", "isStatic": 0 },538080106: { "name": "Beedle's Shop Ship", "internalName": "Obshop", "roomId": 2, "key": "", "isStatic": 0 },674500461: { "name": "Tetra's Ship, On Deck", "internalName": "A_umikz", "roomId": 0, "key": "", "isStatic": 0 },779317099: { "name": "Tetra's Ship, Below Deck", "internalName": "Asoko", "roomId": 0, "key": "", "isStatic": 0 },941910649: { "name": "Forsaken Fortress", "internalName": "MajyuE", "roomId": 0, "key": "ForsakenFortressBailey", "isStatic": 0 },34473840: { "name": "Gallery", "internalName": "majroom", "roomId": 2, "key": "ForsakenFortressGallery", "isStatic": 0 },34473842: { "name": "Prison", "internalName": "majroom", "roomId": 0, "key": "ForsakenFortressPrison", "isStatic": 0 },34473846: { "name": "Barracks", "internalName": "majroom", "roomId": 4, "key": "ForsakenFortressBarracks", "isStatic": 0 },34473841: { "name": "Docks", "internalName": "majroom", "roomId": 3, "key": "ForsakenFortressDocks", "isStatic": 0 },34473843: { "name": "Dining Area", "internalName": "majroom", "roomId": 1, "key": "ForsakenFortressDining", "isStatic": 0 },974063215: { "name": "Forsaken Fortress: Tower", "internalName": "Mjtower", "roomId": 0, "key": "ForsakenFortressTower", "isStatic": 0 },1936023819: { "name": "Windfall Island", "internalName": "sea", "roomId": 11, "key": "", "isStatic": 0 },588018279: { "name": "Chu Jelly Juice Shop", "internalName": "Pdrgsh", "roomId": 0, "key": "", "isStatic": 0 },656042339: { "name": "House of Wealth", "internalName": "Orichh", "roomId": 0, "key": "", "isStatic": 0 },1332770146: { "name": "Cafe", "internalName": "Opub", "roomId": 0, "key": "", "isStatic": 0 },1023569253: { "name": "Lenzo's Studio", "internalName": "Ocmera", "roomId": 0, "key": "", "isStatic": 0 },923140457: { "name": "Joy School", "internalName": "Nitiyou", "roomId": 0, "key": "", "isStatic": 0 },772761971: { "name": "Game Room", "internalName": "Kaisen", "roomId": 0, "key": "", "isStatic": 0 },620956794: { "name": "Windfall Island Jail", "internalName": "Pnezumi", "roomId": 0, "key": "", "isStatic": 0 },755658605: { "name": "Bomb Shop", "internalName": "Obombh", "roomId": 0, "key": "", "isStatic": 0 },672007282: { "name": "Mail Center", "internalName": "Atorizk", "roomId": 0, "key": "", "isStatic": 0 },738526318: { "name": "Dragon Roost Cavern Entrance", "internalName": "Adanmae", "roomId": 0, "key": "", "isStatic": 0 },974879845: { "name": "1F", "internalName": "M_NewD2", "roomId": 0, "key": "CavernEntrance", "isStatic": 0 },1936023820: { "name": "Pawprint Isle", "internalName": "sea", "roomId": 12, "key": "", "isStatic": 0 },1936023821: { "name": "Dragon Roost Island", "internalName": "sea", "roomId": 13, "key": "", "isStatic": 0 },538080104: { "name": "Beedle's Shop Ship", "internalName": "Obshop", "roomId": 0, "key": "", "isStatic": 0 },974879847: { "name": "Main", "internalName": "M_NewD2", "roomId": 2, "key": "CavernMain", "isStatic": 0 },974879848: { "name": "1F", "internalName": "M_NewD2", "roomId": 13, "key": "CavernPots", "isStatic": 0 },974879844: { "name": "1F", "internalName": "M_NewD2", "roomId": 1, "key": "CavernBarricades", "isStatic": 0 },974879854: { "name": "1F", "internalName": "M_NewD2", "roomId": 11, "key": "CavernSwingBarricades", "isStatic": 0 },974879846: { "name": "Outside", "internalName": "M_NewD2", "roomId": 3, "key": "CavernOutside", "isStatic": 0 },974879851: { "name": "Block Climb", "internalName": "M_NewD2", "roomId": 14, "key": "CavernBlockClimb", "isStatic": 0 },974879841: { "name": "2F", "internalName": "M_NewD2", "roomId": 4, "key": "CavernDark", "isStatic": 0 },974879843: { "name": "2F", "internalName": "M_NewD2", "roomId": 6, "key": "CavernTreasureChart", "isStatic": 0 },974879853: { "name": "Geyser", "internalName": "M_NewD2", "roomId": 8, "key": "CavernGeyser", "isStatic": 0 },974879855: { "name": "3F", "internalName": "M_NewD2", "roomId": 10, "key": "CavernBossDoor", "isStatic": 0 },745504123: { "name": "Dragon Roost Cavern: 4F", "internalName": "M_Dra09", "roomId": 9, "key": "", "isStatic": 0 },974879842: { "name": "3F", "internalName": "M_NewD2", "roomId": 7, "key": "CavernBridge", "isStatic": 0 },974879850: { "name": "1F", "internalName": "M_NewD2", "roomId": 15, "key": "CavernTingleStatue", "isStatic": 0 },974879849: { "name": "1F", "internalName": "M_NewD2", "roomId": 12, "key": "CavernFireChest", "isStatic": 0 },741869170: { "name": "Dragon Roost Cavern: 3F", "internalName": "M_DragB", "roomId": 0, "key": "CavernBoss", "isStatic": 0 },1936023808: { "name": "Dragon Roost Island", "internalName": "sea", "roomId": 0, "key": "DragonRoostIslandCutscene", "isStatic": 0 },1648779056: { "name": "Mysterious Labyrinth", "internalName": "TF_06", "roomId": 0, "key": "", "isStatic": 0 },1936023828: { "name": "Fire Mountain", "internalName": "sea", "roomId": 20, "key": "", "isStatic": 0 },1936023835: { "name": "Eastern Triangle Island", "internalName": "sea", "roomId": 27, "key": "", "isStatic": 0 },1936023842: { "name": "Bomb Island", "internalName": "sea", "roomId": 34, "key": "", "isStatic": 0 },672297832: { "name": "Inside a submarine...", "internalName": "Abship", "roomId": 0, "key": "", "isStatic": 0 },1936023849: { "name": "Forest Haven", "internalName": "sea", "roomId": 41, "key": "", "isStatic": 0 },644706162: { "name": "Inside the Forest Haven", "internalName": "Omori", "roomId": 0, "key": "", "isStatic": 0 },
 }
 
 // Create lookup mappings for subareas
@@ -151,6 +304,18 @@ function GetAreaByKey(key)
     }
 }
 
+function GetAreaByInternalName(name)
+{
+    for hash in areas
+    {
+        area = areas[hash]
+        if (area["internalName"] == name)
+        {
+            return area
+        }
+    }
+}
+
 function GetAreaRPLookup()
 {
     ret = {}
@@ -167,6 +332,7 @@ function mapNamePart1() => dword_be(0x003d1664)
 function mapNamePart2() => dword_be(0x003d1668)
 function roomPointer() => dword_be(0x003d21f4) & 0x7FFFFFFF
 function roomId() => byte(roomPointer() + 0x66d)
+function staticRoomId() => byte(0x003cccd8)
 
 function GetAreaHash()
 {
@@ -185,6 +351,12 @@ function IsInAreaByKey(key)
     return ascii_string_equals(mapNameAddr(), area["internalName"])
 }
 
+function IsInAreaByInternalName(name)
+{
+    area = GetAreaByInternalName(name)
+    return ascii_string_equals(mapNameAddr(), area["internalName"])
+}
+
 function IsInAreaByHash(hash)
 {
     return hash == GetAreaHash()
@@ -193,12 +365,21 @@ function IsInAreaByHash(hash)
 function IsOnTitleScreen() => IsInArea("Title Screen")
 internalNamesAddedToRP = []
 
+function maxLifeEnergy() => word_be(0x003cc530)
+function Hearts() => maxLifeEnergy() / 4
+
 for hash in areas
 {
     area = GetAreaByHash(hash)
     superarea = GetSuperareaByName(area["internalName"])
     lookupForArea = lookups[GetLookupKey(area["internalName"])]
     display = ""
+    roomIdToUse = roomId()
+    
+    if (area["isStatic"] == 1)
+    {
+        roomIdToUse = staticRoomId()
+    }
 
     if (DoesSuperareaExist(area["internalName"]))
     {
@@ -207,8 +388,9 @@ for hash in areas
 
     if (!any_of(internalNamesAddedToRP, input => input == area["internalName"]))
     {
-        rich_presence_conditional_display(IsInArea(area["name"]), display + "{0}",
-            rich_presence_lookup(GetLookupKey(area["internalName"]), roomId(), lookupForArea)
+        rich_presence_conditional_display(IsInArea(area["name"]), display + "{0} | {1} ❤️",
+            rich_presence_lookup(GetLookupKey(area["internalName"]), roomIdToUse, lookupForArea),
+            rich_presence_value("Hearts", Hearts())
         )
         array_push(internalNamesAddedToRP, area["internalName"])
     }
@@ -312,4 +494,61 @@ function pictographSidequestProgress() => byte(0x003ccc18)
 achievement(title = "Apprentice Pictographer", description = "Complete Lenzo's pictograph sidequest.", points = 5, id = 404243,
     trigger = WasValueJustSetInGame(pictographSidequestProgress(), 5, 6)
         && measured(pictographSidequestProgress() == 6)
+)
+
+function windWakerSlot() => byte(0x003cc56e)
+achievement(title = "Maestro of the Mistral", description = "Obtain the Wind Waker.", points = 3, type = "progression",
+    trigger = IsValueSetInGame(windWakerSlot(), 0xff, 0x22)
+)
+
+function letterSortingQuestProgress() => byte(0x003ccc16)
+achievement(title = "Part-Time Clerk", description = "Complete the first letter-sorting sidequest.", points = 5,
+    trigger = WasValueJustSetInGame(letterSortingQuestProgress(), 2, 3)
+        && measured(letterSortingQuestProgress() == 3)
+)
+
+possessedTreasureChartAddressBits = {
+    2: { "addr": 0x003cc604, "bit": 0 },3: { "addr": 0x003cc604, "bit": 1 },4: { "addr": 0x003cc604, "bit": 2 },5: { "addr": 0x003cc604, "bit": 5 },6: { "addr": 0x003cc604, "bit": 6 },7: { "addr": 0x003cc605, "bit": 1 },8: { "addr": 0x003cc605, "bit": 2 },9: { "addr": 0x003cc605, "bit": 3 },10: { "addr": 0x003cc605, "bit": 4 },11: { "addr": 0x003cc605, "bit": 5 },12: { "addr": 0x003cc605, "bit": 7 },13: { "addr": 0x003cc606, "bit": 0 },14: { "addr": 0x003cc606, "bit": 1 },15: { "addr": 0x003cc606, "bit": 2 },16: { "addr": 0x003cc606, "bit": 3 },17: { "addr": 0x003cc606, "bit": 5 },18: { "addr": 0x003cc606, "bit": 6 },19: { "addr": 0x003cc606, "bit": 7 },20: { "addr": 0x003cc607, "bit": 4 },21: { "addr": 0x003cc609, "bit": 2 },22: { "addr": 0x003cc60b, "bit": 0 },23: { "addr": 0x003cc60b, "bit": 2 },24: { "addr": 0x003cc60b, "bit": 4 },25: { "addr": 0x003cc60b, "bit": 5 },26: { "addr": 0x003cc60b, "bit": 6 },
+}
+
+GenerateCheevoFromBits(name = "Treasure Hunter - Dragon Roost Cavern", description = "Open all treasure chests in Dragon Roost Cavern.", points = 5,
+    onlyAvailableWhen = IsInAreaByInternalName("M_NewD2"), oneAtATime = true,
+    addresses = {
+        1: { "addr": 0x003cccab, "bit": 0 },
+        2: { "addr": 0x003cccab, "bit": 1 },
+        3: { "addr": 0x003cccab, "bit": 2 },
+        4: { "addr": 0x003cccab, "bit": 3 },
+        5: { "addr": 0x003cccab, "bit": 4 },
+        6: { "addr": 0x003cccab, "bit": 6 },
+        7: { "addr": 0x003cccab, "bit": 7 },
+        8: { "addr": 0x003cccaa, "bit": 2 },
+        9: { "addr": 0x003cccaa, "bit": 3 },
+        10: { "addr": 0x003cccaa, "bit": 4 },
+        11: { "addr": 0x003cccaa, "bit": 5 },
+        12: { "addr": 0x003cccaa, "bit": 6 },
+        13: { "addr": 0x003cccaa, "bit": 7 }
+    }
+)
+
+function dinsPearl() => bit1(0x003cc5ef)
+achievement(title = "Jewel of Power", description = "Obtain Din's Pearl.", points = 3, type = "progression",
+    trigger = WasBitflagJustSetInGame(dinsPearl())
+)
+
+function dragonRoostGrottoChestOpened() => bit0(0x003cccab)
+achievement(title = "The Labyrinth of Dragon Roost", description = "Claim the treasure in the grotto on Dragon Roost Island.", points = 1,
+    trigger = WasBitflagJustSetInGame(dragonRoostGrottoChestOpened()) && IsInArea("Mysterious Labyrinth") && staticRoomId() == 6
+)
+
+cartographerBits = {}
+for i in range(0, 48)
+{
+    baseChartAddr = 0x003cc634
+    cartographerBits[i] = { "addr": (baseChartAddr + i), "bit": 0 }
+}
+
+GenerateCheevoFromBits(name = "Rookie Cartographer", description = "Map 50% of the islands on your Sea Chart.", points = 5,
+    onlyAvailableWhen = IsInAreaByInternalName("sea"),
+    addresses = cartographerBits,
+    threshold = length(cartographerBits) / 2
 )

@@ -193,20 +193,17 @@ function GenerateConditionFromBitflag(bit)
     return { "countsWhen": (bit == 1), "recalculateWhen": (Delta(bit) != bit) }
 }
 
-function TRUE() => 1
-function FALSE() => 0
-
 function DictionaryKeyExists(dict, key)
 {
     for i in dict
     {
         if (i == key)
         {
-            return TRUE()
+            return true
         }
     }
     
-    return FALSE()
+    return false
 }
 
 // Dictionary elements must have "addr" and "bit" fields.
@@ -310,4 +307,17 @@ function SecondsToFormat(value)
 function Debug(text)
 {
     achievement(title = text + "", description = "", points = 0, trigger = always_false())
+}
+
+function DictionaryKeyExists(dict, key)
+{
+    for i in dict
+    {
+        if (i == key)
+        {
+            return true
+        }
+    }
+    
+    return false
 }
