@@ -853,10 +853,6 @@ function LetterFromMoeWasJustRemovedFromBag()
     return trigger
 }
 
-achievement(title = "Distance Makes the Stomach Grow Fonder", description = "Complete Maggie's letter sidequest.", points = 5,
-    trigger = LetterFromMoeWasJustRemovedFromBag()
-)
-
 function ironBootsSlot() => byte(0x003cc575)
 achievement(title = "Anchors Aweigh!", description = "Obtain the Iron Boots.", points = 3,
     trigger = WasValueSetInGame(ironBootsSlot(), 0xff, 0x29)
