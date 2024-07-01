@@ -626,12 +626,12 @@ function messageId() => word_be(dialoguePointer() + 0x40 + 0x80000000)
 function DisplayingMessageWithId(id) => messageId() == id
 
 function baitBagSlot() => byte(0x003cc577)
-achievement(title = "Ready for Hunting", points = 3, description = "Obtain the Bait Bag.", id = 402391,
+achievement(title = "Ready for Hunting", points = 3, description = "Obtain the Bait Bag.", id = 402391, badge = "500800",
     trigger = IsValueSetInGame(baitBagSlot(), 0xff, 0x2c)
 )
 
 function rupees() => word_be(0x003cc534)
-achievement(title = "Birthday Fine", points = 1, description = "Destroy the pot Sue-Belle's carrying and pay the full fine.", id = 402392, type = "missable",
+achievement(title = "Birthday Fine", points = 1, description = "Destroy the pot Sue-Belle's carrying and pay the full fine.", id = 402392, type = "missable", badge = "500801",
     trigger = once(DisplayingMessageWithId(2207)) && Delta(rupees()) == rupees() + 10
 )
 
@@ -639,7 +639,7 @@ function crawlingStatus() => bit3(0x3d21f8)
 function gavePinkPig() => bit0(0x003ccc13)
 function gaveSpottedPig() => bit1(0x003ccc13)
 function gaveBlackPig() => bit2(0x003ccc13)
-achievement(title = "Hog Wild", points = 5, description = "Wrangle all three pigs on Outset Island without crawling or going indoors.", id = 402393,
+achievement(title = "Hog Wild", points = 5, description = "Wrangle all three pigs on Outset Island without crawling or going indoors.", id = 402393, badge = "500803",
     type = "missable",
     trigger = WasBitflagSetInGame(gavePinkPig()) && WasBitflagSetInGame(gaveSpottedPig()) && WasBitflagSetInGame(gaveBlackPig()) && unless(once(crawlingStatus() == 1))
         && (always_false() || never(AreaJustChanged()))
@@ -648,7 +648,7 @@ achievement(title = "Hog Wild", points = 5, description = "Wrangle all three pig
 function bokoblinsDroppedIn() => bit0(0x003cccaf) // when stageId is 0xb
 function tetraAwakens() => bit1(0x003cccaf) // when stageId is 0xb
 achievement(title = "With Enemies Like These", points = 25, description = "Rescue Tetra from the two Bokoblins without using your sword and without leaving the area.", id = 402394,
-    type = "missable",
+    type = "missable", badge = "500870",
     trigger = trigger_when(once(IsInArea("Forest of Fairies") && IsValueSet(bokoblinsDroppedIn(), 0, 1)) && stageId() == 0xb)
         && WasBitflagJustSetInGame(tetraAwakens())
         && never(swordActionPointer() == 0)
@@ -668,7 +668,7 @@ function WithinPlatformTimeLimit() => TetraPlatformTimeElapsed() <= SecondsToFra
 function TetraPlatformsAreUp() => bit0(tetraPlatformPointer() + 0x1bb + 0x80000000) == 1
 function NinjaWarriorChallengeActive() => TetraPlatformsAreUp() && enteredCorrectPassword() == 0
 function CompletedFirstObstacleCourse() => bit4(0x003ccb5b) == 1
-achievement(title = "Ninja Warrior I", points = 10, description = "Complete Niko's obstacle course within " + niko1TimeLimit + " seconds.", id = 402395, type = "missable",
+achievement(title = "Ninja Warrior I", points = 10, description = "Complete Niko's obstacle course within " + niko1TimeLimit + " seconds.", id = 402395, type = "missable", badge = "500804",
     trigger = trigger_when(NinjaWarriorChallengeActive() && TetraPlatformTimerFrozen()) && WithinPlatformTimeLimit() && !CompletedFirstObstacleCourse()
 )
 
@@ -681,23 +681,23 @@ leaderboard(title = "Ninja Warrior I", description = "Reach the end of Niko's fi
 )
 
 function metKoRL() => bit2(0x003cc8b6)
-achievement(title = "Carried by the Currents", description = "Meet the King of Red Lions.", points = 3, id = 402396, type = "progression",
+achievement(title = "Carried by the Currents", description = "Meet the King of Red Lions.", points = 3, id = 402396, type = "progression", badge = "500805",
     trigger = WasBitflagJustSetInGame(metKoRL())
 )
 
 function pictographSidequestProgress() => byte(0x003ccc18)
-achievement(title = "Apprentice Pictographer", description = "Complete Lenzo's pictograph sidequest.", points = 5, id = 404243,
+achievement(title = "Apprentice Pictographer", description = "Complete Lenzo's pictograph sidequest.", points = 5, id = 404243, badge = "500806",
     trigger = WasValueJustSetInGame(pictographSidequestProgress(), 5, 6)
         && measured(pictographSidequestProgress() == 6)
 )
 
 function windWakerSlot() => byte(0x003cc56e)
-achievement(title = "Maestro of the Mistral", description = "Obtain the Wind Waker.", points = 3, type = "progression",
+achievement(title = "Maestro of the Mistral", description = "Obtain the Wind Waker.", points = 3, type = "progression",  badge = "500807",
     trigger = IsValueSetInGame(windWakerSlot(), 0xff, 0x22)
 )
 
 function letterSortingQuestProgress() => byte(0x003ccc16)
-achievement(title = "Part-Time Clerk", description = "Complete the first letter-sorting sidequest.", points = 5,
+achievement(title = "Part-Time Clerk", description = "Complete the first letter-sorting sidequest.", points = 5, badge = "500808",
     trigger = WasValueJustSetInGame(letterSortingQuestProgress(), 2, 3)
         && measured(letterSortingQuestProgress() == 3)
 )
@@ -706,7 +706,7 @@ possessedTreasureChartAddressBits = {
     2: { "addr": 0x003cc604, "bit": 0 },3: { "addr": 0x003cc604, "bit": 1 },4: { "addr": 0x003cc604, "bit": 2 },5: { "addr": 0x003cc604, "bit": 5 },6: { "addr": 0x003cc604, "bit": 6 },7: { "addr": 0x003cc605, "bit": 1 },8: { "addr": 0x003cc605, "bit": 2 },9: { "addr": 0x003cc605, "bit": 3 },10: { "addr": 0x003cc605, "bit": 4 },11: { "addr": 0x003cc605, "bit": 5 },12: { "addr": 0x003cc605, "bit": 7 },13: { "addr": 0x003cc606, "bit": 0 },14: { "addr": 0x003cc606, "bit": 1 },15: { "addr": 0x003cc606, "bit": 2 },16: { "addr": 0x003cc606, "bit": 3 },17: { "addr": 0x003cc606, "bit": 5 },18: { "addr": 0x003cc606, "bit": 6 },19: { "addr": 0x003cc606, "bit": 7 },20: { "addr": 0x003cc607, "bit": 4 },21: { "addr": 0x003cc609, "bit": 2 },22: { "addr": 0x003cc60b, "bit": 0 },23: { "addr": 0x003cc60b, "bit": 2 },24: { "addr": 0x003cc60b, "bit": 4 },25: { "addr": 0x003cc60b, "bit": 5 },26: { "addr": 0x003cc60b, "bit": 6 },
 }
 
-GenerateCheevoFromBits(name = "Treasure Hunter - Dragon Roost Cavern", description = "Open all treasure chests in Dragon Roost Cavern.", points = 5,
+GenerateCheevoFromBits(name = "Dragon's Hoarde", description = "Open all treasure chests in Dragon Roost Cavern.", points = 5,  badge = "500811",
     onlyAvailableWhen = IsInAreaByInternalName("M_NewD2"), oneAtATime = true,
     addresses = {
         1: { "addr": 0x003cccab, "bit": 0 },
@@ -726,7 +726,7 @@ GenerateCheevoFromBits(name = "Treasure Hunter - Dragon Roost Cavern", descripti
 )
 
 function dinsPearl() => bit1(0x003cc5ef)
-achievement(title = "Jewel of Power", description = "Obtain Din's Pearl.", points = 3, type = "progression",
+achievement(title = "Jewel of Power", description = "Obtain Din's Pearl.", points = 3, type = "progression", badge = "500812",
     trigger = WasBitflagJustSetInGame(dinsPearl())
 )
 
@@ -735,6 +735,7 @@ GenerateCheevoFromBufferBits(
     description = "Open the optional treasure chests in all secret caves.",
     points = 10,
     id = 439028,
+     badge = "500813",
     addresses = {
         1: { "buffer": { "addr": 0x003cccab, "bit": 0, "group": "TF_06", "stage": 0xd }, "static": { "addr": 0x003cca87, "bit": 0 } }, // Dragoon Roost Island labyrinth
         2: { "buffer": {  "addr": 0x003cccab, "bit": 1, "group": "Cave05", "stage": 0xd }, "static": { "addr": 0x003cca87, "bit": 1 } }, // Horseshoe Island cave
@@ -762,6 +763,8 @@ GenerateCheevoFromBits(
     name = "Krakenslayer",
     description = "Defeat all six Big Octos.",
     points = 10,
+    id = 444183,
+    badge = "500814",
     addresses = {
         1: { "addr": 0x003cccad, "bit": 1 },
         2: { "addr": 0x003cccae, "bit": 5 },
@@ -782,6 +785,8 @@ for i in range(0, 48)
 }
 
 GenerateCheevoFromBits(name = "Rookie Cartographer", description = "Map 50% of the islands on your Sea Chart.", points = 5,
+    id = 439029,
+    badge = "500817",
     onlyAvailableWhen = IsInAreaByInternalName("sea"),
     addresses = cartographerBits,
     threshold = length(cartographerBits) / 2,
@@ -789,18 +794,18 @@ GenerateCheevoFromBits(name = "Rookie Cartographer", description = "Map 50% of t
 )
 
 function boomerangSlot() => byte(0x003cc571)
-achievement(title = "Back at Ya...Fivefold!", description = "Obtain the Boomerang.", points = 3, type = "progression",
+achievement(title = "Back at Ya...Fivefold!", description = "Obtain the Boomerang.", points = 3, type = "progression", id = 439030, badge = "500818",
     trigger = IsValueSetInGame(boomerangSlot(), 0xff, 0x2d)
 )
 
 function nintendoGalleryOpenedDynamic() => bit6(0x003cccb4)
 function nintendoGalleryOpenedStatic() => bit6(0x003cc8bc)
-achievement(title = "Scalpers, Beware", description = "Gain access to the Nintendo Gallery.", points = 3,
+achievement(title = "Scalpers, Beware", description = "Gain access to the Nintendo Gallery.", points = 3, id = 439031, badge = "500819",
     trigger = WasBitflagJustSetInGame(nintendoGalleryOpenedDynamic()) && nintendoGalleryOpenedStatic() == 0
 )
 
 function walletUpgradesObtained() => byte(0x003cc542)
-achievement(title = "Silver Status", description = "Obtain your first wallet upgrade.", points = 5,
+achievement(title = "Silver Status", description = "Obtain your first wallet upgrade.", points = 5, id = 439032, badge = "500820",
     trigger = WasValueJustSetInGame(walletUpgradesObtained(), 0, 1)
 )
 
@@ -827,7 +832,7 @@ leaderboard(title = "Hide and Seek", description = "Catch all the Killer Bees as
 )
 
 function gaveBirthdayPresent() => bit0(0x003ccc14)
-achievement(title = "Teacher of the Year", description = "Give Mrs. Marie a birthday present.", points = 3,
+achievement(title = "Teacher of the Year", description = "Give Mrs. Marie a birthday present.", points = 3, id = 439033, badge = "500821",
     trigger = WasBitflagSetInGame(gaveBirthdayPresent()) && !IsInDialogue()
 )
 
@@ -839,6 +844,7 @@ function TetraPlatformsAreUp() => bit0(tetraPlatformPointer() + 0x800001bb) == 1
 function NinjaWarriorIIChallengeActive() => TetraPlatformsAreUp() && enteredCorrectPassword() == 1
 function CompletedSecondObstacleCourse() => once(messageId() == 0x1b28)
 achievement(title = "Ninja Warrior II", points = 25, description = "Complete Niko's second obstacle course within " + niko2TimeLimit + " seconds.", type = "missable",
+    id = 439034, badge = "500822",
     trigger = trigger_when(NinjaWarriorIIChallengeActive() && TetraPlatformTimerFrozen()) && WithinRopeTimeLimit() && never(CompletedSecondObstacleCourse())
 )
 
@@ -851,17 +857,18 @@ leaderboard(title = "Ninja Warrior II", description = "Reach the end of Niko's s
 )
 
 function bombCapacity() => byte(0x003cc5a0)
-achievement(title = "Gunboat Diplomacy", description = "Obtain a maximum bomb capacity of 99.", points = 10, id = 439035, badge = "495665",
+achievement(title = "Gunboat Diplomacy", description = "Obtain a maximum bomb capacity of 99.", points = 10, id = 439035, badge = "500823",
     trigger = WasValueSetInGame(bombCapacity(), 0x3c, 0x63)
 )
 
 function totgIsAvailable() => bit0(0x003cc8cb)
-achievement(title = "From the Sea to the Heavens", description = "Reveal the Tower of the Gods.", points = 3,
+achievement(title = "From the Sea to the Heavens", description = "Reveal the Tower of the Gods.", points = 3, id = 439036, badge = "500824",
     trigger = WasBitflagSetInGame(totgIsAvailable())
 )
 
 function totgMinibossDefeated() => bit4(0x003cccad)
 achievement(title = "Familiar Tactics...", description = "Defeat the Darknut in the Tower of the Gods without using a sword, save for a single parry attack.", type = "missable", points = 5,
+    id = 439037, badge = "500825",
     trigger = once(WasJustInAreaByKey("TotG2FLeftCorridor") && IsInAreaByKey("TotG2FMiniboss") && totgMinibossDefeated() == 0)
         && trigger_when(WasBitflagJustSetInGame(totgMinibossDefeated()))
         && never(!IsInAreaByKey("TotG2FMiniboss"))
@@ -870,17 +877,17 @@ achievement(title = "Familiar Tactics...", description = "Defeat the Darknut in 
 )
 
 function bowSlot() => byte(0x003cc578)
-achievement(title = "A Bowyer's Wrath", description = "Obtain the Hero's Bow.", points = 3, type = "progression",
+achievement(title = "A Bowyer's Wrath", description = "Obtain the Hero's Bow.", points = 3, type = "progression", id = 439038, badge = "500826",
     trigger = IsValueSetInGame(bowSlot(), 0xff, 0x27)
 )
 
 function swordEquipped() => byte(0x003cc53e)
-achievement(title = "The Successor", description = "Obtain the Master Sword.", points = 3, type = "progression",
+achievement(title = "The Successor", description = "Obtain the Master Sword.", points = 3, type = "progression", id = 439039, badge = "500827",
     trigger = IsValueSetInGame(swordEquipped(), 0x38, 0x39)
 )
 
 function balladOfGalesObtained() => bit1(0x003cc5ed)
-achievement(title = "The Voice of Boreas", description = "Learn the Ballad of Gales.", points = 3,
+achievement(title = "The Voice of Boreas", description = "Learn the Ballad of Gales.", points = 3, id = 439040, badge = "500829",
     trigger = WasBitflagSetInGame(balladOfGalesObtained())
 )
 
@@ -901,12 +908,13 @@ function zItem() => byte(0x003cc53b)
 function EmptyBottleIsEquipped() => xItem() == 0xf || yItem() == 0xf || zItem() == 0xf
 
 achievement(title = "Eyes Off the Prize", description = "Defeat Phantom Ganon in the Forsaken Fortress without L-Targeting or equipping an empty bottle.", points = 5,
+    id = 439041, badge = "500830",
     trigger = PhantomGanonCheckpointReached() && trigger_when(PhantomGanonDefeated()) && never(IsLTargeting())
         && never(EmptyBottleIsEquipped())
 )
 
 function maxArrowCapacity() => byte(0x003cc59f)
-achievement(title = "Adept Archery", description = "Increase your quiver's arrow capacity to 60.", points = 3,
+achievement(title = "Adept Archery", description = "Increase your quiver's arrow capacity to 60.", points = 3, id = 439042, badge = "500831",
     trigger = WasValueSetInGame(maxArrowCapacity(), 30, 60)
 )
 
@@ -920,7 +928,7 @@ submarineTreasureBits = {
     7: { "addr": 0x003cccab, "bit": 7 }
 }
 
-GenerateCheevoFromBits(name = "Pirate Wannabe", description = "Claim the treasure from all seven submarines.", points = 5,
+GenerateCheevoFromBits(name = "Pirate Wannabe", description = "Claim the treasure from all seven submarines.", points = 5, id = 439043, badge = "500832",
     onlyAvailableWhen = IsInAreaByInternalName("Abship"),
     addresses = submarineTreasureBits,
     threshold = length(submarineTreasureBits),
@@ -928,11 +936,12 @@ GenerateCheevoFromBits(name = "Pirate Wannabe", description = "Claim the treasur
 )
 
 function bowSlot() => byte(0x003cc578)
-achievement(title = "Diametrically Opposed", description = "Obtain the Fire and Ice Arrows.", points = 3,
+achievement(title = "Diametrically Opposed", description = "Obtain the Fire and Ice Arrows.", points = 3, id = 439044, badge = "500833",
     trigger = WasValueSetInGame(bowSlot(), 0x27, 0x35)
 )
 
 GenerateCheevoFromBits(name = "Distinguished Apothecary", description = "Expand the inventory of the Chu Jelly Juice Shop to three different types of potions.", points = 5, id = 439045,
+    badge = "500834",
     addresses = {
         1: { "addr": 0x003ccb61, "bit": 1 }, // Blue Potion
         2: { "addr": 0x003ccb61, "bit": 2 } // Green Potion
@@ -941,12 +950,12 @@ GenerateCheevoFromBits(name = "Distinguished Apothecary", description = "Expand 
 )
 
 function readLetterFromAryll() => bit0(0x003ccbdf)
-achievement(title = "Warmest Regards", description = "Receive a letter from Aryll.", points = 1,
+achievement(title = "Warmest Regards", description = "Receive a letter from Aryll.", points = 1, id = 439046, badge = "500835",
     trigger = WasBitflagSetInGame(readLetterFromAryll())
 )
 
 function songOfPassingObtained() => bit5(0x003cc5ed)
-achievement(title = "From Dusk 'til Dawn", description = "Learn the Song of Passing.", points = 3,
+achievement(title = "From Dusk 'til Dawn", description = "Learn the Song of Passing.", points = 3, id = 439047, badge = "500836",
     trigger = WasBitflagSetInGame(songOfPassingObtained())
 )
 
@@ -971,7 +980,7 @@ function LetterFromMoeWasJustRemovedFromBag()
 }
 
 function ironBootsSlot() => byte(0x003cc575)
-achievement(title = "Anchors Aweigh!", description = "Obtain the Iron Boots.", points = 3,
+achievement(title = "Anchors Aweigh!", description = "Obtain the Iron Boots.", points = 3, id = 439217, badge = "500837",
     trigger = WasValueSetInGame(ironBootsSlot(), 0xff, 0x29)
 )
 
@@ -986,7 +995,7 @@ function IronBootsChallengeCompleted() => WasBitflagSetInGame(ironBootsChest())
 function IronBootsChallengeFailed() => currentTimerElapsedTime() >= ironBootsTimeLimitInSeconds() * 1000
 function IronBootsChallengeCanceled() => currentTimerExpiry() == 0 && Delta(currentTimerExpiry()) > 0
 achievement(title = "Run off the Cold", description = "Open the chest that contains the Iron Boots within " + SecondsToFormat(ironBootsTimeLimitInSeconds()) + " of thawing Ice Ring Isle.",
-    points = 10, type = "missable",
+    points = 10, type = "missable", id = 439219, badge = "500838",
     trigger = IronBootsChallengeHasStarted() && trigger_when(IronBootsChallengeCompleted())
         && never(IronBootsChallengeFailed())
 )
@@ -1006,6 +1015,7 @@ function BoatingCourseChallengeCompleted() => boatingCourseStatus() == 1
 function BoatingCourseChallengeFailed() => currentTimerElapsedTime() >= boatingCourseTimeLimit() * 1000
 function minigameScore() => word_be(0x003d220c)
 achievement(title = "Racing for Rupees", description = "Complete a perfect boating course run within " + SecondsToFormat(boatingCourseTimeLimit()) + ".", points = 10, id = 439218,
+    badge = "500842",
     trigger = BoatingCourseChallengeHasStarted() && trigger_when(BoatingCourseChallengeCompleted() && minigameScore() == 150)
         && never(BoatingCourseChallengeFailed()) && never(!IsInAreaByInternalName("Ocean"))
 )
@@ -1020,7 +1030,7 @@ leaderboard(title = "Racing for Rupees", description = "Complete a perfect boati
 
 function JustLeftDialogue() => dialogueState() < Delta(dialogueState())
 GenerateCheevoFromBits(name = "Totems of the Forest", description = "Obtain all Nintendo Gallery figurines in the Forest Haven room.", points = 10,
-    onlyAvailableWhen = once(DisplayingMessageWithId(0x364d)) && JustLeftDialogue() && never(!IsInAreaByInternalName("Pfigure")), id = 439220,
+    onlyAvailableWhen = once(DisplayingMessageWithId(0x364d)) && JustLeftDialogue() && never(!IsInAreaByInternalName("Pfigure")), id = 439220, badge = "500843",
     addresses = {
         1: { "addr": 0x003ccbf0, "bit": 0 }, // Irch
         2: { "addr": 0x003ccbf0, "bit": 1 }, // Rown
@@ -1039,7 +1049,7 @@ GenerateCheevoFromBits(name = "Totems of the Forest", description = "Obtain all 
     }
 )
 
-GenerateCheevoFromBits(name = "Great Sea Glaze", description = "Obtain all Nintendo Gallery figurines in the Great Sea room.", points = 10,
+GenerateCheevoFromBits(name = "Great Sea Glaze", description = "Obtain all Nintendo Gallery figurines in the Great Sea room.", points = 10, id = 439221, badge = "500844",
     onlyAvailableWhen = once(DisplayingMessageWithId(0x364d)) && JustLeftDialogue() && never(!IsInAreaByInternalName("Pfigure")),
     addresses = {
         1: { "addr": 0x003ccbe1, "bit": 0 }, // King of Red Lions
@@ -1069,7 +1079,7 @@ GenerateCheevoFromBits(name = "Great Sea Glaze", description = "Obtain all Ninte
     }
 )
 
-GenerateCheevoFromBits(name = "Busts from the Beginning", description = "Obtain all Nintendo Gallery figurines in the Outset Island room.", points = 10,
+GenerateCheevoFromBits(name = "Busts from the Beginning", description = "Obtain all Nintendo Gallery figurines in the Outset Island room.", points = 10, id = 439222, badge = "500845",
     onlyAvailableWhen = once(DisplayingMessageWithId(0x364d)) && JustLeftDialogue() && never(!IsInAreaByInternalName("Pfigure")),
     addresses = {
         1: { "addr": 0x003ccbe8, "bit": 0 }, // Joel
@@ -1089,7 +1099,7 @@ GenerateCheevoFromBits(name = "Busts from the Beginning", description = "Obtain 
     }
 )
 
-GenerateCheevoFromBits(name = "Effigies of My Foes", description = "Obtain all Nintendo Gallery figurines in the enemies room.", points = 10,
+GenerateCheevoFromBits(name = "Effigies of My Foes", description = "Obtain all Nintendo Gallery figurines in the enemies room.", points = 10, id = 439223, badge = "500846",
     onlyAvailableWhen = once(DisplayingMessageWithId(0x364d)) && JustLeftDialogue() && never(!IsInAreaByInternalName("Pfigure")),
     addresses = {
         1: { "addr": 0x003ccbd6, "bit": 0 }, // ReDead
@@ -1116,19 +1126,20 @@ GenerateCheevoFromBits(name = "Effigies of My Foes", description = "Obtain all N
 
 function swordTrainingHitsRemaining() => byte(0x003fe37d)
 function FirstIntentionCheckpointReached() => once(swordTrainingHitsRemaining() == 3 && Delta(swordTrainingHitsRemaining()) == 0 && IsInAreaByInternalName("Ojhous"))
-achievement(title = "First Intention", description = "Score 1000 hits on Orca during sword training.", points = 5,
+achievement(title = "First Intention", description = "Score 1000 hits on Orca during sword training.", points = 5, id = 444192, badge = "500847",
     trigger = FirstIntentionCheckpointReached() && trigger_when(minigameScore() == 1000)
         && never(swordTrainingHitsRemaining() == 0 && Delta(swordTrainingHitsRemaining()) == 1)
         && never(!IsInAreaByInternalName("Ojhous"))
 )
 
 function learnedHurricaneSpin() => bit5(0x03ccb5f)
-achievement(title = "Like a Record, Baby", description = "Learn the Hurricane Spin.", points = 3,
+achievement(title = "Like a Record, Baby", description = "Learn the Hurricane Spin.", points = 3, id = 444198, badge = "500848",
     trigger = WasBitflagSetInGame(learnedHurricaneSpin()) && DisplayingMessageWithId(0x10f)
 )
 
 function readBaitoMotherLetter() => bit0(0x003ccc00)
-achievement(title = "A Mother's Thanks", description = "Receive a letter from the mother of Baito, the part-time mail sorter on Dragon Roost Island.", points = 1,
+achievement(title = "A Mother's Thanks", description = "Receive a letter from the mother of Baito, the part-time mail sorter on Dragon Roost Island.", points = 1, id = 444185,
+    badge = "500851",
     trigger = WasBitflagSetInGame(readBaitoMotherLetter())
 )
 
@@ -1140,6 +1151,8 @@ GenerateCheevoFromConditions(
     name = "Boukalophile",
     description = "Collect all four bottles.",
     points = 10,
+    id = 444189,
+    badge = "500852",
     conditions = {
         1: { "countsWhen": (bottle1Slot() != 0xff), "recalculateWhen": (bottle1Slot() != Delta(bottle1Slot())) },
         2: { "countsWhen": (bottle2Slot() != 0xff), "recalculateWhen": (bottle2Slot() != Delta(bottle2Slot())) },
@@ -1164,17 +1177,17 @@ achievement(title = "Skull Crusher", description = "Defeat the miniboss of the E
 )
 
 function currentShield() => byte(0x003cc53f)
-achievement(title = "Under the Gods' Aegis", description = "Obtain the Mirror Shield.", points = 3,
+achievement(title = "Under the Gods' Aegis", description = "Obtain the Mirror Shield.", points = 3, id = 444204, badge = "500855",
     trigger = WasValueSetInGame(currentShield(), 0x3b, 0x3c)
 )
 
 function learnedWindGodAria() => bit4(0x003cc5ed)
-achievement(title = "Fado's Fate", description = "Learn the Wind God's Aria.", points = 3,
+achievement(title = "Fado's Fate", description = "Learn the Wind God's Aria.", points = 3, id = 444191, badge = "500856",
     trigger = WasBitflagSetInGame(learnedWindGodAria()) && never(stageId() == 8) // We need to check for the stage ID here because, otherwise, it would trigger in Ganon's Tower.
 )
 
 function shopPoints() => byte(0x003ccbda)
-achievement(title = "Indulgent Shopper", description = "Earn a Gold Membership from Beedle's Shop Ship.", points = 10,
+achievement(title = "Indulgent Shopper", description = "Earn a Gold Membership from Beedle's Shop Ship.", points = 10, id = 444195, badge = "500857",
     trigger = WasValueSetInGame(shopPoints(), 0x3b, 0x3c)
 )
 
@@ -1194,7 +1207,7 @@ windTempleTreasureBits = {
     13: { "addr": 0x003cccab, "bit": 7 },
 }
 
-GenerateCheevoFromBits(name = "Gifts from the Wind", description = "Open all treasure chests in the Wind Temple.", points = 10,
+GenerateCheevoFromBits(name = "Gifts from the Wind", description = "Open all treasure chests in the Wind Temple.", points = 10, id = 444193, badge = "500858",
     onlyAvailableWhen = IsInAreaByInternalName("kaze"),
     addresses = windTempleTreasureBits,
     oneAtATime = true
@@ -1205,15 +1218,16 @@ function ironBootsStatus() => bit0(0x003a9a2e)
 function WindTempleMinibossCheckpointReached() => once(!IsInDialogue() && IsInAreaByInternalName("kazeMB") && Delta(enemyMusicPointer()) == 0 && enemyMusicPointer() != 0
     && !PhantomGanonDefeated())
 function WindTempleMinibossDefeated() => Delta(enemyMusicPointer()) != 0 && enemyMusicPointer() == 0
-achievement(title = "Bound to Earth", description = "Defeat the miniboss of the Wind Temple with the Iron Boots equipped the entire time (no fairies).", points = 10, type = "missable",
+achievement(title = "Bound to Earth", description = "Defeat the miniboss of the Wind Temple with the Iron Boots equipped the entire time.", points = 10, type = "missable",
+    id = 444190,
     trigger = WindTempleMinibossCheckpointReached() && trigger_when(WindTempleMinibossDefeated())
         && never(ironBootsStatus() == 0)
         && never(hp() <= 0)
         && never(!IsInAreaByInternalName("kazeMB"))
-        // todo: add healing restriction
+        // todo: add healing restriction for balance later?
 )
 
-achievement(title = "Hylia's Blessing", description = "Completely restore the Master Sword's power.", points = 3, type = "progression",
+achievement(title = "Hylia's Blessing", description = "Completely restore the Master Sword's power.", points = 3, type = "progression", id = 444194, badge = "500859",
     trigger = IsValueSetInGame(swordEquipped(), 0x3a, 0x3e)
 )
 
@@ -1233,7 +1247,7 @@ function StartedSavageLabyrinth() => once(IsInAreaByInternalName("Cave09") && ro
 function CompletedSavageLabyrinth() => CreateHitTargetedAndNextChain([ IsInAreaByInternalName("Cave10") && roomIdOnLoad() == 19, IsInAreaByInternalName("Cave10") && roomIdOnLoad() == 255,
     IsInAreaByInternalName("Cave10") && roomIdOnLoad() == 20 ])
 
-achievement(title = "Through Fire and Water", description = "Complete the Savage Labyrinth.", points = 10,
+achievement(title = "Through Fire and Water", description = "Complete the Savage Labyrinth.", points = 10, id = 444203, badge = "500860",
     trigger = CompletedSavageLabyrinth() && never(IsInAreaByInternalName("sea")) && never(IsInAreaByInternalName("sea_T"))
 )
 
@@ -1252,37 +1266,39 @@ function TookGivenDamage(damage)
 
 function slChallengeHpLimit() => 60
 achievement(title = "Lasting Trauma", description = "Complete the Savage Labyrinth without losing more than a total of fifteen hearts of life energy and without using magic.", points = 50,
+    id = 444197, badge = "500861",
     trigger = StartedSavageLabyrinth() && CompletedSavageLabyrinth() && never(IsInAreaByInternalName("sea")) && never(IsInAreaByInternalName("Cave09") && roomIdOnLoad() == 0)
         && never(TookGivenDamage(slChallengeHpLimit()))
         && never(Delta(mp()) > mp())
 )
 
 function heroCharmPossessed() => bit0(0x003cc5e8)
-achievement(title = "The Face of a Champion", description = "Obtain the Hero's Charm.", points = 5,
+achievement(title = "The Face of a Champion", description = "Obtain the Hero's Charm.", points = 5, id = 444202, badge = "500862",
     trigger = WasBitflagSetInGame(heroCharmPossessed())
 )
 
 function slidePuzzlesCompleted() => byte(0x003cc6cf)
-achievement(title = "Sliding Adept", description = "Complete eight slide puzzles in the cabana.", points = 5,
+achievement(title = "Sliding Adept", description = "Complete eight slide puzzles in the cabana.", points = 5, id = 444200, badge = "500864",
     trigger = WasValueSetInGame(slidePuzzlesCompleted(), 7, 8)
 )
 
 function enemyDeathBitflags() => dword_be(0x003cccd0)
 function enemyDeathAndStatusBitflags() => byte(0x003cccd7)
 function sharkIslandChestStatus() => bit4(0x003cccd7)
-achievement(title = "A Leaf in the Wind", type = "missable", description = "Defeat the enemy gauntlet in the Shark Island grotto without getting hit ten times.", points = 25,
+achievement(title = "A Leaf in the Wind", type = "missable", description = "Clear the enemy gauntlet in the Shark Island grotto without getting hit ten times.", points = 25,
+    id = 444184,
     trigger = once(WasJustInAreaByInternalName("ITest63") && IsInAreaByInternalName("ITest63") && enemyDeathBitflags() == 0 && enemyDeathAndStatusBitflags() == 0)
         && trigger_when(sharkIslandChestStatus() == 1)
         && never(!IsInAreaByInternalName("ITest63")) && never(repeated(10, Delta(hp()) > hp()))
 )
 
 function pigPieceOfHeartStatus() => bit2(0x003cccbf)
-achievement(title = "Bait Marks the Spot", description = "Collect the rare trasure that the black pig can dig up on Outset Island.", points = 3,
+achievement(title = "Bait Marks the Spot", description = "Collect the rare trasure that the black pig can dig up on Outset Island.", points = 3, id = 444188, badge = "500865",
     trigger = WasBitflagJustSetInGame(pigPieceOfHeartStatus()) && IsInAreaByInternalName("sea")
         && Delta(stageId()) == 0
 )
 
-GenerateCheevoFromBits(name = "A Tree a Day Keeps the Oceans at Bay", description = "Cure all eight withered tree sprouts within twenty minutes.", points = 5,
+GenerateCheevoFromBits(name = "A Tree a Day Keeps the Oceans at Bay", description = "Cure all eight withered tree sprouts within twenty minutes.", points = 5, id = 444186, badge = "500867",
     onlyAvailableWhen = IsInAreaByInternalName("sea"),
     addresses = {
         1: { "addr": 0x003ccbee, "bit": 0 },
@@ -1298,7 +1314,7 @@ GenerateCheevoFromBits(name = "A Tree a Day Keeps the Oceans at Bay", descriptio
 )
 
 function lindaPieceOfHeartStatus() => bit7(0x003ccb76)
-achievement(title = "Invisible but not Intangible", description = "Bring Anton and Linda together.", points = 5,
+achievement(title = "Invisible, But Not Intangible", description = "Bring Anton and Linda together.", points = 5, id = 444196, badge = "500868",
     trigger = WasBitflagSetInGame(lindaPieceOfHeartStatus()) && !IsInDialogue()
 )
 
@@ -1316,7 +1332,7 @@ achievement(title = "Ten Years at Sea", type = "missable", description = "Defeat
 
 function ganondorfDefeated() => bit0(0x003cccad)
 function dialogueIndex() => dword_be(0x003fe838)
-achievement(title = "As Dandelions", type = "win_condition", description = "Defeat Ganondorf and set sail for a new land.", points = 25,
+achievement(title = "As Dandelions", type = "win_condition", description = "Defeat Ganondorf and set sail for a new land.", points = 25, id = 444187, badge = "500869",
     trigger = CreateHitTargetedAndNextChain([ dialogueIndex() == 392 && IsInAreaByInternalName("GTower"), repeated(5000, !BlackBarsArePresent()) ])
         && never(!IsInAreaByInternalName("GTower"))
 )
