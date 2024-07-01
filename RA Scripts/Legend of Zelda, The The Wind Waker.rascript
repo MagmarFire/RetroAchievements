@@ -636,10 +636,10 @@ achievement(title = "Birthday Fine", points = 1, description = "Destroy the pot 
 )
 
 function crawlingStatus() => bit3(0x3d21f8)
-function gavePinkPig() => bit0(0x003ccc0a)
-function gaveSpottedPig() => bit1(0x003ccc0a)
-function gaveBlackPig() => bit2(0x003ccc0a)
-achievement(title = "Hog Wild", points = 5, description = "Wrangle all three pigs on Outset Island and claim all three Rupee rewards without crawling or going indoors.", id = 402393,
+function gavePinkPig() => bit0(0x003ccc13)
+function gaveSpottedPig() => bit1(0x003ccc13)
+function gaveBlackPig() => bit2(0x003ccc13)
+achievement(title = "Hog Wild", points = 5, description = "Wrangle all three pigs on Outset Island without crawling or going indoors.", id = 402393,
     type = "missable",
     trigger = WasBitflagSetInGame(gavePinkPig()) && WasBitflagSetInGame(gaveSpottedPig()) && WasBitflagSetInGame(gaveBlackPig()) && unless(once(crawlingStatus() == 1))
         && (always_false() || never(AreaJustChanged()))
@@ -1019,8 +1019,8 @@ leaderboard(title = "Racing for Rupees", description = "Complete a perfect boati
 )
 
 function JustLeftDialogue() => dialogueState() < Delta(dialogueState())
-GenerateCheevoFromBits(name = "Forest Figurines", description = "Obtain all Nintendo Gallery figurines in the Forest Haven room.", points = 10,
-    onlyAvailableWhen = once(DisplayingMessageWithId(0x364d)) && JustLeftDialogue() && never(!IsInAreaByInternalName("Pfigure")),
+GenerateCheevoFromBits(name = "Totems of the Forest", description = "Obtain all Nintendo Gallery figurines in the Forest Haven room.", points = 10,
+    onlyAvailableWhen = once(DisplayingMessageWithId(0x364d)) && JustLeftDialogue() && never(!IsInAreaByInternalName("Pfigure")), id = 439220,
     addresses = {
         1: { "addr": 0x003ccbf0, "bit": 0 }, // Irch
         2: { "addr": 0x003ccbf0, "bit": 1 }, // Rown
@@ -1317,6 +1317,6 @@ achievement(title = "Ten Years at Sea", type = "missable", description = "Defeat
 function ganondorfDefeated() => bit0(0x003cccad)
 function dialogueIndex() => dword_be(0x003fe838)
 achievement(title = "As Dandelions", type = "win_condition", description = "Defeat Ganondorf and set sail for a new land.", points = 25,
-    trigger = CreateHitTargetedAndNextChain([ dialogueIndex() == 392 && IsInAreaByInternalName("GTower"), repeated(5100, !BlackBarsArePresent()) ])
+    trigger = CreateHitTargetedAndNextChain([ dialogueIndex() == 392 && IsInAreaByInternalName("GTower"), repeated(5000, !BlackBarsArePresent()) ])
         && never(!IsInAreaByInternalName("GTower"))
 )
