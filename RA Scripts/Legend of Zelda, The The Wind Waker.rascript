@@ -229,7 +229,7 @@ function GenerateCheevoFromConditions(name, description, points, conditions, thr
 // type: self-explanatory
 // oneAtATime: indicates that bits will only ever get flipped one at a time, meaning the achievement will check one below the threshold before triggering
 function GenerateCheevoFromBits(name, description, points, addresses, threshold = 0, onlyAvailableWhen = always_true(), resetWhen = always_false(), id = 0, badge = "00000", type = "",
-    oneAtATime = false)
+    oneAtATime = false, measuredIf = always_true())
 {
     shouldTriggerPauselock = always_false()
     bitcounts = GenerateBitcountFromCountableObjects(GetCountableAccessorArrayFromAddressBits(addresses))
@@ -243,7 +243,7 @@ function GenerateCheevoFromBits(name, description, points, addresses, threshold 
     // This way, loading a save doesn't invalidate the achievement outright if a player hasn't actually earned it yet.
     if (oneAtATime)
     {
-        trigger = measured(bitcounts >= threshold) && Delta(bitcounts) == threshold - 1
+        trigger = measured(bitcounts >= threshold, measuredIf) && Delta(bitcounts) == threshold - 1
     }
     else
     {
@@ -726,7 +726,7 @@ GenerateCheevoFromBits(name = "Dragon's Hoarde", description = "Open all treasur
 )
 
 function dinsPearl() => bit1(0x003cc5ef)
-achievement(title = "Jewel of Power", description = "Obtain Din's Pearl.", points = 3, type = "progression", badge = "500812",
+achievement(title = "Jewel of Power", description = "Obtain Din's Pearl.", points = 3, type = "progression", badge = "502207", id = 439027,
     trigger = WasBitflagJustSetInGame(dinsPearl())
 )
 
@@ -790,7 +790,8 @@ GenerateCheevoFromBits(name = "Rookie Cartographer", description = "Map 50% of t
     onlyAvailableWhen = IsInAreaByInternalName("sea"),
     addresses = cartographerBits,
     threshold = length(cartographerBits) / 2,
-    oneAtATime = true
+    oneAtATime = true,
+    measuredIf = FileIsLoaded()
 )
 
 function boomerangSlot() => byte(0x003cc571)
@@ -936,7 +937,7 @@ GenerateCheevoFromBits(name = "Pirate Wannabe", description = "Claim the treasur
 )
 
 function bowSlot() => byte(0x003cc578)
-achievement(title = "Diametrically Opposed", description = "Obtain the Fire and Ice Arrows.", points = 3, id = 439044, badge = "500833",
+achievement(title = "Diametrically Opposed", description = "Obtain the Fire and Ice Arrows.", points = 3, id = 439044, badge = "502206",
     trigger = WasValueSetInGame(bowSlot(), 0x27, 0x35)
 )
 
@@ -1169,6 +1170,7 @@ function mp() => byte(0x003cc544)
 function earthTempleMinibossTriggered() => bit3(0x003cccb0)
 function earthTempleMinibossDefeated() => bit0(0x003cccb0)
 achievement(title = "Skull Crusher", description = "Defeat the miniboss of the Earth Temple using only the Skull Hammer.", points = 10, type = "missable",
+    id = 444199, badge = "502208",
     trigger = once(WasBitflagSetInGame(earthTempleMinibossTriggered())) && trigger_when(WasBitflagSetInGame(earthTempleMinibossDefeated()))
         && never(swordActionPointer() == 0) && never(Delta(numberOfBombs()) > numberOfBombs()) && never(Delta(numberOfArrows()) > numberOfArrows())
         && never(swordAnimationId() != 0x12 && swordAnimationId() != 0x11 && swordAnimationId() != 0x13 && swordAnimationId() != 0)
@@ -1219,7 +1221,7 @@ function WindTempleMinibossCheckpointReached() => once(!IsInDialogue() && IsInAr
     && !PhantomGanonDefeated())
 function WindTempleMinibossDefeated() => Delta(enemyMusicPointer()) != 0 && enemyMusicPointer() == 0
 achievement(title = "Bound to Earth", description = "Defeat the miniboss of the Wind Temple with the Iron Boots equipped the entire time.", points = 10, type = "missable",
-    id = 444190,
+    id = 444190, badge = "502209",
     trigger = WindTempleMinibossCheckpointReached() && trigger_when(WindTempleMinibossDefeated())
         && never(ironBootsStatus() == 0)
         && never(hp() <= 0)
@@ -1286,7 +1288,7 @@ function enemyDeathBitflags() => dword_be(0x003cccd0)
 function enemyDeathAndStatusBitflags() => byte(0x003cccd7)
 function sharkIslandChestStatus() => bit4(0x003cccd7)
 achievement(title = "A Leaf in the Wind", type = "missable", description = "Clear the enemy gauntlet in the Shark Island grotto without getting hit ten times.", points = 25,
-    id = 444184,
+    id = 444184, badge = "502210",
     trigger = once(WasJustInAreaByInternalName("ITest63") && IsInAreaByInternalName("ITest63") && enemyDeathBitflags() == 0 && enemyDeathAndStatusBitflags() == 0)
         && trigger_when(sharkIslandChestStatus() == 1)
         && never(!IsInAreaByInternalName("ITest63")) && never(repeated(10, Delta(hp()) > hp()))
@@ -1323,7 +1325,7 @@ function zCoord() => float_be(0x003ebd3c)
 function sqrDistanceFromOrigin() => xCoord() * xCoord() + zCoord() * zCoord()
 function puppetGanonFightStart() => bit3(0x003cccac)
 function puppetGanonDefeated() => bit2(0x003cccad)
-achievement(title = "Ten Years at Sea", type = "missable", description = "Defeat Puppet Ganon without touching dry land.", points = 25,
+achievement(title = "Ten Years at Sea", type = "missable", description = "Defeat Puppet Ganon without touching dry land.", points = 25, id = 444201, badge = "502211",
     trigger = once(WasBitflagSetInGame(puppetGanonFightStart()) && stageId() == 8)
         && trigger_when(WasBitflagSetInGame(puppetGanonDefeated()))
         && never(sqrDistanceFromOrigin() < 582169.0 || sqrDistanceFromOrigin() > 5776812.0)
