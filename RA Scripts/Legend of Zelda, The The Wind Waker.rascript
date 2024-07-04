@@ -251,7 +251,7 @@ function GenerateCheevoFromBits(name, description, points, addresses, threshold 
         // if the save file would satisfy enough conditions to trigger the achievement on load--this should trigger a
         // permanant pauselock to serve as save protection.
         shouldTriggerPauselock = once(bitcounts >= threshold && IsOnTitleScreen())
-        trigger = measured(bitcounts >= threshold)
+        trigger = measured(bitcounts >= threshold, measuredIf)
     }    
 
     achievement(title = name, description = description, points = points, badge = badge, id = id, type = type,
@@ -286,7 +286,8 @@ function HasKey(dict, key)
 // id: self-explanatory
 // badge: self-explanatory
 // type: self-explanatory
-function GenerateCheevoFromBufferBits(name, description, points, addresses, threshold = 0, onlyAvailableWhen = always_true(), id = 0, badge = "00000", type = "")
+// measure: Whether or not the Measured flag should be used
+function GenerateCheevoFromBufferBits(name, description, points, addresses, threshold = 0, onlyAvailableWhen = always_true(), id = 0, badge = "00000", type = "", measure = true)
 {
     trigger = always_false()
     measureTrigger = always_true()
@@ -336,7 +337,14 @@ function GenerateCheevoFromBufferBits(name, description, points, addresses, thre
             array_push(bitsInGroup, bufferBit)
         }
         
-        trigger = trigger || measured(sum_of(otherStaticBits, key => Delta(bit(key["bit"], key["addr"]))) + sum_of(bitsInGroup, key => key) == threshold) && subtrigger
+        mainTrigger = sum_of(otherStaticBits, key => Delta(bit(key["bit"], key["addr"]))) + sum_of(bitsInGroup, key => key) == threshold
+        
+        if (measure)
+        {
+            mainTrigger = measured(mainTrigger)
+        }
+        
+        trigger = trigger || mainTrigger && subtrigger
     }  
 
     achievement(title = name, description = description, points = points, badge = badge, id = id, type = type,
@@ -598,15 +606,36 @@ rich_presence_display("Somewhere on the Great Sea...")
 function outsetIslandCutscenePlayed() => bit4(0x003ccb89)
 function IsLoadingSaveFile() => IsValueSet(outsetIslandCutscenePlayed(), 0, 1)
 function FileIsLoaded() => Delta(outsetIslandCutscenePlayed()) == 1
+function Pluralize(value, unit)
+{
+    if (value == 1)
+    {
+        return unit
+    }
+    else
+    {
+        return unit + "s"
+    }
+}
 
 function SecondsToFormat(value)
 {
-    leadingZero = ""
-    if (value % 60 < 10)
+    singleUnitFormat = "{0} {1}"
+    doubleUnitFormat = "{0} {1} and {2} {3}"
+    minutes = value / 60
+    seconds = value % 60
+    
+    if (minutes == 0)
     {
-        leadingZero = "0"
+        return format(singleUnitFormat, seconds, Pluralize(seconds, "second"))
     }
-    return value / 60 + ":" + leadingZero + value % 60
+    
+    if (seconds == 0)
+    {
+        return format(singleUnitFormat, Pluralize(minutes, "minute"))
+    }
+    
+    return format(doubleUnitFormat, minutes, Pluralize(minutes, "minute"), seconds, Pluralize(seconds, "second"))
 }
 
 // $3ffc3c: (32-bit BE) System timer. Increments by one every frame.
@@ -668,7 +697,8 @@ function WithinPlatformTimeLimit() => TetraPlatformTimeElapsed() <= SecondsToFra
 function TetraPlatformsAreUp() => bit0(tetraPlatformPointer() + 0x1bb + 0x80000000) == 1
 function NinjaWarriorChallengeActive() => TetraPlatformsAreUp() && enteredCorrectPassword() == 0
 function CompletedFirstObstacleCourse() => bit4(0x003ccb5b) == 1
-achievement(title = "Ninja Warrior I", points = 10, description = "Complete Niko's obstacle course within " + niko1TimeLimit + " seconds.", id = 402395, type = "missable", badge = "500804",
+achievement(title = "Ninja Warrior I", points = 10, description = "Complete Niko's obstacle course within " + SecondsToFormat(niko1TimeLimit) + ".", id = 402395, type = "missable",
+    badge = "500804",
     trigger = trigger_when(NinjaWarriorChallengeActive() && TetraPlatformTimerFrozen()) && WithinPlatformTimeLimit() && !CompletedFirstObstacleCourse()
 )
 
@@ -837,6 +867,14 @@ achievement(title = "Teacher of the Year", description = "Give Mrs. Marie a birt
     trigger = WasBitflagSetInGame(gaveBirthdayPresent()) && !IsInDialogue()
 )
 
+GenerateCheevoFromBufferBits(name = "Appropriation", description = "Open the treasure chests in the back room of Lenzo's studio.", points = 5, id = 439048, badge = "",
+    addresses = {
+        1: { "buffer": { "addr": 0x003cccab, "bit": 1, "group": "Ocmera", "stage": 0xb }, "static": { "addr": 0x003cca3f, "bit": 1 } },
+        2: { "buffer": {  "addr": 0x003cccab, "bit": 2, "group": "Ocmera", "stage": 0xb }, "static": { "addr": 0x003cca3f, "bit": 2 } }
+    },
+    measure = false
+)
+
 niko2TimeLimit = 43
 niko2MaxTime = 0xbb8
 function WithinRopeTimeLimit() => Niko2TimeElapsed() <= SecondsToFrames(niko2TimeLimit)
@@ -844,7 +882,7 @@ function Niko2TimeElapsed() => (niko2MaxTime - tetraPlatformTimeRemaining()) * 2
 function TetraPlatformsAreUp() => bit0(tetraPlatformPointer() + 0x800001bb) == 1
 function NinjaWarriorIIChallengeActive() => TetraPlatformsAreUp() && enteredCorrectPassword() == 1
 function CompletedSecondObstacleCourse() => once(messageId() == 0x1b28)
-achievement(title = "Ninja Warrior II", points = 25, description = "Complete Niko's second obstacle course within " + niko2TimeLimit + " seconds.", type = "missable",
+achievement(title = "Ninja Warrior II", points = 25, description = "Complete Niko's second obstacle course within " + SecondsToFormat(niko2TimeLimit) + ".", type = "missable",
     id = 439034, badge = "500822",
     trigger = trigger_when(NinjaWarriorIIChallengeActive() && TetraPlatformTimerFrozen()) && WithinRopeTimeLimit() && never(CompletedSecondObstacleCourse())
 )
@@ -1267,7 +1305,8 @@ function TookGivenDamage(damage)
 }
 
 function slChallengeHpLimit() => 60
-achievement(title = "Lasting Trauma", description = "Complete the Savage Labyrinth without losing more than a total of fifteen hearts of life energy and without using magic.", points = 50,
+achievement(title = "Lasting Trauma", description = "Complete the Savage Labyrinth without losing more than a total of " + slChallengeHpLimit() / 4
+    + " hearts of life energy and without using magic.", points = 50,
     id = 444197, badge = "500861",
     trigger = StartedSavageLabyrinth() && CompletedSavageLabyrinth() && never(IsInAreaByInternalName("sea")) && never(IsInAreaByInternalName("Cave09") && roomIdOnLoad() == 0)
         && never(TookGivenDamage(slChallengeHpLimit()))
@@ -1287,11 +1326,12 @@ achievement(title = "Sliding Adept", description = "Complete eight slide puzzles
 function enemyDeathBitflags() => dword_be(0x003cccd0)
 function enemyDeathAndStatusBitflags() => byte(0x003cccd7)
 function sharkIslandChestStatus() => bit4(0x003cccd7)
-achievement(title = "A Leaf in the Wind", type = "missable", description = "Clear the enemy gauntlet in the Shark Island grotto without getting hit ten times.", points = 25,
-    id = 444184, badge = "502210",
+function sharkIslandHitLimit() => 10
+achievement(title = "A Leaf in the Wind", type = "missable", description = "Clear the enemy gauntlet in the Shark Island grotto without getting hit " + sharkIslandHitLimit() + " times.",
+    points = 25, id = 444184, badge = "502210",
     trigger = once(WasJustInAreaByInternalName("ITest63") && IsInAreaByInternalName("ITest63") && enemyDeathBitflags() == 0 && enemyDeathAndStatusBitflags() == 0)
         && trigger_when(sharkIslandChestStatus() == 1)
-        && never(!IsInAreaByInternalName("ITest63")) && never(repeated(10, Delta(hp()) > hp()))
+        && never(!IsInAreaByInternalName("ITest63")) && never(repeated(sharkIslandHitLimit(), Delta(hp()) > hp()))
 )
 
 function pigPieceOfHeartStatus() => bit2(0x003cccbf)
@@ -1300,7 +1340,7 @@ achievement(title = "Bait Marks the Spot", description = "Collect the rare trasu
         && Delta(stageId()) == 0
 )
 
-GenerateCheevoFromBits(name = "A Tree a Day Keeps the Oceans at Bay", description = "Cure all eight withered tree sprouts within twenty minutes.", points = 5, id = 444186, badge = "500867",
+GenerateCheevoFromBits(name = "A Tree a Day Keeps the Oceans at Bay", description = "Cure all eight withered tree sprouts within 20 minutes.", points = 5, id = 444186, badge = "500867",
     onlyAvailableWhen = IsInAreaByInternalName("sea"),
     addresses = {
         1: { "addr": 0x003ccbee, "bit": 0 },
@@ -1325,7 +1365,7 @@ function zCoord() => float_be(0x003ebd3c)
 function sqrDistanceFromOrigin() => xCoord() * xCoord() + zCoord() * zCoord()
 function puppetGanonFightStart() => bit3(0x003cccac)
 function puppetGanonDefeated() => bit2(0x003cccad)
-achievement(title = "Ten Years at Sea", type = "missable", description = "Defeat Puppet Ganon without touching dry land.", points = 25, id = 444201, badge = "502211",
+achievement(title = "Ten Years at Sea", type = "missable", description = "Defeat Puppet Ganon without leaving the water.", points = 25, id = 444201, badge = "502211",
     trigger = once(WasBitflagSetInGame(puppetGanonFightStart()) && stageId() == 8)
         && trigger_when(WasBitflagSetInGame(puppetGanonDefeated()))
         && never(sqrDistanceFromOrigin() < 582169.0 || sqrDistanceFromOrigin() > 5776812.0)
