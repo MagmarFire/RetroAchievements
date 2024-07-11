@@ -287,7 +287,9 @@ function HasKey(dict, key)
 // badge: self-explanatory
 // type: self-explanatory
 // measure: Whether or not the Measured flag should be used
-function GenerateCheevoFromBufferBits(name, description, points, addresses, threshold = 0, onlyAvailableWhen = always_true(), id = 0, badge = "00000", type = "", measure = true)
+// measuredIf: self-explanatory
+function GenerateCheevoFromBufferBits(name, description, points, addresses, threshold = 0, onlyAvailableWhen = always_true(), id = 0, badge = "00000", type = "", measure = true,
+    measuredIf = always_true())
 {
     trigger = always_false()
     measureTrigger = always_true()
@@ -316,7 +318,7 @@ function GenerateCheevoFromBufferBits(name, description, points, addresses, thre
         
         // Now that we have all the dynamic bits we care about, we need to collect all the static bits for all other chests not in this group.
         otherStaticBits = []
-        
+
         for j in addresses
         {
             if (addresses[j]["buffer"]["group"] != currentGroup)
@@ -341,11 +343,17 @@ function GenerateCheevoFromBufferBits(name, description, points, addresses, thre
         
         if (measure)
         {
-            mainTrigger = measured(mainTrigger)
+            mainTrigger = measured(mainTrigger, measuredIf)
         }
         
         trigger = trigger || mainTrigger && subtrigger
-    }  
+    }
+    
+    allStaticBits = []
+    for j in addresses
+    {
+        array_push(allStaticBits, addresses[j]["static"])
+    }
 
     achievement(title = name, description = description, points = points, badge = badge, id = id, type = type,
         trigger = FileIsLoaded() && trigger && onlyAvailableWhen && never(IsOnTitleScreen())
@@ -541,6 +549,7 @@ function IsInSuperarea(internalName)
 }
 
 function IsOnTitleScreen() => IsInArea("Title Screen")
+function IsSelectingFile() => IsInArea("File Select")
 internalNamesAddedToRP = []
 
 function maxLifeEnergy() => word_be(0x003cc530)
@@ -592,7 +601,7 @@ for hash in areas
             display = superarea["displayName"] + ": "
         }
         
-        rich_presence_conditional_display(IsInArea(area["name"]), display + "{0} | {1} ❤️",
+        rich_presence_conditional_display(IsInArea(area["name"]), display + "{0} • {1} ❤️",
             rich_presence_lookup(GetLookupKey(area["internalName"]), roomIdToUse, lookupForArea),
             rich_presence_value("Hearts", Hearts())
         )
@@ -601,6 +610,7 @@ for hash in areas
 }
 
 rich_presence_conditional_display(IsOnTitleScreen(), "On the title screen...")
+rich_presence_conditional_display(IsSelectingFile(), "Selecting a file...")
 rich_presence_display("Somewhere on the Great Sea...")
 
 function outsetIslandCutscenePlayed() => bit4(0x003ccb89)
@@ -736,7 +746,7 @@ possessedTreasureChartAddressBits = {
     2: { "addr": 0x003cc604, "bit": 0 },3: { "addr": 0x003cc604, "bit": 1 },4: { "addr": 0x003cc604, "bit": 2 },5: { "addr": 0x003cc604, "bit": 5 },6: { "addr": 0x003cc604, "bit": 6 },7: { "addr": 0x003cc605, "bit": 1 },8: { "addr": 0x003cc605, "bit": 2 },9: { "addr": 0x003cc605, "bit": 3 },10: { "addr": 0x003cc605, "bit": 4 },11: { "addr": 0x003cc605, "bit": 5 },12: { "addr": 0x003cc605, "bit": 7 },13: { "addr": 0x003cc606, "bit": 0 },14: { "addr": 0x003cc606, "bit": 1 },15: { "addr": 0x003cc606, "bit": 2 },16: { "addr": 0x003cc606, "bit": 3 },17: { "addr": 0x003cc606, "bit": 5 },18: { "addr": 0x003cc606, "bit": 6 },19: { "addr": 0x003cc606, "bit": 7 },20: { "addr": 0x003cc607, "bit": 4 },21: { "addr": 0x003cc609, "bit": 2 },22: { "addr": 0x003cc60b, "bit": 0 },23: { "addr": 0x003cc60b, "bit": 2 },24: { "addr": 0x003cc60b, "bit": 4 },25: { "addr": 0x003cc60b, "bit": 5 },26: { "addr": 0x003cc60b, "bit": 6 },
 }
 
-GenerateCheevoFromBits(name = "Dragon's Hoarde", description = "Open all treasure chests in Dragon Roost Cavern.", points = 5,  badge = "500811",
+GenerateCheevoFromBits(name = "Dragon's Hoard", description = "Open all treasure chests in Dragon Roost Cavern.", points = 5,  badge = "500811",
     onlyAvailableWhen = IsInAreaByInternalName("M_NewD2"), oneAtATime = true,
     addresses = {
         1: { "addr": 0x003cccab, "bit": 0 },
@@ -789,22 +799,22 @@ GenerateCheevoFromBufferBits(
     onlyAvailableWhen = stageId() != 0
 )
 
-GenerateCheevoFromBits(
+GenerateCheevoFromBufferBits(
     name = "Krakenslayer",
     description = "Defeat all six Big Octos.",
     points = 10,
     id = 444183,
     badge = "500814",
     addresses = {
-        1: { "addr": 0x003cccad, "bit": 1 },
-        2: { "addr": 0x003cccae, "bit": 5 },
-        3: { "addr": 0x003cccad, "bit": 2 },
-        4: { "addr": 0x003cccae, "bit": 7 },
-        5: { "addr": 0x003cccad, "bit": 0 },
-        6: { "addr": 0x003cccae, "bit": 6 }
+        1: { "buffer": { "addr": 0x003cccad, "bit": 0, "group": "" }, "static": { "addr": 0x003cc8b4, "bit": 0 } },
+        2: { "buffer": { "addr": 0x003cccad, "bit": 1, "group": "" }, "static": { "addr": 0x003cc8b4, "bit": 1 } },
+        3: { "buffer": { "addr": 0x003cccad, "bit": 2, "group": "" }, "static": { "addr": 0x003cc8b4, "bit": 2 } },
+        4: { "buffer": { "addr": 0x003cccae, "bit": 5, "group": "" }, "static": { "addr": 0x003cc8b5, "bit": 5 } },
+        5: { "buffer": { "addr": 0x003cccae, "bit": 6, "group": "" }, "static": { "addr": 0x003cc8b5, "bit": 6 } },
+        6: { "buffer": { "addr": 0x003cccae, "bit": 7, "group": "" }, "static": { "addr": 0x003cc8b5, "bit": 7 } }
     },
-    onlyAvailableWhen = Delta(stageId()) == 0x0,
-    oneAtATime = true
+    measuredIf = stageId() == 0,
+    onlyAvailableWhen = Delta(stageId()) == 0x0
 )
 
 cartographerBits = {}
@@ -822,6 +832,53 @@ GenerateCheevoFromBits(name = "Rookie Cartographer", description = "Map 50% of t
     threshold = length(cartographerBits) / 2,
     oneAtATime = true,
     measuredIf = FileIsLoaded()
+)
+
+treasureChartBitflags = {
+    1: { "addr": 0x003cc604, "bit": 0 },
+    2: { "addr": 0x003cc604, "bit": 1 },
+    3: { "addr": 0x003cc604, "bit": 2 },
+    4: { "addr": 0x003cc604, "bit": 3 },
+    5: { "addr": 0x003cc604, "bit": 4 },
+    6: { "addr": 0x003cc604, "bit": 5 },
+    7: { "addr": 0x003cc604, "bit": 6 },
+    8: { "addr": 0x003cc604, "bit": 7 },
+    9: { "addr": 0x003cc605, "bit": 0 },
+    10: { "addr": 0x003cc605, "bit": 1 },
+    11: { "addr": 0x003cc605, "bit": 2 },
+    12: { "addr": 0x003cc605, "bit": 3 },
+    13: { "addr": 0x003cc605, "bit": 4 },
+    14: { "addr": 0x003cc605, "bit": 5 },
+    15: { "addr": 0x003cc605, "bit": 6 },
+    16: { "addr": 0x003cc605, "bit": 7 },
+    17: { "addr": 0x003cc606, "bit": 0 },
+    18: { "addr": 0x003cc606, "bit": 1 },
+    19: { "addr": 0x003cc606, "bit": 2 },
+    20: { "addr": 0x003cc606, "bit": 3 },
+    21: { "addr": 0x003cc606, "bit": 4 },
+    22: { "addr": 0x003cc606, "bit": 5 },
+    23: { "addr": 0x003cc606, "bit": 6 },
+    24: { "addr": 0x003cc606, "bit": 7 },
+    25: { "addr": 0x003cc609, "bit": 0 },
+    26: { "addr": 0x003cc609, "bit": 1 },
+    27: { "addr": 0x003cc609, "bit": 2 },
+    28: { "addr": 0x003cc60a, "bit": 0 },
+    29: { "addr": 0x003cc60a, "bit": 1 },
+    30: { "addr": 0x003cc60a, "bit": 2 },
+    31: { "addr": 0x003cc60a, "bit": 3 },
+    32: { "addr": 0x003cc60a, "bit": 4 },
+    33: { "addr": 0x003cc60a, "bit": 5 },
+    34: { "addr": 0x003cc60a, "bit": 6 },
+    35: { "addr": 0x003cc60a, "bit": 7 },
+    36: { "addr": 0x003cc60b, "bit": 0 },
+    37: { "addr": 0x003cc60b, "bit": 1 },
+    38: { "addr": 0x003cc60b, "bit": 4 },
+    39: { "addr": 0x003cc60b, "bit": 5 },
+    40: { "addr": 0x003cc60b, "bit": 6 },
+    41: { "addr": 0x003cc60b, "bit": 7 }
+}
+GenerateCheevoFromBits(name = "Legendary Atlas", description = "Collect all Treasure Charts.", points = 10, id = 445530, badge = "505461",
+    addresses = treasureChartBitflags
 )
 
 function boomerangSlot() => byte(0x003cc571)
@@ -867,12 +924,13 @@ achievement(title = "Teacher of the Year", description = "Give Mrs. Marie a birt
     trigger = WasBitflagSetInGame(gaveBirthdayPresent()) && !IsInDialogue()
 )
 
-GenerateCheevoFromBufferBits(name = "Appropriation", description = "Open the treasure chests in the back room of Lenzo's studio.", points = 5, id = 439048, badge = "",
+GenerateCheevoFromBufferBits(name = "Appropriation", description = "Open the treasure chests in the back room of Lenzo's studio.", points = 5, id = 439048, badge = "505166",
     addresses = {
         1: { "buffer": { "addr": 0x003cccab, "bit": 1, "group": "Ocmera", "stage": 0xb }, "static": { "addr": 0x003cca3f, "bit": 1 } },
         2: { "buffer": {  "addr": 0x003cccab, "bit": 2, "group": "Ocmera", "stage": 0xb }, "static": { "addr": 0x003cca3f, "bit": 2 } }
     },
-    measure = false
+    measure = false,
+    onlyAvailableWhen = Delta(stageId()) == 0xb && IsInAreaByInternalName("Ocmera")
 )
 
 niko2TimeLimit = 43
@@ -885,6 +943,7 @@ function CompletedSecondObstacleCourse() => once(messageId() == 0x1b28)
 achievement(title = "Ninja Warrior II", points = 25, description = "Complete Niko's second obstacle course within " + SecondsToFormat(niko2TimeLimit) + ".", type = "missable",
     id = 439034, badge = "500822",
     trigger = trigger_when(NinjaWarriorIIChallengeActive() && TetraPlatformTimerFrozen()) && WithinRopeTimeLimit() && never(CompletedSecondObstacleCourse())
+        && enteredCorrectPassword() == 1 // This line is needed to hide the challenge indicator. Kinda h
 )
 
 leaderboard(title = "Ninja Warrior II", description = "Reach the end of Niko's second obstacle course as quickly as you can.",
@@ -896,7 +955,7 @@ leaderboard(title = "Ninja Warrior II", description = "Reach the end of Niko's s
 )
 
 function bombCapacity() => byte(0x003cc5a0)
-achievement(title = "Gunboat Diplomacy", description = "Obtain a maximum bomb capacity of 99.", points = 10, id = 439035, badge = "500823",
+achievement(title = "Gunboat Diplomacy", description = "Be able to carry 99 bombs.", points = 10, id = 439035, badge = "500823",
     trigger = WasValueSetInGame(bombCapacity(), 0x3c, 0x63)
 )
 
@@ -953,25 +1012,22 @@ achievement(title = "Eyes Off the Prize", description = "Defeat Phantom Ganon in
 )
 
 function maxArrowCapacity() => byte(0x003cc59f)
-achievement(title = "Adept Archery", description = "Increase your quiver's arrow capacity to 60.", points = 3, id = 439042, badge = "500831",
+achievement(title = "Adept Archery", description = "Be able to carry 60 arrows.", points = 3, id = 439042, badge = "500831",
     trigger = WasValueSetInGame(maxArrowCapacity(), 30, 60)
 )
 
-submarineTreasureBits = {
-    1: { "addr": 0x003cccab, "bit": 0 },
-    2: { "addr": 0x003cccab, "bit": 1 },
-    3: { "addr": 0x003cccab, "bit": 2 },
-    4: { "addr": 0x003cccab, "bit": 3 },
-    5: { "addr": 0x003cccab, "bit": 4 },
-    6: { "addr": 0x003cccab, "bit": 6 },
-    7: { "addr": 0x003cccab, "bit": 7 }
-}
-
-GenerateCheevoFromBits(name = "Pirate Wannabe", description = "Claim the treasure from all seven submarines.", points = 5, id = 439043, badge = "500832",
-    onlyAvailableWhen = IsInAreaByInternalName("Abship"),
-    addresses = submarineTreasureBits,
-    threshold = length(submarineTreasureBits),
-    oneAtATime = true
+GenerateCheevoFromBufferBits(name = "Pirate Wannabe", description = "Claim the treasure from all seven submarines.", points = 5, id = 439043, badge = "500832",
+    onlyAvailableWhen = IsInAreaByInternalName("Abship") && Delta(stageId()) == 0xa,
+    addresses = {
+        1: { "buffer": { "addr": 0x003cccab, "bit": 0, "group": 0xa }, "static": { "addr": 0x003cca1b, "bit": 0 } },
+        2: { "buffer": { "addr": 0x003cccab, "bit": 1, "group": 0xa }, "static": { "addr": 0x003cca1b, "bit": 1 } },
+        3: { "buffer": { "addr": 0x003cccab, "bit": 2, "group": 0xa }, "static": { "addr": 0x003cca1b, "bit": 2 } },
+        4: { "buffer": { "addr": 0x003cccab, "bit": 3, "group": 0xa }, "static": { "addr": 0x003cca1b, "bit": 3 } },
+        5: { "buffer": { "addr": 0x003cccab, "bit": 4, "group": 0xa }, "static": { "addr": 0x003cca1b, "bit": 4 } },
+        6: { "buffer": { "addr": 0x003cccab, "bit": 6, "group": 0xa }, "static": { "addr": 0x003cca1b, "bit": 6 } },
+        7: { "buffer": { "addr": 0x003cccab, "bit": 7, "group": 0xa }, "static": { "addr": 0x003cca1b, "bit": 7 } }
+    },
+    measuredIf = stageId() == 0xa
 )
 
 function bowSlot() => byte(0x003cc578)
@@ -1193,10 +1249,10 @@ GenerateCheevoFromConditions(
     id = 444189,
     badge = "500852",
     conditions = {
-        1: { "countsWhen": (bottle1Slot() != 0xff), "recalculateWhen": (bottle1Slot() != Delta(bottle1Slot())) },
-        2: { "countsWhen": (bottle2Slot() != 0xff), "recalculateWhen": (bottle2Slot() != Delta(bottle2Slot())) },
-        3: { "countsWhen": (bottle3Slot() != 0xff), "recalculateWhen": (bottle3Slot() != Delta(bottle3Slot())) },
-        4: { "countsWhen": (bottle4Slot() != 0xff), "recalculateWhen": (bottle4Slot() != Delta(bottle4Slot())) },
+        1: { "countsWhen": (bottle1Slot() != 0xff), "recalculateWhen": (Delta(bottle1Slot()) == 0xff && bottle1Slot() == 0xff) },
+        2: { "countsWhen": (bottle2Slot() != 0xff), "recalculateWhen": (Delta(bottle2Slot()) == 0xff && bottle1Slot() == 0xff) },
+        3: { "countsWhen": (bottle3Slot() != 0xff), "recalculateWhen": (Delta(bottle3Slot()) == 0xff && bottle1Slot() == 0xff) },
+        4: { "countsWhen": (bottle4Slot() != 0xff), "recalculateWhen": (Delta(bottle4Slot()) == 0xff && bottle1Slot() == 0xff) },
     }
 )
 
@@ -1231,26 +1287,24 @@ achievement(title = "Indulgent Shopper", description = "Earn a Gold Membership f
     trigger = WasValueSetInGame(shopPoints(), 0x3b, 0x3c)
 )
 
-windTempleTreasureBits = {
-    1: { "addr": 0x003cccaa, "bit": 0 },
-    2: { "addr": 0x003cccaa, "bit": 1 },
-    3: { "addr": 0x003cccaa, "bit": 2 },
-    4: { "addr": 0x003cccaa, "bit": 3 },
-    5: { "addr": 0x003cccaa, "bit": 4 },
-    6: { "addr": 0x003cccaa, "bit": 5 },
-    7: { "addr": 0x003cccaa, "bit": 7 },
-    8: { "addr": 0x003cccab, "bit": 0 },
-    9: { "addr": 0x003cccab, "bit": 2 },
-    10: { "addr": 0x003cccab, "bit": 3 },
-    11: { "addr": 0x003cccab, "bit": 4 },
-    12: { "addr": 0x003cccab, "bit": 5 },
-    13: { "addr": 0x003cccab, "bit": 7 },
-}
-
-GenerateCheevoFromBits(name = "Gifts from the Wind", description = "Open all treasure chests in the Wind Temple.", points = 10, id = 444193, badge = "500858",
-    onlyAvailableWhen = IsInAreaByInternalName("kaze"),
-    addresses = windTempleTreasureBits,
-    oneAtATime = true
+GenerateCheevoFromBufferBits(name = "Gifts from the Wind", description = "Open all treasure chests in the Wind Temple.", points = 10, id = 444193, badge = "500858",
+    onlyAvailableWhen = IsInAreaByInternalName("kaze") && Delta(stageId()) == 0x7,
+    addresses = {
+        1: { "buffer": { "addr": 0x003cccaa, "bit": 0, "group": 0x7 }, "static": { "addr": 0x003cc9ae, "bit": 0 } },
+        2: { "buffer": { "addr": 0x003cccaa, "bit": 1, "group": 0x7 }, "static": { "addr": 0x003cc9ae, "bit": 1 } },
+        3: { "buffer": { "addr": 0x003cccaa, "bit": 2, "group": 0x7 }, "static": { "addr": 0x003cc9ae, "bit": 2 } },
+        4: { "buffer": { "addr": 0x003cccaa, "bit": 3, "group": 0x7 }, "static": { "addr": 0x003cc9ae, "bit": 3 } },
+        5: { "buffer": { "addr": 0x003cccaa, "bit": 4, "group": 0x7 }, "static": { "addr": 0x003cc9ae, "bit": 4 } },
+        6: { "buffer": { "addr": 0x003cccaa, "bit": 5, "group": 0x7 }, "static": { "addr": 0x003cc9ae, "bit": 5 } },
+        7: { "buffer": { "addr": 0x003cccaa, "bit": 7, "group": 0x7 }, "static": { "addr": 0x003cc9ae, "bit": 7 } },
+        8: { "buffer": { "addr": 0x003cccab, "bit": 0, "group": 0x7 }, "static": { "addr": 0x003cc9af, "bit": 0 } },
+        9: { "buffer": { "addr": 0x003cccab, "bit": 2, "group": 0x7 }, "static": { "addr": 0x003cc9af, "bit": 2 } },
+        10: { "buffer": { "addr": 0x003cccab, "bit": 3, "group": 0x7 }, "static": { "addr": 0x003cc9af, "bit": 3 } },
+        11: { "buffer": { "addr": 0x003cccab, "bit": 4, "group": 0x7 }, "static": { "addr": 0x003cc9af, "bit": 4 } },
+        12: { "buffer": { "addr": 0x003cccab, "bit": 5, "group": 0x7 }, "static": { "addr": 0x003cc9af, "bit": 5 } },
+        13: { "buffer": { "addr": 0x003cccab, "bit": 7, "group": 0x7 }, "static": { "addr": 0x003cc9af, "bit": 7 } }
+    },
+    measuredIf = stageId() == 0x7
 )
 
 function hp() => word_be(0x003cc532)
@@ -1328,7 +1382,7 @@ function enemyDeathAndStatusBitflags() => byte(0x003cccd7)
 function sharkIslandChestStatus() => bit4(0x003cccd7)
 function sharkIslandHitLimit() => 10
 achievement(title = "A Leaf in the Wind", type = "missable", description = "Clear the enemy gauntlet in the Shark Island grotto without getting hit " + sharkIslandHitLimit() + " times.",
-    points = 25, id = 444184, badge = "502210",
+    points = 25, id = 444184, badge = "505460",
     trigger = once(WasJustInAreaByInternalName("ITest63") && IsInAreaByInternalName("ITest63") && enemyDeathBitflags() == 0 && enemyDeathAndStatusBitflags() == 0)
         && trigger_when(sharkIslandChestStatus() == 1)
         && never(!IsInAreaByInternalName("ITest63")) && never(repeated(sharkIslandHitLimit(), Delta(hp()) > hp()))
@@ -1374,7 +1428,8 @@ achievement(title = "Ten Years at Sea", type = "missable", description = "Defeat
 
 function ganondorfDefeated() => bit0(0x003cccad)
 function dialogueIndex() => dword_be(0x003fe838)
-achievement(title = "As Dandelions", type = "win_condition", description = "Defeat Ganondorf and set sail for a new land.", points = 25, id = 444187, badge = "500869",
+achievement(title = "As Dandelions", type = "win_condition", description = "Defeat Ganondorf and set sail for a new land.", points = 25, id = 444187, badge = "505459",
     trigger = CreateHitTargetedAndNextChain([ dialogueIndex() == 392 && IsInAreaByInternalName("GTower"), repeated(5000, !BlackBarsArePresent()) ])
         && never(!IsInAreaByInternalName("GTower"))
 )
+
