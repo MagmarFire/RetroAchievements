@@ -746,22 +746,22 @@ possessedTreasureChartAddressBits = {
     2: { "addr": 0x003cc604, "bit": 0 },3: { "addr": 0x003cc604, "bit": 1 },4: { "addr": 0x003cc604, "bit": 2 },5: { "addr": 0x003cc604, "bit": 5 },6: { "addr": 0x003cc604, "bit": 6 },7: { "addr": 0x003cc605, "bit": 1 },8: { "addr": 0x003cc605, "bit": 2 },9: { "addr": 0x003cc605, "bit": 3 },10: { "addr": 0x003cc605, "bit": 4 },11: { "addr": 0x003cc605, "bit": 5 },12: { "addr": 0x003cc605, "bit": 7 },13: { "addr": 0x003cc606, "bit": 0 },14: { "addr": 0x003cc606, "bit": 1 },15: { "addr": 0x003cc606, "bit": 2 },16: { "addr": 0x003cc606, "bit": 3 },17: { "addr": 0x003cc606, "bit": 5 },18: { "addr": 0x003cc606, "bit": 6 },19: { "addr": 0x003cc606, "bit": 7 },20: { "addr": 0x003cc607, "bit": 4 },21: { "addr": 0x003cc609, "bit": 2 },22: { "addr": 0x003cc60b, "bit": 0 },23: { "addr": 0x003cc60b, "bit": 2 },24: { "addr": 0x003cc60b, "bit": 4 },25: { "addr": 0x003cc60b, "bit": 5 },26: { "addr": 0x003cc60b, "bit": 6 },
 }
 
-GenerateCheevoFromBits(name = "Dragon's Hoard", description = "Open all treasure chests in Dragon Roost Cavern.", points = 5,  badge = "500811",
-    onlyAvailableWhen = IsInAreaByInternalName("M_NewD2"), oneAtATime = true,
+GenerateCheevoFromBufferBits(name = "Dragon's Hoard", description = "Open all treasure chests in Dragon Roost Cavern.", points = 5,  badge = "500811",
+    onlyAvailableWhen = IsInAreaByInternalName("M_NewD2") && Delta(stageId()) == 3,
     addresses = {
-        1: { "addr": 0x003cccab, "bit": 0 },
-        2: { "addr": 0x003cccab, "bit": 1 },
-        3: { "addr": 0x003cccab, "bit": 2 },
-        4: { "addr": 0x003cccab, "bit": 3 },
-        5: { "addr": 0x003cccab, "bit": 4 },
-        6: { "addr": 0x003cccab, "bit": 6 },
-        7: { "addr": 0x003cccab, "bit": 7 },
-        8: { "addr": 0x003cccaa, "bit": 2 },
-        9: { "addr": 0x003cccaa, "bit": 3 },
-        10: { "addr": 0x003cccaa, "bit": 4 },
-        11: { "addr": 0x003cccaa, "bit": 5 },
-        12: { "addr": 0x003cccaa, "bit": 6 },
-        13: { "addr": 0x003cccaa, "bit": 7 }
+        1: { "buffer": { "addr": 0x003cccab, "bit": 0, "group": 0x3 }, "static": { "addr": 0x003cc91f, "bit": 0 } },
+        2: { "buffer": { "addr": 0x003cccab, "bit": 1, "group": 0x3 }, "static": { "addr": 0x003cc91f, "bit": 1 } },
+        3: { "buffer": { "addr": 0x003cccab, "bit": 2, "group": 0x3 }, "static": { "addr": 0x003cc91f, "bit": 2 } },
+        4: { "buffer": { "addr": 0x003cccab, "bit": 3, "group": 0x3 }, "static": { "addr": 0x003cc91f, "bit": 3 } },
+        5: { "buffer": { "addr": 0x003cccab, "bit": 4, "group": 0x3 }, "static": { "addr": 0x003cc91f, "bit": 4 } },
+        6: { "buffer": { "addr": 0x003cccab, "bit": 6, "group": 0x3 }, "static": { "addr": 0x003cc91f, "bit": 6 } },
+        7: { "buffer": { "addr": 0x003cccab, "bit": 7, "group": 0x3 }, "static": { "addr": 0x003cc91f, "bit": 7 } },
+        8: { "buffer": { "addr": 0x003cccaa, "bit": 2, "group": 0x3 }, "static": { "addr": 0x003cc91e, "bit": 2 } },
+        9: { "buffer": { "addr": 0x003cccaa, "bit": 3, "group": 0x3 }, "static": { "addr": 0x003cc91e, "bit": 3 } },
+        10: { "buffer": { "addr": 0x003cccaa, "bit": 4, "group": 0x3 }, "static": { "addr": 0x003cc91e, "bit": 4 } },
+        11: { "buffer": { "addr": 0x003cccaa, "bit": 5, "group": 0x3 }, "static": { "addr": 0x003cc91e, "bit": 5 } },
+        12: { "buffer": { "addr": 0x003cccaa, "bit": 6, "group": 0x3 }, "static": { "addr": 0x003cc91e, "bit": 6 } },
+        13: { "buffer": { "addr": 0x003cccaa, "bit": 7, "group": 0x3 }, "static": { "addr": 0x003cc91e, "bit": 7 } }
     }
 )
 
@@ -1432,4 +1432,5 @@ achievement(title = "As Dandelions", type = "win_condition", description = "Defe
     trigger = CreateHitTargetedAndNextChain([ dialogueIndex() == 392 && IsInAreaByInternalName("GTower"), repeated(5000, !BlackBarsArePresent()) ])
         && never(!IsInAreaByInternalName("GTower"))
 )
+
 
