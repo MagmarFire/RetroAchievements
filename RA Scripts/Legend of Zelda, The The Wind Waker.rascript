@@ -293,6 +293,8 @@ function GenerateCheevoFromBufferBits(name, description, points, addresses, thre
     trigger = always_false()
     measureTrigger = always_true()
     stageGroups = {}
+    allStages = {}
+    staticSumForAllStages = 0
     
     if (threshold == 0)
     {
@@ -300,8 +302,10 @@ function GenerateCheevoFromBufferBits(name, description, points, addresses, thre
     }
     
     for i in addresses
-    {   
-        stageGroups[addresses[i]["buffer"]["stage"]] = []
+    {
+        stage = addresses[i]["buffer"]["stage"]
+        stageGroups[stage] = []
+        allStages[stage] = 0
     }
     
     // Go through every buffer bit and put them in the correct entry in the dictionary.
@@ -314,43 +318,34 @@ function GenerateCheevoFromBufferBits(name, description, points, addresses, thre
     }
     
     // A stage group consists of all address pairs that are dynamic within a specific stage ID. Achievements of this type will only ever trigger when Link is in a room using the same stage ID.
-    // Therefore, the actual trigger alt must contain all dynamic bits in the current stage and the STATIC bits for all other stages.
+    // Therefore, the actual trigger alts must contain all dynamic bits in the current stage and the STATIC bits for all other stages.
     for i in stageGroups
     {
-        bufferSum = sum_of(stageGroups[i], x => bit(x["buffer"]["bit"], x["buffer"]["addr"]))
-        staticSum = sum_of(stageGroups[i], x => bit(x["static"]["bit"], x["static"]["addr"]))
-        otherStages = []
-        otherStaticSum = 0
-        otherBufferSum = 0
+        bufferSumForThisStage = sum_of(stageGroups[i], x => bit(x["buffer"]["bit"], x["buffer"]["addr"]))
+        staticSumForAllStages = staticSumForAllStages + sum_of(stageGroups[i], x => bit(x["static"]["bit"], x["static"]["addr"]))
+        staticSumForOtherStages = 0
         
         for j in stageGroups
         {
-            if (j != i)
+            if (i != j)
             {
-                otherStaticSum = otherStaticSum + sum_of(stageGroups[j], x => bit(x["static"]["bit"], x["static"]["addr"]))
-                otherBufferSum = otherBufferSum + sum_of(stageGroups[j], x => bit(x["buffer"]["bit"], x["buffer"]["addr"]))
-                array_push(otherStages, j)
+                staticSumForOtherStages = staticSumForOtherStages + sum_of(stageGroups[j], x => bit(x["static"]["bit"], x["static"]["addr"]))
             }
         }
-
-        bufferMeasureAlt = bufferSum + otherStaticSum == threshold
-        staticMeasureAlt = staticSum + otherBufferSum == threshold
         
-        if (measure)
-        {
-            measureIf = stageId() != i
-            if (length(otherStages) > 0)
-            {
-                measureIf = any_of(otherStages, x => stageId() == x)
-            }
-            
-            bufferMeasureAlt = measured(bufferMeasureAlt, stageId() == i)
-            staticMeasureAlt = measured(staticMeasureAlt, measureIf)
-        }
-        
-        trigger = trigger || bufferMeasureAlt && Delta(bufferSum + otherStaticSum) == threshold - 1
-            || staticMeasureAlt && Delta(staticSum + otherBufferSum) == threshold - 1
+        trigger = trigger || measured(bufferSumForThisStage + staticSumForOtherStages == threshold, stageId() == i)
+            && Delta(bufferSumForThisStage + staticSumForOtherStages) == threshold - 1 // This delta check is simply for save protection.
     }
+    
+    // The final alt should just be a measurement for when we're in an area with a stage ID that no dynamic bits are relevant to.
+    currentStageIsIrrelevant = always_true()
+    for stage in allStages
+    {
+        currentStageIsIrrelevant = currentStageIsIrrelevant && stageId() != stage
+    }
+    
+    trigger = trigger || measured(staticSumForAllStages == threshold, currentStageIsIrrelevant)
+        && Delta(staticSumForAllStages) == threshold - 1 // This delta check is simply for save protection.
 
     achievement(title = name, description = description, points = points, badge = badge, id = id, type = type,
         trigger = FileIsLoaded() && onlyAvailableWhen && never(IsOnTitleScreen()) && trigger
@@ -382,7 +377,7 @@ function GetSuperareaByName(name)
             return superarea
         }
     }
-	
+    
     return false
 }
 
@@ -396,7 +391,7 @@ function DoesSuperareaExist(name)
             return true
         }
     }
-	
+    
     return false
 }
 
@@ -476,6 +471,7 @@ function GetAreaRPLookup()
 }
 
 function mapNameAddr() => 0x003d1664
+function loadingMapNameAddr() => 0x003d1670
 function mapNamePart1() => dword_be(0x003d1664)
 function mapNamePart2() => dword_be(0x003d1668)
 function roomPointer() => dword_be(0x003d21f4) & 0x7FFFFFFF
@@ -534,6 +530,12 @@ function WasJustInAreaByInternalName(name)
     return ascii_string_equals(mapNameAddr(), area["internalName"], transform = Delta)
 }
 
+function IsTransitioningToAreaByInternalName(name)
+{
+    area = GetAreaByInternalName(name)
+    return ascii_string_equals(loadingMapNameAddr(), area["internalName"]) && !ascii_string_equals(mapNameAddr(), area["internalName"])
+}
+
 function IsInAreaByHash(hash)
 {
     return hash == GetAreaHash()
@@ -552,6 +554,9 @@ internalNamesAddedToRP = []
 function maxLifeEnergy() => word_be(0x003cc530)
 function Hearts() => maxLifeEnergy() / 4
 function ShouldUseStageLookup(stageId) => stageId > 0 && stageId < 9
+function outsetIslandCutscenePlayed() => bit4(0x003ccb89)
+function IsLoadingSaveFile() => IsValueSet(outsetIslandCutscenePlayed(), 0, 1)
+function FileIsLoaded() => Delta(outsetIslandCutscenePlayed()) == 1
 
 lookupForSuperarea = {}
 for i in superareas
@@ -599,7 +604,7 @@ for hash in areas
         }
         
         rich_presence_conditional_display(IsInArea(area["name"]), display + "{0} • {1} ❤️",
-            rich_presence_lookup(GetLookupKey(area["internalName"]), roomIdToUse, lookupForArea),
+            rich_presence_lookup(GetLookupKey(area["internalName"]), roomIdToUse, lookupForArea, "Somewhere on the Great Sea..."),
             rich_presence_value("Hearts", Hearts())
         )
         array_push(internalNamesAddedToRP, area["internalName"])
@@ -610,9 +615,6 @@ rich_presence_conditional_display(IsOnTitleScreen(), "On the title screen...")
 rich_presence_conditional_display(IsSelectingFile(), "Selecting a file...")
 rich_presence_display("Somewhere on the Great Sea...")
 
-function outsetIslandCutscenePlayed() => bit4(0x003ccb89)
-function IsLoadingSaveFile() => IsValueSet(outsetIslandCutscenePlayed(), 0, 1)
-function FileIsLoaded() => Delta(outsetIslandCutscenePlayed()) == 1
 function Pluralize(value, unit)
 {
     if (value == 1)
@@ -1011,12 +1013,16 @@ function EmptyBottleIsEquipped() =>
     || xItem() == 0x10 || yItem() == 0x10 || zItem() == 0x10
     || xItem() == 0x11 || yItem() == 0x11 || zItem() == 0x11
 
+function IsItemEquipped(id) => xItem() == id || yItem() == id || zItem() == id
+
 function hp() => word_be(0x003cc532)
-achievement(title = "Eyes off the Prize", description = "Defeat Phantom Ganon in the Forsaken Fortress without L-Targeting or equipping an empty bottle (no resurrections).", points = 5,
+achievement(title = "Eyes off the Prize", description = "Defeat Phantom Ganon in the Forsaken Fortress without L-Targeting or equipping an empty bottle, and without being resurrected.",
+    points = 5,
     id = 439041, badge = "500830", type = "missable",
     trigger = PhantomGanonCheckpointReached() && trigger_when(PhantomGanonDefeated()) && never(IsLTargeting())
         && never(EmptyBottleIsEquipped())
         && never(hp() <= 0)
+        && never(IsTransitioningToAreaByInternalName("sea_T"))
 )
 
 function maxArrowCapacity() => byte(0x003cc59f)
@@ -1239,10 +1245,10 @@ achievement(title = "Like a Record, Baby", description = "Learn the Hurricane Sp
     trigger = WasBitflagSetInGame(learnedHurricaneSpin()) && DisplayingMessageWithId(0x10f)
 )
 
-function readBaitoMotherLetter() => bit0(0x003ccc00)
+function baitoMotherLetterProgress() => byte(0x003ccc00)
 achievement(title = "A Mother's Thanks", description = "Receive a letter from the mother of Baito, the part-time mail sorter on Dragon Roost Island.", points = 1, id = 444185,
     badge = "500851",
-    trigger = WasBitflagSetInGame(readBaitoMotherLetter())
+    trigger = WasValueSetInGame(baitoMotherLetterProgress(), 2, 3)
 )
 
 GenerateCheevoFromConditions(
@@ -1266,13 +1272,14 @@ function boomerangLaunched() => bit6(0x003d21f9)
 function mp() => byte(0x003cc544)
 function earthTempleMinibossTriggered() => bit3(0x003cccb0)
 function earthTempleMinibossDefeated() => bit0(0x003cccb0)
-achievement(title = "Skull Crusher", description = "Defeat the miniboss of the Earth Temple using only the Skull Hammer.", points = 10, type = "missable",
+achievement(title = "Skull Crusher", description = "Defeat the miniboss of the Earth Temple using only the Skull Hammer and without being resurrected.", points = 10, type = "missable",
     id = 444199, badge = "502208",
     trigger = once(WasBitflagSetInGame(earthTempleMinibossTriggered())) && trigger_when(WasBitflagSetInGame(earthTempleMinibossDefeated()))
         && never(swordActionPointer() == 0) && never(Delta(numberOfBombs()) > numberOfBombs()) && never(Delta(numberOfArrows()) > numberOfArrows())
         && never(swordAnimationId() != 0x12 && swordAnimationId() != 0x11 && swordAnimationId() != 0x13 && swordAnimationId() != 0)
         && never(grapplingHookInUse() == 1) && never(boomerangLaunched() == 1)
         && never(!IsInAreaByInternalName("M_DaiMB"))
+        && never(hp() <= 0)
 )
 
 function currentShield() => byte(0x003cc53f)
@@ -1309,23 +1316,6 @@ GenerateCheevoFromBufferBits(name = "Gifts from the Wind", description = "Open a
     }
 )
 
-function ironBootsStatus() => bit0(0x003a9a2e)
-function WindTempleMinibossCheckpointReached() => once(!IsInDialogue() && IsInAreaByInternalName("kazeMB") && Delta(enemyMusicPointer()) == 0 && enemyMusicPointer() != 0
-    && !PhantomGanonDefeated())
-function WindTempleMinibossDefeated() => Delta(enemyMusicPointer()) != 0 && enemyMusicPointer() == 0
-achievement(title = "Bound to Earth", description = "Defeat the miniboss of the Wind Temple with the Iron Boots equipped the entire time (no resurrections).", points = 10, type = "missable",
-    id = 444190, badge = "502209",
-    trigger = WindTempleMinibossCheckpointReached() && trigger_when(WindTempleMinibossDefeated())
-        && never(ironBootsStatus() == 0)
-        && never(hp() <= 0)
-        && never(!IsInAreaByInternalName("kazeMB"))
-        // todo: add healing restriction for balance later?
-)
-
-achievement(title = "Hylia's Blessing", description = "Completely restore the Master Sword's power.", points = 5, type = "progression", id = 444194, badge = "500859",
-    trigger = IsValueSetInGame(swordEquipped(), 0x3a, 0x3e)
-)
-
 function CreateHitTargetedAndNextChain(permutation)
 {
     trigger = always_true()
@@ -1337,6 +1327,25 @@ function CreateHitTargetedAndNextChain(permutation)
     
     return trigger
 }
+
+function ironBootsStatus() => bit0(0x003a9a2e)
+function TransitionedToWindTempleMinibossRoom() => once(staticRoomId() == 2 && WasJustInAreaByInternalName("kaze") && staticRoomId() == 2 && IsInAreaByInternalName("kazeMB"))
+function WindTempleMinibossCheckpointReached() => once(TransitionedToWindTempleMinibossRoom() && hookshotChest() == 0 && !PhantomGanonDefeated())
+function WindTempleMinibossDefeated() => Delta(enemyMusicPointer()) != 0 && enemyMusicPointer() == 0
+function hookshotChest() => bit5(0x003cccab)
+achievement(title = "Bound to Earth", description = "Defeat the miniboss of the Wind Temple with the Iron Boots equipped the entire time and without being resurrected.",
+    points = 10, type = "missable",
+    id = 444190, badge = "502209",
+    trigger = WindTempleMinibossCheckpointReached() && trigger_when(WindTempleMinibossDefeated())
+        && never(ironBootsStatus() == 0 && enemyMusicPointer() != 0)
+        && never(hp() <= 0)
+        && never(!IsInAreaByInternalName("kazeMB"))
+        && never(IsTransitioningToAreaByInternalName("sea_T"))
+)
+
+achievement(title = "Hylia's Blessing", description = "Completely restore the Master Sword's power.", points = 5, type = "progression", id = 444194, badge = "500859",
+    trigger = IsValueSetInGame(swordEquipped(), 0x3a, 0x3e)
+)
 
 function StartedSavageLabyrinth() => once(IsInAreaByInternalName("Cave09") && roomIdOnLoad() == 1 && Delta(roomIdOnLoad()) == 255)
 function CompletedSavageLabyrinth() => CreateHitTargetedAndNextChain([ IsInAreaByInternalName("Cave10") && roomIdOnLoad() == 19, IsInAreaByInternalName("Cave10") && roomIdOnLoad() == 255,
@@ -1363,7 +1372,7 @@ function slChallengeHpLimit() => 60
 achievement(title = "Lasting Trauma", description = "Complete the Savage Labyrinth without losing more than a total of " + slChallengeHpLimit() / 4
     + " hearts of life energy and without using magic.", points = 50,
     id = 444197, badge = "500861",
-    trigger = StartedSavageLabyrinth() && CompletedSavageLabyrinth() && never(IsInAreaByInternalName("sea")) && never(IsInAreaByInternalName("Cave09") && roomIdOnLoad() == 0)
+    trigger = StartedSavageLabyrinth() && trigger_when(CompletedSavageLabyrinth()) && never(IsInAreaByInternalName("sea")) && never(IsInAreaByInternalName("Cave09") && roomIdOnLoad() == 0)
         && never(TookGivenDamage(slChallengeHpLimit()))
         && never(Delta(mp()) > mp())
 )
@@ -1382,11 +1391,14 @@ function enemyDeathBitflags() => dword_be(0x003cccd0)
 function enemyDeathAndStatusBitflags() => byte(0x003cccd7)
 function sharkIslandChestStatus() => bit4(0x003cccd7)
 function sharkIslandHitLimit() => 10
-achievement(title = "A Leaf in the Wind", type = "missable", description = "Clear the enemy gauntlet in the Shark Island grotto without getting hit " + sharkIslandHitLimit() + " times.",
+function magicArmorId() => 0xa
+achievement(title = "A Leaf in the Wind", type = "missable", description = "Clear the enemy gauntlet in the Shark Island grotto without getting hit " + sharkIslandHitLimit() + " times "
+    + "and without using magic.",
     points = 25, id = 444184, badge = "505460",
     trigger = once(WasJustInAreaByInternalName("ITest63") && IsInAreaByInternalName("ITest63") && enemyDeathBitflags() == 0 && enemyDeathAndStatusBitflags() == 0)
         && trigger_when(sharkIslandChestStatus() == 1)
         && never(!IsInAreaByInternalName("ITest63")) && never(repeated(sharkIslandHitLimit(), Delta(hp()) > hp()))
+        && never(Delta(mp()) > mp())
 )
 
 function pigPieceOfHeartStatus() => bit2(0x003cccbf)
@@ -1415,6 +1427,16 @@ achievement(title = "Invisible, But Not Intangible", description = "Bring Anton 
     trigger = WasBitflagSetInGame(lindaPieceOfHeartStatus()) && !IsInDialogue()
 )
 
+function currentHighestBidder() => word_be(0x003d209e)
+function PlayerIsHighestBidder() => currentHighestBidder() == 0x1ce9
+function maximumBid() => 75
+achievement(title = "Lot Sniper", id = 448883, description = "Win an auction with a bid of 75 Rupees or less.", points = 5,
+    trigger = once(IsInAreaByInternalName("Orichh") && currentTimerExpiry() == 0xea60 && Delta(currentTimerExpiry()) == 0)
+        && trigger_when(currentTimerElapsedTime() >= currentTimerExpiry() && PlayerIsHighestBidder())
+        && minigameScore() <= maximumBid()
+        && never(!IsInAreaByInternalName("Orichh"))
+)
+
 function xCoord() => float_be(0x003ebd34)
 function zCoord() => float_be(0x003ebd3c)
 function sqrDistanceFromOrigin() => xCoord() * xCoord() + zCoord() * zCoord()
@@ -1433,5 +1455,3 @@ achievement(title = "As Dandelions", type = "win_condition", description = "Defe
     trigger = CreateHitTargetedAndNextChain([ dialogueIndex() == 392 && IsInAreaByInternalName("GTower"), repeated(5000, !BlackBarsArePresent()) ])
         && never(!IsInAreaByInternalName("GTower"))
 )
-
-
