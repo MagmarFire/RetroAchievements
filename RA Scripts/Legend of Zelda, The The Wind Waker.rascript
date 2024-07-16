@@ -941,7 +941,7 @@ niko2MaxTime = 0xbb8
 function WithinRopeTimeLimit() => Niko2TimeElapsed() <= SecondsToFrames(niko2TimeLimit)
 function Niko2TimeElapsed() => (niko2MaxTime - tetraPlatformTimeRemaining()) * 2
 function TetraPlatformsAreUp() => bit0(tetraPlatformPointer() + 0x800001bb) == 1
-function NinjaWarriorIIChallengeActive() => TetraPlatformsAreUp() && enteredCorrectPassword() == 1
+function NinjaWarriorIIChallengeActive() => TetraPlatformsAreUp() && enteredCorrectPassword() == 1 && IsInAreaByInternalName("Asoko")
 function CompletedSecondObstacleCourse() => once(messageId() == 0x1b28)
 achievement(title = "Ninja Warrior II", points = 25, description = "Complete Niko's second obstacle course within " + SecondsToFormat(niko2TimeLimit) + ".", type = "missable",
     id = 439034, badge = "500822",
@@ -949,7 +949,7 @@ achievement(title = "Ninja Warrior II", points = 25, description = "Complete Nik
         && enteredCorrectPassword() == 1 // This line is needed to hide the challenge indicator. Kinda h
 )
 
-leaderboard(title = "Ninja Warrior II", description = "Reach the end of Niko's second obstacle course as quickly as you can.",
+leaderboard(title = "Ninja Warrior II", description = "Reach the end of Niko's second obstacle course as quickly as you can.", id = 105469,
     start = NinjaWarriorIIChallengeActive() && never(CompletedSecondObstacleCourse()),
     cancel = !NinjaWarriorIIChallengeActive(),
     submit = NinjaWarriorIIChallengeActive() && TetraPlatformTimerFrozen(),
@@ -1111,7 +1111,7 @@ achievement(title = "Run off the Cold", description = "Open the chest that conta
         && never(ShouldResetIronBootsChallenge())
 )
 
-leaderboard(title = "Run off the Cold", description = "Open the chest that contains the Iron Boots as quickly as you can.",
+leaderboard(title = "Run off the Cold", description = "Open the chest that contains the Iron Boots as quickly as you can.", id = 105485,
     start = IronBootsChallengeHasStarted() && never(ShouldResetIronBootsChallenge()),
     cancel = ShouldResetIronBootsChallenge(),
     submit = IronBootsChallengeCompleted() && never(ShouldResetIronBootsChallenge()),
