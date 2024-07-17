@@ -778,7 +778,7 @@ GenerateCheevoFromBufferBits(
     addresses = {
         1: { "buffer": { "addr": 0x003cccab, "bit": 0, "group": "TF_06", "stage": 0xd }, "static": { "addr": 0x003cca87, "bit": 0 } }, // Dragoon Roost Island labyrinth
         2: { "buffer": {  "addr": 0x003cccab, "bit": 1, "group": "Cave05", "stage": 0xd }, "static": { "addr": 0x003cca87, "bit": 1 } }, // Horseshoe Island cave
-        3: { "buffer": {  "addr": 0x003cccab, "bit": 3, "group": "WarpD", "stage": 0xc }, "static": { "addr": 0x003cca63, "bit": 3 } }, // Diamond Steppe Island cave
+        3: { "buffer": {  "addr": 0x003ccca9, "bit": 7, "group": "WarpD", "stage": 0xc }, "static": { "addr": 0x003cca61, "bit": 7 } }, // Diamond Steppe Island cave
         4: { "buffer": {  "addr": 0x003cccaa, "bit": 1, "group": "SubD42", "stage": 0xd }, "static": { "addr": 0x003cca86, "bit": 1 } }, // Needle Rock Isle cave
         5: { "buffer": {  "addr": 0x003cccab, "bit": 6, "group": "SubD43", "stage": 0xd }, "static": { "addr": 0x003cca87, "bit": 6 } }, // Angular Isles cave
         6: { "buffer": {  "addr": 0x003ccca8, "bit": 0, "group": "TyuTyu", "stage": 0xc }, "static": { "addr": 0x003cca60, "bit": 0 } }, // Pawprint Isle cave
@@ -1286,12 +1286,12 @@ achievement(title = "Skull Crusher", description = "Defeat the miniboss of the E
 )
 
 function currentShield() => byte(0x003cc53f)
-achievement(title = "Under the Gods' Aegis", description = "Obtain the Mirror Shield.", points = 3, id = 444204, badge = "500855",
+achievement(title = "Under the Gods' Aegis", description = "Obtain the Mirror Shield.", points = 3, id = 444204, badge = "500855", type = "progression",
     trigger = WasValueSetInGame(currentShield(), 0x3b, 0x3c)
 )
 
 function learnedWindGodAria() => bit4(0x003cc5ed)
-achievement(title = "Fado's Fate", description = "Learn the Wind God's Aria.", points = 3, id = 444191, badge = "500856",
+achievement(title = "Fado's Fate", description = "Learn the Wind God's Aria.", points = 3, id = 444191, badge = "500856", type = "progression",
     trigger = WasBitflagSetInGame(learnedWindGodAria()) && never(stageId() == 8) // We need to check for the stage ID here because, otherwise, it would trigger in Ganon's Tower.
 )
 
