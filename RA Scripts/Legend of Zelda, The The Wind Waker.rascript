@@ -524,10 +524,17 @@ function IsInAreaByInternalName(name)
     return ascii_string_equals(mapNameAddr(), area["internalName"])
 }
 
-function WasJustInAreaByInternalName(name)
-{
+function WasJustInAreaByInternalName(name, useNullTerminator = false)
+{    
     area = GetAreaByInternalName(name)
-    return ascii_string_equals(mapNameAddr(), area["internalName"], transform = Delta)
+    nullTerminatorClause = always_true()
+    
+    if (useNullTerminator)
+    {
+        nullTerminatorClause = Delta(byte(mapNameAddr() + length(area["internalName"]))) == 0
+    }
+    
+    return ascii_string_equals(mapNameAddr(), area["internalName"], transform = Delta) && nullTerminatorClause
 }
 
 function IsTransitioningToAreaByInternalName(name)
@@ -1276,12 +1283,14 @@ function numberOfArrows() => byte(0x003cc599)
 function grapplingHookInUse() => bit1(0x003d21f9)
 function boomerangLaunched() => bit6(0x003d21f9)
 function mp() => byte(0x003cc544)
-function earthTempleMinibossTriggered() => bit3(0x003cccb0)
+function EarthTempleMinibossCheckpointReached() => once(Delta(staticRoomId()) == 7 && WasJustInAreaByInternalName("M_Dai", true) && staticRoomId() == 7 && IsInAreaByInternalName("M_DaiMB")
+    && earthTempleMinibossDefeated() == 0)
 function earthTempleMinibossDefeated() => bit0(0x003cccb0)
-achievement(title = "Skull Crusher", description = "Defeat the miniboss of the Earth Temple using only the Skull Hammer and without being resurrected.", points = 10, type = "missable",
+achievement(title = "Skull Crusher", description = "Defeat the miniboss of the Earth Temple using only the Skull Hammer and without being resurrected.",
+    points = 10, type = "missable",
     id = 444199, badge = "502208",
-    trigger = once(WasBitflagSetInGame(earthTempleMinibossTriggered())) && trigger_when(WasBitflagSetInGame(earthTempleMinibossDefeated()))
-        && never(swordActionPointer() == 0) && never(Delta(numberOfBombs()) > numberOfBombs()) && never(Delta(numberOfArrows()) > numberOfArrows())
+    trigger = EarthTempleMinibossCheckpointReached() && trigger_when(WasBitflagSetInGame(earthTempleMinibossDefeated()))
+        && swordActionPointer() != 0 && never(Delta(numberOfBombs()) > numberOfBombs()) && never(Delta(numberOfArrows()) > numberOfArrows())
         && never(swordAnimationId() != 0x12 && swordAnimationId() != 0x11 && swordAnimationId() != 0x13 && swordAnimationId() != 0)
         && never(grapplingHookInUse() == 1) && never(boomerangLaunched() == 1)
         && never(!IsInAreaByInternalName("M_DaiMB"))
