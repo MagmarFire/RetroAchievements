@@ -1443,7 +1443,7 @@ achievement(title = "Invisible, But Not Intangible", description = "Bring Anton 
 )
 
 function currentHighestBidder() => word_be(0x003d209e)
-function PlayerIsHighestBidder() => currentHighestBidder() == 0x1ce9
+function PlayerIsHighestBidder() => once(currentHighestBidder() == 0x1ce9 && Delta(minigameScore()) < minigameScore() && never(currentHighestBidder() != 0x1ce9))
 function maximumBid() => 75
 achievement(title = "Lot Sniper", id = 448883, description = "Win an auction with a bid of 75 Rupees or less.", points = 5, badge = "506828", type = "missable",
     trigger = once(IsInAreaByInternalName("Orichh") && currentTimerExpiry() == 0xea60 && Delta(currentTimerExpiry()) == 0)
