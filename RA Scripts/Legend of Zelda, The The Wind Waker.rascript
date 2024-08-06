@@ -972,7 +972,7 @@ achievement(title = "Gunboat Diplomacy", description = "Be able to carry 99 bomb
 )
 
 function totgIsAvailable() => bit0(0x003cc8cb)
-achievement(title = "From the Sea to the Heavens", description = "Reveal the Tower of the Gods.", points = 3, id = 439036, badge = "500824",
+achievement(title = "From the Sea to the Heavens", description = "Reveal the Tower of the Gods.", points = 3, id = 439036, badge = "500824", type = "progression",
     trigger = WasBitflagSetInGame(totgIsAvailable())
 )
 
@@ -1131,17 +1131,17 @@ leaderboard(title = "Run off the Cold", description = "Open the chest that conta
 function boatingCourseTimeLimit() => 105
 function boatingCourseStatus() => byte(0x003d220e)
 function BoatingCourseChallengeHasStarted() => once(currentTimerType() == 2 && Delta(currentTimerType()) == 0xffffffff && IsInAreaByInternalName("Ocean"))
-function BoatingCourseChallengeCompleted() => boatingCourseStatus() == 1
+function BoatingCourseChallengeCompleted() => boatingCourseStatus() == 1 && minigameScore() == 150
 function BoatingCourseChallengeFailed() => currentTimerElapsedTime() >= boatingCourseTimeLimit() * 1000
 function minigameScore() => word_be(0x003d220c)
 achievement(title = "Racing for Rupees", description = "Complete a perfect boating course run within " + SecondsToFormat(boatingCourseTimeLimit()) + ".", points = 10, id = 439218,
     badge = "500842",
-    trigger = BoatingCourseChallengeHasStarted() && trigger_when(BoatingCourseChallengeCompleted() && minigameScore() == 150)
+    trigger = BoatingCourseChallengeHasStarted() && trigger_when(BoatingCourseChallengeCompleted())
         && never(BoatingCourseChallengeFailed()) && never(!IsInAreaByInternalName("Ocean"))
 )
 
-leaderboard(title = "Racing for Rupees", description = "Complete a perfect boating course run as quickly as you can.",
-    start = BoatingCourseChallengeHasStarted(),
+leaderboard(title = "Racing for Rupees", description = "Complete a perfect boating course run as quickly as you can.", id = 105484,
+    start = BoatingCourseChallengeHasStarted() && never(currentTimerType() == 0xffffffff),
     cancel = IronBootsChallengeCanceled(),
     submit = BoatingCourseChallengeCompleted(),
     value = currentTimerElapsedTime() / 10,
