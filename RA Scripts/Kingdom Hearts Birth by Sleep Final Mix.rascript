@@ -1825,6 +1825,23 @@ function NumberOfTimesGivenCommandsUsed(haystack)
 balanceGroup1Commands = GetCommandsByProperties({ "supercategory": "Attack" })
 balanceGroup2Commands = GetCommandsByProperties({ "supercategory": "Magic" })
 itemCommands = GetCommandsByProperties({ "supercategory": "Item" })
+balanceGroup1Triggers = NumberOfTimesGivenCommandsUsed(balanceGroup1Commands)
+balanceGroup2Triggers = NumberOfTimesGivenCommandsUsed(balanceGroup2Commands)
+switch12 = [] // tally(group1 commands), deduct(group2 commands)
+switch21 = [] // tally(group2 commands), deduct(group1 commands)
+for trigger in balanceGroup1Triggers
+{
+   array_push(switch12, trigger)
+}
+for trigger in balanceGroup2Triggers
+{
+   array_push(switch21, trigger)
+   array_push(switch12, deduct(trigger))
+}
+for trigger in balanceGroup1Triggers
+{
+   array_push(switch21, deduct(trigger))
+}
 achievement(title = "Mind-Body Balance [m]", points = 25, id = 187107, badge = "207994",
     description = "Defeat Dragon Maleficent without using magic commands two more times than attack commands, and vice versa (Proud Mode or higher, Level 6 or below, no items).",
     trigger = CheckpointPassedForCharacters(InformationBarPoppedUpOnce() && IsAtLeastOnDifficulty("Proud") && level() <= 6
@@ -1833,8 +1850,8 @@ achievement(title = "Mind-Body Balance [m]", points = 25, id = 187107, badge = "
             Aqua(): MaxHPIncreased()
         }, true)
         && never(!IsInLocation("EnchantedBridgeThorns"))
-        && never(tally(2, tally(0, NumberOfTimesGivenCommandsUsed(balanceGroup1Commands)), deduct(tally(0, NumberOfTimesGivenCommandsUsed(balanceGroup2Commands)))))
-        && never(tally(2, tally(0, NumberOfTimesGivenCommandsUsed(balanceGroup2Commands)), deduct(tally(0, NumberOfTimesGivenCommandsUsed(balanceGroup1Commands)))))
+        && never(tally(2, switch12))
+        && never(tally(2, switch21))
         && never(JustUsedAnyGivenCommand(itemCommands))
 )
 
