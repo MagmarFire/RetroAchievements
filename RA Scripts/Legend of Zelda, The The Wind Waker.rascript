@@ -884,7 +884,8 @@ treasureChartBitflags = {
     41: { "addr": 0x003cc60b, "bit": 7 }
 }
 GenerateCheevoFromBits(name = "Legendary Atlas", description = "Collect all Treasure Charts.", points = 10, id = 445530, badge = "505461",
-    addresses = treasureChartBitflags
+    addresses = treasureChartBitflags,
+    oneAtATime = true
 )
 
 function boomerangSlot() => byte(0x003cc571)
