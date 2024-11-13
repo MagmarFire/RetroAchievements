@@ -2549,8 +2549,8 @@ achievement(title = "Looks Like We Don't Have a Choice!", points = 10,
 )
 
 positivePins = GetPinsByTrait("Element", "Pos")
-achievement(title = "At Arm's Length", points = 10,
-    description = "Defeat Reaper Beat without any Positive-type pins equipped (Normal or higher, Level 35 or below).",
+achievement(title = "At Arm's Length", points = 10, id = 120647, badge = "131640",
+    description = "Defeat the Reaper Beat boss Noise without any Positive-type pins equipped (Normal or higher, Level 35 or below).",
     trigger = enemyId() == GetEnemyIdByName("Reaper Beat") && EnterBattleCheckpointValid()
         && IsAtLeastOnDifficulty("Normal") && currentLevel() <= 35 && IsRankingRevealed()
         && never(AnyOfTheGivenPinsAreEquipped(positivePins))
