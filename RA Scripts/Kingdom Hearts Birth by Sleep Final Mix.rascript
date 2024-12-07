@@ -1853,6 +1853,7 @@ for trigger in balanceGroup1Triggers
 {
    array_push(switch21, deduct(trigger))
 }
+
 xachievement(title = "Mind-Body Balance", points = 25, id = 187107, badge = "207994", type = "missable", shouldRender = IsCore(),
     description = "Defeat Dragon Maleficent without using magic commands two more times than attack commands, and vice versa (Proud Mode or higher, Level 6 or below, no items).",
     trigger = CheckpointPassedForCharacters(InformationBarPoppedUpOnce() && IsAtLeastOnDifficulty("Proud") && level() <= 6

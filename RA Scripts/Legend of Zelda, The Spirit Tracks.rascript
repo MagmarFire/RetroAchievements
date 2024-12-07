@@ -291,7 +291,7 @@ function hasRecruitSword() => bit1(0x264902)
 function rupees() => word(0x264908)
 
 // $264912: Arrows in inventory
-function arrows() => word(0x264912)
+function arrows() => byte(0x264912)
 
 // $264914: Potion slot 1:
 //          

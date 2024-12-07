@@ -6,6 +6,10 @@
 function GetGlobalOffset() => 0x0
 
 function systemTimer() => odword(0x3ffc3c)
+function dsiSystemTimer() => odword(0x7ffc3c)
+
+function TimeAdvancedOnDS() => Delta(systemTimer()) != systemTimer() && systemTimer() > 0
+function TimeAdvancedOnDSi() => Delta(dsiSystemTimer()) != dsiSystemTimer() && dsiSystemTimer() > 0
 
 function obit0(addr) => bit0(addr + GetGlobalOffset())
 function obit1(addr) => bit1(addr + GetGlobalOffset())
@@ -526,13 +530,15 @@ achievement(title = "And Kablooey!", points = 3, id = 143352, badge = "160098",
 
 function cyclokState() => obyte(0x255a0c)
 function IsCyclokDying() => cyclokState() == 0x8
-function CyclokStarted() => once(Delta(cyclokState()) == 1 && cyclokState() == 2)
+function CyclokStarted() => once(cyclokState() == 2 && Delta(cyclokState()) == 1)
 cyclokFrameLimit = 2700
-function TimeAdvancedAgainstCyclok() => CyclokStarted() && Delta(systemTimer()) != systemTimer()
-achievement(title = "A Short Fuse [m]", points = 10,
+function TimeAdvancedAgainstCyclokOnDS() => CyclokStarted() && TimeAdvancedOnDS()
+function TimeAdvancedAgainstCyclokOnDSi() => CyclokStarted() && TimeAdvancedOnDSi()
+achievement(title = "A Short Fuse", points = 10, type = "missable", id = 143353, badge = "160099",
     description = "Defeat Cyclok within " + (cyclokFrameLimit / 60) + " seconds.",
     trigger = once(IsInLocation("Cyclok") && WasInLocation("TempleOfWind")) && never(!IsInLocation("Cyclok"))
-        && IsCyclokDying() && never(repeated(cyclokFrameLimit, TimeAdvancedAgainstCyclok()))
+        && IsCyclokDying() && never(repeated(cyclokFrameLimit, TimeAdvancedAgainstCyclokOnDS()))
+        && never(repeated(cyclokFrameLimit, TimeAdvancedAgainstCyclokOnDSi()))
 )
 
 function neriFreed() => obit4(0x1b5554)
@@ -667,12 +673,14 @@ achievement(title = "Stop!", points = 3, id = 143375, badge = "160121",
 eoxTimeLimit = 150
 function eoxState() => obyte(0x255bdc)
 function IsEoxDying() => eoxState() == 0xd
-function EoxStarted() => once(Delta(eoxState()) == 0 && eoxState() != 0)
-function TimeAdvancedAgainstEox() => EoxStarted() && Delta(systemTimer()) != systemTimer()
-achievement(title = "Hammer Time! [m]", points = 5,
+function EoxStarted() => once(eoxState() != 0 && Delta(eoxState()) == 0)
+function TimeAdvancedAgainstEoxOnDS() => EoxStarted() && TimeAdvancedOnDS()
+function TimeAdvancedAgainstEoxOnDSi() => EoxStarted() && TimeAdvancedOnDSi()
+achievement(title = "Hammer Time!", points = 5, type = "missable", id = 143376, badge = "160122",
     description = "Defeat Eox within " + SecondsToFormat(eoxTimeLimit) + ".",
     trigger = once(IsInLocation("Eox") && WasInLocation("Mutoh")) && never(!IsInLocation("Eox"))
-        && IsEoxDying() && never(repeated(eoxTimeLimit * 60, TimeAdvancedAgainstEox()))
+        && IsEoxDying() && never(repeated(eoxTimeLimit * 60, TimeAdvancedAgainstEoxOnDS()))
+         && never(repeated(eoxTimeLimit * 60, TimeAdvancedAgainstEoxOnDSi()))
 )
 
 function aquanine() => obit7(0x1b554b)
@@ -1018,18 +1026,20 @@ achievement(title = "A Wish for Freedom", points = 25,
     trigger = IsInLocation("Credits") && WasInLocation("BellumFinal")
 )
 
-leaderboard(title = "Time Attack - Cyclok", description = "Defeat Cyclok as quickly as you can.",
+leaderboard(title = "Time Attack - Cyclok", description = "Defeat Cyclok as quickly as you can (DS mode only).",
     start = once(IsInLocation("Cyclok") && WasInLocation("TempleOfWind")) && CyclokStarted(),
-    cancel = !IsInLocation("Cyclok"),
+    cancel = !IsInLocation("Cyclok") || systemTimer() == 0,
     submit = IsCyclokDying(),
-    value = LMeasured(TimeAdvancedAgainstCyclok())
+    value = LMeasured(TimeAdvancedAgainstCyclokOnDS()),
+    format = "FRAMES"
 )
 
-leaderboard(title = "Time Attack - Eox", description = "Defeat Eox as quickly as you can.",
+leaderboard(title = "Time Attack - Eox", description = "Defeat Eox as quickly as you can (DS mode only).",
     start = once(IsInLocation("Eox") && WasInLocation("Mutoh")) && EoxStarted(),
-    cancel = !IsInLocation("Eox"),
+    cancel = !IsInLocation("Eox") || systemTimer() == 0,
     submit = IsEoxDying(),
-    value = LMeasured(TimeAdvancedAgainstEox())
+    value = LMeasured(TimeAdvancedAgainstEoxOnDS()),
+    format = "FRAMES"
 )
 
 leaderboard(title = "Goron Game", description = "Finish the Goron Game in the fastest time you can.",

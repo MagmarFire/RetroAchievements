@@ -884,7 +884,8 @@ treasureChartBitflags = {
     41: { "addr": 0x003cc60b, "bit": 7 }
 }
 GenerateCheevoFromBits(name = "Legendary Atlas", description = "Collect all Treasure Charts.", points = 10, id = 445530, badge = "505461",
-    addresses = treasureChartBitflags
+    addresses = treasureChartBitflags,
+    oneAtATime = true
 )
 
 function boomerangSlot() => byte(0x003cc571)
@@ -1248,9 +1249,10 @@ GenerateCheevoFromBits(name = "Effigies of My Foes", description = "Obtain all N
 )
 
 function swordTrainingHitsRemaining() => byte(0x003fe37d)
-function FirstIntentionCheckpointReached() => once(swordTrainingHitsRemaining() == 3 && Delta(swordTrainingHitsRemaining()) == 0 && IsInAreaByInternalName("Ojhous"))
+function IsInSwordTrainingWithOrca() => byte(0x003fe8e4) == 1
+function FirstIntentionCheckpointReached() => once(swordTrainingHitsRemaining() == 3 && IsInSwordTrainingWithOrca() && IsInAreaByInternalName("Ojhous"))
 achievement(title = "First Intention", description = "Score 1,000 hits on Orca during sword training.", points = 5, id = 444192, badge = "500847",
-    trigger = FirstIntentionCheckpointReached() && trigger_when(minigameScore() == 1000)
+    trigger = FirstIntentionCheckpointReached() && trigger_when(minigameScore() >= 1000)
         && never(swordTrainingHitsRemaining() == 0 && Delta(swordTrainingHitsRemaining()) == 1)
         && never(!IsInAreaByInternalName("Ojhous"))
 )
