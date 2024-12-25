@@ -529,8 +529,8 @@ function IsCyclokDying() => cyclokState() == 0x8
 function CyclokStarted() => once(Delta(cyclokState()) == 1 && cyclokState() == 2)
 cyclokFrameLimit = 2700
 function TimeAdvancedAgainstCyclok() => CyclokStarted() && Delta(systemTimer()) != systemTimer()
-achievement(title = "A Short Fuse [m]", points = 10,
-    description = "Defeat Cyclok within " + (cyclokFrameLimit / 60) + " seconds.",
+achievement(title = "A Short Fuse", points = 10, type = "missable", id = 143353, badge = "160099",
+    description = "Defeat Cyclok within " + (cyclokFrameLimit / 60) + " seconds (DSi mode not supported).",
     trigger = once(IsInLocation("Cyclok") && WasInLocation("TempleOfWind")) && never(!IsInLocation("Cyclok"))
         && IsCyclokDying() && never(repeated(cyclokFrameLimit, TimeAdvancedAgainstCyclok()))
 )
@@ -669,8 +669,8 @@ function eoxState() => obyte(0x255bdc)
 function IsEoxDying() => eoxState() == 0xd
 function EoxStarted() => once(Delta(eoxState()) == 0 && eoxState() != 0)
 function TimeAdvancedAgainstEox() => EoxStarted() && Delta(systemTimer()) != systemTimer()
-achievement(title = "Hammer Time! [m]", points = 5,
-    description = "Defeat Eox within " + SecondsToFormat(eoxTimeLimit) + ".",
+achievement(title = "Hammer Time!", points = 5, type = "missable", id = 143376, badge = "160122",
+    description = "Defeat Eox within " + SecondsToFormat(eoxTimeLimit) + " (DSi mode not supported).",
     trigger = once(IsInLocation("Eox") && WasInLocation("Mutoh")) && never(!IsInLocation("Eox"))
         && IsEoxDying() && never(repeated(eoxTimeLimit * 60, TimeAdvancedAgainstEox()))
 )
@@ -1018,18 +1018,20 @@ achievement(title = "A Wish for Freedom", points = 25,
     trigger = IsInLocation("Credits") && WasInLocation("BellumFinal")
 )
 
-leaderboard(title = "Time Attack - Cyclok", description = "Defeat Cyclok as quickly as you can.",
+leaderboard(title = "Time Attack - Cyclok", description = "Defeat Cyclok as quickly as you can (DSi mode not supported).",
     start = once(IsInLocation("Cyclok") && WasInLocation("TempleOfWind")) && CyclokStarted(),
     cancel = !IsInLocation("Cyclok"),
     submit = IsCyclokDying(),
-    value = LMeasured(TimeAdvancedAgainstCyclok())
+    value = LMeasured(TimeAdvancedAgainstCyclok()),
+    format = "FRAMES"
 )
 
-leaderboard(title = "Time Attack - Eox", description = "Defeat Eox as quickly as you can.",
+leaderboard(title = "Time Attack - Eox", description = "Defeat Eox as quickly as you can (DSi mode not supported).",
     start = once(IsInLocation("Eox") && WasInLocation("Mutoh")) && EoxStarted(),
     cancel = !IsInLocation("Eox"),
     submit = IsEoxDying(),
-    value = LMeasured(TimeAdvancedAgainstEox())
+    value = LMeasured(TimeAdvancedAgainstEox()),
+    format = "FRAMES"
 )
 
 leaderboard(title = "Goron Game", description = "Finish the Goron Game in the fastest time you can.",
