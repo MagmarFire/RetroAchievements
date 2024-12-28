@@ -2819,16 +2819,18 @@ xachievement(title = "Unparalleled Focus", points = 50, id = 187176, badge = "20
         && NeverJustUsedAnyGivenCommandInArena(commandsThatExplicitlyAffectFocus)
 )
 
+function DefeatedBossAsAnyCharacter() => TriggerConditionsMetForCharacters({
+    Terra(): BossDefeatTriggered(),
+    Ventus(): BossDefeatTriggered(),
+    Aqua(): BossDefeatTriggered()
+}, true)
+
 healingGuardCommands = GetCommandsByCallback(command => command["name"] == "Renewal Block" || command["name"] == "Renewal Barrier")
 xachievement(title = "Conservation of Life", points = 50, shouldRender = IsCore(), id = 187177, badge = "208064",
     description = "Defeat the Vanitas Remnant without using Renewal Block or Renewal Barrier (Proud Mode or higher).",
     trigger = CheckpointPassedForCharacters(InformationBarPoppedUpOnce()
             && IsInLocation("GraveyardBadlands2") && IsAtLeastOnDifficulty("Proud"), [ Terra(), Ventus(), Aqua() ], true)
-            && TriggerConditionsMetForCharacters({
-                Terra(): BossDefeatTriggered(),
-                Ventus(): BossDefeatTriggered(),
-                Aqua(): BossDefeatTriggered()
-            }, true)
+            && DefeatedBossAsAnyCharacter()
         && never(!IsInLocation("GraveyardBadlands2"))
         && never(IsUsingAnyGivenCommand(healingGuardCommands))
 )
@@ -2837,14 +2839,32 @@ xachievement(title = "Portent of Pain", points = 50, shouldRender = IsCore(), id
     description = "Defeat the Unknown on Proud Mode or higher.",
     trigger = CheckpointPassedForCharacters(IsWaitingForBattleToBegin()
             && IsInLocation("DepartureSummitRuins2") && IsAtLeastOnDifficulty("Proud"), [ Terra(), Ventus(), Aqua() ], true)
-            && TriggerConditionsMetForCharacters({
-                Terra(): BossDefeatTriggered(),
-                Ventus(): BossDefeatTriggered(),
-                Aqua(): BossDefeatTriggered()
-            }, true)
+            && DefeatedBossAsAnyCharacter()
         && never(!IsInLocation("DepartureSummitRuins2"))
 )
 
 /* END OF CORE
    BEGINNING OF SUBSET */
 
+eventRegister = {
+    "Wheel Master": { "article": true, "location": "EnchantedAudience2", "characters": TerraOnly(), "points": 3, "id": 0, "badge": "" },
+}
+
+for name in eventRegister
+{
+    event = eventRegister[name]
+    displayName = name
+    
+    if (event["article"])
+    {
+        displayName = "the " + displayName
+    }
+    
+    xachievement(title = name, points = event["points"], shouldRender = IsSubset(), type = "missable", id = event["id"], badge = event["badge"],
+        description = "Defeat " + displayName + " at Level 1 on Critical Mode.",
+        trigger = CheckpointPassedForCharacters(IsWaitingForBattleToBegin()
+                && IsInLocation(event["location"]) && IsAtLeastOnDifficulty("Critical") && level() <= 1, event["characters"], true)
+                && DefeatedBossAsAnyCharacter()
+            && never(!IsInLocation(event["location"]))
+    )
+}
