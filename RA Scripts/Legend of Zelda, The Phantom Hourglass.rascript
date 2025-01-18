@@ -474,7 +474,7 @@ achievement(title = "A Vision of Darkness", points = 1, id = 143346, badge = "16
 )
 
 function boomerang() => obit2(0x1ba604)
-achievement(title = "Back at Ya!", points = 1, id = 143347, badge = "160093",
+achievement(title = "Back at Ya!", points = 3, id = 143347, badge = "160093", type = "progression",
     description = "Acquire the boomerang.",
     trigger = WasBitflagSetInGame(boomerang())
 )
@@ -487,13 +487,13 @@ achievement(title = "Scorching Earth [m]", points = 5,
 )
 
 function leafFreed() => obit3(0x1b5554)
-achievement(title = "Hidden in Flame", points = 3, id = 143345, badge = "160091",
+achievement(title = "Hidden in Flame", points = 5, id = 143345, badge = "160091", type = "progression",
     description = "Free the Spirit of Power.",
     trigger = WasBitflagSetInGame(leafFreed())
 )
 
 function phantomHourglass() => obit0(0x1ba608)
-achievement(title = "Tempus Fugit", points = 3, id = 143348, badge = "160094",
+achievement(title = "Tempus Fugit", points = 5, id = 143348, badge = "160094", type = "progression",
     description = "Acquire the Phantom Hourglass.",
     trigger = WasBitflagSetInGame(phantomHourglass())
 )
@@ -536,7 +536,7 @@ achievement(title = "A Short Fuse", points = 10, type = "missable", id = 143353,
 )
 
 function neriFreed() => obit4(0x1b5554)
-achievement(title = "Hidden in Wind", points = 3, id = 143354, badge = "160100",
+achievement(title = "Hidden in Wind", points = 5, id = 143354, badge = "160100", type = "progression",
     description = "Free the Spirit of Wisdom.",
     trigger = WasBitflagSetInGame(neriFreed())
 )
@@ -567,7 +567,7 @@ achievement(title = "Minimalist [m]", points = 10,
 )
 
 function cielaHalfFreed() => obit5(0x1b5554)
-achievement(title = "Hidden in Oblivion", points = 3, id = 143360, badge = "160106",
+achievement(title = "Hidden in Oblivion", points = 5, id = 143360, badge = "160106", type = "progression",
     description = "Free the Spirit of Courage.",
     trigger = WasBitflagSetInGame(cielaHalfFreed())
 )
@@ -585,14 +585,14 @@ function swordStatus() => obyte(swordDataPointer() + 0x64)
 function IsUsingSword() => swordStatus() == 0x3 && swordItemAnimationId() != 0xff
 function JustUsedSword() => Delta(swordStatus()) != 0x3 && IsUsingSword()
 function ghostKey() => obit5(0x1b5542)
-achievement(title = "Quadruple Break Up [m]", points = 50, id = 143361, badge = "160107",
+achievement(title = "Quadruple Break Up", points = 25, id = 143361, badge = "160107", type = "missable",
     description = "Win at Dead Man's Volley and earn the Ghost Key using thirty-six sword swings or fewer.",
     trigger = once(IsInLocation("Cubus") && WasInLocation("GhostShip")) && never(repeated(36, JustUsedSword()))
         && never(!IsInLocation("Cubus")) && WasBitflagSetInGame(ghostKey())
 )
 
 function endOfGhostShip() => obit1(0x1b555b)
-achievement(title = "Petraphobia", points = 3, id = 143362, badge = "160108",
+achievement(title = "Petraphobia", points = 5, id = 143362, badge = "160108", type = "progression",
     description = "Find Tetra.",
     trigger = WasBitflagSetInGame(endOfGhostShip())
 )
@@ -635,7 +635,7 @@ achievement(title = "Why Don't Ya Just Shoot Him? [m]", points = 10,
 )
 
 function crimsonine() => obit6(0x1b554b)
-achievement(title = "Sanguine Ore", points = 3, id = 143367, badge = "160113",
+achievement(title = "Sanguine Ore", points = 5, id = 143367, badge = "160113", type = "progression",
     description = "Obtain Crimsonine.",
     trigger = WasBitflagSetInGame(crimsonine())
 )
@@ -653,7 +653,7 @@ achievement(title = "One Head Is Better than Two [m]", points = 5,
 )
 
 function azurine() => obit5(0x1b554b)
-achievement(title = "Lacrimal Ore", points = 3, id = 143370, badge = "160116",
+achievement(title = "Lacrimal Ore", points = 5, id = 143370, badge = "160116", type = "progression",
     description = "Obtain Azurine.",
     trigger = WasBitflagSetInGame(azurine())
 )
@@ -676,13 +676,13 @@ achievement(title = "Hammer Time!", points = 5, type = "missable", id = 143376, 
 )
 
 function aquanine() => obit7(0x1b554b)
-achievement(title = "Sudorific Ore", points = 3, id = 143377, badge = "160123",
+achievement(title = "Sudorific Ore", points = 5, id = 143377, badge = "160123", type = "progression",
     description = "Obtain Aquanine.",
     trigger = WasBitflagSetInGame(aquanine()) 
 )
 
 function phantomSword() => obit5(0x1ba608)
-achievement(title = "The Phantombuster", points = 3, id = 143391, badge = "160137",
+achievement(title = "The Phantombuster", points = 5, id = 143391, badge = "160137", type = "progression",
     description = "Forge the Phantom Sword.",
     trigger = WasBitflagSetInGame(phantomSword())
 )
