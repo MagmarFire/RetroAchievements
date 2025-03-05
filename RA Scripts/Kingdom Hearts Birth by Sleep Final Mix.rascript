@@ -1700,12 +1700,12 @@ function thunderScreenActiveAddr() => 0x1f2aca0
 function darkScreenActiveAddr() => 0x1f2aca4
 nonBlizzardAndNonCureBattleCommandsAndShotlocks = GetCommandsByCallback(command => command["element"] != "Blizzard" && command["healsHp"] == 0 && command["equippableBattleCommand"] == 1
     || command["supercategory"] == "Shotlock" && command["element"] != "Blizzard")
-achievement(title = "Severe Frostbite [m]", points = 10, id = 187097, badge = "207984",
+achievement(title = "Severe Frostbite", points = 10, id = 187097, badge = "207984", type = "missable",
     description = "Defeat Vanitas in the Keyblade Graveyard with no Screen abilities enabled and " +
         "without using battle commands or Shotlocks that aren't Blizzard-based or HP curative (Proud Mode or higher, Level 24 or below).",
     trigger = CheckpointPassedForCharacters(InformationBarPoppedUpOnce() && IsInLocation("Graveyard4"), [ VentusArmoredHelmetless() ], true)
         && TriggerConditionsMetForCharacters({
-            VentusArmoredHelmetless(): MaxHPIncreased()
+            VentusArmoredHelmetless(): BossDefeatTriggered()
         }, true)
         && IsAtLeastOnDifficulty("Proud") && level() <= 24
         && never(!IsInLocation("Graveyard4"))
@@ -2012,9 +2012,9 @@ function AquaFinalSegmentSharedConditions() => never(JustUsedAnyGivenCommand(aqu
     && equippedKeyblade() == 0x17
 function DefeatBraigInformationDisplayed() => ascii_string_equals(informationBarTextPointer(), "Defeat Braig!")
 
-achievement(title = "Magical Rage [m]", points = 10, id = 187123, badge = "208010",
+achievement(title = "Magical Rage", points = 10, id = 187123, badge = "208010", type = "missable",
     description = "Defeat Braig in the Keyblade Graveyard without using Barrier defensive commands and with Pixie Petal and only one Cure-family command"
-        + " equipped (Proud Mode or higher, Level 28 or below).",
+        + " equipped (Proud Mode or higher; Level 28 or below; uncleared game only).",
     trigger = CheckpointPassedForCharacters(InformationBarPoppedUpOnce()
             && DefeatBraigInformationDisplayed()
             && IsInLocation("Graveyard4") && IsAtLeastOnDifficulty("Proud") && level() <= 28, [ AquaArmoredHelmetless() ], true)
