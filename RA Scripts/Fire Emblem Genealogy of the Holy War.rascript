@@ -944,12 +944,12 @@ achievement(title = "The Key to Mastery", points = 5, id = 130731, badge = "1439
 
 achievement(title = "The Culmination of Years of Training!", points = 5, badge = "143910", id = 130713,
     description = "Change a unit's class.",
-    trigger = gen1UnitChangedClass || gen2UnitChangedClass
+    trigger = never(IsBooting()) && (gen1UnitChangedClass || gen2UnitChangedClass)
 )
 
-achievement(title = "That Special Someone", points = 5,
+achievement(title = "That Special Someone", points = 5, badge = "143922", id = 130725,
     description = "Have two units fall in love with each other, excluding predetermined romances.",
-    trigger = gen1OptionalUnitFellInLove || gen2UnitFellInLove
+    trigger = never(IsBooting()) && (gen1OptionalUnitFellInLove || gen2UnitFellInLove)
 )
 
 achievement(title = "Gladiator", description = "Max out a unit's arena level.", id = 130704, badge = "143901",
