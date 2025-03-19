@@ -711,7 +711,7 @@ function TetraPlatformTimerFrozen() => byte(tetraPlatformPointer() + 0x1c0 + 0x8
 function TetraPlatformTimeElapsed() => (tetraPlatformMaxTime - tetraPlatformTimeRemaining()) * 2
 function WithinPlatformTimeLimit() => TetraPlatformTimeElapsed() <= SecondsToFrames(niko1TimeLimit)
 function TetraPlatformsAreUp() => bit0(tetraPlatformPointer() + 0x1bb + 0x80000000) == 1
-function NinjaWarriorChallengeActive() => TetraPlatformsAreUp() && enteredCorrectPassword() == 0
+function NinjaWarriorChallengeActive() => TetraPlatformsAreUp() && enteredCorrectPassword() == 0 && tetraPlatformPointer() != 0
 function CompletedFirstObstacleCourse() => bit4(0x003ccb5b) == 1
 achievement(title = "Ninja Warrior I", points = 10, description = "Complete Niko's obstacle course within " + SecondsToFormat(niko1TimeLimit) + ".", id = 402395, type = "missable",
     badge = "500804",
