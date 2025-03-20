@@ -1,11 +1,14 @@
 // Kingdom Hearts Birth by Sleep
-// #ID = 3556
+// #core-ID = 3556
+// #ID = 32426
 
 // todo: There is an issue with the save protection that could cause pauselocks to not reset when loading different save files from a game over screen.
 //       Fixing this will likely require an address that actually tells us what episode is currently being played instead of knowing what character is currently under the player's control.
 //       This will, then, have to wait until after achievements for each episode are completed.
 
-// todo: put level restrictions in the checkpoint instead of putting them in a never()
+function SetType() => 2
+function IsCore() => SetType() == 1
+function IsSubset() => SetType() == 2
 
 function Delta(mem) => prev(mem)
 
@@ -185,7 +188,7 @@ function GetCountableAccessorArrayFromAddressBits(dict)
 // onlyAvailableWhen: a condition that must be true in all conditions for the achievement to trigger.
 // id: self-explanatory
 // badge: self-explanatory
-function GenerateCheevoFromBits(name, description, points, addresses, onlyAvailableWhen = always_true(), id = 0, badge = "00000", threshold = 0)
+function GenerateCheevoFromBits(name, description, points, addresses, shouldRender, onlyAvailableWhen = always_true(), id = 0, badge = "00000", threshold = 0)
 {
     bitcounts = GenerateBitcountFromCountableObjects(GetCountableAccessorArrayFromAddressBits(addresses))
     
@@ -203,10 +206,18 @@ function GenerateCheevoFromBits(name, description, points, addresses, onlyAvaila
     // This way, loading a save doesn't invalidate the achievement outright if a player hasn't actually earned it yet.
     trigger = bitcounts >= threshold
 
-    achievement(title = name, description = description, points = points, badge = badge, id = id,
+    xachievement(title = name, description = description, points = points, badge = badge, id = id, shouldRender = shouldRender,
         trigger = IsInGame() && measured(trigger) && unless(shouldTriggerPauselock) && onlyAvailableWhen
             && (always_false() || IsAlwaysInGame()) // Reset any potential pauselock when changing save files.
     )
+}
+
+function xachievement(title, description, points, id, shouldRender, badge = "", trigger = always_false(), type = "")
+{
+    if (shouldRender)
+    {
+        achievement(title = title, description = description, points = points, badge = badge, id = id, trigger = trigger, type = type)
+    }
 }
 
 function GenerateBitcountFromCountableObjects(addresses)
@@ -686,8 +697,8 @@ rich_presence_conditional_display(IsOnTitleScreen(), "On the title screen...")
 
 rich_presence_display("Somewhere in the World...")
 
-achievement(title = "The Final Stargaze", points = 1, id = 187047, badge = "207934",
-    description = "Complete the prologue.",
+xachievement(title = "The Final Stargaze", points = 1, id = 187047, badge = "207934", type = "progression",
+    description = "Complete the prologue.", shouldRender = IsCore(),
     trigger = WasInLocation("DepartureSummitNight") && IsInLocation("MysteriousChamber")
 )
 
@@ -895,7 +906,7 @@ function TriggerConditionsMetForMarkOfMastery() =>
     }, true)
 
 shotlocks = GetCommandsByProperties({ "supercategory": "Shotlock" })
-achievement(title = "Hit Ball to Pass Test [m]", points = 3, id = 187048, badge = "207935",
+xachievement(title = "Hit Ball to Pass Test", points = 3, id = 187048, badge = "207935", shouldRender = IsCore(), type = "missable",
     description = "Complete the first phase of the Mark of Mastery exam using only one attack or fewer and no Shotlocks.",
     trigger = MarkOfMasteryCheckpointReached() && never(tally(2, [ EnteredAttackState(), EnteredMagicState() ]))
         && TriggerConditionsMetForMarkOfMastery()
@@ -905,7 +916,7 @@ achievement(title = "Hit Ball to Pass Test [m]", points = 3, id = 187048, badge 
 function diamondDustState() => byte(0x1f2acd0)
 function LearnedDiamondDust() => diamondDustState() == 5 && Delta(diamondDustState()) == 0
 
-achievement(title = "Snap the Spindle [m]", points = 25, id = 187049, badge = "207936",
+xachievement(title = "Snap the Spindle", points = 25, id = 187049, badge = "207936", shouldRender = IsCore(), type = "missable",
     description = "Finish off the Wheel Master in Enchanted Dominion with a Finish command (Proud Mode or higher, Level 4 or below).",
     trigger = CheckpointPassedForCharacters(InformationBarPoppedUpOnce()
         && IsInLocation("EnchantedAudience2"), TerraOnly(), true
@@ -919,14 +930,14 @@ achievement(title = "Snap the Spindle [m]", points = 25, id = 187049, badge = "2
 function MustBeTerra() => never(currentCharacter() != Terra())
 
 function enchantedDominionTerraStoryEntry() => bit0(0x1f28485)
-achievement(title = "The First of Seven", points = 3,
+xachievement(title = "The First of Seven", points = 3, id = 187050, badge = "207937", shouldRender = IsCore(), type = "progression",
     description = "Complete Enchanted Dominion as Terra.",
     trigger = WasBitflagSetInGame(enchantedDominionTerraStoryEntry()) && IsInLocation("WorldMap")
         && MustBeTerra()
 )
 
 function counterHammerId() => 0x114
-achievement(title = "Chipped Shield [m]", points = 10, id = 187051, badge = "207938",
+xachievement(title = "Chipped Shield", points = 10, id = 187051, badge = "207938", shouldRender = IsCore(), type = "missable",
     description = "Escort Cinderella to the ball without guarding (Proud Mode or higher, Level 5 or below).",
     trigger = IsAlwaysInGame()
         && CheckpointPassedForCharacters(once(InformationBarJustPoppedUp() && IsInLocation("CastleCorridor")) && IsAtLeastOnDifficulty("Proud") && level() <= 5, TerraOnly(), false)
@@ -940,7 +951,7 @@ achievement(title = "Chipped Shield [m]", points = 10, id = 187051, badge = "207
 // NOTE: It's theoretically possible to defeat more than one enemy at a time in this battle. As such, I'll consider it a valid unlock if the player defeats more than one instrument ONLY IF
 // the boss itself is defeated in the same frame. We need to do this because the number of active enemies is set to zero as soon as the boss is defeated.
 function symphonyMastersDefeated() => word(0x1f35fc4)
-achievement(title = "Syncopation [m]", points = 10, id = 187052, badge = "207939",
+xachievement(title = "Syncopation", points = 10, id = 187052, badge = "207939", shouldRender = IsCore(), type = "missable",
     description = "Defeat the Symphony Master without destroying more than one instrument (Proud Mode or higher, Level 5 or below).",
     trigger = CheckpointPassedForCharacters(InformationBarPoppedUpOnce()
         && IsInLocation("CastleBallroom"), TerraOnly(), true
@@ -952,7 +963,7 @@ achievement(title = "Syncopation [m]", points = 10, id = 187052, badge = "207939
 )
 
 function castleOfDreamsTerraStoryEntry() => bit7(0x1f28464)
-achievement(title = "Boundless Faith", points = 3,
+xachievement(title = "Boundless Faith", points = 3, id = 187053, badge = "207940", shouldRender = IsCore(),
     description = "Complete Castle of Dreams as Terra.",
     trigger = WasBitflagSetInGame(castleOfDreamsTerraStoryEntry()) && IsInLocation("WorldMap")
         && MustBeTerra()
@@ -960,7 +971,7 @@ achievement(title = "Boundless Faith", points = 3,
 
 function fissionFiragaTerraChest() => bit3(0x1f2927f)
 function dwarfWoodlandsTerraStoryEntry() => bit7(0x1f28444)
-achievement(title = "Swiping the Cookie Jar [m]", points = 5,
+xachievement(title = "Swiping the Cookie Jar", points = 5, id = 187054, badge = "207941", shouldRender = IsCore(), type = "missable",
     description = "Open the Fission Firaga chest in Dwarf Woodlands as Terra before defeating the boss.",
     trigger = WasBitflagSetInGame(fissionFiragaTerraChest()) && dwarfWoodlandsTerraStoryEntry() == 0
         && MustBeTerra()
@@ -1075,7 +1086,7 @@ function HasAnyOfTheGivenCommandsEquipped(commands)
 
 function Debug(text)
 {
-    achievement(title = text + "", description = "", points = 0, trigger = always_false())
+    xachievement(title = text + "", description = "", points = 0, trigger = always_false())
 }
 
 function CreateCommandDenylistFromAllowlist(allowlist)
@@ -1116,7 +1127,7 @@ function firestormState() => byte(0x1f2accf)
 function FirestormLearned() => firestormState() == 5 && Delta(firestormState()) == 0
 statusCommands = GetCommandsByProperties({ "type": "Status Effect" })
 cureCommands = GetCommandsByProperties({ "type": "Cure" })
-achievement(title = "Sleeping Death [m]", points = 10, id = 187055, badge = "207942",
+xachievement(title = "Sleeping Death", points = 10, id = 187055, badge = "207942", shouldRender = IsCore(), type = "missable",
     description = "Defeat the Spirit of the Magic Mirror equipping battle commands that only inflict status effects (Proud Mode or higher, Level 7 or below, no D-Links).",
     trigger = HasOnlyTheGivenCommandsEquipped(statusCommands)
         && CheckpointPassedForCharacters(InformationBarPoppedUpOnce()
@@ -1130,7 +1141,7 @@ achievement(title = "Sleeping Death [m]", points = 10, id = 187055, badge = "207
         && never(IsUsingDLink())
 )
 
-achievement(title = "A Grave Riddle", points = 3,
+xachievement(title = "A Grave Riddle", points = 3, id = 187056, badge = "207943", shouldRender = IsCore(), type = "progression",
     description = "Complete Dwarf Woodlands as Terra.",
     trigger = WasBitflagSetInGame(dwarfWoodlandsTerraStoryEntry()) && IsInLocation("WorldMap")
         && MustBeTerra()
@@ -1145,7 +1156,7 @@ function trinityArmorsDefeated() => word(0x1f35fd6)
 function TrinityArmorWasJustDefeated() => Delta(trinityArmorsDefeated()) < trinityArmorsDefeated()
 function secondChanceActiveAddr() => 0x1f2acbc
 function onceMoreActiveAddr() => 0x1f2acc0
-achievement(title = "Face, Meet Cannon [m]", points = 10, id = 187057, badge = "207944",
+xachievement(title = "Face, Meet Cannon", points = 10, id = 187057, badge = "207944", shouldRender = IsCore(), type = "missable",
     description = "Defeat the Trinity Armor in Radiant Garden without Second Chance or Once More equipped (Critical Mode, Level 8 or below).",
     trigger = IsAlwaysInGame()
         && CheckpointPassedForCharacters(once(InformationBarJustPoppedUp() && IsInLocation("RadiantReactor")) && IsAtLeastOnDifficulty("Critical") && level() <= 8,
@@ -1159,7 +1170,7 @@ achievement(title = "Face, Meet Cannon [m]", points = 10, id = 187057, badge = "
         && never(IsAbilityTurnedOn(onceMoreActiveAddr()))
 )
 
-achievement(title = "He Who Liveth by the Sword... [m]", points = 10, id = 187058, badge = "207945",
+xachievement(title = "He Who Liveth by the Sword...", points = 10, id = 187058, badge = "207945", shouldRender = IsCore(), type = "missable",
     description = "Defeat Braig in Radiant Garden without using any standard attacks (Proud Mode or higher, Level 8 or below).",
     trigger = CheckpointPassedForCharacters(InformationBarPoppedUpOnce()
         && IsInLocation("RadiantPurification"), TerraOnly(), true
@@ -1172,13 +1183,13 @@ achievement(title = "He Who Liveth by the Sword... [m]", points = 10, id = 18705
 )
 
 function radiantGardenTerraStoryEntry() => bit5(0x1f284c5)
-achievement(title = "The Shame of Sin", points = 3,
+xachievement(title = "The Shame of Sin", points = 3, id = 187059, badge = "207946", shouldRender = IsCore(), type = "progression",
     description = "Complete Radiant Garden as Terra.",
     trigger = WasBitflagSetInGame(radiantGardenTerraStoryEntry()) && IsInLocation("WorldMap")
 )
 
 function breakTimeChest() => bit3(0x1f29294)
-achievement(title = "Full Tilt", points = 5,
+xachievement(title = "Full Tilt", points = 5, id = 187060, badge = "207947", shouldRender = IsCore(),
     description = "Obtain the Break Time command from a chest in Disney Town.",
     trigger = WasBitflagSetInGame(breakTimeChest())
 )
@@ -1187,7 +1198,7 @@ function maxHp() => word(0x1f19afc)
 function MaxHPIncreased() => Delta(maxHp()) < maxHp()
 nonHealingMagicCommands = GetCommandsByProperties({ "supercategory": "Magic", "healsHp": 0 })
 function BeganFinalsAsTerra() => bit4(0x1f28505) == 1
-achievement(title = "Self-Reliance [m]", points = 25, id = 187061, badge = "207948",
+xachievement(title = "Self-Reliance", points = 25, id = 187061, badge = "207948", shouldRender = IsCore(), type = "missable",
     description = "Reach the finals of the Olympus Coliseum Games as Terra without using D-Links or non-healing magic commands (Proud Mode or higher, Level 11 or below).",
     trigger = CheckpointPassedForCharacters(InformationBarPoppedUpOnce()
             && IsInLocation("OlympusEast") && level() <= 11, TerraOnly(), true)
@@ -1204,7 +1215,7 @@ achievement(title = "Self-Reliance [m]", points = 25, id = 187061, badge = "2079
 
 forbiddenCommandsAgainstZack = GetCommandsByCallback(command => command["element"] != "N/A" && command["element"] != "Null" && command["element"] != "Physical" && command["id"] != 0xffff)
 function DefeatedZackForTheFirstTime() => bit2(0x1f28505) == 1
-achievement(title = "Out of Your Element [m]", points = 10, id = 187062, badge = "207949",
+xachievement(title = "Out of Your Element", points = 10, id = 187062, badge = "207949", shouldRender = IsCore(), type = "missable",
     description = "Win your second fight against Zack using only physical- or null-elemental commands (Proud Mode or higher, Level 11 or below).",
     trigger = CheckpointPassedForCharacters(InformationBarPoppedUpOnce()
             && IsInLocation("OlympusEast"), TerraOnly(), true)
@@ -1220,7 +1231,7 @@ achievement(title = "Out of Your Element [m]", points = 10, id = 187062, badge =
 )
 
 function olympusColiseumTerraStoryEntry() => bit3(0x1f28505)
-achievement(title = "First-Class Soldier", points = 3,
+xachievement(title = "First-Class Soldier", points = 3, id = 187063, badge = "207950", type = "progression", shouldRender = IsCore(),
     description = "Complete Olympus Coliseum as Terra.",
     trigger = WasBitflagSetInGame(olympusColiseumTerraStoryEntry()) && IsInLocation("WorldMap")
         && MustBeTerra()
@@ -1229,7 +1240,7 @@ achievement(title = "First-Class Soldier", points = 3,
 fireCommands = GetCommandsByProperties({ "element": "Fire" })
 function thunderboltState() => byte(0x1f2acd1)
 function ThunderboltLearned() => Delta(thunderboltState()) == 0 && thunderboltState() == 5
-achievement(title = "Hypoxic Cabin [m]", points = 5, id = 187064, badge = "207951",
+xachievement(title = "Hypoxic Cabin", points = 5, id = 187064, badge = "207951", shouldRender = IsCore(), type = "missable",
     description = "Defeat Experiment 221 without using any fire-elemental commands (Proud Mode or higher, Level 15 or below).",
     trigger = CheckpointPassedForCharacters(InformationBarPoppedUpOnce()
             && IsInLocation("SpacePod"), TerraOnly(), true)
@@ -1242,7 +1253,7 @@ achievement(title = "Hypoxic Cabin [m]", points = 5, id = 187064, badge = "20795
 )
 
 function deepSpaceTerraStoryEntry() => bit7(0x1f28524)
-achievement(title = "For but a Moment", points = 3,
+xachievement(title = "For but a Moment", points = 3, id = 187065, badge = "207952", type = "progression", shouldRender = IsCore(),
     description = "Complete Deep Space as Terra.",
     trigger = WasBitflagSetInGame(deepSpaceTerraStoryEntry()) && IsInLocation("WorldMap")
 )
@@ -1302,7 +1313,7 @@ battleCommands = GetCommandsByCallback(command => command["supercategory"] == "A
 function bladechargeState() => byte(0x1f2acd3)
 function BladechargeLearned() => Delta(bladechargeState()) == 0 && bladechargeState() == 5
 function DefeatedPeterPan() => bit5(0x1f28564) == 1
-achievement(title = "Minesweeper [m]", points = 5, id = 187066, badge = "207953",
+xachievement(title = "Minesweeper", points = 5, id = 187066, badge = "207953", type = "missable", shouldRender = IsCore(),
     description = "Defeat Peter Pan using only one type of battle command and without taking damage (Proud Mode or higher, Level 17 or below).",
     trigger = CheckpointPassedForCharacters(InformationBarPoppedUpOnce()
         && IsInLocation("NeverlandSkullCavern"), TerraOnly(), true)
@@ -1317,12 +1328,12 @@ achievement(title = "Minesweeper [m]", points = 5, id = 187066, badge = "207953"
 )
 
 function neverlandTerraStoryEntry() => bit1(0x1f28565)
-achievement(title = "One Man's Treasure", points = 3,
+xachievement(title = "One Man's Treasure", points = 3, id = 187067, badge = "207954", shouldRender = IsCore(),
     description = "Complete Neverland as Terra.",
     trigger = WasBitflagSetInGame(neverlandTerraStoryEntry()) && IsInLocation("LanesBetween")
 )
 
-achievement(title = "Claimed by the Abyss [m]", points = 50, id = 187068, badge = "207955",
+xachievement(title = "Claimed by the Abyss", points = 50, id = 187068, badge = "207955", type = "missable", shouldRender = IsCore(),
     description = "Defeat Eraqus without ever leaving the Dark Impulse Command Style (Proud Mode or higher, Level 18 or below).",
     trigger = CheckpointPassedForCharacters(InformationBarPoppedUpOnce()
         && IsInLocation("DepartureForecourtDay"), TerraOnly(), true)
@@ -1335,14 +1346,14 @@ achievement(title = "Claimed by the Abyss [m]", points = 50, id = 187068, badge 
 )
 
 function landOfDepartureIITerraStoryEntry() => bit0(0x1f28425)
-achievement(title = "Patricide", points = 3,
+xachievement(title = "Patricide", points = 3, id = 187069, badge = "207956", shouldRender = IsCore(), type = "progression",
     description = "Complete Terra's second visit to the Land of Departure.",
     trigger = WasBitflagSetInGame(landOfDepartureIITerraStoryEntry()) && IsInLocation("WorldMap")
         && MustBeTerra()
 )
 
 function DefeatedXehanortI() => bit0(0x1f285a5) == 1
-achievement(title = "Give Me Strength [m]", points = 10, id = 187070, badge = "207957",
+xachievement(title = "Give Me Strength", points = 10, id = 187070, badge = "207957", type = "missable", shouldRender = IsCore(),
     description = "Defeat Xehanort solo using only battle commands while a D-Link is active (Proud Mode or higher, Level 20 or below).",
     trigger = CheckpointPassedForCharacters(InformationBarPoppedUpOnce()
         && IsInLocation("Graveyard3"), TerraOnly(), true)
@@ -1357,7 +1368,7 @@ achievement(title = "Give Me Strength [m]", points = 10, id = 187070, badge = "2
 
 function DefeatedXehanortII() => bit1(0x1f285a5) == 1
 cureFamilyCommands = GetCommandsByCallback(command => command["name"] == "Cure" || command["name"] == "Cura" || command["name"] == "Curaga")
-achievement(title = "Terminal Corruption [m]", points = 25, id = 187071, badge = "207958",
+xachievement(title = "Terminal Corruption", points = 25, id = 187071, badge = "207958", type = "missable", shouldRender = IsCore(),
     description = "Defeat the final boss of Terra's story without using any commands in the Cure family (Proud Mode or higher, Level 22 or below).",
     trigger = CheckpointPassedForCharacters(InformationBarPoppedUpOnce()
         && IsInLocation("GraveyardCage"), [ TerraArmored() ], true)
@@ -1380,24 +1391,24 @@ function ViewedBattleReportLongEnough() => once(Delta(gameStateDeterminer()) != 
     && never(repeated(battleReportFrameLimit() + 1, gameStateDeterminer() == 0x81))
     
 function TerraStoryCompleted() => WasBitflagSetInGame(xehanortReport11()) && ViewedBattleReportLongEnough() && currentCharacter() == TerraArmored()
-achievement(title = "The Vessel", points = 10, id = 187072, badge = "207959",
+xachievement(title = "The Vessel", points = 10, id = 187072, badge = "207959", type = "progression", shouldRender = IsCore(),
     description = "Complete Terra's story.",
     trigger = TerraStoryCompleted()
 )
 
-achievement(title = "Proud Warrior", points = 10, id = 187073, badge = "207960",
+xachievement(title = "Proud Warrior", points = 10, id = 187073, badge = "207960", type = "missable", shouldRender = IsCore(),
     description = "Complete Terra's story on Proud Mode or higher.",
     trigger = TerraStoryCompleted() && IsAtLeastOnDifficulty("Proud")
 )
 
-achievement(title = "Critical Warrior", points = 25, id = 187074, badge = "207961",
+xachievement(title = "Critical Warrior", points = 25, id = 187074, badge = "207961", type = "missable", shouldRender = IsCore(),
     description = "Complete Terra's story on Critical Mode.",
     trigger = TerraStoryCompleted() && IsAtLeastOnDifficulty("Critical")
 )
 
 function EscortedSnowWhite() => bit3(0x1f28445) == 1
 whiteCalmCommands = GetCommandsByProperties({ "name": "White Calm" })
-achievement(title = "White Noise [m]", points = 10,
+xachievement(title = "White Noise", points = 10, type = "missable", shouldRender = IsCore(), id = 187075, badge = "207962",
     description = "Escort Snow White out of the Deep Woods using White Calm only two times or fewer (Proud Mode or higher, Level 1).",
     trigger = CheckpointPassedForCharacters(InformationBarPoppedUpOnce()
         && IsInLocation("DwarfWoods"), VentusOnly(), true)
@@ -1414,7 +1425,7 @@ achievement(title = "White Noise [m]", points = 10,
 )
 
 madTreantForbiddenCommands = GetCommandsByCallback(command => command["element"] == "Fire" || command["element"] == "Thunder")
-achievement(title = "Only You Can Prevent Wildfires [m]", points = 10, id = 187076, badge = "207963",
+xachievement(title = "Only You Can Prevent Wildfires", points = 10, id = 187076, badge = "207963", type = "missable", shouldRender = IsCore(),
     description = "Defeat the Mad Treant in the Dwarf Woodlands without using fire- or thunder-elemental commands (Proud Mode or higher, Level 3 or below).",
     trigger = CheckpointPassedForCharacters(InformationBarPoppedUpOnce()
         && IsInLocation("DwarfWoods"), VentusOnly(), true)
@@ -1430,7 +1441,7 @@ achievement(title = "Only You Can Prevent Wildfires [m]", points = 10, id = 1870
 function MustBeVentus() => never(currentCharacter() != Ventus())
 
 function dwarfWoodlandsVenStoryEntry() => bit6(0x1f28445)
-achievement(title = "The Fruits of His Labor", points = 3,
+xachievement(title = "The Fruits of His Labor", points = 3, id = 187077, badge = "207964", type = "progression", shouldRender = IsCore(),
     description = "Complete Dwarf Woodlands as Ventus.",
     trigger = WasBitflagSetInGame(dwarfWoodlandsVenStoryEntry()) && IsInLocation("WorldMap")
 )
@@ -1492,14 +1503,14 @@ function castleOfDreamsVenStoryEntry() => bit2(0x1f28465)
 function IsFacingLucifer() => cutsceneBeforeLuciferFight() == 1 && castleOfDreamsVenStoryEntry() == 0
 
 nonJumpCommands = GetCommandsByCallback(command => command["name"] != "Jump" && command["name"] != "High Jump")
-achievement(title = "Be-twine My Toes", points = 1,
+xachievement(title = "Be-twine My Toes", points = 1, id = 187078, badge = "207965", type = "missable", shouldRender = IsCore(),
     description = "Defeat 34 enemies in a row in the Wardrobe Room as Ventus without using any command besides jumping.",
     trigger = never(!IsInLocation("CastleWardrobe")) && repeated(34, JustDefeatedEnemy(10))
          && never(JustUsedAnyGivenCommand(nonJumpCommands))
          && never(IsFacingLucifer())
 )
 
-achievement(title = "Accept Your Helplessness [m]", points = 5, id = 187079, badge = "207966",
+xachievement(title = "Accept Your Helplessness", points = 5, id = 187079, badge = "207966", type = "missable", shouldRender = IsCore(),
     description = "Defeat Lucifer without healing (Proud Mode or higher, Level 4 or below).",
     trigger = CheckpointPassedForCharacters(InformationBarPoppedUpOnce()
         && IsInLocation("CastleWardrobe2"), VentusOnly(), true)
@@ -1512,7 +1523,7 @@ achievement(title = "Accept Your Helplessness [m]", points = 5, id = 187079, bad
         && never(Delta(hp()) < hp())
 )
 
-achievement(title = "Shoot for the Moon", points = 3,
+xachievement(title = "Shoot for the Moon", points = 3, id = 187080, badge = "207967", type = "progression", shouldRender = IsCore(),
     description = "Complete Castle of Dreams as Ventus.",
     trigger = WasBitflagSetInGame(castleOfDreamsVenStoryEntry()) && IsInLocation("WorldMap")
         && MustBeVentus()
@@ -1522,7 +1533,7 @@ function cutsceneBeforeMaleficentFight() => bit3(0x1f28485)
 function enchantedDominionVenStoryEntry() => bit6(0x1f28485)
 function IsFacingMaleficent() => cutsceneBeforeMaleficentFight() == 1 && enchantedDominionVenStoryEntry() == 0
 jointForceCommand = GetCommandsByProperties({ "name": "Joint Force" })
-achievement(title = "Disbelief in Fairies [m]", points = 5, id = 187081, badge = "207968",
+xachievement(title = "Disbelief in Fairies", points = 5, id = 187081, badge = "207968", type = "missable", shouldRender = IsCore(),
     description = "Defeat Maleficent without using the Joint Force command (Proud Mode or higher, Level 5 or below).",
     trigger = CheckpointPassedForCharacters(InformationBarPoppedUpOnce()
         && IsInLocation("EnchantedThrone"), VentusOnly(), true)
@@ -1535,7 +1546,7 @@ achievement(title = "Disbelief in Fairies [m]", points = 5, id = 187081, badge =
         && never(!IsFacingMaleficent()) // We need to check this because the information bar is triggered in this room in a previous scripted battle.
 )
 
-achievement(title = "Pursuit of the Wayward", points = 3,
+xachievement(title = "Pursuit of the Wayward", points = 3, id = 187082, badge = "207969", type = "progression", shouldRender = IsCore(),
     description = "Complete Enchanted Dominion as Ventus.",
     trigger = WasBitflagSetInGame(enchantedDominionVenStoryEntry()) && IsInLocation("WorldMap")
         && MustBeVentus()
@@ -1544,7 +1555,7 @@ achievement(title = "Pursuit of the Wayward", points = 3,
 function cutsceneBeforeVanitasIFightAsVen() => bit5(0x1f285a4)
 function badlandsVenStoryEntry() => bit7(0x1f285a4)
 function IsFacingVanitasIAsVen() => cutsceneBeforeVanitasIFightAsVen() == 1 && badlandsVenStoryEntry() == 0
-achievement(title = "Field Medic [m]", points = 25, id = 187083, badge = "207970",
+xachievement(title = "Field Medic", points = 25, id = 187083, badge = "207970", type = "missable", shouldRender = IsCore(),
     description = "Defeat Vanitas alongside King Mickey without the latter's HP dropping to zero (Proud Mode or higher, Level 7 or below).",
     trigger = CheckpointPassedForCharacters(InformationBarPoppedUpOnce()
         && IsInLocation("GraveyardBadlands"), VentusOnly(), true)
@@ -1558,7 +1569,7 @@ achievement(title = "Field Medic [m]", points = 25, id = 187083, badge = "207970
 )
 
 function radiantGardenVenStoryEntry() => bit2(0x1f284c5)
-achievement(title = "The Problem of Trust", points = 3,
+xachievement(title = "The Problem of Trust", points = 3, id = 187084, badge = "207971", type = "progression", shouldRender = IsCore(),
     description = "Complete Radiant Garden as Ventus.",
     trigger = WasBitflagSetInGame(radiantGardenVenStoryEntry()) && IsInLocation("WorldMap")
         && MustBeVentus()
@@ -1583,35 +1594,35 @@ function HighScoreEarned(mem, target, golf = false)
 
 function itsASmallWorldMasterBaseHighScore() => dword(0x1f357a4)
 function itsASmallWorldMasterScoreTarget() => 0x9b8
-achievement(title = "Maestro - \"It's a Small World\"", points = 10,
+xachievement(title = "Maestro - \"It's a Small World\"", points = 10, id = 187085, badge = "207972", shouldRender = IsCore(),
     description = "Set a new base high score that earns a ranking of Fantastic for the song \"It's a Small World\" in Ice Cream Beat on Master Mode.",
     trigger = HighScoreEarned(itsASmallWorldMasterBaseHighScore(), itsASmallWorldMasterScoreTarget())
 )
 
 function blastAwayMasterBaseHighScore() => dword(0x1f35804)
 function blastAwayMasterScoreTarget() => 0xcc6
-achievement(title = "Maestro - \"Blast Away! Gummi Ship II\"", points = 10,
+xachievement(title = "Maestro - \"Blast Away! Gummi Ship II\"", points = 10, id = 187086, badge = "207973", shouldRender = IsCore(),
     description = "Set a new base high score that earns a ranking of Fantastic for the song \"Blast Away! Gummi Ship II\" in Ice Cream Beat on Master Mode.",
     trigger = HighScoreEarned(blastAwayMasterBaseHighScore(), blastAwayMasterScoreTarget())
 )
 
 function dessertParadiseMasterBaseHighScore() => dword(0x1f357d4)
 function dessertParadiseMasterScoreTarget() => 0x94e
-achievement(title = "Maestro - \"Dessert Paradise\"", points = 10,
+xachievement(title = "Maestro - \"Dessert Paradise\"", points = 10, id = 187087, badge = "207974", shouldRender = IsCore(),
     description = "Set a new base high score that earns a ranking of Fantastic for the song \"Dessert Paradise\" in Ice Cream Beat on Master Mode.",
     trigger = HighScoreEarned(dessertParadiseMasterBaseHighScore(), dessertParadiseMasterScoreTarget())
 )
 
 function destinyIslandsMasterBaseHighScore() => dword(0x1f35834)
 function destinyIslandsMasterScoreTarget() => 0xb8e
-achievement(title = "Maestro - \"Destiny Islands\"", points = 10,
+xachievement(title = "Maestro - \"Destiny Islands\"", points = 10, id = 187088, badge = "207975", shouldRender = IsCore(),
     description = "Set a new base high score that earns a ranking of Fantastic for the song \"Destiny Islands\" in Ice Cream Beat on Master Mode.",
     trigger = HighScoreEarned(destinyIslandsMasterBaseHighScore(), destinyIslandsMasterScoreTarget())
 )
 
 function handInHandMasterBaseHighScore() => dword(0x1f35864)
 function handInHandMasterScoreTarget() => 0xc6a
-achievement(title = "Maestro - \"Hand in Hand\"", points = 25,
+xachievement(title = "Maestro - \"Hand in Hand\"", points = 25, id = 187089, badge = "207976", shouldRender = IsCore(),
     description = "Set a new base high score that earns a ranking of Fantastic for the song \"Hand in Hand\" in Ice Cream Beat on Master Mode.",
     trigger = HighScoreEarned(handInHandMasterBaseHighScore(), handInHandMasterScoreTarget())
 )
@@ -1627,7 +1638,7 @@ function breakTheUrnsHighScoreTerra() => word(0x1f35c9a)
 function breakTheUrnsHighScoreVen() => word(0x1f35c98)
 function breakTheUrnsHighScoreAqua() => word(0x1f35c9c)
 function breakTheUrnsScoreTarget() => 180
-achievement(title = "The Urninator", points = 10, id = 187090, badge = "207977",
+xachievement(title = "The Urninator", points = 10, id = 187090, badge = "207977", shouldRender = IsCore(),
     description = "Set a new high score of at least " + breakTheUrnsScoreTarget() + " in the Break the Urns minigame.",
     trigger = CharacterSpecificHighScoreEarned(breakTheUrnsHighScoreTerra(), breakTheUrnsHighScoreVen(), breakTheUrnsHighScoreAqua(), breakTheUrnsScoreTarget())
 )
@@ -1638,7 +1649,7 @@ function olympusColiseumVenStoryEntry() => bit4(0x1f28505)
 function IsDefendingOlympusColiseum() => cutsceneBeforeOlympusDefense() == 1 && olympusColiseumVenStoryEntry() == 0
 olympusDefenseForbiddenCommands = GetCommandsByCallback(command => command["name"] != "Swing Slash" && command["supercategory"] != "Movement")
 swingSlash = GetCommandsByProperties({ "name": "Swing Slash" })
-achievement(title = "So Long, King Ventus! [m]", points = 1, id = 187091, badge = "207978",
+xachievement(title = "So Long, King Ventus!", points = 1, id = 187091, badge = "207978", type = "missable", shouldRender = IsCore(),
     description = "As Ventus, defend the Games from the Unversed using only Swing Slash and movement commands, and no standard attacks (Proud Mode or higher, Level 14 or below).",
     trigger = CheckpointPassedForCharacters(InformationBarPoppedUpOnce() && IsInLocation("OlympusTown"), VentusOnly(), true)
         && TriggerConditionsMetForCharacters({
@@ -1651,14 +1662,14 @@ achievement(title = "So Long, King Ventus! [m]", points = 1, id = 187091, badge 
         && never(!IsDefendingOlympusColiseum()) // We need to check this because the information bar is triggered in this room in a previous scripted battle.
 )
 
-achievement(title = "A Wish to Reconcile", points = 3,
+xachievement(title = "A Wish to Reconcile", points = 3, id = 187092, badge = "207979", type = "progression", shouldRender = IsCore(),
     description = "Complete Olympus Coliseum as Ventus.",
     trigger = WasBitflagSetInGame(olympusColiseumVenStoryEntry()) && IsInLocation("WorldMap")
         && MustBeVentus()
 )
 
 metamorphosisForbiddenCommands = GetCommandsByCallback(command => command["name"] == "Astro Strike")
-achievement(title = "The Miracle of Gravity [m]", points = 5, id = 187093, badge = "207980",
+xachievement(title = "The Miracle of Gravity", points = 5, id = 187093, badge = "207980", type = "missable", shouldRender = IsCore(),
     description = "Defeat the Metamorphosis without using Astro Strike (Proud Mode or higher, Level 17 or below).",
     trigger = CheckpointPassedForCharacters(InformationBarPoppedUpOnce() && IsInLocation("SpaceMachineryBay"), VentusOnly(), true)
         && TriggerConditionsMetForCharacters({
@@ -1670,13 +1681,13 @@ achievement(title = "The Miracle of Gravity [m]", points = 5, id = 187093, badge
 )
 
 function deepSpaceVenStoryEntryUnlocked() => bit3(0x1f28525)
-achievement(title = "To the Ends of the Cosmos", points = 3,
+xachievement(title = "To the Ends of the Cosmos", points = 3, id = 187094, badge = "207981", type = "progression", shouldRender = IsCore(),
     description = "Complete Deep Space as Ventus.",
     trigger = WasBitflagSetInGame(deepSpaceVenStoryEntryUnlocked()) && IsInLocation("WorldMap")
         && MustBeVentus()
 )
 
-achievement(title = "Closest Quarters [m]", points = 25, id = 187095, badge = "207982",
+xachievement(title = "Closest Quarters", points = 25, id = 187095, badge = "207982", type = "missable", shouldRender = IsCore(),
     description = "Defeat Captain Hook without swimming in the water more than three times (Proud Mode or higher, Level 23 or below).",
     trigger = CheckpointPassedForCharacters(InformationBarPoppedUpOnce() && IsInLocation("NeverlandCove"), VentusOnly(), true)
         && TriggerConditionsMetForCharacters({
@@ -1688,7 +1699,7 @@ achievement(title = "Closest Quarters [m]", points = 25, id = 187095, badge = "2
 )
 
 function neverlandVenStoryEntryUnlocked() => bit4(0x1f28565)
-achievement(title = "Always a Step Closer to Home", points = 3,
+xachievement(title = "Always a Step Closer to Home", points = 3, id = 187096, badge = "207983", type = "progression", shouldRender = IsCore(),
     description = "Complete Neverland as Ventus.",
     trigger = WasBitflagSetInGame(neverlandVenStoryEntryUnlocked()) && IsInLocation("WorldMap")
         && MustBeVentus()
@@ -1700,7 +1711,7 @@ function thunderScreenActiveAddr() => 0x1f2aca0
 function darkScreenActiveAddr() => 0x1f2aca4
 nonBlizzardAndNonCureBattleCommandsAndShotlocks = GetCommandsByCallback(command => command["element"] != "Blizzard" && command["healsHp"] == 0 && command["equippableBattleCommand"] == 1
     || command["supercategory"] == "Shotlock" && command["element"] != "Blizzard")
-achievement(title = "Severe Frostbite", points = 10, id = 187097, badge = "207984", type = "missable",
+xachievement(title = "Severe Frostbite", points = 10, id = 187097, badge = "207984", type = "missable", shouldRender = IsCore(),
     description = "Defeat Vanitas in the Keyblade Graveyard with no Screen abilities enabled and " +
         "without using battle commands or Shotlocks that aren't Blizzard-based or HP curative (Proud Mode or higher, Level 24 or below).",
     trigger = CheckpointPassedForCharacters(InformationBarPoppedUpOnce() && IsInLocation("Graveyard4"), [ VentusArmoredHelmetless() ], true)
@@ -1717,7 +1728,7 @@ achievement(title = "Severe Frostbite", points = 10, id = 187097, badge = "20798
 )
 
 healingCommands = GetCommandsByProperties({ "healsHp": 1, "equippableBattleCommand": 1 })
-achievement(title = "Incomplete Being [m]", points = 25, id = 187098, badge = "207985",
+xachievement(title = "Incomplete Being", points = 25, id = 187098, badge = "207985", type = "missable", shouldRender = IsCore(),
     description = "Defeat Vanitas at the end of Ventus's story with only four battle command slots occupied in the Command Deck, " +
         "only three max of which may be healing commands (Proud Mode or higher, Level 24 or below).",
     trigger = CheckpointPassedForCharacters(InformationBarPoppedUpOnce() && IsInLocation("VentusHeart2"), VentusOnly(), true)
@@ -1732,22 +1743,22 @@ achievement(title = "Incomplete Being [m]", points = 25, id = 187098, badge = "2
 
 function xehanortReport10() => bit7(0x1f2932c)
 function VentusStoryCompleted() => WasBitflagSetInGame(xehanortReport10()) && ViewedBattleReportLongEnough() && currentCharacter() == Ventus()
-achievement(title = "The Dormant", points = 10, id = 187099, badge = "207986",
+xachievement(title = "The Dormant", points = 10, id = 187099, badge = "207986", type = "progression", shouldRender = IsCore(),
     description = "Complete Ventus's story.",
     trigger = VentusStoryCompleted()
 )
 
-achievement(title = "Proud Guardian", points = 10, id = 187100, badge = "207987",
+xachievement(title = "Proud Guardian", points = 10, id = 187100, badge = "207987", type = "missable", shouldRender = IsCore(),
     description = "Complete Ventus's story on Proud Mode or higher.",
     trigger = VentusStoryCompleted() && IsAtLeastOnDifficulty("Proud")
 )
 
-achievement(title = "Critical Guardian", points = 25, id = 187101, badge = "207988",
+xachievement(title = "Critical Guardian", points = 25, id = 187101, badge = "207988", type = "missable", shouldRender = IsCore(),
     description = "Complete Ventus's story on Critical Mode.",
     trigger = VentusStoryCompleted() && IsAtLeastOnDifficulty("Critical")
 )
 
-achievement(title = "Mouse-like Stealth [m]", points = 5, id = 187102, badge = "207989",
+xachievement(title = "Mouse-like Stealth", points = 5, id = 187102, badge = "207989", type = "missable", shouldRender = IsCore(),
     description = "Escort Jaq to the mousehole without running or using battle commands (Proud Mode or higher, Level 3 or below).",
     trigger = CheckpointPassedForCharacters(InformationBarPoppedUpOnce()
         && IsInLocation("CastleWardrobe"), AquaOnly(), true)
@@ -1761,7 +1772,7 @@ achievement(title = "Mouse-like Stealth [m]", points = 5, id = 187102, badge = "
 )
 
 magicCommands = GetCommandsByProperties({ "supercategory": "Magic" })
-achievement(title = "Broken Wand [m]", points = 5, id = 187103, badge = "207990",
+xachievement(title = "Broken Wand", points = 5, id = 187103, badge = "207990", type = "missable", shouldRender = IsCore(),
     description = "Defeat the Cursed Coach in Castle of Dreams without using magic commands (Proud Mode or higher, Level 3 or below).",
     trigger = CheckpointPassedForCharacters(InformationBarPoppedUpOnce()
         && IsInLocation("CastleForest"), AquaOnly(), true)
@@ -1775,14 +1786,14 @@ achievement(title = "Broken Wand [m]", points = 5, id = 187103, badge = "207990"
 
 function MustBeAqua() => never(currentCharacter() != Aqua())
 function castleOfDreamsAquaStoryEntry() => bit6(0x1f28465)
-achievement(title = "Innocence of Youth", points = 3,
+xachievement(title = "Innocence of Youth", points = 3, id = 187104, badge = "207991", type = "progression", shouldRender = IsCore(),
     description = "Complete Castle of Dreams as Aqua.",
     trigger = WasBitflagSetInGame(castleOfDreamsAquaStoryEntry()) && IsInLocation("WorldMap")
         && MustBeAqua()
 )
 
 function dwarfWoodlandsAquaStoryEntry() => bit1(0x1f28445)
-achievement(title = "Sound Awake", points = 3,
+xachievement(title = "Sound Awake", points = 3, id = 187105, badge = "207992", type = "progression", shouldRender = IsCore(),
     description = "Complete Dwarf Woodlands as Aqua.",
     trigger = WasBitflagSetInGame(dwarfWoodlandsAquaStoryEntry()) && IsInLocation("WorldMap")
         && MustBeAqua()
@@ -1790,7 +1801,7 @@ achievement(title = "Sound Awake", points = 3,
 
 unallowedCastleEscapeCommands = GetCommandsByCallback(command => command["supercategory"] != "Magic" && command["name"] != "Jump" && command["name"] != "Selfless Prince")
 function highJumpId() => 0xfa
-achievement(title = "You Never Split the Party [m]", points = 10, id = 187106, badge = "207993",
+xachievement(title = "You Never Split the Party", points = 10, id = 187106, badge = "207993", type = "missable", shouldRender = IsCore(),
     description = "Escape from Maleficent's castle alongside Prince Phillip using only magic commands, Jump, and Selfless Prince (Proud Mode or higher, Level 6 or below).",
     trigger = CheckpointPassedForCharacters(InformationBarPoppedUpOnce() && IsAtLeastOnDifficulty("Proud") && level() <= 6
         && IsInLocation("EnchantedGates"), AquaOnly(), true)
@@ -1842,7 +1853,7 @@ for trigger in balanceGroup1Triggers
 {
    array_push(switch21, deduct(trigger))
 }
-achievement(title = "Mind-Body Balance [m]", points = 25, id = 187107, badge = "207994",
+xachievement(title = "Mind-Body Balance", points = 25, id = 187107, badge = "207994", type = "missable", shouldRender = IsCore(),
     description = "Defeat Dragon Maleficent without using magic commands two more times than attack commands, and vice versa (Proud Mode or higher, Level 6 or below, no items).",
     trigger = CheckpointPassedForCharacters(InformationBarPoppedUpOnce() && IsAtLeastOnDifficulty("Proud") && level() <= 6
         && IsInLocation("EnchantedBridgeThorns"), AquaOnly(), true)
@@ -1856,13 +1867,13 @@ achievement(title = "Mind-Body Balance [m]", points = 25, id = 187107, badge = "
 )
 
 function enchantedDominionAquaStoryEntry() => bit3(0x1f28485)
-achievement(title = "Love Conquers", points = 3,
+xachievement(title = "Love Conquers", points = 3, id = 187108, badge = "207995", type = "progression", shouldRender = IsCore(),
     description = "Complete Enchanted Dominion as Aqua.",
     trigger = WasBitflagSetInGame(enchantedDominionAquaStoryEntry()) && IsInLocation("WorldMap")
         && MustBeAqua()
 )
 
-achievement(title = "One Precious Chance [m]", points = 50, id = 187109, badge = "207996",
+xachievement(title = "One Precious Chance", points = 50, id = 187109, badge = "207996", type = "missable", shouldRender = IsCore(),
     description = "Defeat Vanitas in Radiant Garden without healing more than twice (Proud Mode or higher, Level 8 or below).",
     trigger = CheckpointPassedForCharacters(InformationBarPoppedUpOnce() && IsAtLeastOnDifficulty("Proud") && level() <= 8
         && IsInLocation("RadiantCentral"), AquaOnly(), true)
@@ -1874,7 +1885,7 @@ achievement(title = "One Precious Chance [m]", points = 50, id = 187109, badge =
 )
 
 function radiantGardenAquaStoryEntry() => bit0(0x1f284c5)
-achievement(title = "Unwitting Predecessor", points = 3,
+xachievement(title = "Unwitting Predecessor", points = 3, id = 187110, badge = "207997", type = "progression", shouldRender = IsCore(),
     description = "Complete Radiant Garden as Aqua.",
     trigger = WasBitflagSetInGame(radiantGardenAquaStoryEntry()) && IsInLocation("WorldMap")
         && MustBeAqua()
@@ -1902,7 +1913,7 @@ function HighScoreEarnedAgainstChipAndDale(target = 1) => CharacterSpecificHighS
     fruitballChipAndDaleHighScoreAqua(), target)
 function HighScoreEarnedAgainstPete(target = 1) => CharacterSpecificHighScoreEarned(fruitballPeteHighScoreTerra(), fruitballPeteHighScoreVen(), fruitballPeteHighScoreAqua(), target)
 
-achievement(title = "Running Up the Score", points = 5, id = 187111, badge = "207998",
+xachievement(title = "Running Up the Score", points = 5, id = 187111, badge = "207998", shouldRender = IsCore(),
     description = "Set a new high score of " + fruitballChallengeScoreTarget() + " or more in any round of Fruitball.",
     trigger = HighScoreEarned(fruitballShoegazersHighScore(), fruitballChallengeScoreTarget())
         || HighScoreEarnedAgainstBruisers(fruitballChallengeScoreTarget())
@@ -1910,23 +1921,23 @@ achievement(title = "Running Up the Score", points = 5, id = 187111, badge = "20
         || HighScoreEarnedAgainstPete(fruitballChallengeScoreTarget())
 )
 
-achievement(title = "Regular Fruitballer", points = 5, id = 187112, badge = "207999",
+xachievement(title = "Regular Fruitballer", points = 5, id = 187112, badge = "207999", shouldRender = IsCore(),
     description = "Set a new high score versus the Bruisers team in Fruitball.",
     trigger = HighScoreEarnedAgainstBruisers()
 )
 
-achievement(title = "Veteran Fruitballer", points = 10, id = 187113, badge = "208000",
+xachievement(title = "Veteran Fruitballer", points = 10, id = 187113, badge = "208000", shouldRender = IsCore(),
     description = "Set a new high score versus Chip and Dale in Fruitball.",
     trigger = HighScoreEarnedAgainstChipAndDale()
 )
 
-achievement(title = "Legendary Fruitballer", points = 25, id = 187114, badge = "208001",
+xachievement(title = "Legendary Fruitballer", points = 25, id = 187114, badge = "208001", shouldRender = IsCore(),
     description = "Set a new high score versus Captain Justice or Captain Dark in Fruitball.",
     trigger = HighScoreEarnedAgainstPete()
 )
 
 function BeganFinalsAsAqua() => bit7(0x1f28504) == 1
-achievement(title = "With but a Finger [m]", points = 10, id = 187115, badge = "208002",
+xachievement(title = "With but a Finger", points = 10, id = 187115, badge = "208002", type = "missable", shouldRender = IsCore(),
     description = "Reach the finals of the Olympus Coliseum Games as Aqua using only one type of battle command (Proud Mode or higher, Level 10 or below).",
     trigger = CheckpointPassedForCharacters(InformationBarPoppedUpOnce()
             && IsInLocation("OlympusEast") && IsAtLeastOnDifficulty("Proud") && level() <= 10, AquaOnly(), true)
@@ -1939,7 +1950,7 @@ achievement(title = "With but a Finger [m]", points = 10, id = 187115, badge = "
 )
 
 firewheelCommand = GetCommandsByProperties({ "name": "Firewheel" })
-achievement(title = "Bad Manners [m]", points = 5, id = 187116, badge = "208003",
+xachievement(title = "Bad Manners", points = 5, id = 187116, badge = "208003", type = "missable", shouldRender = IsCore(),
     description = "As Aqua, finish off Zack with Firewheel (Proud Mode or higher, Level 10 or below).",
     trigger = CheckpointPassedForCharacters(InformationBarPoppedUpOnce()
             && IsInLocation("OlympusEast") && IsAtLeastOnDifficulty("Proud") && level() <= 10, AquaOnly(), true)
@@ -1951,7 +1962,7 @@ achievement(title = "Bad Manners [m]", points = 5, id = 187116, badge = "208003"
 )
 
 defenseCommand = GetCommandsByProperties({ "supercategory": "Defense" })
-achievement(title = "By His Own Petard [m]", points = 5, id = 187117, badge = "208004",
+xachievement(title = "By His Own Petard", points = 5, id = 187117, badge = "208004", type = "missable", shouldRender = IsCore(),
     description = "Defeat Hades and the Ice Titan while a defensive command is active (Proud Mode or higher, Level 10 or below).",
     trigger = CheckpointPassedForCharacters(InformationBarPoppedUpOnce()
             && IsInLocation("OlympusEastNight") && IsAtLeastOnDifficulty("Proud") && level() <= 10, AquaOnly(), true)
@@ -1962,14 +1973,14 @@ achievement(title = "By His Own Petard [m]", points = 5, id = 187117, badge = "2
 )
 
 function olympusColiseumAquaStoryEntry() => bit5(0x1f28505)
-achievement(title = "Star-Crossed", points = 3,
+xachievement(title = "Star-Crossed", points = 3, id = 187118, badge = "208005", type = "progression", shouldRender = IsCore(),
     description = "Complete Olympus Coliseum as Aqua.",
     trigger = WasBitflagSetInGame(olympusColiseumAquaStoryEntry()) && IsInLocation("WorldMap")
         && MustBeAqua()
 )
 
 cartwheelAndFirewheelCommands = GetCommandsByCallback(command => command["name"] == "Cartwheel" || command["name"] == "Firewheel")
-achievement(title = "Heightened Vulnerability [m]", points = 3, id = 187119, badge = "208006",
+xachievement(title = "Heightened Vulnerability", points = 3, id = 187119, badge = "208006", type = "missable", shouldRender = IsCore(),
     description = "Defeat Gantu without using the Cartwheel or Firewheel commands (Proud Mode or higher, Level 16 or below).",
     trigger = CheckpointPassedForCharacters(InformationBarPoppedUpOnce()
             && IsInLocation("SpaceLaunch") && IsAtLeastOnDifficulty("Proud") && level() <= 16, AquaOnly(), true)
@@ -1981,13 +1992,13 @@ achievement(title = "Heightened Vulnerability [m]", points = 3, id = 187119, bad
 )
 
 function deepSpaceAquaStoryEntry() => bit6(0x1f28525)
-achievement(title = "Proof of Amicability", points = 3,
+xachievement(title = "Proof of Amicability", points = 3, id = 187120, badge = "208007", type = "progression", shouldRender = IsCore(),
     description = "Complete Deep Space as Aqua.",
     trigger = WasBitflagSetInGame(deepSpaceAquaStoryEntry()) && IsInLocation("WorldMap")
         && MustBeAqua()
 )
 
-achievement(title = "Undergrowth [m]", points = 5, id = 187121, badge = "208008",
+xachievement(title = "Undergrowth", points = 5, id = 187121, badge = "208008", type = "missable", shouldRender = IsCore(),
     description = "Defeat Vanitas in Neverland at Level 23 or below on Critical Mode.",
     trigger = CheckpointPassedForCharacters(InformationBarPoppedUpOnce()
             && IsInLocation("NeverlandCamp") && IsAtLeastOnDifficulty("Critical") && level() <= 23, AquaOnly(), true)
@@ -1998,7 +2009,7 @@ achievement(title = "Undergrowth [m]", points = 5, id = 187121, badge = "208008"
 )
 
 function neverlandAquaStoryEntry() => bit0(0x1f28565)
-achievement(title = "Never Apart", points = 3,
+xachievement(title = "Never Apart", points = 3, id = 187122, badge = "208009", type = "progression", shouldRender = IsCore(),
     description = "Complete Neverland as Aqua.",
     trigger = WasBitflagSetInGame(neverlandAquaStoryEntry()) && IsInLocation("LanesBetween")
         && MustBeAqua()
@@ -2012,7 +2023,7 @@ function AquaFinalSegmentSharedConditions() => never(JustUsedAnyGivenCommand(aqu
     && equippedKeyblade() == 0x17
 function DefeatBraigInformationDisplayed() => ascii_string_equals(informationBarTextPointer(), "Defeat Braig!")
 
-achievement(title = "Magical Rage", points = 10, id = 187123, badge = "208010", type = "missable",
+xachievement(title = "Magical Rage", points = 10, id = 187123, badge = "208010", type = "missable", shouldRender = IsCore(),
     description = "Defeat Braig in the Keyblade Graveyard without using Barrier defensive commands and with Pixie Petal and only one Cure-family command"
         + " equipped (Proud Mode or higher; Level 28 or below; uncleared game only).",
     trigger = CheckpointPassedForCharacters(InformationBarPoppedUpOnce()
@@ -2026,7 +2037,7 @@ achievement(title = "Magical Rage", points = 10, id = 187123, badge = "208010", 
         && AquaFinalSegmentSharedConditions()
 )
 
-achievement(title = "Divine Rebellion [m]", points = 25, id = 187124, badge = "208011",
+xachievement(title = "Divine Rebellion", points = 25, id = 187124, badge = "208011", type = "missable", shouldRender = IsCore(),
     description = "Defeat the final boss of Aqua's story with the same restrictions as the ones in \"Magical Rage\", but with only four battle command slots filled"
         + " (Proud Mode or higher, Level 28 or below).",
     trigger = CheckpointPassedForCharacters(InformationBarPoppedUpOnce()
@@ -2043,24 +2054,24 @@ achievement(title = "Divine Rebellion [m]", points = 25, id = 187124, badge = "2
 
 function xehanortReport7() => bit4(0x1f2932c)
 function AquaStoryCompleted() => WasBitflagSetInGame(xehanortReport7()) && ViewedBattleReportLongEnough() && currentCharacter() == AquaArmoredHelmetless()
-achievement(title = "The Seeker", points = 10, id = 187125, badge = "208012",
+xachievement(title = "The Seeker", points = 10, id = 187125, badge = "208012", type = "progression", shouldRender = IsCore(),
     description = "Complete Aqua's story.",
     trigger = AquaStoryCompleted()
 )
 
-achievement(title = "Proud Mystic", points = 10, id = 187126, badge = "208013",
+xachievement(title = "Proud Mystic", points = 10, id = 187126, badge = "208013", type = "missable", shouldRender = IsCore(),
     description = "Complete Aqua's story on Proud Mode or higher.",
     trigger = AquaStoryCompleted() && IsAtLeastOnDifficulty("Proud")
 )
 
-achievement(title = "Critical Mystic", points = 25, id = 187127, badge = "208014",
+xachievement(title = "Critical Mystic", points = 25, id = 187127, badge = "208014", type = "missable", shouldRender = IsCore(),
     description = "Complete Aqua's story on Critical Mode.",
     trigger = AquaStoryCompleted() && IsAtLeastOnDifficulty("Critical")
 )
 
 equippableBattleCommands = GetCommandsByProperties({ "equippableBattleCommand": 1 })
 nonIllusionEquippableBattleCommands = GetCommandsByCallback(command => command["equippableBattleCommand"] == 1 && command["id"] <= 0xdf)
-achievement(title = "Prime Sacrifice [m]", points = 10, id = 187128, badge = "208015",
+xachievement(title = "Prime Sacrifice", points = 10, id = 187128, badge = "208015", type = "missable", shouldRender = IsCore(),
     description = "Defeat the first phase of the final boss of the Final Episode using any two of non-Illusion battle commands, D-Links, or Shotlocks, but not all three"
         + " (Proud Mode or higher, Level 29 or below).",
     trigger = CheckpointPassedForCharacters(InformationBarPoppedUpOnce()
@@ -2073,7 +2084,7 @@ achievement(title = "Prime Sacrifice [m]", points = 10, id = 187128, badge = "20
 )
 
 dualLimitCommand = GetCommandsByProperties({ "name": "Dual Limit" })
-achievement(title = "Lonely Duet [m]", points = 5, id = 187129, badge = "208016",
+xachievement(title = "Lonely Duet", points = 5, id = 187129, badge = "208016", type = "missable", shouldRender = IsCore(),
     description = "Finish off the second phase of the final boss of the Final Episode with Dual Limit (Proud Mode or higher, Level 29 or below).",
     trigger = CheckpointPassedForCharacters(InformationBarPoppedUpOnce()
             && IsInLocation("RadiantCentralTerranort") && IsAtLeastOnDifficulty("Proud") && level() <= 29, AquaOnly(), true)
@@ -2085,17 +2096,17 @@ achievement(title = "Lonely Duet [m]", points = 5, id = 187129, badge = "208016"
 
 function aquaMetHerFate() => bit3(0x1f285a5)
 function FinalEpisodeCompleted() => WasBitflagSetInGame(aquaMetHerFate()) && ViewedBattleReportLongEnough() && currentCharacter() == Aqua()
-achievement(title = "The Wanderer", points = 3, id = 187130, badge = "208017",
+xachievement(title = "The Wanderer", points = 3, id = 187130, badge = "208017", type = "progression", shouldRender = IsCore(),
     description = "Complete the Final Episode.",
     trigger = FinalEpisodeCompleted()
 )
 
-achievement(title = "Proud Wanderer [m]", points = 5, id = 187131, badge = "208018",
+xachievement(title = "Proud Wanderer", points = 5, id = 187131, badge = "208018", type = "missable", shouldRender = IsCore(),
     description = "Complete the Final Episode on Proud Mode or higher.",
     trigger = FinalEpisodeCompleted() && IsAtLeastOnDifficulty("Proud")
 )
 
-achievement(title = "Critical Wanderer [m]", points = 10, id = 187132, badge = "208019",
+xachievement(title = "Critical Wanderer", points = 10, id = 187132, badge = "208019", type = "missable", shouldRender = IsCore(),
     description = "Complete the Final Episode on Critical Mode.",
     trigger = FinalEpisodeCompleted() && IsAtLeastOnDifficulty("Critical")
 )
@@ -2115,7 +2126,7 @@ function DarkHideScoreIncreased() => JustUsedAnyGivenCommand(cartwheelCommand)
 function darkHideCartwheelLimit() => 155
 
 // High score: 186
-achievement(title = "Dance with Death [m]", points = 25, id = 187133, badge = "208020",
+xachievement(title = "Dance with Death", points = 25, id = 187133, badge = "208020", type = "missable", shouldRender = IsCore(),
     description = "Defeat the Dark Hide without using the Cartwheel command more than " + darkHideCartwheelLimit() + " times (Proud Mode or higher, Level 33 or below).",
     trigger = DarkHideCheckpointReached()
         && DarkHideChallengeCompleted(true)
@@ -2123,32 +2134,35 @@ achievement(title = "Dance with Death [m]", points = 25, id = 187133, badge = "2
         && never(repeated(darkHideCartwheelLimit() + 1, DarkHideScoreIncreased()))
 )
 
-leaderboard(title = "Dance with Death", description = "Defeat the Dark Hide with as few Cartwheel commands as possible.",
-    start = DarkHideCheckpointReached(),
-    cancel = DarkHideCancel(),
-    submit = DarkHideChallengeCompleted(false),
-    value = measured(repeated(0, DarkHideScoreIncreased())),
-    id = 27894
-)
+if (IsCore())
+{
+    leaderboard(title = "Dance with Death", description = "Defeat the Dark Hide with as few Cartwheel commands as possible.",
+        start = DarkHideCheckpointReached(),
+        cancel = DarkHideCancel(),
+        submit = DarkHideChallengeCompleted(false),
+        value = measured(repeated(0, DarkHideScoreIncreased())),
+        id = 27894
+    )
+}
 
 function darkHideDefeated() => bit2(0x1f284e5)
 function SecretEpisodeCompleted() => WasBitflagSetInGame(darkHideDefeated()) && ViewedBattleReportLongEnough() && currentCharacter() == Aqua()
-achievement(title = "The Wayfinder", points = 3, id = 187134, badge = "208021",
+xachievement(title = "The Wayfinder", points = 3, id = 187134, badge = "208021", type = "win_condition", shouldRender = IsCore(),
     description = "Complete the Secret Episode.",
     trigger = SecretEpisodeCompleted()
 )
 
-achievement(title = "Proud Wayfinder [m]", points = 5, id = 187135, badge = "208022",
+xachievement(title = "Proud Wayfinder", points = 5, id = 187135, badge = "208022", type = "missable", shouldRender = IsCore(),
     description = "Complete the Secret Episode on Proud Mode or higher.",
     trigger = SecretEpisodeCompleted() && IsAtLeastOnDifficulty("Proud")
 )
 
-achievement(title = "Critical Wayfinder [m]", points = 10, id = 187136, badge = "208023",
+xachievement(title = "Critical Wayfinder", points = 10, id = 187136, badge = "208023", type = "missable", shouldRender = IsCore(),
     description = "Complete the Secret Episode on Critical Mode.",
     trigger = SecretEpisodeCompleted() && IsAtLeastOnDifficulty("Critical")
 )
 
-achievement(title = "The Mark of Mastery [m]", points = 100, id = 187137, badge = "208024",
+xachievement(title = "The Mark of Mastery", points = 100, id = 187137, badge = "208024", type = "missable", shouldRender = IsCore(),
     description = "Complete any character's story at Level 1 on Critical Mode.",
     trigger = never(level() > 1) && IsAtLeastOnDifficulty("Critical")
         && (
@@ -2181,7 +2195,7 @@ function CreateRumbleRacingAchievementAndLeaderboard(achievementName, location, 
 {
     rumbleRacingCheckpointReached = RumbleRacingIntroWasJustPlaying() && RumbleRacingCountingDown() && IsInLocation(location["name"]) && rumbleRacingTotalLaps() == 5
     isInRaceLocation = AddressIsPointer(rumbleRacingPointerAddr()) && IsInLocation(location["name"])
-    achievement(title = achievementName, points = points, id = id, badge = badge,
+    xachievement(title = achievementName, points = points, id = id, badge = badge, shouldRender = IsCore(),
         description = "Finish a five-lap race on the " + location["display"] + " course in Rumble Racing in " + SecondsToFormat(timeLimit) + ".",
         trigger = once(rumbleRacingCheckpointReached)
             && trigger_when(RumbleRacingJustFinished())
@@ -2189,12 +2203,15 @@ function CreateRumbleRacingAchievementAndLeaderboard(achievementName, location, 
             && never(!isInRaceLocation)
     )
     
-    leaderboard(title = "Rumble Racing - " + location["display"] + " (5 Laps)", description = "Race to the finish!",
-        start = once(rumbleRacingCheckpointReached) && never(!isInRaceLocation),
-        cancel = !isInRaceLocation,
-        submit = RumbleRacingJustFinished(),
-        value = RumbleRacingRecordableTimeElapsed()
-    )
+    if (IsCore())
+    {
+        leaderboard(title = "Rumble Racing - " + location["display"] + " (5 Laps)", description = "Race to the finish!",
+            start = once(rumbleRacingCheckpointReached) && never(!isInRaceLocation),
+            cancel = !isInRaceLocation,
+            submit = RumbleRacingJustFinished(),
+            value = RumbleRacingRecordableTimeElapsed()
+        )
+    }
 }
 
 CreateRumbleRacingAchievementAndLeaderboard("Country Thrills", GetLocationByName("DisneyCountryChase"), 125, 10, id = 187138, badge = "208025")
@@ -2205,7 +2222,7 @@ CreateRumbleRacingAchievementAndLeaderboard("Prix Spree", GetLocationByName("Dis
 
 CreateRumbleRacingAchievementAndLeaderboard("Castle Crasher", GetLocationByName("DisneyCastle"), 236, 50, id = 187141, badge = "208028")
 
-GenerateCheevoFromBits(name = "Sticker Warrior", description = "Collect every sticker in Terra's story.", points = 5,
+GenerateCheevoFromBits(name = "Sticker Warrior", description = "Collect every sticker in Terra's story.", points = 5, shouldRender = IsCore(),
     addresses = {
         1: { "addr": 0x1f2929c, "bit": 1 },
         2: { "addr": 0x1f2929c, "bit": 2 },
@@ -2231,7 +2248,7 @@ GenerateCheevoFromBits(name = "Sticker Warrior", description = "Collect every st
     onlyAvailableWhen = IsPlayingAsTerra()
 )
 
-GenerateCheevoFromBits(name = "Sticker Guardian", description = "Collect every sticker in Ventus's story.", points = 5,
+GenerateCheevoFromBits(name = "Sticker Guardian", description = "Collect every sticker in Ventus's story.", points = 5, shouldRender = IsCore(),
     addresses = {
         1: { "addr": 0x1f2929c, "bit": 1 },
         2: { "addr": 0x1f2929c, "bit": 2 },
@@ -2257,7 +2274,7 @@ GenerateCheevoFromBits(name = "Sticker Guardian", description = "Collect every s
     onlyAvailableWhen = IsPlayingAsVentus()
 )
 
-GenerateCheevoFromBits(name = "Sticker Mystic", description = "Collect every sticker in Aqua's story.", points = 5,
+GenerateCheevoFromBits(name = "Sticker Mystic", description = "Collect every sticker in Aqua's story.", points = 5, shouldRender = IsCore(),
     addresses = {
         1: { "addr": 0x1f2929c, "bit": 1 },
         2: { "addr": 0x1f2929c, "bit": 2 },
@@ -2302,17 +2319,17 @@ function UnlockedFinishCommand(id)
     return trigger
 }
 
-achievement(title = "Apex of War", points = 5,
+xachievement(title = "Apex of War", points = 5, shouldRender = IsCore(), id = 187145, badge = "208032",
     description = "Unlock Terra's ultimate Finish command.",
     trigger = UnlockedFinishCommand(0x5a) && IsPlayingAsTerra()
 )
 
-achievement(title = "Apex of Warding", points = 5,
+xachievement(title = "Apex of Warding", points = 5, id = 187146, badge = "208033", shouldRender = IsCore(),
     description = "Unlock Ventus's ultimate Finish command.",
     trigger = UnlockedFinishCommand(0x58) && IsPlayingAsVentus()
 )
 
-achievement(title = "Apex of Witchcraft", points = 5,
+xachievement(title = "Apex of Witchcraft", points = 5, id = 187147, badge = "208034", shouldRender = IsCore(),
     description = "Unlock Aqua's ultimate Finish command.",
     trigger = UnlockedFinishCommand(0x59) && IsPlayingAsAqua()
 )
@@ -2321,7 +2338,7 @@ function flameBoxMissionHighScoreTerra() => dword(0x1f35d38)
 function flameBoxMissionHighScoreVen() => dword(0x1f35cb8)
 function flameBoxMissionHighScoreAqua() => dword(0x1f35cf8)
 function flameBoxMissionScoreTarget() => 65
-achievement(title = "Orbital Defender", points = 10, id = 187148, badge = "208035",
+xachievement(title = "Orbital Defender", points = 10, id = 187148, badge = "208035", shouldRender = IsCore(),
     description = "Set a new high score of " + flameBoxMissionScoreTarget() + " or more in the Flame Box Unversed Mission.",
     trigger = CharacterSpecificHighScoreEarned(flameBoxMissionHighScoreTerra(), flameBoxMissionHighScoreVen(), flameBoxMissionHighScoreAqua(), flameBoxMissionScoreTarget())
 )
@@ -2330,7 +2347,7 @@ function loneRunnerMissionHighScoreTerra() => dword(0x1f35d3c)
 function loneRunnerMissionHighScoreVen() => dword(0x1f35cbc)
 function loneRunnerMissionHighScoreAqua() => dword(0x1f35cfc)
 function loneRunnerMissionScoreTarget() => 80
-achievement(title = "Shoe Snatcher", points = 5, id = 187149, badge = "208036",
+xachievement(title = "Shoe Snatcher", points = 5, id = 187149, badge = "208036", shouldRender = IsCore(),
     description = "Set a new high score of " + loneRunnerMissionScoreTarget() + " or more in the Lone Runner Unversed Mission.",
     trigger = CharacterSpecificHighScoreEarned(loneRunnerMissionHighScoreTerra(), loneRunnerMissionHighScoreVen(), loneRunnerMissionHighScoreAqua(), loneRunnerMissionScoreTarget())
 )
@@ -2339,7 +2356,7 @@ function vitalityVialMissionHighScoreTerra() => dword(0x1f35d44)
 function vitalityVialMissionHighScoreVen() => dword(0x1f35cc4)
 function vitalityVialMissionHighScoreAqua() => dword(0x1f35d04)
 function vitalityVialMissionScoreTarget() => 180
-achievement(title = "Iron Lung", points = 5, id = 187150, badge = "208037",
+xachievement(title = "Iron Lung", points = 5, id = 187150, badge = "208037", shouldRender = IsCore(),
     description = "Set a new survival record of " + SecondsToFormat(vitalityVialMissionScoreTarget()) + " or longer in the Vitality Vial Unversed Mission.",
     trigger = CharacterSpecificHighScoreEarned(vitalityVialMissionHighScoreTerra(), vitalityVialMissionHighScoreVen(), vitalityVialMissionHighScoreAqua(),
         SecondsToFrames(vitalityVialMissionScoreTarget()))
@@ -2349,7 +2366,7 @@ function bellyBalloonMissionHighScoreTerra() => dword(0x1f35d30)
 function bellyBalloonMissionHighScoreVen() => dword(0x1f35cb0)
 function bellyBalloonMissionHighScoreAqua() => dword(0x1f35cf0)
 function bellyBalloonMissionScoreTarget() => 15
-achievement(title = "Wind Rusher", points = 5, id = 187151, badge = "208038",
+xachievement(title = "Wind Rusher", points = 5, id = 187151, badge = "208038", shouldRender = IsCore(),
     description = "Set a new record of " + SecondsToFormat(bellyBalloonMissionScoreTarget()) + " or faster in the Belly Balloon Unversed Mission.",
     trigger = CharacterSpecificHighScoreEarned(bellyBalloonMissionHighScoreTerra(), bellyBalloonMissionHighScoreVen(), bellyBalloonMissionHighScoreAqua(),
         SecondsToFrames(bellyBalloonMissionScoreTarget()), true)
@@ -2359,7 +2376,7 @@ function ringerMissionHighScoreTerra() => dword(0x1f35d48)
 function ringerMissionHighScoreVen() => dword(0x1f35cc8)
 function ringerMissionHighScoreAqua() => dword(0x1f35d08)
 function ringerMissionScoreTarget() => 50
-achievement(title = "Allegro con Grazia", points = 10, id = 187152, badge = "208039",
+xachievement(title = "Allegro con Grazia", points = 10, id = 187152, badge = "208039", shouldRender = IsCore(),
     description = "Set a new high score of " + ringerMissionScoreTarget() + " or more in the Ringer Unversed Mission.",
     trigger = CharacterSpecificHighScoreEarned(ringerMissionHighScoreTerra(), ringerMissionHighScoreVen(), ringerMissionHighScoreAqua(), ringerMissionScoreTarget())
 )
@@ -2368,7 +2385,7 @@ function gluttonousGooMissionHighScoreTerra() => dword(0x1f35d4c)
 function gluttonousGooMissionHighScoreVen() => dword(0x1f35ccc)
 function gluttonousGooMissionHighScoreAqua() => dword(0x1f35d0c)
 function gluttonousGooMissionScoreTarget() => 100
-achievement(title = "Struggle Champion", points = 10, id = 187153, badge = "208040",
+xachievement(title = "Struggle Champion", points = 10, id = 187153, badge = "208040", shouldRender = IsCore(),
     description = "Set a new high score of " + gluttonousGooMissionScoreTarget() + " in the Gluttonous Goo Unversed Mission.",
     trigger = CharacterSpecificHighScoreEarned(gluttonousGooMissionHighScoreTerra(), gluttonousGooMissionHighScoreVen(), gluttonousGooMissionHighScoreAqua(), gluttonousGooMissionScoreTarget())
 )
@@ -2377,7 +2394,7 @@ function elementClusterMissionHighScoreTerra() => dword(0x1f35d34)
 function elementClusterMissionHighScoreVen() => dword(0x1f35cb4)
 function elementClusterMissionHighScoreAqua() => dword(0x1f35cf4)
 function elementClusterMissionScoreTarget() => 100
-achievement(title = "Elemental Pulsar", points = 10, id = 187154, badge = "208041",
+xachievement(title = "Elemental Pulsar", points = 10, id = 187154, badge = "208041", shouldRender = IsCore(),
     description = "Set a new high score of " + elementClusterMissionScoreTarget() + " or more in the Element Cluster Unversed Mission.",
     trigger = CharacterSpecificHighScoreEarned(elementClusterMissionHighScoreTerra(), elementClusterMissionHighScoreVen(), elementClusterMissionHighScoreAqua(), elementClusterMissionScoreTarget())
 )
@@ -2386,7 +2403,7 @@ function jellyshadeMissionHighScoreTerra() => dword(0x1f35d50)
 function jellyshadeMissionHighScoreVen() => dword(0x1f35cd0)
 function jellyshadeMissionHighScoreAqua() => dword(0x1f35d10)
 function jellyshadeMissionScoreTarget() => 20
-achievement(title = "Greater Fumigator", points = 5, id = 187155, badge = "208042",
+xachievement(title = "Greater Fumigator", points = 5, id = 187155, badge = "208042", shouldRender = IsCore(),
     description = "Set a new record of " + SecondsToFormat(jellyshadeMissionScoreTarget()) + " or faster in the Jellyshade Unversed Mission.",
     trigger = CharacterSpecificHighScoreEarned(jellyshadeMissionHighScoreTerra(), jellyshadeMissionHighScoreVen(), jellyshadeMissionHighScoreAqua(),
         SecondsToFrames(jellyshadeMissionScoreTarget()), true)
@@ -2396,12 +2413,12 @@ function floatingFloraMissionHighScoreTerra() => dword(0x1f35d40)
 function floatingFloraMissionHighScoreVen() => dword(0x1f35cc0)
 function floatingFloraMissionHighScoreAqua() => dword(0x1f35d00)
 function floatingFloraMissionScoreTarget() => 999
-achievement(title = "Green Thumb", points = 3, id = 187156, badge = "208043",
+xachievement(title = "Green Thumb", points = 3, id = 187156, badge = "208043", shouldRender = IsCore(),
     description = "Set a new record of " + floatingFloraMissionScoreTarget() + " in the Floating Flora Unversed Mission.",
     trigger = CharacterSpecificHighScoreEarned(floatingFloraMissionHighScoreTerra(), floatingFloraMissionHighScoreVen(), floatingFloraMissionHighScoreAqua(), floatingFloraMissionScoreTarget())
 )
 
-GenerateCheevoFromBits(name = "Career Rumbler", description = "Complete all Rumble Racing Arena Missions for any character.", points = 5,
+GenerateCheevoFromBits(name = "Career Rumbler", description = "Complete all Rumble Racing Arena Missions for any character.", points = 5, shouldRender = IsCore(),
     threshold = 4,
     addresses = {
         1: { "addr": 0x1f35d7e, "bit": 2 },
@@ -2411,7 +2428,7 @@ GenerateCheevoFromBits(name = "Career Rumbler", description = "Complete all Rumb
     }
 )
 
-GenerateCheevoFromBits(name = "Medal Detector", description = "Complete all medal Arena Missions for any character.", points = 10,
+GenerateCheevoFromBits(name = "Medal Detector", description = "Complete all medal Arena Missions for any character.", points = 10, shouldRender = IsCore(),
     threshold = 6,
     addresses = {
         1: { "addr": 0x1f35d7c, "bit": 0 },
@@ -2423,7 +2440,7 @@ GenerateCheevoFromBits(name = "Medal Detector", description = "Complete all meda
     }
 )
 
-GenerateCheevoFromBits(name = "Command Street", description = "Complete all Command Board Arena Missions for any character.", points = 5,
+GenerateCheevoFromBits(name = "Command Street", description = "Complete all Command Board Arena Missions for any character.", points = 5, shouldRender = IsCore(),
     threshold = 4,
     addresses = {
         1: { "addr": 0x1f35d7f, "bit": 1 },
@@ -2433,7 +2450,7 @@ GenerateCheevoFromBits(name = "Command Street", description = "Complete all Comm
     }
 )
 
-GenerateCheevoFromBits(name = "Savage Slayer", description = "Complete all Arena Mode Arena Missions for any character.", points = 25,
+GenerateCheevoFromBits(name = "Savage Slayer", description = "Complete all Arena Mode Arena Missions for any character.", points = 25, shouldRender = IsCore(),
     threshold = 15,
     addresses = {
         1: { "addr": 0x1f35d7c, "bit": 6 }, // Day of Reckoning
@@ -2500,7 +2517,7 @@ function NeverJustUsedAnyGivenCommandInArena(haystack)
         && never(AquaJustUsedAnyGivenCommandInArena(haystack) && currentCharacter() == AquaArmored())
 }
 
-achievement(title = "Prison Rations", points = 10, id = 187161, badge = "208048", type = "missable",
+xachievement(title = "Prison Rations", points = 10, id = 187161, badge = "208048", type = "missable", shouldRender = IsCore(),
     description = "Complete \"Day of Reckoning\" in the Mirage Arena using Cure as your only healing command no more than thrice (Critical Mode, Level 12 or below).",
     trigger = MirageArenaCheckpointReachedForCharacters(1, "MirageArena1", AnyArmoredCharacter(), 4, difficulty = "Critical", level = 12)
         && NeverJustUsedAnyGivenCommandInArena(dayOfReckoningForbiddenHealingCommands)
@@ -2549,7 +2566,7 @@ function DeckLoadoutChanged()
 megaFlareLimit = 3
 directHealingCommands = GetCommandsByProperties({ "healsHp": 1 })
 megaFlareCommand = GetCommandsByProperties({ "name": "Mega Flare" })
-achievement(title = "Nuclear Disarmament", points = 5, id = 187162, badge = "208049", type = "missable",
+xachievement(title = "Nuclear Disarmament", points = 5, id = 187162, badge = "208049", type = "missable", shouldRender = IsCore(),
     description = "Complete \"Wheels of Misfortune\" in the Mirage Arena using Mega Flare only three times or fewer and with a max of "
         + "six battle command slots filled (Critical Mode, Level 12 or below).",
     trigger = MirageArenaCheckpointReachedForCharacters(0x101, "MirageForest", AnyArmoredCharacter(), 4, difficulty = "Critical", level = 12)
@@ -2557,14 +2574,14 @@ achievement(title = "Nuclear Disarmament", points = 5, id = 187162, badge = "208
 )
 
 equippableBattleCommands = GetCommandsByProperties({ "equippableBattleCommand": 1 })
-achievement(title = "Rainbow Loom", points = 5, id = 187163, badge = "208050", type = "missable",
+xachievement(title = "Rainbow Loom", points = 5, id = 187163, badge = "208050", type = "missable", shouldRender = IsCore(),
     description = "Complete \"Weaver Fever\" in the Mirage Arena without any duplicate commands equipped (Critical Mode, Level 16 or below, Deck 1 only).",
     trigger = never(HasDuplicateCommandInDeckOfSize(equippableBattleCommands, 1, 8))
         && never(DeckLoadoutChanged()) && CurrentDeckIs(1)
         && MirageArenaCheckpointReachedForCharacters(0x301, "MirageChamber", AnyArmoredCharacter(), 4, difficulty = "Critical", level = 16)
 )
 
-achievement(title = "Weapon Confiscation", points = 5, id = 187164, badge = "208051", type = "missable",
+xachievement(title = "Weapon Confiscation", points = 5, id = 187164, badge = "208051", type = "missable", shouldRender = IsCore(),
     description = "Complete \"Sinister Sentinel\" in the Mirage Arena with only three battle command slots filled and without using Shotlocks (Critical Mode, Level 23 or below).",
     trigger = NeverJustUsedAnyGivenCommandInArena(shotlocks)
         && MirageArenaCheckpointReachedForCharacters(0x401, "MirageArena1", AnyArmoredCharacter(), 5, difficulty = "Critical", level = 23)
@@ -2579,7 +2596,7 @@ function NeverUsedAnyUniqueCommandsGivenNumberOfTimesInArena(haystack, limit)
 }
 
 surgeBattleCommands = GetCommandsByCallback(command => command["name"] == "Fire Surge" || command["name"] == "Thunder Surge" || command["name"] == "Barrier Surge")
-achievement(title = "Minor Duplication", points = 5, id = 187165, badge = "208052", type = "missable",
+xachievement(title = "Minor Duplication", points = 5, id = 187165, badge = "208052", type = "missable", shouldRender = IsCore(),
     description = "Complete \"Dead Ringer\" in the Mirage Arena using only two kinds of non-Surge battle commands (Critical Mode, Level 25 or below).",
     trigger = MirageArenaCheckpointReachedForCharacters(0x501, "MirageDeck", AnyArmoredCharacter(), 5, difficulty = "Critical", level = 25)
         && NeverUsedAnyUniqueCommandsGivenNumberOfTimesInArena(battleCommands, 3)
@@ -2647,7 +2664,7 @@ function NumberOfGivenAbilitiesEquippedByAddrGreaterThanOrEqualTo(addrs, max)
     return tally(max, ret)
 }
 
-achievement(title = "Combined Boon", points = 10, id = 187166, badge = "208053", type = "missable",
+xachievement(title = "Combined Boon", points = 10, id = 187166, badge = "208053", type = "missable", shouldRender = IsCore(),
     description = "Complete \"Combined Threat\" in the Mirage Arena with only two beneficial Stat and Support Abilities each turned on (Critical Mode, Level 29 or below).",
     trigger = MirageArenaCheckpointReachedForCharacters(0x601, "MirageExterior", AnyArmoredCharacter(), 6, difficulty = "Critical", level = 29)
         && never(NumberOfStatAbilitiesEquipped(3))
@@ -2655,14 +2672,14 @@ achievement(title = "Combined Boon", points = 10, id = 187166, badge = "208053",
 )
 
 battleCommandsThatUseMoreThanOneSlot = GetCommandsByCallback(command => command["slots"] > 1)
-achievement(title = "Healthcare Budgeting", points = 5, id = 187167, badge = "208054", type = "missable",
+xachievement(title = "Healthcare Budgeting", points = 5, id = 187167, badge = "208054", type = "missable", shouldRender = IsCore(),
     description = "Complete \"Risky Riches\" in the Mirage Arena using only commands that take up a single slot and without taking damage more than three times (Critical Mode, Level 20 or below).",
     trigger = MirageArenaCheckpointReachedForCharacters(0x201, "MirageSkull", AnyArmoredCharacter(), 3, difficulty = "Critical", level = 20)
         && never(repeated(4, TookDamageInTheMirageArena()))
         && NeverJustUsedAnyGivenCommandInArena(battleCommandsThatUseMoreThanOneSlot)
 )
 
-achievement(title = "Escalation of Force", points = 10, id = 187168, badge = "208055", type = "missable",
+xachievement(title = "Escalation of Force", points = 10, id = 187168, badge = "208055", type = "missable", shouldRender = IsCore(),
     description = "Complete \"Harsh Punishment\" in the Mirage Arena with only five battle command slots filled (Critical Mode, Level 32 or below).",
     trigger = MirageArenaCheckpointReachedForCharacters(0x801, "MirageArena1", AnyArmoredCharacter(), 6, difficulty = "Critical", level = 32)
         && never(CommandDeckSlotsFilledIsAtLeast(6))
@@ -2677,18 +2694,18 @@ function MonstroMirageArenaCheckpointReachedForCharacters()
 }
 
 function MonstroDefeatTriggered() => IsInBattle() && bit3(battleFlagsAddr()) == 1 && arenaHp() > 0 && characterArenaPointer() != 0
-achievement(title = "The Madness of Man", points = 25, id = 187169, badge = "208056", type = "missable",
+xachievement(title = "The Madness of Man", points = 25, id = 187169, badge = "208056", type = "missable", shouldRender = IsCore(),
     description = "Complete \"The Monster of the Sea\" in the Mirage Arena in four rounds or fewer (Critical Mode, Level 35 or below).",
     trigger = MonstroMirageArenaCheckpointReachedForCharacters()
 )
 
-achievement(title = "Scrounging to Survive", points = 10, id = 187170, badge = "208057", type = "missable",
+xachievement(title = "Scrounging to Survive", points = 10, id = 187170, badge = "208057", type = "missable", shouldRender = IsCore(),
     description = "Complete \"Treasure Tussle\" in the Mirage Arena without using commands that directly heal you (Critical Mode, Level 24 or below).",
     trigger = MirageArenaCheckpointReachedForCharacters(0x701, "MiragePinball", AnyArmoredCharacter(), 3, difficulty = "Critical", level = 24)
         && NeverJustUsedAnyGivenCommandInArena(directHealingCommands)
 )
 
-achievement(title = "Rolling Blackout", points = 25, id = 187171, badge = "208058", type = "missable",
+xachievement(title = "Rolling Blackout", points = 25, id = 187171, badge = "208058", type = "missable", shouldRender = IsCore(),
     description = "Complete \"Copycat Crisis\" in the Mirage Arena using battle commands only on even-numbered rounds (Critical Mode, Level 45 or below).",
     trigger = MirageArenaCheckpointReachedForCharacters(0xa01, "MirageSummit", AnyArmoredCharacter(), 8, difficulty = "Critical", level = 45)
         // We need to check oddness for each round individually because (1) the modulo operator isn't supported in the editor and (2) the logic would be too complex otherwise.
@@ -2712,7 +2729,7 @@ achievement(title = "Rolling Blackout", points = 25, id = 187171, badge = "20805
 nonFireBattleCommandsAndShotlocks = GetCommandsByCallback(command => (command["equippableBattleCommand"] == 1 || command["supercategory"] == "Shotlock") && command["element"] != "Fire")
 nonFireOrCureBattleCommandsAndShotlocks = GetCommandsByCallback(command => (command["equippableBattleCommand"] == 1 || command["supercategory"] == "Shotlock") && command["element"] != "Fire"
     && command["name"] != "Cure" && command["name"] != "Cura" && command["name"] != "Curaga")
-achievement(title = "Ribbon of Terracotta", points = 10, id = 187172, badge = "208059",
+xachievement(title = "Ribbon of Terracotta", points = 10, id = 187172, badge = "208059", shouldRender = IsCore(),
     description = "As Terra, complete \"A Time to Chill\" in the Mirage Arena using only fire-based battle commands and Shotlocks, "
         + "with Cure commands permissible only in Round 4 (Proud Mode or higher, Level 45 or below).", type = "missable",
     trigger = MirageArenaCheckpointReachedForCharacters(0x901, "MirageColiseum", [ TerraArmored() ], 8, difficulty = "Proud", level = 45)
@@ -2741,7 +2758,7 @@ function GivenCommandStyleWasActivated(activatedMem)
     return activatedMem == Delta(activatedMem) + 1
 }
 
-achievement(title = "The Spice of Life", points = 50, id = 187173, badge = "208060", type = "missable",
+xachievement(title = "The Spice of Life", points = 50, id = 187173, badge = "208060", type = "missable", shouldRender = IsCore(),
     description = "Activate seven different Command Styles in a single attempt of the \"Keepers of the Arena\" event in the Mirage Arena, and then complete it (Critical Mode, Level 48 or below).",
     trigger = MirageArenaCheckpointReachedForCharacters(0xb01, "MirageArena1", AnyArmoredCharacter(), 9, difficulty = "Critical", level = 48)
         && trigger_when(tally(7, [
@@ -2763,7 +2780,7 @@ achievement(title = "The Spice of Life", points = 50, id = 187173, badge = "2080
         ]))
 )
 
-achievement(title = "Style Specialist", points = 50, id = 187174, badge = "208061", type = "missable",
+xachievement(title = "Style Specialist", points = 50, id = 187174, badge = "208061", type = "missable", shouldRender = IsCore(),
     description = "Complete \"Villains' Vendetta\" in the Mirage Arena while activating at most one type of Command Style (Critical Mode, Level 53 or below).",
     trigger = MirageArenaCheckpointReachedForCharacters(0xd01, "MirageArena1", AnyArmoredCharacter(), 8, difficulty = "Critical", level = 53)
         && never(tally(2, [
@@ -2786,7 +2803,7 @@ achievement(title = "Style Specialist", points = 50, id = 187174, badge = "20806
 )
 
 shotlockCommands = GetCommandsByProperties({ "supercategory": "Shotlock" })
-achievement(title = "Clash of Blades", points = 50, id = 187175, badge = "208062",
+xachievement(title = "Clash of Blades", points = 50, id = 187175, badge = "208062", shouldRender = IsCore(),
     description = "Defeat the Armor of Eraqus without using Shotlocks (Critical Mode only).",
     trigger = MirageArenaCheckpointReachedForCharacters(0xe01, "MirageSummit2", AnyArmoredCharacter(), 1, difficulty = "Critical", level = 99)
         && NeverJustUsedAnyGivenCommandInArena(shotlockCommands)
@@ -2795,35 +2812,59 @@ achievement(title = "Clash of Blades", points = 50, id = 187175, badge = "208062
 function damageSyphonAddr() => 0x1f2acb8
 commandsThatExplicitlyAffectFocus = GetCommandsByCallback(command => command["name"] == "Focus Block" || command["name"] == "Focus Barrier" || command["name"] == "Ether"
     || command["name"] == "Mega-Ether" || command["name"] == "Elixir" || command["name"] == "Megalixir")
-achievement(title = "Unparalleled Focus", points = 50, id = 187176, badge = "208063",
+xachievement(title = "Unparalleled Focus", points = 50, id = 187176, badge = "208063", shouldRender = IsCore(),
     description = "Defeat No Heart without using battle commands or abilities that explicitly refill the Focus Gauge (Critical Mode only).",
     trigger = MirageArenaCheckpointReachedForCharacters(0xf01, "MirageGreatHall", AnyArmoredCharacter(), 2, difficulty = "Critical", level = 99)
         && never(IsAbilityTurnedOn(damageSyphonAddr()))
         && NeverJustUsedAnyGivenCommandInArena(commandsThatExplicitlyAffectFocus)
 )
 
+function DefeatedBossAsAnyCharacter() => TriggerConditionsMetForCharacters({
+    Terra(): BossDefeatTriggered(),
+    Ventus(): BossDefeatTriggered(),
+    Aqua(): BossDefeatTriggered()
+}, true)
+
 healingGuardCommands = GetCommandsByCallback(command => command["name"] == "Renewal Block" || command["name"] == "Renewal Barrier")
-achievement(title = "Conservation of Life", points = 50,
+xachievement(title = "Conservation of Life", points = 50, shouldRender = IsCore(), id = 187177, badge = "208064",
     description = "Defeat the Vanitas Remnant without using Renewal Block or Renewal Barrier (Proud Mode or higher).",
     trigger = CheckpointPassedForCharacters(InformationBarPoppedUpOnce()
             && IsInLocation("GraveyardBadlands2") && IsAtLeastOnDifficulty("Proud"), [ Terra(), Ventus(), Aqua() ], true)
-            && TriggerConditionsMetForCharacters({
-                Terra(): BossDefeatTriggered(),
-                Ventus(): BossDefeatTriggered(),
-                Aqua(): BossDefeatTriggered()
-            }, true)
+            && DefeatedBossAsAnyCharacter()
         && never(!IsInLocation("GraveyardBadlands2"))
         && never(IsUsingAnyGivenCommand(healingGuardCommands))
 )
 
-achievement(title = "Portent of Pain", points = 50,
+xachievement(title = "Portent of Pain", points = 50, shouldRender = IsCore(), id = 187178, badge = "208065",
     description = "Defeat the Unknown on Proud Mode or higher.",
     trigger = CheckpointPassedForCharacters(IsWaitingForBattleToBegin()
             && IsInLocation("DepartureSummitRuins2") && IsAtLeastOnDifficulty("Proud"), [ Terra(), Ventus(), Aqua() ], true)
-            && TriggerConditionsMetForCharacters({
-                Terra(): BossDefeatTriggered(),
-                Ventus(): BossDefeatTriggered(),
-                Aqua(): BossDefeatTriggered()
-            }, true)
+            && DefeatedBossAsAnyCharacter()
         && never(!IsInLocation("DepartureSummitRuins2"))
 )
+
+/* END OF CORE
+   BEGINNING OF SUBSET */
+
+eventRegister = {
+    "Wheel Master": { "article": true, "location": "EnchantedAudience2", "characters": TerraOnly(), "points": 3, "id": 0, "badge": "" },
+}
+
+for name in eventRegister
+{
+    event = eventRegister[name]
+    displayName = name
+    
+    if (event["article"])
+    {
+        displayName = "the " + displayName
+    }
+    
+    xachievement(title = name, points = event["points"], shouldRender = IsSubset(), type = "missable", id = event["id"], badge = event["badge"],
+        description = "Defeat " + displayName + " at Level 1 on Critical Mode.",
+        trigger = CheckpointPassedForCharacters(IsWaitingForBattleToBegin()
+                && IsInLocation(event["location"]) && IsAtLeastOnDifficulty("Critical") && level() <= 1, event["characters"], true)
+                && DefeatedBossAsAnyCharacter()
+            && never(!IsInLocation(event["location"]))
+    )
+}
