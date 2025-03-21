@@ -1249,12 +1249,25 @@ achievement(title = "Consolation Loot [m]", points = 10, id = 130718, badge = "1
     trigger = chapter() == 3 && IsBitflagSetInGame(dewReceivedWindSword())
 )
 
+function WasValueSetInGameFromAny(mem, newValue)
+{
+    return once(Delta(mem) != mem && mem == newValue) && never(IsLoadingSaveFile())
+}
+
+function UnitJustReceivedItemById(inventoryCountBaseAddr, itemId)
+{
+    count = byte(inventoryCountBaseAddr)
+    itemAddr = inventoryCountBaseAddr + count + 3
+    return Delta(count) != count && WasValueSetInGameFromAny(byte(itemAddr), itemId)
+}
+
 earthSwordId = 0x22
 function raquesisRetrievedEarthSword() => bit7(0x0052c4)
 function eldiganWasKilled() => bit2(0x0052c6)
-achievement(title = "Siblings' Last Quarrel [m]", points = 10, id = 130715, badge = "143912",
-    description = "Receive the Earth Sword from Eldigan in Chapter 3.",
+achievement(title = "Siblings' Last Quarrel", points = 10, id = 130715, badge = "143912", type = "missable",
+    description = "Receive the Earth Sword from Eldigan in Chapter 3 (Raquesis must have inventory space).",
     trigger = chapter() == 3 && WasBitflagSetInGame(raquesisRetrievedEarthSword()) && eldiganWasKilled() == 0
+        && UnitJustReceivedItemById(raquesisInventoryCountAddr(), earthSwordId)
 )
 
 achievement(title = "Arden's Resolve [m]", points = 3, id = 130730, badge = "143927",
