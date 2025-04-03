@@ -1023,7 +1023,8 @@ leaderboard(title = "Time Attack - Cyclok", description = "Defeat Cyclok as quic
     cancel = !IsInLocation("Cyclok"),
     submit = IsCyclokDying(),
     value = LMeasured(TimeAdvancedAgainstCyclok()),
-    format = "FRAMES"
+    format = "FRAMES",
+    lower_is_better = true
 )
 
 leaderboard(title = "Time Attack - Eox", description = "Defeat Eox as quickly as you can (DSi mode not supported).",
@@ -1031,14 +1032,16 @@ leaderboard(title = "Time Attack - Eox", description = "Defeat Eox as quickly as
     cancel = !IsInLocation("Eox"),
     submit = IsEoxDying(),
     value = LMeasured(TimeAdvancedAgainstEox()),
-    format = "FRAMES"
+    format = "FRAMES",
+    lower_is_better = true
 )
 
 leaderboard(title = "Goron Game", description = "Finish the Goron Game in the fastest time you can.",
     start = IsInLocation("DS") && goronGameState() != 0xffffffff && goronGameCountdown() == 0x3,
     cancel = !IsInLocation("DS"),
     submit = GoronGameDisplayIsActive() && goronGameTargetsRemaining() == 0,
-    value = goronGameTime() * 2
+    value = goronGameTime() * 2,
+    lower_is_better = true
 )
 
 leaderboard(title = "Cannon Game", description = "Get the highest score you can.",
@@ -1060,5 +1063,6 @@ leaderboard(title = "Time Trial - Sandless Temple of the Ocean King",
     start = StartedTotokFromFloor1() && phantomSword() == 1,
     cancel = IsInLocation("OceanKingLobby") || RegainedSand(),
     submit = ReachedFinalFloor(),
-    value = TimeSpentInTotok()
+    value = TimeSpentInTotok(),
+    lower_is_better = true
 )
