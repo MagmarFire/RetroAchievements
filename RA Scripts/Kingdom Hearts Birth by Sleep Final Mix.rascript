@@ -685,13 +685,30 @@ function IsOnTitleScreen() => IsInLocation("Title")
 
 function GetAreaHash(areaId, worldId) => areaId + worldId * 256
 
-rich_presence_conditional_display(!IsOnTitleScreen(), "{0}, Level {1} | {2}{3} | Play time: {4}",
-    rich_presence_lookup("Characters", currentCharacter(), CharacterIdToNames()),
-    rich_presence_value("Level", level(), "VALUE"),
-    rich_presence_lookup("WorldDisplay", GetAreaHash(areaId(), worldId()), GetRPWorldLookup()),
-    rich_presence_lookup("Areas", GetAreaHash(areaId(), worldId()), GetAreaRPLookup()),
-    rich_presence_value("Play Time", playTime(), "SECS")
-)
+if (IsCore())
+{
+    rich_presence_conditional_display(!IsOnTitleScreen(), "{0}, Level {1} | {2}{3} | Play time: {4}",
+        rich_presence_lookup("Characters", currentCharacter(), CharacterIdToNames()),
+        rich_presence_value("Level", level(), "VALUE"),
+        rich_presence_lookup("WorldDisplay", GetAreaHash(areaId(), worldId()), GetRPWorldLookup()),
+        rich_presence_lookup("Areas", GetAreaHash(areaId(), worldId()), GetAreaRPLookup()),
+        rich_presence_value("Play Time", playTime(), "SECS")
+    )
+}
+else
+{
+    rich_presence_conditional_display(!IsOnTitleScreen() && level() <= 1 && IsAtLeastOnDifficulty("Critical"), "{0}, Level {1} | {2}{3} | Play time: {4}",
+        rich_presence_lookup("Characters", currentCharacter(), CharacterIdToNames()),
+        rich_presence_value("Level", level(), "VALUE"),
+        rich_presence_lookup("WorldDisplay", GetAreaHash(areaId(), worldId()), GetRPWorldLookup()),
+        rich_presence_lookup("Areas", GetAreaHash(areaId(), worldId()), GetAreaRPLookup()),
+        rich_presence_value("Play Time", playTime(), "SECS")
+    )
+    
+    rich_presence_conditional_display(!IsOnTitleScreen() && IsAtLeastOnDifficulty("Critical"), "Achievements disabled! Not playing on Level 1.")
+    rich_presence_conditional_display(!IsOnTitleScreen() && level() <= 1, "Achievements disabled! Not playing on Critical Mode.")
+    rich_presence_conditional_display(!IsOnTitleScreen(), "Achievements disabled! Not playing at Level 1 on Critical Mode.")
+}
 
 rich_presence_conditional_display(IsOnTitleScreen(), "On the title screen...")
 
@@ -1152,6 +1169,15 @@ function IsAbilityTurnedOn(addr)
     return bit0(addr) + bit1(addr) * 2 + bit2(addr) * 4 > 0
 }
 
+function TriggerConditionsMetForAllCharacters(condition, useTrigger = true)
+{
+    return TriggerConditionsMetForCharacters({
+        Terra(): TrinityArmorWasJustDefeated(),
+        Ventus(): TrinityArmorWasJustDefeated(),
+        Aqua(): TrinityArmorWasJustDefeated()
+    }, useTrigger)
+}
+
 function trinityArmorsDefeated() => word(0x1f35fd6)
 function TrinityArmorWasJustDefeated() => Delta(trinityArmorsDefeated()) < trinityArmorsDefeated()
 function secondChanceActiveAddr() => 0x1f2acbc
@@ -1161,11 +1187,7 @@ xachievement(title = "Face, Meet Cannon", points = 10, id = 187057, badge = "207
     trigger = IsAlwaysInGame()
         && CheckpointPassedForCharacters(once(InformationBarJustPoppedUp() && IsInLocation("RadiantReactor")) && IsAtLeastOnDifficulty("Critical") && level() <= 8,
             [ Terra(), Ventus(), Aqua() ], true)
-        && TriggerConditionsMetForCharacters({
-            Terra(): TrinityArmorWasJustDefeated(),
-            Ventus(): TrinityArmorWasJustDefeated(),
-            Aqua(): TrinityArmorWasJustDefeated()
-        }, true)
+        && TriggerConditionsMetForAllCharacters(TrinityArmorWasJustDefeated())
         && never(IsAbilityTurnedOn(secondChanceActiveAddr()))
         && never(IsAbilityTurnedOn(onceMoreActiveAddr()))
 )
@@ -2847,24 +2869,80 @@ xachievement(title = "Portent of Pain", points = 50, shouldRender = IsCore(), id
    BEGINNING OF SUBSET */
 
 eventRegister = {
-    "Wheel Master": { "article": true, "location": "EnchantedAudience2", "characters": TerraOnly(), "points": 3, "id": 0, "badge": "" },
+    "Wheel Master": { "article": true, "location": "EnchantedAudience2", "characters": TerraOnly(), "points": 3, "id": 492931, "badge": "" },
+    "Symphony Master": { "article": true, "location": "CastleBallroom", "characters": TerraOnly(), "points": 5, "id": 492932, "badge": "" },
+    "Spirit of the Magic Mirror (Terra)": { "article": true, "location": "DwarfMirror", "characters": TerraOnly(), "points": 5, "id": 492933, "badge": "",
+        "description": "Defeat the Spirit of the Magic Mirror as Terra at Level 1 on Critical Mode." },
+    "Spirit of the Magic Mirror (Aqua)": { "article": true, "location": "DwarfMirror", "characters": AquaOnly(), "points": 5, "id": 0, "badge": "",
+        "description": "Defeat the Spirit of the Magic Mirror as Aqua at Level 1 on Critical Mode."},
+    "Trinity Armor": { "article": true, "location": "RadiantReactor", "characters": [ Terra(), Ventus(), Aqua() ], "points": 5, "id": 492934, "badge": "",
+        "triggerWhen": TriggerConditionsMetForAllCharacters(TrinityArmorWasJustDefeated(), false) },
+    "Braig (Radiant Garden)": { "article": false, "location": "RadiantPurification", "characters": TerraOnly(), "points": 10, "id": 492935, "badge": "",
+        "description": "Defeat Braig as Terra at Level 1 on Critical Mode." },
+    "Experiment 221": { "article": false, "location": "SpacePod", "characters": TerraOnly(), "points": 10, "id": 0, "badge": "" },
+    "Zack (Terra)": { "article": false, "location": "OlympusEast", "characters": TerraOnly(), "points": 10, "id": 0, "badge": "", "alsoWhen": DefeatedZackForTheFirstTime() },
+    "Peter Pan": { "article": false, "location": "NeverlandSkullCavern", "characters": TerraOnly(), "points": 5, "id": 0, "badge": "", "triggerWhen": BladechargeLearned(),
+        "neverWhen": (!IsInBattle() || DefeatedPeterPan()) },
+    "Eraqus": { "article": false, "location": "DepartureForecourtDay", "characters": TerraOnly(), "points": 25, "id": 0, "badge": "" },
+    "Xehanort": { "article": false, "location": "Graveyard3", "characters": TerraOnly(), "points": 25, "id": 0, "badge": "", "neverWhen": !DefeatedXehanortI() },
+    "Terra-Xehanort": { "article": false, "location": "GraveyardCage", "characters": [ TerraArmored() ], "points": 25, "id": 0, "badge": "", "triggerWhen": TriggerConditionsMetForCharacters({
+        TerraArmored(): BossDefeatTriggered()
+    }, false) },
+    "Mad Treant": { "article": true, "location": "DwarfWoods", "characters": VentusOnly(), "points": 3, "id": 0, "badge": "" },
+    "Lucifer": { "article": false, "location": "CastleWardrobe2", "characters": VentusOnly(), "points": 5, "id": 0, "badge": "" },
+    "Maleficent": { "article": false, "location": "EnchantedThrone", "characters": VentusOnly(), "points": 5, "id": 0, "badge": "" },
+    "Vanitas (Badlands)": { "article": false, "location": "GraveyardBadlands", "characters": VentusOnly(), "points": 10, "id": 0, "badge": "", "description": "Defeat Vanitas alongside King Mickey"
+        + " at Level 1 on Critical Mode.", "neverWhen": !IsFacingVanitasIAsVen() },
+    "Metamorphosis": { "article": true, "location": "SpaceMachineryBay", "characters": VentusOnly(), "points": 10, "id": 0, "badge": "" },
+    "Captain Hook": { "article": false, "location": "NeverlandCove", "characters": VentusOnly(), "points": 10, "id": 0, "badge": "" },
+    "Vanitas (Keyblade Graveyard)": { "article": false, "location": "Graveyard4", "characters": [ VentusArmoredHelmetless() ], "points": 25, "id": 0, "badge": "",
+        "description": "Defeat Vanitas in the Keyblade Graveyard at Level 1 on Critical Mode.", "triggerWhen": TriggerConditionsMetForCharacters({
+        VentusArmoredHelmetless(): BossDefeatTriggered()
+    }, false) },
+    "Final Vanitas": { "article": false, "location": "VentusHeart2", "characters": VentusOnly(), "points": 25, "id": 0, "badge": "" }
 }
 
 for name in eventRegister
 {
     event = eventRegister[name]
     displayName = name
+    triggerWhen = DefeatedBossAsAnyCharacter()
+    alsoWhen = always_true()
+    neverWhen = always_false()
     
     if (event["article"])
     {
         displayName = "the " + displayName
     }
     
+    description = "Defeat " + displayName + " at Level 1 on Critical Mode."
+    
+    if (dictionary_contains_key(event, "description"))
+    {
+        description = event["description"]
+    }
+    
+    if (dictionary_contains_key(event, "triggerWhen"))
+    {
+        triggerWhen = trigger_when(event["triggerWhen"])
+    }
+    
+    if (dictionary_contains_key(event, "alsoWhen"))
+    {
+        alsoWhen = event["alsoWhen"]
+    }
+    
+    if (dictionary_contains_key(event, "neverWhen"))
+    {
+        neverWhen = event["neverWhen"]
+    }
+    
     xachievement(title = name, points = event["points"], shouldRender = IsSubset(), type = "missable", id = event["id"], badge = event["badge"],
-        description = "Defeat " + displayName + " at Level 1 on Critical Mode.",
+        description = description,
         trigger = CheckpointPassedForCharacters(IsWaitingForBattleToBegin()
-                && IsInLocation(event["location"]) && IsAtLeastOnDifficulty("Critical") && level() <= 1, event["characters"], true)
-                && DefeatedBossAsAnyCharacter()
-            && never(!IsInLocation(event["location"]))
+            && IsInLocation(event["location"]) && IsAtLeastOnDifficulty("Critical")
+            && alsoWhen, event["characters"], true)
+            && triggerWhen && level() <= 1 && never(!IsInLocation(event["location"]))
+            && never(neverWhen)
     )
 }
