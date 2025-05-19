@@ -1242,9 +1242,10 @@ achievement(title = "Hypoxic Cabin [m]", points = 5, id = 187064, badge = "20795
 )
 
 function deepSpaceTerraStoryEntry() => bit7(0x1f28524)
-achievement(title = "For but a Moment", points = 3,
+achievement(title = "For but a Moment", points = 3, type = "progression", id = 187065, badge = "207952",
     description = "Complete Deep Space as Terra.",
     trigger = WasBitflagSetInGame(deepSpaceTerraStoryEntry()) && IsInLocation("WorldMap")
+        && never(!IsPlayingAsTerra())
 )
 
 function UsedAnyUniqueCommandsGivenNumberOfTimes(usableCommands, usages)
