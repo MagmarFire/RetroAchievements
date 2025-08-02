@@ -30,11 +30,11 @@ function IsSatisfyingLevel1CriticalModeConditions()
     return IsLevel1() && IsOnCriticalMode() && HasLowEnoughAP() && HasFewPowerBoosts() && HasFewMagicBoosts() && HasFewDefenseBoosts()
 }
 
-function xachievement(title, description, points, trigger, badge = "00000", id = 0)
+function xachievement(title, description, points, trigger, badge = "00000", id = 0, type = "")
 {
     if (!generateBonusAchievements())
     {
-        achievement(title = title, description = description, points = points, trigger = trigger, badge = badge, id = id)
+        achievement(title = title, description = description, points = points, trigger = trigger, badge = badge, id = id, type = type)
     }
 }
 
@@ -1881,20 +1881,20 @@ function PainAndPanicCupCheckpointReached(when = always_true())
     => once(eventId() == 0xbd && IsActiveInTheField() && IsInLocation("ColiseumTourney1") && JustBecameActiveInTheField() && currentRound() == 1 && when)
     && never(IsDead()) && never(IsInLocation("UnderworldEntrance"))
 function WonThePainAndPanicCup() => eventId() == 0xb4 && IsInLocation("ColiseumVictory") || ClearAnimationStarted()
-xachievement(title = "Pain and Panic Champion", description = "Win the Pain and Panic Cup.", points = 3,
+xachievement(title = "Pain and Panic Champion", description = "Win the Pain and Panic Cup starting from Round 1.", points = 3,
     id = 356881, badge = "402075",
     trigger = PainAndPanicCupCheckpointReached() && WonThePainAndPanicCup()
 )
 
 function underdromeCurrentScore() => dword(0x01d48efc)
-xachievement(title = "Pain and Panic Recordsetter", description = "Win the Pain and Panic Cup with a score of 2000 or more.", points = 5,
+xachievement(title = "Pain and Panic Recordsetter", description = "Win the Pain and Panic Cup with a score of 2000 or more starting from Round 1.", points = 5,
     id = 356882, badge = "402076",
     trigger = PainAndPanicCupCheckpointReached() && trigger_when(underdromeCurrentScore() >= 2000)
         && trigger_when(WonThePainAndPanicCup())
 )
 
-xachievement(title = "Pain and Panic Title Defender [m]", description = "Win the Pain and Panic Cup without using Limits (Proud Mode or higher; Level 30 or below).", points = 25,
-    id = 356883, badge = "402077",
+xachievement(title = "Pain and Panic Title Defender", description = "Win the Pain and Panic Cup without using Limits starting from Round 1 (Proud Mode or higher; Level 30 or below).", points = 25,
+    id = 356883, badge = "402077", type = "missable",
     trigger = PainAndPanicCupCheckpointReached(when = level() <= 30 && IsAtLeastOnDifficulty("Proud"))
         && trigger_when(WonThePainAndPanicCup())
         && never(LimitIsBeingUsed())
@@ -1909,7 +1909,7 @@ xachievement(title = "Cerberus Champion", description = "Win the Cerberus Cup.",
     trigger = CerberusCupCheckpointReached() && WonTheCerberusCup()
 )
 
-xachievement(title = "Cerberus Recordsetter", description = "Win the Cerberus Cup with a score of 1000 or more.", points = 5,
+xachievement(title = "Cerberus Recordsetter", description = "Win the Cerberus Cup with a score of 1000 or more starting from Round 1.", points = 5,
     id = 356886, badge = "402080",
     trigger = CerberusCupCheckpointReached() && trigger_when(underdromeCurrentScore() >= 1000)
         && trigger_when(WonTheCerberusCup())
@@ -1924,8 +1924,8 @@ function ViolatedCerberusCupRules(when = always_true()) => ConditionIsTrueMoreTh
         || ConditionIsTrueMoreThanOncePerRound(JustEnteredAntiForm())
 // Checking for whether or not the player is active on the field is so that they can use the Retry option in the middle of Round 1 and not have their uses carry over.
 function ConditionIsTrueMoreThanOncePerRound(condition) => repeated(2, condition && never(CurrentRoundHasChanged()) && never(!IsActiveInTheField()))
-xachievement(title = "Cerberus Title Defender [m]", description = "Win the Cerberus Cup without activating the same Drive Form more than once per round (Proud Mode or higher; Level 33 or below).",
-    points = 25, id = 356884, badge = "402078",
+xachievement(title = "Cerberus Title Defender", description = "Win the Cerberus Cup without activating the same Drive Form more than once per round starting from Round 1 (Proud Mode or higher; Level 33 or below).",
+    points = 25, id = 356884, badge = "402078", type = "missable",
     trigger = CerberusCupCheckpointReached(when = level() <= 33 && IsAtLeastOnDifficulty("Proud"))
         && trigger_when(WonTheCerberusCup())
         && never(ViolatedCerberusCupRules())
@@ -1935,20 +1935,20 @@ function TitanCupCheckpointReached(when = always_true())
     => once(eventId() == 0xbf && IsActiveInTheField() && IsInLocation("ColiseumTourney1") && JustBecameActiveInTheField() && currentRound() == 1 && when)
     && never(IsDead()) && never(IsInLocation("UnderworldEntrance"))
 function WonTheTitanCup() => eventId() == 0xb5 && IsInLocation("ColiseumVictory") || ClearAnimationStarted()
-xachievement(title = "Titan Champion", description = "Win the Titan Cup.", points = 3,
+xachievement(title = "Titan Champion", description = "Win the Titan Cup starting from Round 1.", points = 3,
     id = 356955, badge = "402152",
     trigger = TitanCupCheckpointReached() && WonTheTitanCup()
 )
 
-xachievement(title = "Titan Recordsetter", description = "Win the Titan Cup with a score of 5000 or more.", points = 5,
+xachievement(title = "Titan Recordsetter", description = "Win the Titan Cup with a score of 5000 or more starting from Round 1.", points = 5,
     id = 356956, badge = "402153",
     trigger = TitanCupCheckpointReached() && trigger_when(underdromeCurrentScore() >= 5000)
         && trigger_when(WonTheTitanCup())
 )
 
 function keyScore() => dword(0x01d48f6c)
-xachievement(title = "Titan Title Defender [m]", description = "Win the Titan Cup with at least 125 points remaining (Proud Mode or higher; Level 45 or below).",
-    points = 50, id = 356957, badge = "402154",
+xachievement(title = "Titan Title Defender", description = "Win the Titan Cup with at least 125 points remaining starting from Round 1 (Proud Mode or higher; Level 45 or below).",
+    points = 50, id = 356957, badge = "402154", type = "missable",
     trigger = TitanCupCheckpointReached(when = level() <= 45 && IsAtLeastOnDifficulty("Proud"))
         && trigger_when(WonTheTitanCup())
         && never(keyScore() < 125)
@@ -1958,19 +1958,19 @@ function GoddessOfFateCupCheckpointReached(when = always_true())
     => once(eventId() == 0xc0 && IsActiveInTheField() && IsInLocation("ColiseumTourney1") && JustBecameActiveInTheField() && currentRound() == 1 && when)
     && never(IsDead()) && never(IsInLocation("UnderworldEntrance"))
 function WonTheGoddessOfFateCup() => eventId() == 0xb7 && IsInLocation("ColiseumVictory") || ClearAnimationStarted()
-xachievement(title = "Goddess of Fate Champion", description = "Win the Goddess of Fate Cup.", points = 3,
+xachievement(title = "Goddess of Fate Champion", description = "Win the Goddess of Fate Cup starting from Round 1.", points = 3,
     id = 356958, badge = "402155",
     trigger = GoddessOfFateCupCheckpointReached() && WonTheGoddessOfFateCup()
 )
 
-xachievement(title = "Goddess of Fate Recordsetter", description = "Win the Goddess of Fate Cup with a score of 3000 or more.", points = 5,
+xachievement(title = "Goddess of Fate Recordsetter", description = "Win the Goddess of Fate Cup with a score of 3000 or more starting from Round 1.", points = 5,
     id = 356959, badge = "402156",
     trigger = GoddessOfFateCupCheckpointReached() && trigger_when(underdromeCurrentScore() >= 3000)
         && trigger_when(WonTheGoddessOfFateCup())
 )
 
-xachievement(title = "Goddess of Fate Title Defender [m]", description = "Win the Goddess of Fate Cup without using Magnet magic (Proud Mode or higher; Level 50 or below).",
-    points = 10, id = 356960, badge = "402157",
+xachievement(title = "Goddess of Fate Title Defender", description = "Win the Goddess of Fate Cup without using Magnet magic starting from Round 1 (Proud Mode or higher; Level 50 or below).",
+    points = 10, id = 356960, badge = "402157", type = "missable",
     trigger = GoddessOfFateCupCheckpointReached(when = level() <= 50 && IsAtLeastOnDifficulty("Proud"))
         && trigger_when(WonTheGoddessOfFateCup())
         && never(JustUsedMagnet())
@@ -1982,21 +1982,21 @@ function PainAndPanicParadoxCupCheckpointReached(when = always_true())
     => once(eventId() == 0xc1 && IsActiveInTheField() && IsInLocation("ColiseumTourney1") && JustBecameActiveInTheField() && currentRound() == 1 && when)
     && never(IsDead()) && never(IsTransitioningToOrFromBattle())
 function WonThePainAndPanicParadoxCup() => battleState() == 5 && Delta(battleState()) == 1 && IsInLocation("HadesChamber") || ClearAnimationStarted()
-xachievement(title = "Pain and Panic Paradox Champion", description = "Win the Pain and Panic Paradox Cup.", points = 3,
+xachievement(title = "Pain and Panic Paradox Champion", description = "Win the Pain and Panic Paradox Cup starting from Round 1.", points = 3,
     id = 356962, badge = "402159",
     trigger = PainAndPanicParadoxCupCheckpointReached() && WonThePainAndPanicParadoxCup()
 )
 
 function underdromeCurrentScore() => dword(0x01d48efc)
-xachievement(title = "Pain and Panic Paradox Recordsetter", description = "Win the Pain and Panic Paradox Cup with a score of 2500 or more.", points = 5,
+xachievement(title = "Pain and Panic Paradox Recordsetter", description = "Win the Pain and Panic Paradox Cup with a score of 2500 or more starting from Round 1.", points = 5,
     id = 356963, badge = "402160",
     trigger = PainAndPanicParadoxCupCheckpointReached() && trigger_when(underdromeCurrentScore() >= 2500)
         && trigger_when(WonThePainAndPanicParadoxCup())
 )
 
 function ViolatedPainAndPanicParadoxCupRules() => LimitIsBeingUsed()
-xachievement(title = "Pain and Panic Paradox Title Defender [m]", description = "Win the Pain and Panic Paradox Cup without using Limits (Proud Mode or higher; Level 50 or below).", points = 25,
-    id = 356964, badge = "402161",
+xachievement(title = "Pain and Panic Paradox Title Defender", description = "Win the Pain and Panic Paradox Cup without using Limits starting from Round 1 (Proud Mode or higher; Level 50 or below).", points = 25,
+    id = 356964, badge = "402161", type = "missable",
     trigger = PainAndPanicParadoxCupCheckpointReached(when = level() <= 50 && IsAtLeastOnDifficulty("Proud"))
         && trigger_when(WonThePainAndPanicParadoxCup())
         && never(ViolatedPainAndPanicParadoxCupRules())
@@ -2006,19 +2006,19 @@ function CerberusParadoxCupCheckpointReached(when = always_true())
     => once(eventId() == 0xc2 && IsActiveInTheField() && IsInLocation("ColiseumTourney1") && JustBecameActiveInTheField() && currentRound() == 1 && when)
     && never(IsDead()) && never(IsTransitioningToOrFromBattle())
 function WonTheCerberusParadoxCup() => battleState() == 5 && Delta(battleState()) == 1 && IsInLocation("HadesChamber") || ClearAnimationStarted()
-xachievement(title = "Cerberus Paradox Champion", description = "Win the Cerberus Paradox Cup.", points = 3,
+xachievement(title = "Cerberus Paradox Champion", description = "Win the Cerberus Paradox Cup starting from Round 1.", points = 3,
     id = 356965, badge = "402162",
     trigger = CerberusParadoxCupCheckpointReached() && WonTheCerberusParadoxCup()
 )
 
-xachievement(title = "Cerberus Paradox Recordsetter", description = "Win the Cerberus Paradox Cup with a score of 1300 or more.", points = 5,
+xachievement(title = "Cerberus Paradox Recordsetter", description = "Win the Cerberus Paradox Cup with a score of 1300 or more starting from Round 1.", points = 5,
     id = 356966, badge = "402163",
     trigger = CerberusParadoxCupCheckpointReached() && trigger_when(underdromeCurrentScore() >= 1300)
         && trigger_when(WonTheCerberusParadoxCup())
 )
 
-xachievement(title = "Cerberus Paradox Title Defender [m]", description = "Win the Cerberus Paradox Cup without activating the same Drive Form more than once per round (Proud Mode or higher; Level 60 or below).",
-    points = 25, id = 356967, badge = "402164",
+xachievement(title = "Cerberus Paradox Title Defender", description = "Win the Cerberus Paradox Cup without activating the same Drive Form more than once per round starting from Round 1 (Proud Mode or higher; Level 60 or below).",
+    points = 25, id = 356967, badge = "402164", type = "missable",
     trigger = CerberusParadoxCupCheckpointReached(when = level() <= 60 && IsAtLeastOnDifficulty("Proud"))
         && trigger_when(WonTheCerberusParadoxCup())
         && never(ViolatedCerberusCupRules())
@@ -2028,12 +2028,12 @@ function TitanParadoxCupCheckpointReached(when = always_true())
     => once(eventId() == 0xc3 && IsActiveInTheField() && IsInLocation("ColiseumTourney1") && JustBecameActiveInTheField() && currentRound() == 1 && when)
     && never(IsDead()) && never(IsTransitioningToOrFromBattle())
 function WonTheTitanParadoxCup() => battleState() == 5 && Delta(battleState()) == 1 && IsInLocation("HadesChamber") || ClearAnimationStarted()
-xachievement(title = "Titan Paradox Champion", description = "Win the Titan Paradox Cup.", points = 3,
+xachievement(title = "Titan Paradox Champion", description = "Win the Titan Paradox Cup starting from Round 1.", points = 3,
     id = 356968, badge = "402165",
     trigger = TitanParadoxCupCheckpointReached() && WonTheTitanParadoxCup()
 )
 
-xachievement(title = "Titan Paradox Recordsetter", description = "Win the Titan Paradox Cup with a score of 10000 or more.", points = 5,
+xachievement(title = "Titan Paradox Recordsetter", description = "Win the Titan Paradox Cup with a score of 10000 or more starting from Round 1.", points = 5,
     id = 356969, badge = "402166",
     trigger = TitanParadoxCupCheckpointReached() && trigger_when(underdromeCurrentScore() >= 10000)
         && trigger_when(WonTheTitanParadoxCup())
@@ -2052,8 +2052,8 @@ function JustUsedPeterPan() => Delta(peterPanUses()) != peterPanUses()
 // Without this, the OrNexts that would result if we put the round checks outside would be placed before the round checks instead of after.
 function ViolatedTitanParadoxCupRules(when = always_true())
     => repeated(3, when && (JustUsedChickenLittle()) || repeated(3, JustUsedGenie()) || repeated(3, JustUsedStitch()) || repeated(3, JustUsedPeterPan()))
-xachievement(title = "Titan Paradox Title Defender [m]", description = "Win the Titan Paradox Cup without using any individual summon more than twice each (Proud Mode or higher; Level 70 or below).",
-    points = 10, id = 356970, badge = "402167",
+xachievement(title = "Titan Paradox Title Defender", description = "Win the Titan Paradox Cup without using any individual summon more than twice each starting from Round 1 (Proud Mode or higher; Level 70 or below).",
+    points = 10, id = 356970, badge = "402167", type = "missable",
     trigger = TitanParadoxCupCheckpointReached(when = level() <= 70 && IsAtLeastOnDifficulty("Proud"))
         && trigger_when(WonTheTitanParadoxCup())
         && never(ViolatedTitanParadoxCupRules())
@@ -2063,19 +2063,19 @@ function HadesParadoxCupCheckpointReached(when = always_true())
     => once(eventId() == 0xc4 && IsActiveInTheField() && IsInLocation("ColiseumTourney1") && JustBecameActiveInTheField() && currentRound() == 1 && when)
     && never(IsDead()) && never(IsInLocation("UnderworldEntrance"))
 function WonTheHadesParadoxCup() => eventId() == 0xb8 && IsInLocation("ColiseumVictory") || ClearAnimationStarted()
-xachievement(title = "Hades Paradox Champion", description = "Win the Hades Paradox Cup.", points = 5,
+xachievement(title = "Hades Paradox Champion", description = "Win the Hades Paradox Cup starting from Round 1.", points = 5,
     id = 356971, badge = "402168",
     trigger = HadesParadoxCupCheckpointReached() && WonTheHadesParadoxCup()
 )
 
-xachievement(title = "Hades Paradox Recordsetter", description = "Win the Hades Paradox Cup with a score of 15000 or more.", points = 10,
+xachievement(title = "Hades Paradox Recordsetter", description = "Win the Hades Paradox Cup with a score of 15000 or more starting from Round 1.", points = 10,
     id = 356972, badge = "402169",
     trigger = HadesParadoxCupCheckpointReached() && trigger_when(underdromeCurrentScore() >= 15000)
         && trigger_when(WonTheHadesParadoxCup())
 )
 
 xachievement(title = "Hades Paradox Title Defender", description = "Win the Hades Paradox Cup on Proud Mode or higher while adhering to the same achievement conditions for each Paradox Cup's "
-    + "respective set of rounds.", points = 50,
+    + "respective set of rounds starting from Round 1.", points = 50,
     id = 356973, badge = "402170",
     trigger = HadesParadoxCupCheckpointReached(when = IsAtLeastOnDifficulty("Proud"))
         && trigger_when(WonTheHadesParadoxCup())
