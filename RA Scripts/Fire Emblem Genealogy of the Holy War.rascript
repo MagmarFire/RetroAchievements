@@ -1347,9 +1347,11 @@ achievement(title = "The Same Loving Smile [m]", points = 5, id = 130758, badge 
 )
 
 function altenaConvincesArion() => bit5(0x0052c9)
-achievement(title = "Reason Before Pride [m]", points = 5, id = 130763, badge = "143961",
-    description = "Convince Arion to take up arms against Julius in the final chapter.",
+function juliusDefeatCutscenePlayed() => bit7(0x0052c4)
+achievement(title = "Reason Before Pride", points = 5, id = 130763, badge = "143961", type = "missable",
+    description = "Convince Arion to take up arms before Julius's defeat in the final chapter.",
     trigger = chapter() == 11 && IsBitflagSetInGame(altenaConvincesArion())
+        && never(juliusDefeatCutscenePlayed() == 1)
 )
 
 function GetTacticsRankConditions()
