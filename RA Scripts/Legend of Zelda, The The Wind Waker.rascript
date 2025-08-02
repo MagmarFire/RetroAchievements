@@ -1019,7 +1019,7 @@ function IsLTargeting() => lLetterboxState() == 2 && lTargetingState() == 1
 function xItem() => byte(0x003cc539)
 function yItem() => byte(0x003cc53a)
 function zItem() => byte(0x003cc53b)
-function EmptyBottleIsEquipped() => 
+function BottleIsEquipped() => 
     xItem() == 0xe || yItem() == 0xe || zItem() == 0xe
     || xItem() == 0xf || yItem() == 0xf || zItem() == 0xf
     || xItem() == 0x10 || yItem() == 0x10 || zItem() == 0x10
@@ -1028,11 +1028,11 @@ function EmptyBottleIsEquipped() =>
 function IsItemEquipped(id) => xItem() == id || yItem() == id || zItem() == id
 
 function hp() => word_be(0x003cc532)
-achievement(title = "Eyes off the Prize", description = "Defeat Phantom Ganon in the Forsaken Fortress without L-Targeting or equipping an empty bottle, and without being resurrected.",
+achievement(title = "Eyes off the Prize", description = "Defeat Phantom Ganon in the Forsaken Fortress without L-Targeting or equipping a bottle, and without being resurrected.",
     points = 5,
     id = 439041, badge = "500830", type = "missable",
     trigger = PhantomGanonCheckpointReached() && trigger_when(PhantomGanonDefeated()) && never(IsLTargeting())
-        && never(EmptyBottleIsEquipped())
+        && never(BottleIsEquipped())
         && never(hp() <= 0)
         && never(IsTransitioningToAreaByInternalName("sea_T"))
 )
