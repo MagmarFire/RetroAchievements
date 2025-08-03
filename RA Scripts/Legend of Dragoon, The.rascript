@@ -29,6 +29,7 @@ function EnteredBattleOnce() => once(Delta(battleMarker()) != battleMarker() && 
 //          0x8005 = world map(?)
 function battleMarker() => word(0xccdec)
 function IsInBattle() => battleMarker() == 0x1021
+function JustLeftBattle() => !IsInBattle() && Delta(battleMarker()) == 0x1021
 
 // $0badae: Total items in inventory
 function itemsInInventory() => byte(0x0badae)
@@ -300,6 +301,44 @@ achievement(
     trigger = word(0x052C30) == 0x0032 && bit5(0x0BAD90) == 0x1 && prev(bit5(0x0BAD90)) == 0x0
 )
 
+function urobolusHp() => word(0x1adf44)
+function itemsInInventory() => byte(0x0BADAE)
+function ItemCountDecreased() => Delta(itemsInInventory()) > itemsInInventory()
+function characterObjectWidth() => 0x2c
+
+function Dart() => 0
+function Lavitz() => 1
+function Shana() => 2
+
+function GetCharacterById(id)
+{
+    characterArrayBaseAddr = 0x0baef4
+    addr = characterArrayBaseAddr + id * characterObjectWidth()
+    return {
+        "exp": dword(addr),
+        "statusFlags": byte(addr + 4),
+        "hp": word(addr + 8),
+        "level": byte(addr + 18),
+        "accessoryId": byte(addr + 24)
+    }
+}
+
+function CharacterWithIdHasItemWithIdEquipped(charId, accessoryId)
+{
+    character = GetCharacterById(charId)
+    return character["accessoryId"] == accessoryId
+}
+
+function poisonGuardId() => 0x67
+achievement(title = "Pharmacophobia", points = 5, id = 189207, badge = "209992",
+    description = "Defeat the Urobolus without using items and without equipping any Poison Guards.",
+    trigger = mapId() == 0x35 && enemyId() == 0x19e && EnteredBattleOnce() && never(!IsInBattle())
+        && trigger_when(once(Delta(urobolusHp()) > 0 && urobolusHp() == 0) && repeated(290, urobolusHp() == 0))
+        && never(ItemCountDecreased()) && never(CharacterWithIdHasItemWithIdEquipped(Dart(), poisonGuardId()))
+        && never(CharacterWithIdHasItemWithIdEquipped(Lavitz(), poisonGuardId()))
+        && never(CharacterWithIdHasItemWithIdEquipped(Shana(), poisonGuardId()))
+)
+
 achievement(
     title = "No Ordinary Keepsake", description = "Awaken the Dragoon Spirit of the Red-Eyed Dragon.", points = 5,
     id = 94790, badge = "106752", published = "1/15/2020 11:23:24 PM", modified = "2/3/2020 10:16:19 PM",
@@ -319,6 +358,133 @@ achievement(
                 unless(byte(0x0BAC58) == 0x01) && never(word(0x1AC26C) == 0x0000) && never(word(0x1ABEE4) == 0x0000)) ||
                (repeated(256, word(0x1AC894) == 0x0000) && unless(byte(0x0BAC54) == 0x03) && 
                 unless(byte(0x0BAC58) == 0x03) && never(word(0x1AC50C) == 0x0000) && never(word(0x1AC184) == 0x0000)))
+)
+
+function playerSlot1Addr() => 0x0bc1d8
+function playerSlot2Addr() => 0x0bc1dc
+function playerSlot3Addr() => 0x0bc1e0
+function enemySlot1Addr() => 0x0bc1ec
+function enemySlot2Addr() => 0x0bc1f0
+function garbagePointer() => 0xbc0c0
+
+function PointerIsValid(addr) => Delta(tbyte(addr)) != garbagePointer()
+function GetCombatantInGivenSlotAddr(addr)
+{
+    return {
+        "hp": word(tbyte(addr) + 0x108),
+        "mp": word(tbyte(addr) + 0x10c)
+    }
+}
+
+function CombatantInSlotAddrWasJustDefeated(addr)
+{
+    combatant = GetCombatantInGivenSlotAddr(addr)
+    return PointerIsValid(addr) && Delta(combatant["hp"]) > 0 && combatant["hp"] == 0
+}
+
+function AllCombatantsInGivenSlotAddrsWereJustDefeated(slots, useTrigger = true, deferTime = 0)
+{
+    allGivenCombatantsDefeated = always_true()
+    anyGivenCombatantWasJustDefeated = always_false()
+    ret = always_false()
+    for slot in slots
+    {
+        combatant = GetCombatantInGivenSlotAddr(slot)
+        allGivenCombatantsDefeated = allGivenCombatantsDefeated && combatant["hp"] == 0 && PointerIsValid(slot)
+        wasJustDefeated = CombatantInSlotAddrWasJustDefeated(slot)
+        
+        anyGivenCombatantWasJustDefeated = anyGivenCombatantWasJustDefeated || wasJustDefeated
+    }
+    
+    if (deferTime > 0)
+    {
+        ret = repeated(deferTime, allGivenCombatantsDefeated) && anyGivenCombatantWasJustDefeated
+    }
+    else
+    {
+        ret = allGivenCombatantsDefeated && anyGivenCombatantWasJustDefeated
+    }
+    
+    if (useTrigger == true)
+    {
+        ret = trigger_when(ret)
+    }
+    
+    return ret
+}
+
+function slot1DragoonTurnsRemaining() => byte(0x06e62c)
+function slot2DragoonTurnsRemaining() => byte(0x06e630)
+function slot3DragoonTurnsRemaining() => byte(0x06e634)
+
+function DragoonTurnConsumedBySlot(slotId)
+{
+    if (slotId == 1)
+    {
+        return Delta(slot1DragoonTurnsRemaining()) > slot1DragoonTurnsRemaining()
+    }
+    else if (slotId == 2)
+    {
+        return Delta(slot2DragoonTurnsRemaining()) > slot2DragoonTurnsRemaining()
+    }
+    else
+    {
+        return Delta(slot3DragoonTurnsRemaining()) > slot3DragoonTurnsRemaining()
+    }
+}
+
+function turnCounter() => dword(0x0bac80)
+function TurnConsumed() => Delta(turnCounter()) < turnCounter()
+
+function GetPlayerAddrFromSlot(slotId)
+{
+    if (slotId == 1)
+    {
+        return playerSlot1Addr()
+    }
+    else if (slotId == 2)
+    {
+        return playerSlot2Addr()
+    }
+    else
+    {
+        return playerSlot3Addr()
+    }
+}
+
+function PlayerUsedMagicThisTurn()
+{
+    trigger = always_false()
+    for slot in range(1, 3)
+    {
+        slotAddr = GetPlayerAddrFromSlot(slot)
+        combatant = GetCombatantInGivenSlotAddr(slotAddr)
+        trigger = trigger || unless(!PointerIsValid(slotAddr)) && trigger_when(once(Delta(combatant["mp"]) > combatant["mp"] && never(TurnConsumed())))
+    }
+    
+    return trigger
+}
+
+function PlayerJustUsedMagic()
+{
+    trigger = always_false()
+    for slot in range(1, 3)
+    {
+        slotAddr = GetPlayerAddrFromSlot(slot)
+        combatant = GetCombatantInGivenSlotAddr(slotAddr)
+        // todo: use `trigger_when()` around the `once()` statement when https://github.com/Jamiras/RATools/issues/272 is addressed.
+        trigger = trigger || PointerIsValid(slotAddr) && once(Delta(combatant["mp"]) > combatant["mp"])
+    }
+    
+    return trigger
+}
+
+function Feyrbrand() => enemySlot1Addr()
+function Greham() => enemySlot2Addr()
+achievement(title = "No Revenge Like Overkill", description = "Finish the battle against Greham and Feyrbrand with a Dragoon spell.", points = 10,
+    id = 189209, badge = "209994",
+    trigger = mapId() == 0x290 && enemyId() == 0x189 && EnteredBattleOnce() && never(!IsInBattle())
+        && AllCombatantsInGivenSlotAddrsWereJustDefeated([ Feyrbrand(), Greham() ], true) && PlayerUsedMagicThisTurn()
 )
 
 achievement(
@@ -368,14 +534,14 @@ achievement(
               word(0x052C30) == 0x027E
 )
 
+function monsterConquestAddr() => tbyte(0x0bc1e8)
+function monsterConquestScore() => dword(monsterConquestAddr() + 0x7c)
 achievement(
     title = "Monkeyball Master", description = "Get a score of 100 or more in the Monster Conquest Game Stand minigame.", points = 5,
     id = 94798, badge = "106744", published = "1/15/2020 11:26:27 PM", modified = "2/4/2020 10:54:22 PM",
-    trigger = word(0x052C30) == 0x0098 && never(word(0x052C30) != 0x0098) &&
-              ((dword(0x195DD4) >= 0x00000064 && dword(0x195DD4) != 0xFFFFFFFF && once(word(0x195DD4) == 0xFFFF) && 
-                word(0x0BAC60) == 0x0000) ||
-               (word(0x0BAC60) > 0x0000 && dword(0x195054) >= 0x00000064 && dword(0x195054) != 0xFFFFFFFF && 
-                once(word(0x195054) == 0xFFFF)))
+    trigger = mapId() == 0x98 && never(mapId() != 0x98) &&
+        never(!PointerIsValid(monsterConquestAddr())) && monsterConquestScore() >= 100 && monsterConquestScore() != 0xffffffff
+        && once(monsterConquestScore() == 0xffffffff)
 )
 
 achievement(
@@ -433,6 +599,15 @@ achievement(
     title = "Later, Buddy", description = "Suffer a great loss in Hellena Prison.", points = 1,
     id = 94802, badge = "106744", published = "1/15/2020 11:26:40 PM", modified = "2/3/2020 2:24:58 AM",
     trigger = word(0x0BB0F8) == 0x0183 && word(0x0BC95C) == 0x07D0
+)
+
+function Doel() => enemySlot1Addr()
+function DragoonDoel() => enemySlot2Addr()
+achievement(title = "Electrical Paralysis", points = 5, id = 189208, badge = "209993",
+    description = "Defeat Emperor Doel without using Dragoon magic.",
+    trigger = mapId() == 0x294 && enemyId() == 0x186 && EnteredBattleOnce() && never(!IsInBattle())
+        && AllCombatantsInGivenSlotAddrsWereJustDefeated([ Doel(), DragoonDoel() ], true)
+        && never(PlayerJustUsedMagic())
 )
 
 // To make sure the achievement doesn't trigger during a game over while still letting it trigger during the
@@ -713,12 +888,23 @@ achievement(
                (word(0x1AD824) == 0x0000 && prev(word(0x1AD824)) == 0x0003))
 )
 
+function slot1DragoonTurnsRemaining() => byte(0x06E62C)
+function slot2DragoonTurnsRemaining() => byte(0x06E630)
+function slot3DragoonTurnsRemaining() => byte(0x06E634)
+function slotIdOfDragoonSpecial() => byte(0x06E648)
+function DragoonLloyd() => enemySlot1Addr()
+
+// This achievement needs a rework. We need to ensure the player actually spends at least six turns in a Dragoon Special. The player can simply wait to pop the special until the end, which
+// was not intended.
+// Additionally, we need to specify 0 HP instead of defeating him because Lloyd will always do an AoE attack when he's brought to 0 HP. This will have to be specified until I can revise this
+// further and trigger the achievement after the cutscene like before.
 achievement(
-    title = "Confidence, or Recklessness?", description = "Defeat Lloyd after triggering at least a second-level Dragoon Special at least once.", points = 10,
+    title = "Confidence, or Recklessness?", description = "Bring Lloyd down to 0 HP after triggering at least a second-level Dragoon Special at least once.", points = 10,
     id = 98127, badge = "108055", published = "2/9/2020 9:25:08 PM", modified = "2/13/2020 10:38:38 PM",
-    trigger = word(0x0BC95C) == 0x2EE0 && once(byte(0x06E62C) > 0x01 && byte(0x06E630) > 0x01 && byte(0x06E634) > 0x01
-               && prev(byte(0x06E648)) == 0xFF && byte(0x06E648) != 0xFF) && 
-              never(prev(word(0x0CCDEC)) != 0x1021 && word(0x0CCDEC) == 0x1021) && word(0x0BB0F8) == 0x0188
+    trigger = trigger_when(once(slot1DragoonTurnsRemaining() > 1 && slot2DragoonTurnsRemaining() > 1 && slot3DragoonTurnsRemaining() > 1
+              && Delta(slotIdOfDragoonSpecial()) == 0xFF && slotIdOfDragoonSpecial() != 0xFF))
+              && never(JustLeftBattle()) && enemyId() == 0x0188
+              && AllCombatantsInGivenSlotAddrsWereJustDefeated([ DragoonLloyd() ], true)
 )
 
 achievement(
@@ -764,27 +950,6 @@ achievement(
     title = "Savan's Final Hope", description = "Carry on in lieu of the one who wished to protect the world.", points = 1,
     id = 98140, badge = "106726", published = "2/10/2020 5:10:15 AM", modified = "2/13/2020 10:38:46 PM",
     trigger = prev(word(0x052C30)) == 0x023C && word(0x052C30) == 0x0210
-)
-
-achievement(
-    title = "Protectionist Parliamentarian", description = "Repeal the law permitting use of the shop next to the Law Factory in Zenebatos.", points = 1,
-    id = 96106, badge = "106738", published = "1/26/2020 7:52:18 PM", modified = "2/3/2020 2:50:34 AM",
-    trigger = word(0x052C30) == 0x0218 && prev(bit0(0x0BAD68)) == 0x1 && bit0(0x0BAD68) == 0x0 && bit0(0x0BACDA) == 0x1 && 
-              prev(bit0(0x0BACDA)) == 0x0
-)
-
-achievement(
-    title = "Trespassers Will Be Ignored", description = "Prohibit the Zenebatos guards from arresting you by changing the law.", points = 1,
-    id = 96108, badge = "106738", published = "1/26/2020 8:05:07 PM", modified = "2/3/2020 2:50:37 AM",
-    trigger = word(0x052C30) == 0x0218 && prev(bit0(0x0BAD68)) == 0x1 && bit0(0x0BAD68) == 0x0 && bit5(0x0BACD9) == 0x1 && 
-              prev(bit5(0x0BACD9)) == 0x0
-)
-
-achievement(
-    title = "No Lines, No Waiting", description = "Repeal the law in Zenebatos requiring the need to queue at the Legislation Center.", points = 1,
-    id = 96111, badge = "106738", published = "1/26/2020 8:13:46 PM", modified = "2/3/2020 2:50:30 AM",
-    trigger = word(0x052C30) == 0x0218 && prev(bit0(0x0BAD68)) == 0x1 && bit0(0x0BAD68) == 0x0 && bit4(0x0BACD9) == 0x1 && 
-              prev(bit4(0x0BACD9)) == 0x0
 )
 
 achievement(
@@ -840,12 +1005,12 @@ achievement(
                (word(0x0CCDEC) == 0x0000 && word(0x0BC95C) == 0x1770 && word(0x0BC920) == 0x012C))
 )
 
+function DivineDragonSpirit() => enemySlot2Addr()
 achievement(
     title = "Ful, Losei Dovahkiin?", description = "Defeat the spirit of the Divine Dragon in Mayfil.", points = 25,
     id = 96124, badge = "106736", published = "1/26/2020 9:17:07 PM", modified = "2/3/2020 2:53:03 AM",
-    trigger = word(0x0BB0F8) == 0x01BF && word(0x052C30) == 0x0222 && word(0x0BB0F4) == 0x0044 &&
-              ((prev(word(0x0BC95C)) == 0x1F40 && word(0x0BC95C) == 0x0000) ||
-               (word(0x0CCDEC) == 0x0000 && word(0x0BC95C) == 0x1F40 && word(0x0BC920) == 0x0190))
+    trigger = mapId() == 0x0222 && enemyId() == 0x01BF && EnteredBattleOnce() && never(!IsInBattle())
+        && AllCombatantsInGivenSlotAddrsWereJustDefeated([ DivineDragonSpirit() ], false)
 )
 
 achievement(
