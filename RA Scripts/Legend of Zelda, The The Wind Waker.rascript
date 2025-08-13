@@ -1056,7 +1056,7 @@ GenerateCheevoFromBufferBits(name = "Pirate Wannabe", description = "Claim the t
 )
 
 function bowSlot() => byte(0x003cc578)
-achievement(title = "Diametrically Opposed", description = "Obtain the Fire and Ice Arrows.", points = 3, id = 439044, badge = "502206",
+achievement(title = "Diametrically Opposed", description = "Obtain the Fire and Ice Arrows.", points = 3, id = 439044, badge = "502206", type = "progression",
     trigger = WasValueSetInGame(bowSlot(), 0x27, 0x35)
 )
 
@@ -1100,7 +1100,7 @@ function LetterFromMoeWasJustRemovedFromBag()
 }
 
 function ironBootsSlot() => byte(0x003cc575)
-achievement(title = "Anchors Aweigh!", description = "Obtain the Iron Boots.", points = 3, id = 439217, badge = "500837",
+achievement(title = "In Irons", description = "Obtain the Iron Boots.", points = 3, id = 439217, badge = "500837", type = "progression",
     trigger = WasValueSetInGame(ironBootsSlot(), 0xff, 0x29)
 )
 
