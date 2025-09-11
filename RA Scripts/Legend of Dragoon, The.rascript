@@ -755,7 +755,7 @@ achievement(
 achievement(
     title = "Muggles Do It Better", description = "Defeat Lenus and Regole without using Dragoon transformations.", points = 5,
     id = 98008, badge = "108035", published = "2/8/2020 11:03:41 PM", modified = "2/13/2020 10:38:26 PM", type = "missable",
-    trigger = once(EnteredBattleOnce() && prev(byte(0x06E648)) != 0xFF && byte(0x06E648) == 0xFF) && word(0x0CCDEC) == 0x1021 &&
+    trigger = EnteredBattleOnce() && word(0x0CCDEC) == 0x1021 &&
               ((never(byte(0x06E62C) > 0x00) && never(byte(0x06E630) > 0x00) && never(byte(0x06E634) > 0x00) && 
                 unless(byte(0x06E62C) == 0x28) && unless(byte(0x06E630) == 0x2C) && unless(byte(0x06E634) == 0x30) && always_false()) ||
                (prev(word(0x0BC95C)) == 0x1B58 && word(0x0BC95C) == 0x0000))
