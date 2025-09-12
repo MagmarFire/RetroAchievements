@@ -305,10 +305,21 @@ function urobolusHp() => word(0x1adf44)
 function itemsInInventory() => byte(0x0BADAE)
 function ItemCountDecreased() => Delta(itemsInInventory()) > itemsInInventory()
 function characterObjectWidth() => 0x2c
+function characterSlot1Id() => byte(0x0bac50)
+function characterSlot2Id() => byte(0x0bac54)
+function characterSlot3Id() => byte(0x0bac58)
 
 function Dart() => 0
 function Lavitz() => 1
 function Shana() => 2
+function Haschel() => 4
+function Kongol() => 7
+function Miranda() => 8
+
+function CharacterIsInParty(id)
+{
+    return characterSlot1Id() == id || characterSlot2Id() == id || characterSlot3Id() == id
+}
 
 function GetCharacterById(id)
 {
@@ -380,6 +391,12 @@ function CombatantInSlotAddrWasJustDefeated(addr)
 {
     combatant = GetCombatantInGivenSlotAddr(addr)
     return PointerIsValid(addr) && Delta(combatant["hp"]) > 0 && combatant["hp"] == 0
+}
+
+function CombatantInSlotAddrWasAlreadyDefeated(addr)
+{
+    combatant = GetCombatantInGivenSlotAddr(addr)
+    return PointerIsValid(addr) && Delta(combatant["hp"]) == 0 && combatant["hp"] == 0
 }
 
 function AllCombatantsInGivenSlotAddrsWereJustDefeated(slots, useTrigger = true, deferTime = 0)
@@ -1059,9 +1076,10 @@ achievement(
 
 achievement(
     title = "Leave No Trace", description = "With Kongol and Haschel in your party, destroy the arm of the Super Virage on the Moon before either its head or its body.", points = 5,
-    id = 98230, badge = "108084", published = "2/12/2020 12:39:52 AM", modified = "2/13/2020 10:39:00 PM",
+    id = 98230, badge = "108084", published = "2/12/2020 12:39:52 AM", modified = "2/13/2020 10:39:00 PM", type = "missable",
     trigger = word(0x0BC95C) == 0x3A98 && word(0x0BB0F8) == 0x019B && never(word(0x052C30) != 0x02DD) &&
               (always_false() || (once(prev(word(0x0BAC80)) != word(0x0BAC80)) && unless(word(0x1AB01C) > 0x0000)))
+              && never(!CharacterIsInParty(Haschel())) && never(!CharacterIsInParty(Kongol()))
 )
 
 achievement(
