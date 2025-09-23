@@ -313,6 +313,7 @@ function Dart() => 0
 function Lavitz() => 1
 function Shana() => 2
 function Haschel() => 4
+function Albert() => 5
 function Kongol() => 7
 function Miranda() => 8
 
@@ -376,6 +377,7 @@ function playerSlot2Addr() => 0x0bc1dc
 function playerSlot3Addr() => 0x0bc1e0
 function enemySlot1Addr() => 0x0bc1ec
 function enemySlot2Addr() => 0x0bc1f0
+function enemySlot3Addr() => 0x0bc1f4
 function garbagePointer() => 0xbc0c0
 
 function PointerIsValid(addr) => Delta(tbyte(addr)) != garbagePointer()
@@ -749,9 +751,10 @@ achievement(
 achievement(
     title = "Magician's Hat-Trick", description = "With Albert and Kongol in your party, defeat the Magician Bogy Trio simultaneously.", points = 5,
     id = 97752, badge = "107878", published = "2/7/2020 5:10:49 AM", modified = "2/13/2020 10:38:15 PM",
-    trigger = word(0x0BB0F8) == 0x01E9 && word(0x052C30) == 0x0125 && word(0x0CCDEC) == 0x1021 && 
-              prev(word(0x1AD694)) > 0x0000 && word(0x1AD694) == 0x0000 && prev(word(0x1AD30C)) > 0x0000 && word(0x1AD30C) == 0x0000 && 
-              prev(word(0x1ACF84)) > 0x0000 && word(0x1ACF84) == 0x0000
+    trigger = enemyId() == 0x01E9 && mapId() == 0x0125
+        && EnteredBattleOnce() && never(!IsInBattle())
+        && CombatantInSlotAddrWasJustDefeated(enemySlot1Addr()) && CombatantInSlotAddrWasJustDefeated(enemySlot2Addr()) && CombatantInSlotAddrWasJustDefeated(enemySlot3Addr())
+        && never(!CharacterIsInParty(Albert())) && never(!CharacterIsInParty(Kongol()))
 )
 
 achievement(
