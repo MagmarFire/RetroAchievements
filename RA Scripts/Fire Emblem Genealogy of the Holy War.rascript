@@ -1264,10 +1264,12 @@ function UnitJustReceivedItemById(inventoryCountBaseAddr, itemId)
 earthSwordId = 0x22
 function raquesisRetrievedEarthSword() => bit7(0x0052c4)
 function eldiganWasKilled() => bit2(0x0052c6)
+function raquesisInventoryCountAddr2() => byte(0x003b7f)
 achievement(title = "Siblings' Last Quarrel", points = 10, id = 130715, badge = "143912", type = "missable",
     description = "Receive the Earth Sword from Eldigan in Chapter 3 (Raquesis must have inventory space).",
     trigger = chapter() == 3 && WasBitflagSetInGame(raquesisRetrievedEarthSword()) && eldiganWasKilled() == 0
-        && UnitJustReceivedItemById(raquesisInventoryCountAddr(), earthSwordId)
+        && (UnitJustReceivedItemById(raquesisInventoryCountAddr(), earthSwordId)
+        || UnitJustReceivedItemById(raquesisInventoryCountAddr2(), earthSwordId)) // Raquesis's inventory count may be in a different address in some scenarios.
 )
 
 achievement(title = "Arden's Resolve [m]", points = 3, id = 130730, badge = "143927",
