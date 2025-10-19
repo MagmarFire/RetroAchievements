@@ -1172,9 +1172,9 @@ function IsAbilityTurnedOn(addr)
 function TriggerConditionsMetForAllCharacters(condition, useTrigger = true)
 {
     return TriggerConditionsMetForCharacters({
-        Terra(): TrinityArmorWasJustDefeated(),
-        Ventus(): TrinityArmorWasJustDefeated(),
-        Aqua(): TrinityArmorWasJustDefeated()
+        Terra(): condition,
+        Ventus(): condition,
+        Aqua(): condition
     }, useTrigger)
 }
 
@@ -2873,33 +2873,59 @@ eventRegister = {
     "Symphony Master": { "article": true, "location": "CastleBallroom", "characters": TerraOnly(), "points": 5, "id": 492932, "badge": "" },
     "Spirit of the Magic Mirror (Terra)": { "article": true, "location": "DwarfMirror", "characters": TerraOnly(), "points": 5, "id": 492933, "badge": "",
         "description": "Defeat the Spirit of the Magic Mirror as Terra at Level 1 on Critical Mode." },
-    "Spirit of the Magic Mirror (Aqua)": { "article": true, "location": "DwarfMirror", "characters": AquaOnly(), "points": 5, "id": 0, "badge": "",
+    "Spirit of the Magic Mirror (Aqua)": { "article": true, "location": "DwarfMirror", "characters": AquaOnly(), "points": 5, "id": 552428, "badge": "",
         "description": "Defeat the Spirit of the Magic Mirror as Aqua at Level 1 on Critical Mode."},
     "Trinity Armor": { "article": true, "location": "RadiantReactor", "characters": [ Terra(), Ventus(), Aqua() ], "points": 5, "id": 492934, "badge": "",
         "triggerWhen": TriggerConditionsMetForAllCharacters(TrinityArmorWasJustDefeated(), false) },
     "Braig (Radiant Garden)": { "article": false, "location": "RadiantPurification", "characters": TerraOnly(), "points": 10, "id": 492935, "badge": "",
         "description": "Defeat Braig as Terra at Level 1 on Critical Mode." },
-    "Experiment 221": { "article": false, "location": "SpacePod", "characters": TerraOnly(), "points": 10, "id": 0, "badge": "" },
-    "Zack (Terra)": { "article": false, "location": "OlympusEast", "characters": TerraOnly(), "points": 10, "id": 0, "badge": "", "alsoWhen": DefeatedZackForTheFirstTime() },
-    "Peter Pan": { "article": false, "location": "NeverlandSkullCavern", "characters": TerraOnly(), "points": 5, "id": 0, "badge": "", "triggerWhen": BladechargeLearned(),
+    "Experiment 221": { "article": false, "location": "SpacePod", "characters": TerraOnly(), "points": 10, "id": 552427, "badge": "" },
+    "Zack (Terra)": { "description": "Defeat Zack in Olympus Coliseum as Terra at Level 1 on Critical Mode.", "article": false, "location": "OlympusEast", "characters": TerraOnly(),
+        "points": 10, "id": 552429, "badge": "", "alsoWhen": DefeatedZackForTheFirstTime() },
+    "Peter Pan": { "article": false, "location": "NeverlandSkullCavern", "characters": TerraOnly(), "points": 5, "id": 552430, "badge": "", "triggerWhen": BladechargeLearned(),
         "neverWhen": (!IsInBattle() || DefeatedPeterPan()) },
-    "Eraqus": { "article": false, "location": "DepartureForecourtDay", "characters": TerraOnly(), "points": 25, "id": 0, "badge": "" },
-    "Xehanort": { "article": false, "location": "Graveyard3", "characters": TerraOnly(), "points": 25, "id": 0, "badge": "", "neverWhen": !DefeatedXehanortI() },
-    "Terra-Xehanort": { "article": false, "location": "GraveyardCage", "characters": [ TerraArmored() ], "points": 25, "id": 0, "badge": "", "triggerWhen": TriggerConditionsMetForCharacters({
+    "Eraqus": { "article": false, "location": "DepartureForecourtDay", "characters": TerraOnly(), "points": 25, "id": 552431, "badge": "" },
+    "Xehanort": { "article": false, "location": "Graveyard3", "characters": TerraOnly(), "points": 25, "id": 552433, "badge": "", "neverWhen": !DefeatedXehanortI() },
+    "Terra-Xehanort (Terra)": { "article": false, "description": "Defeat Terra-Xehanort as the Lingering Will at Level 1 on Critical Mode.", "location": "GraveyardCage",
+        "characters": [ TerraArmored() ], "points": 25, "id": 552432, "badge": "", "triggerWhen": TriggerConditionsMetForCharacters({
         TerraArmored(): BossDefeatTriggered()
-    }, false) },
-    "Mad Treant": { "article": true, "location": "DwarfWoods", "characters": VentusOnly(), "points": 3, "id": 0, "badge": "" },
-    "Lucifer": { "article": false, "location": "CastleWardrobe2", "characters": VentusOnly(), "points": 5, "id": 0, "badge": "" },
-    "Maleficent": { "article": false, "location": "EnchantedThrone", "characters": VentusOnly(), "points": 5, "id": 0, "badge": "" },
-    "Vanitas (Badlands)": { "article": false, "location": "GraveyardBadlands", "characters": VentusOnly(), "points": 10, "id": 0, "badge": "", "description": "Defeat Vanitas alongside King Mickey"
-        + " at Level 1 on Critical Mode.", "neverWhen": !IsFacingVanitasIAsVen() },
-    "Metamorphosis": { "article": true, "location": "SpaceMachineryBay", "characters": VentusOnly(), "points": 10, "id": 0, "badge": "" },
-    "Captain Hook": { "article": false, "location": "NeverlandCove", "characters": VentusOnly(), "points": 10, "id": 0, "badge": "" },
-    "Vanitas (Keyblade Graveyard)": { "article": false, "location": "Graveyard4", "characters": [ VentusArmoredHelmetless() ], "points": 25, "id": 0, "badge": "",
+        }, false) },
+    "Mad Treant": { "article": true, "location": "DwarfWoods", "characters": VentusOnly(), "points": 3, "id": 552434, "badge": "" },
+    "Lucifer": { "article": false, "location": "CastleWardrobe2", "characters": VentusOnly(), "points": 5, "id": 552435, "badge": "" },
+    "Maleficent": { "article": false, "location": "EnchantedThrone", "characters": VentusOnly(), "points": 5, "id": 552436, "badge": "" },
+    "Vanitas (Badlands)": { "article": false, "location": "GraveyardBadlands", "characters": VentusOnly(), "points": 10, "id": 552437, "badge": "",
+        "description": "Defeat Vanitas alongside King Mickey at Level 1 on Critical Mode.", "neverWhen": !IsFacingVanitasIAsVen() },
+    "Metamorphosis": { "article": true, "location": "SpaceMachineryBay", "characters": VentusOnly(), "points": 10, "id": 552438, "badge": "" },
+    "Captain Hook": { "article": false, "location": "NeverlandCove", "characters": VentusOnly(), "points": 10, "id": 552439, "badge": "" },
+    "Vanitas (Keyblade Graveyard)": { "article": false, "location": "Graveyard4", "characters": [ VentusArmoredHelmetless() ], "points": 25, "id": 552440, "badge": "",
         "description": "Defeat Vanitas in the Keyblade Graveyard at Level 1 on Critical Mode.", "triggerWhen": TriggerConditionsMetForCharacters({
         VentusArmoredHelmetless(): BossDefeatTriggered()
     }, false) },
-    "Final Vanitas": { "article": false, "location": "VentusHeart2", "characters": VentusOnly(), "points": 25, "id": 0, "badge": "" }
+    "Final Vanitas": { "article": false, "location": "VentusHeart2", "characters": VentusOnly(), "points": 25, "id": 552441, "badge": "" },
+    "Cursed Coach": { "article": true, "location": "CastleForest", "characters": AquaOnly(), "points": 3, "id": 552442, "badge": "" },
+    "Dragon Maleficent": { "article": false, "location": "EnchantedBridgeThorns", "characters": AquaOnly(), "points": 5, "id": 552443, "badge": "" },
+    "Vanitas (Radiant Garden)": { "description": "Defeat Vanitas in Radiant Garden at Level 1 on Critical Mode.",
+        "article": false, "location": "RadiantCentral", "characters": AquaOnly(), "points": 10, "id": 552444, "badge": "" },
+    "Zack (Aqua)": { "description": "Defeat Zack in Olympus Coliseum as Aqua at Level 1 on Critical Mode.", "article": false, "location": "OlympusEast", "characters": AquaOnly(),
+        "points": 10, "id": 552445, "badge": "", "neverWhen": !BeganFinalsAsAqua() },
+    "Hades and the Ice Titan": { "article": false, "location": "OlympusEastNight", "characters": AquaOnly(), "points": 10, "id": 552446, "badge": "" },
+    "Gantu": { "article": false, "location": "SpaceLaunch", "characters": AquaOnly(), "points": 10, "id": 552447, "badge": "" },
+    "Vanitas (Neverland)": { "article": false, "location": "NeverlandCamp", "characters": AquaOnly(), "points": 10, "id": 552448, "badge": "" },
+    "Braig (Keyblade Graveyard)": { "article": false, "description": "Defeat Braig as Aqua at Level 1 on Critical Mode.", "location": "Graveyard4", "characters": [ AquaArmoredHelmetless() ],
+        "points": 10, "id": 552449, "badge": "", "neverWhen": !DefeatBraigInformationDisplayed(), "triggerWhen": TriggerConditionsMetForCharacters({
+        AquaArmoredHelmetless(): BossDefeatTriggered()
+    }, false) },
+    "Ventus-Vanitas": { "article": false, "description": "Defeat Ventus-Vanitas as Aqua at Level 1 on Critical Mode.", "location": "Graveyard4", "characters": [ AquaArmoredHelmetless() ],
+        "points": 25, "id": 552450, "badge": "", "neverWhen": DefeatBraigInformationDisplayed(), "triggerWhen": TriggerConditionsMetForCharacters({
+        AquaArmoredHelmetless(): BossDefeatTriggered()
+    }, false) },
+    "Terra-Xehanort (Aqua)": { "article": false, "description": "Defeat Terra-Xehanort as Aqua at Level 1 on Critical Mode.", "location": "RadiantCentralTerranort", "characters": AquaOnly(),
+        "points": 25, "id": 552452, "badge": "" },
+    "Dark Hide": { "article": true, "location": "DarknessValley", "characters": AquaOnly(), "points": 25, "id": 552453, "badge": "" },
+    "Vanitas Remnant": { "article": true, "location": "GraveyardBadlands2", "characters": [ Terra(), Ventus(), Aqua() ], "points": 100, "id": 552454, "badge": "",
+        "triggerWhen": TriggerConditionsMetForAllCharacters(BossDefeatTriggered(), false) },
+    "Unknown": { "article": true, "location": "DepartureSummitRuins2", "characters": [ Terra(), Ventus(), Aqua() ], "points": 100, "id": 552455, "badge": "",
+        "triggerWhen": TriggerConditionsMetForAllCharacters(BossDefeatTriggered(), false) }
 }
 
 for name in eventRegister
