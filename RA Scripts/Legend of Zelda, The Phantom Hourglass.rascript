@@ -3,9 +3,11 @@
 
 // The global offset has not been found and may not be found for a while. However, we're designing the script with potential multilanguage support
 // in mind early to limit the pain to implement later.
-function GetGlobalOffset() => 0x0
+function GetGlobalOffset() => globalPointer() - 0x1b27e0
 
-function systemTimer() => odword(0x3ffc3c)
+function globalPointer() => tbyte(0x0011f4a0)
+
+function systemTimer() => dword(0x3ffc3c)
 
 function obit0(addr) => bit0(addr + GetGlobalOffset())
 function obit1(addr) => bit1(addr + GetGlobalOffset())
@@ -62,12 +64,9 @@ function SecondsToFormat(value)
 
 function IsLoadingSaveFile() => Delta(maxHp()) == 0 && maxHp() > 0
 
-function LanguageIsEnglish() => dword(0x3df018) == 0x220
-
 function IsInGame() => maxHp() > 0 && !IsInLocation("File")
     && !IsInLocation("WFC") && !IsInLocation("Title")
     && !IsInLocation("Battle") && !IsInLocation("Download")
-    && LanguageIsEnglish()
 
 // $1b7f9c: File selection menu (16-bit)
 //          0x1 = File selection
@@ -480,7 +479,7 @@ achievement(title = "Back at Ya!", points = 3, id = 143347, badge = "160093", ty
 )
 
 function IsBlaazDying() => obyte(0x25f050) == 0x16
-achievement(title = "Scorching Earth [m]", points = 5,
+achievement(title = "Scorching Earth", points = 5, id = 143344, badge = "160090", type = "missable",
     description = "Defeat Blaaz without healing.",
     trigger = once(IsInLocation("Blaaz") && WasInLocation("TempleOfFire"))
         && IsBlaazDying() && never(hp() > Delta(hp()))
@@ -514,7 +513,7 @@ achievement(title = "Dig to the Center of the Earth!", points = 3, id = 143350, 
 // we'll have to simply lock it out by other means. Best we can do at this point is to check for the existence of an item.
 // We're adding this cheevo simply due to the existence of a microphone-dependent obstacle (MDO) on the island.
 function bombs() => obit4(0x1ba604)
-achievement(title = "Where the Wind Blows", points = 1,
+achievement(title = "Where the Wind Blows", points = 1, id = 143351, badge = "160097",
     description = "Reach the Isle of Gust for the first time.",
     trigger = WasInLocation("Sea") && IsInLocation("Gust") && bombs() != 1
 )
@@ -524,7 +523,8 @@ achievement(title = "And Kablooey!", points = 3, id = 143352, badge = "160098",
     trigger = WasBitflagSetInGame(bombs())
 )
 
-function cyclokState() => obyte(0x255a0c)
+function bossStatePointer() => tbyte(0x000e674c)
+function cyclokState() => byte(bossStatePointer() - 0x9a00)
 function IsCyclokDying() => cyclokState() == 0x8
 function CyclokStarted() => once(Delta(cyclokState()) == 1 && cyclokState() == 2)
 cyclokFrameLimit = 2700
@@ -560,7 +560,7 @@ achievement(title = "A Bowyer's Pride", points = 3, id = 143358, badge = "160104
 )
 
 function IsCraykDying() => obyte(0x259f00) == 0x1e
-achievement(title = "Minimalist [m]", points = 10,
+achievement(title = "Minimalist", points = 10, id = 143359, badge = "160105", type = "missable",
     description = "Defeat Crayk using at most one arrow.",
     trigger = once(IsInLocation("Crayk") && WasInLocation("TempleOfCourage")) && never(!IsInLocation("Crayk"))
         && IsCraykDying() && never(repeated(2, arrowsRemaining() < Delta(arrowsRemaining())))
@@ -599,7 +599,7 @@ achievement(title = "Petraphobia", points = 5, id = 143362, badge = "160108", ty
 
 function grapplingHook() => obit6(0x1ba604)
 function bombchus() => obit7(0x1ba604)
-achievement(title = "Two in a Row [m]", points = 5, id = 143363, badge = "160109",
+achievement(title = "Two in a Row", points = 5, id = 143363, badge = "160109", type = "missable",
     description = "Obtain the Northeastern Sea chart while having obtained neither the Bombchu bag nor the grappling hook.",
     trigger = WasBitflagSetInGame(northeasternSeaChart()) && grapplingHook() == 0 && bombchus() == 0 && never(!IsInLocation("OceanKing"))
 )
@@ -616,7 +616,7 @@ function JustSwitchedFromGongoronToLink() => Delta(characterControlStatus()) == 
 function dongorongoState() => obyte(0x269e20)
 function DongorongoFirstPhaseComplete() => dongorongoState() == 0x16
 function SwitchedTooManyTimes() => tally(maxSwitches + 1, [ JustSwitchedFromLinkToGongoron(), JustSwitchedFromGongoronToLink() ])
-achievement(title = "Seamless Relay [m]", points = 5, id = 143365, badge = "160111",
+achievement(title = "Seamless Relay", points = 5, id = 143365, badge = "160111", type = "missable",
     description = "Complete Dongorongo's first phase without switching between Link and Gongoron more than eight times.",
     trigger = once(IsInLocation("Dongorongo") && WasInLocation("GoronTemple")) && never(!IsInLocation("Dongorongo"))
         && DongorongoFirstPhaseComplete() && never(SwitchedTooManyTimes())
@@ -627,7 +627,7 @@ achievement(title = "Seamless Relay [m]", points = 5, id = 143365, badge = "1601
 function DongorongoSecondPhaseBeginning() => dongorongoState() == 0x17
 function DongorongoDying() => dongorongoState() == 0x18
 function dongorongoHP() => obyte(0x269e10)
-achievement(title = "Why Don't Ya Just Shoot Him? [m]", points = 10,
+achievement(title = "Why Don't Ya Just Shoot Him?", points = 10, id = 143366, badge = "160112", type = "missable",
     description = "Complete Dongorongo's second phase without using your sword on it.",
     trigger = never(!IsInLocation("Dongorongo")) && once(DongorongoSecondPhaseBeginning()) && DongorongoDying()
         && never(IsUsingSword()
@@ -646,7 +646,7 @@ achievement(title = "The Hooks!", points = 3, id = 143368, badge = "160114",
 )
 
 function cutsceneAfterGleeok() => obit3(0x1b555b)
-achievement(title = "One Head Is Better than Two [m]", points = 5,
+achievement(title = "One Head Is Better than Two", points = 5, id = 143369, badge = "160115", type = "missable",
     description = "Defeat Gleeok and take its Sand of Hours without taking damage.",
     trigger = once(IsInLocation("Gleeok") && WasInLocation("TempleOfIce")) && Delta(cutsceneAfterGleeok()) == 0 && cutsceneAfterGleeok() == 1
         && never(!IsInLocation("Gleeok")) && never(hp() < Delta(hp()))
@@ -694,7 +694,7 @@ function salvageArmSpeedMode() => obyte(0x1f56ec)
 function StartedSalvageMinigame() => once(Delta(salvageArmSpeedMode()) == 0x0 && salvageArmSpeedMode() == 0x3)
 function salvageMinigameState() => obyte(0x1f56dc)
 function PrematurelyReturningFromMinigame() => salvageMinigameState() == 0x4
-achievement(title = "Be the Crane [m]", points = 5,
+achievement(title = "Be the Crane", points = 5, id = 143378, badge = "160124", type = "missable",
     description = "Salvage treasure without damaging the Salvage Arm.",
     trigger = once(WasInLocation("Sea") && IsInLocation("Salvage"))
         && IsInLocation("Sea") && WasInLocation("Salvage")
@@ -709,7 +709,7 @@ function goronGameState() => odword(0x26124c)
 function goronGameCountdown() => odword(0x261248)
 function goronGameTime() => odword(0x197ba4)
 function goronGameTargetsRemaining() => obyte(0x197bd0)
-achievement(title = "Rollin', Rollin', Rollin'", points = 25,
+achievement(title = "Rollin', Rollin', Rollin'", points = 25, id = 143380, badge = "160126",
     description = "Finish the Goron Game in thirty seconds or less.",
     trigger = never(!IsInLocation("DS")) && once(goronGameState() != 0xffffffff && goronGameCountdown() == 0x3)
         && never(Delta(goronGameTargetsRemaining()) == 0 && goronGameTargetsRemaining() == 30)
@@ -724,7 +724,7 @@ function cannonGameCountdown() => odword(0x233f18)
 function cannonGameScore() => odword(0x11f548)
 function cannonGameDisplaySize() => obyte(0x233f15)
 function CannonGameStarted() => once(cannonGameCountdown() == 0x3 && Delta(cannonGameDisplaySize()) == 0x10)
-achievement(title = "Action Port", points = 10,
+achievement(title = "Action Port", points = 10, id = 143384, badge = "160130",
     description = "Get a score of " + cannonScoreTarget + " in the cannon minigame.",
     trigger = never(!IsInLocation("CannonMinigame")) && CannonGameStarted()
         && never(cannonGameCountdown() == 0x4)
@@ -733,13 +733,13 @@ achievement(title = "Action Port", points = 10,
 
 function trainingPointsInCurrentGame() => oword(0x267164)
 function trainingTimesHitInCurrentGame() => obyte(0x26716a)
-achievement(title = "Second Intention", points = 5,
+achievement(title = "Second Intention", points = 5, id = 143383, badge = "160129",
     description = "Score a total of 90 hits in a row during training without getting hit yourself.",
     trigger = never(!IsInLocation("Traveler2")) && never(Delta(trainingTimesHitInCurrentGame()) < trainingTimesHitInCurrentGame())
         && repeated(90, Delta(trainingPointsInCurrentGame()) < trainingPointsInCurrentGame()) && never(trainingPointsInCurrentGame() == 0)
 )
 
-achievement(title = "Double Hero", points = 3,
+achievement(title = "Double Hero", points = 3, id = 143387, badge = "160133",
     description = "Score more than 200 hits during training.",
     trigger = never(!IsInLocation("Traveler2")) && trainingPointsInCurrentGame() > 200
         && trainingTimesHitInCurrentGame() < 3
@@ -752,7 +752,7 @@ function shootingRangeScore() => oword(0x28223c)
 function shootingRangeLastScoreIncrease() => oword(0x28223e)
 function ShootingRangeComboContinued() => Delta(shootingRangeScore()) != shootingRangeScore() && shootingRangeLastScoreIncrease() > 0
 function ShootingRangeComboReset() => Delta(shootingRangeLastScoreIncrease()) > 0 && shootingRangeLastScoreIncrease() == 0
-achievement(title = "Sharpshooter", points = 5,
+achievement(title = "Sharpshooter", points = 5, id = 143388, badge = "160134",
     description = "Get a combo of " + comboTarget + " or more at the Shooting Range.",
     trigger = never(!IsInLocation("Molida")) && repeated(comboTarget, ShootingRangeComboContinued())
         && never(ShootingRangeCountdownStarted()) && never(ShootingRangeComboReset())
@@ -792,7 +792,7 @@ achievement(title = "Armed to the Teeth", points = 10, id = 143381, badge = "160
         || WasValueSetInGame(quiverUpgrades(), 1, 2) && bombUpgrades() == 2 && bombchuUpgrades() == 2
 )
 
-achievement(title = "Heartthrob [m]", points = 10, id = 143382, badge = "160128",
+achievement(title = "Heartthrob", points = 10, id = 143382, badge = "160128", type = "missable",
     description = "Collect all thirteen Heart Containers.",
     trigger = WasValueSetInGame(maxHp(), 0x3c, 0x40)
 )
@@ -972,7 +972,7 @@ function StartedTotokFromFloor1() => WasInLocation("OceanKingLobby") && IsInLoca
 function RegainedSand() => Delta(timeRemainingInHourglass()) < timeRemainingInHourglass() && currentSublocation() > 0
 function ReachedFinalFloor() => Delta(currentSublocation()) == 0x11 && currentSublocation() == 0x12
 function TimeSpentInTotok() => phantomHourglassMaxTime() - timeRemainingInHourglass()
-achievement(title = "Eroding Will", points = 25,
+achievement(title = "Eroding Will", points = 25, id = 143394, badge = "160140",
     description = "Complete the Temple of the Ocean King from beginning to end within " + SecondsToFormat(totokTimeLimit) + " without replenishing sand.",
     trigger = once(StartedTotokFromFloor1()) && ReachedFinalFloor() && never(IsInLocation("OceanKingLobby")) && never(RegainedSand())
         && TimeSpentInTotok() <= totokTimeLimit * 60
@@ -980,7 +980,7 @@ achievement(title = "Eroding Will", points = 25,
 
 function bellumHp() => oword(0x25ad1c)
 function IsBellumDying() => Delta(bellumHp()) > 0 && bellumHp() == 0
-achievement(title = "Leech Killer [m]", points = 5,
+achievement(title = "Leech Killer", points = 5, id = 143395, badge = "160141", type = "missable",
     description = "Defeat Bellum's first phase without your life energy dipping three hearts below its maximum.",
     trigger = once(IsInLocation("Bellum") && WasInLocation("OceanKing")) && never(IsInLocation("OceanKing"))
         && IsBellumDying() && never(hp() <= maxHp() - 12)
@@ -988,7 +988,7 @@ achievement(title = "Leech Killer [m]", points = 5,
 
 function shipHpPointer() => otbyte(0x1ba5d8)
 function shipHp() => obyte(shipHpPointer() + 0x3606a)
-achievement(title = "The Green Baron [m]", points = 10,
+achievement(title = "The Green Baron", points = 10, id = 143396, badge = "160142", type = "missable",
     description = "Defeat Bellum's second phase without your ship being damaged more than six times.",
     trigger = IsInLocation("BellumFinal") && never(repeated(6, Delta(shipHp()) > shipHp()))
         && (once(IsInLocation("BellumSeaBattle") && WasInLocation("BellumSeaCutscene"))
@@ -1004,7 +1004,7 @@ function TookAtLeastThreeQuartersHeartDamage() => Delta(hp()) >= hp() + 3
 function TookAtLeastHeartDamage() => Delta(hp()) >= hp() + 4
 function bellumbeckState() => obyte(0x25a088)
 function BellumbeckIsDying() => bellumbeckState() == 0x17
-achievement(title = "Defender of the Seas", points = 25,
+achievement(title = "Defender of the Seas", points = 25, id = 143397, badge = "160143",
     description = "Defeat Bellum's final phase while taking less than three hearts of damage and without any spirit abilities equipped.",
     trigger = never(IsInLocation("BellumSeaBattle")) && never(IsInLocation("Sea")) && never(SpiritAbilityEquipped())
         && never(tally(12, [ TookAtLeastQuarterHeartDamage(), TookAtLeastHalfHeartDamage(),
@@ -1013,12 +1013,12 @@ achievement(title = "Defender of the Seas", points = 25,
             || once(IsInLocation("BellumFinal") && WasInLocation("Sea")))
 )
 
-achievement(title = "A Wish for Freedom", points = 25,
+achievement(title = "A Wish for Freedom", points = 25, id = 143398, badge = "160144", type = "win_condition",
     description = "Save the World of the Ocean King from Bellum's influence.",
     trigger = IsInLocation("Credits") && WasInLocation("BellumFinal")
 )
 
-leaderboard(title = "Time Attack - Cyclok", description = "Defeat Cyclok as quickly as you can (DSi mode not supported).",
+leaderboard(title = "Time Attack - Cyclok", description = "Defeat Cyclok as quickly as you can (DSi mode not supported).", id = 20187,
     start = once(IsInLocation("Cyclok") && WasInLocation("TempleOfWind")) && CyclokStarted(),
     cancel = !IsInLocation("Cyclok"),
     submit = IsCyclokDying(),
@@ -1027,7 +1027,7 @@ leaderboard(title = "Time Attack - Cyclok", description = "Defeat Cyclok as quic
     lower_is_better = true
 )
 
-leaderboard(title = "Time Attack - Eox", description = "Defeat Eox as quickly as you can (DSi mode not supported).",
+leaderboard(title = "Time Attack - Eox", description = "Defeat Eox as quickly as you can (DSi mode not supported).", id = 20604,
     start = once(IsInLocation("Eox") && WasInLocation("Mutoh")) && EoxStarted(),
     cancel = !IsInLocation("Eox"),
     submit = IsEoxDying(),
@@ -1036,7 +1036,7 @@ leaderboard(title = "Time Attack - Eox", description = "Defeat Eox as quickly as
     lower_is_better = true
 )
 
-leaderboard(title = "Goron Game", description = "Finish the Goron Game in the fastest time you can.",
+leaderboard(title = "Goron Game", description = "Finish the Goron Game in the fastest time you can.", id = 20610,
     start = IsInLocation("DS") && goronGameState() != 0xffffffff && goronGameCountdown() == 0x3,
     cancel = !IsInLocation("DS"),
     submit = GoronGameDisplayIsActive() && goronGameTargetsRemaining() == 0,
@@ -1044,14 +1044,14 @@ leaderboard(title = "Goron Game", description = "Finish the Goron Game in the fa
     lower_is_better = true
 )
 
-leaderboard(title = "Cannon Game", description = "Get the highest score you can.",
+leaderboard(title = "Cannon Game", description = "Get the highest score you can.", id = 20708,
     start = IsInLocation("CannonMinigame") && CannonGameStarted(),
     cancel = !IsInLocation("CannonMinigame"),
     submit = cannonGameCountdown() == 0x4,
     value = cannonGameScore()
 )
 
-leaderboard(title = "Shooting Range", description = "Get the highest score you can.",
+leaderboard(title = "Shooting Range", description = "Get the highest score you can.", id = 20718,
     start = IsInLocation("Molida") && ShootingRangeCountdownStarted(),
     cancel = !IsInLocation("Molida") || ShootingRangeCanceled(),
     submit = ShootingRangeGameComplete() && ShootingRangeTimeIsUp(),
@@ -1059,7 +1059,7 @@ leaderboard(title = "Shooting Range", description = "Get the highest score you c
 )
 
 leaderboard(title = "Time Trial - Sandless Temple of the Ocean King",
-    description = "Complete the Temple of the Ocean King in the fastest time you can without replenishing sand.",
+    description = "Complete the Temple of the Ocean King in the fastest time you can without replenishing sand.", id = 20748,
     start = StartedTotokFromFloor1() && phantomSword() == 1,
     cancel = IsInLocation("OceanKingLobby") || RegainedSand(),
     submit = ReachedFinalFloor(),
