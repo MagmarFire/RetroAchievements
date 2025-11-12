@@ -67,6 +67,7 @@ function IsLoadingSaveFile() => Delta(maxHp()) == 0 && maxHp() > 0
 function IsInGame() => maxHp() > 0 && !IsInLocation("File")
     && !IsInLocation("WFC") && !IsInLocation("Title")
     && !IsInLocation("Battle") && !IsInLocation("Download")
+    && globalPointer() != 0
 
 // $1b7f9c: File selection menu (16-bit)
 //          0x1 = File selection
@@ -357,7 +358,7 @@ function WasInLocation(code)
     return Delta(currentLocation()) == location["id"]
 }
 
-achievement(title = "Permission Shmermission", points = 1, id = 143332, badge = "160078",
+achievement(title = "Permission Shmermission", points = 1, id = 143332, badge = "160078", type = "progression",
     description = "Learn swordplay from Oshus after raiding his storage.",
     trigger = WasBitflagSetInGame(learnedSwordplay())
 )
@@ -445,29 +446,29 @@ GenerateSaveProtectedAchievementFromConditions({
 //          Bit 4: Sea Chart - Northeast quadrant
 seaChartBaseAddr = 0x1ba608
 // The title should reflect Seneca's names for the classical compass winds in Latin, to match the Latin origin for Bellum's name.
-achievement(title = "Africus", points = 3, id = 143340, badge = "160086",
+achievement(title = "Africus", points = 3, id = 143340, badge = "160086", type = "progression",
     description = "Acquire the Southwestern Sea chart.",
     trigger = WasBitflagSetInGame(obit1(seaChartBaseAddr))
 )
 
-achievement(title = "Corus", points = 3, id = 143341, badge = "160087",
+achievement(title = "Corus", points = 3, id = 143341, badge = "160087", type = "progression",
     description = "Acquire the Northwestern Sea chart.",
     trigger = WasBitflagSetInGame(obit2(seaChartBaseAddr))
 )
 
-achievement(title = "Vulturnus", points = 3, id = 143342, badge = "160088",
+achievement(title = "Vulturnus", points = 3, id = 143342, badge = "160088", type = "progression",
     description = "Acquire the Southeastern Sea chart.",
     trigger = WasBitflagSetInGame(obit3(seaChartBaseAddr))
 )
 
 function northeasternSeaChart() => obit4(seaChartBaseAddr)
-achievement(title = "Caecias", points = 3, id = 143343, badge = "160089",
+achievement(title = "Caecias", points = 3, id = 143343, badge = "160089", type = "progression",
     description = "Acquire the Northeastern Sea chart.",
     trigger = WasBitflagSetInGame(northeasternSeaChart())
 )
 
 function astridRescued() => obit5(0x1b5544)
-achievement(title = "A Vision of Darkness", points = 1, id = 143346, badge = "160092",
+achievement(title = "A Vision of Darkness", points = 1, id = 143346, badge = "160092", type = "progression",
     description = "Rescue Astrid, the fortuneteller on the Isle of Ember.",
     trigger = WasBitflagSetInGame(astridRescued())
 )
@@ -498,13 +499,13 @@ achievement(title = "Tempus Fugit", points = 5, id = 143348, badge = "160094", t
 )
 
 function eddoCannon() => obyte(0x1ba53f)
-achievement(title = "Open Fire!", points = 3, id = 143349, badge = "160095",
+achievement(title = "Open Fire!", points = 3, id = 143349, badge = "160095", type = "progression",
     description = "Buy Eddo's cannon.",
     trigger = WasValueSetInGame(eddoCannon(), 0xff, 0x1)
 )
 
 function shovel() => obit3(0x1ba604)
-achievement(title = "Dig to the Center of the Earth!", points = 3, id = 143350, badge = "160096",
+achievement(title = "Dig to the Center of the Earth!", points = 3, id = 143350, badge = "160096", type = "progression",
     description = "Obtain the shovel.",
     trigger = WasBitflagSetInGame(shovel())
 )
@@ -513,12 +514,12 @@ achievement(title = "Dig to the Center of the Earth!", points = 3, id = 143350, 
 // we'll have to simply lock it out by other means. Best we can do at this point is to check for the existence of an item.
 // We're adding this cheevo simply due to the existence of a microphone-dependent obstacle (MDO) on the island.
 function bombs() => obit4(0x1ba604)
-achievement(title = "Where the Wind Blows", points = 1, id = 143351, badge = "160097",
+achievement(title = "Where the Wind Blows", points = 1, id = 143351, badge = "160097", type = "progression",
     description = "Reach the Isle of Gust for the first time.",
     trigger = WasInLocation("Sea") && IsInLocation("Gust") && bombs() != 1
 )
 
-achievement(title = "And Kablooey!", points = 3, id = 143352, badge = "160098",
+achievement(title = "And Kablooey!", points = 3, id = 143352, badge = "160098", type = "progression",
     description = "Obtain bombs.",
     trigger = WasBitflagSetInGame(bombs())
 )
@@ -542,19 +543,19 @@ achievement(title = "Hidden in Wind", points = 5, id = 143354, badge = "160100",
 )
 
 function crestPuzzleSolved() => obit2(0x1b554c)
-achievement(title = "Mental Reflection", points = 3, id = 143356, badge = "160102",
+achievement(title = "Mental Reflection", points = 3, id = 143356, badge = "160102", type = "progression",
     description = "Solve the crest puzzle in the second section of the Temple of the Ocean King.",
     trigger = WasBitflagSetInGame(crestPuzzleSolved())
 )
 
 function salvageArm() => obit4(0x1ba609)
-achievement(title = "An Arm and a Leg", points = 1, id = 143357, badge = "160103",
+achievement(title = "An Arm and a Leg", points = 1, id = 143357, badge = "160103", type = "progression",
     description = "Buy the Salvage Arm.",
     trigger = WasBitflagSetInGame(salvageArm())
 )
 
 function bow() => obit5(0x1ba604)
-achievement(title = "A Bowyer's Pride", points = 3, id = 143358, badge = "160104",
+achievement(title = "A Bowyer's Pride", points = 3, id = 143358, badge = "160104", type = "progression",
     description = "Obtain the bow.",
     trigger = WasBitflagSetInGame(bow())
 )
@@ -604,7 +605,7 @@ achievement(title = "Two in a Row", points = 5, id = 143363, badge = "160109", t
     trigger = WasBitflagSetInGame(northeasternSeaChart()) && grapplingHook() == 0 && bombchus() == 0 && never(!IsInLocation("OceanKing"))
 )
 
-achievement(title = "Precision Demolition", points = 3, id = 143364, badge = "160110",
+achievement(title = "Precision Demolition", points = 3, id = 143364, badge = "160110", type = "progression",
     description = "Obtain the Bombchu bag.",
     trigger = WasBitflagSetInGame(bombchus())
 )
@@ -640,7 +641,7 @@ achievement(title = "Sanguine Ore", points = 5, id = 143367, badge = "160113", t
     trigger = WasBitflagSetInGame(crimsonine())
 )
 
-achievement(title = "The Hooks!", points = 3, id = 143368, badge = "160114",
+achievement(title = "The Hooks!", points = 3, id = 143368, badge = "160114", type = "progression",
     description = "Obtain the grappling hook.",
     trigger = WasBitflagSetInGame(grapplingHook())
 )
@@ -659,7 +660,7 @@ achievement(title = "Lacrimal Ore", points = 5, id = 143370, badge = "160116", t
 )
 
 function hammer() => obit0(0x1ba605)
-achievement(title = "Stop!", points = 3, id = 143375, badge = "160121",
+achievement(title = "Stop!", points = 3, id = 143375, badge = "160121", type = "progression",
     description = "Obtain the hammer.",
     trigger = WasBitflagSetInGame(hammer())
 )
