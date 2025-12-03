@@ -2924,8 +2924,8 @@ eventRegister = {
     "Dark Hide": { "article": true, "location": "DarknessValley", "characters": AquaOnly(), "points": 25, "id": 552453, "badge": "" },
     "Vanitas Remnant": { "article": true, "location": "GraveyardBadlands2", "characters": [ Terra(), Ventus(), Aqua() ], "points": 100, "id": 552454, "badge": "",
         "triggerWhen": TriggerConditionsMetForAllCharacters(BossDefeatTriggered(), false) },
-    "Unknown": { "article": true, "location": "DepartureSummitRuins2", "characters": [ Terra(), Ventus(), Aqua() ], "points": 100, "id": 552455, "badge": "",
-        "triggerWhen": TriggerConditionsMetForAllCharacters(BossDefeatTriggered(), false) }
+    //"Unknown": { "article": true, "location": "DepartureSummitRuins2", "characters": [ Terra(), Ventus(), Aqua() ], "points": 100, "id": 552455, "badge": "", // Not sure if possible...
+        //"triggerWhen": TriggerConditionsMetForAllCharacters(BossDefeatTriggered(), false) }
 }
 
 for name in eventRegister
