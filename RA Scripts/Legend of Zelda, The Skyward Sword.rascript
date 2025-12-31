@@ -18,8 +18,10 @@ function areaId() => dword_be(0x005b51e0)
 
 function lightingState() => byte(0x00593941)
 
+function dialogueIdAddr() => 0x005a88f4
+
 areas = {
-0x46303031: { "name": "Knight Academy", "internalName": "", },0x46303039: { "name": "Sparring Hall", "internalName": "", },0x46303030: { "name": "Skyloft", "internalName": "", },0x44303030: { "name": "Waterfall", "internalName": "", },0x46303230: { "name": "The Sky", "internalName": "", },0x46303038: { "name": "Chamber of the Sword", "internalName": "", },0x46303231: { "name": "Sealed Grounds", "internalName": "", },0x46343031: { "name": "Sealed Grounds", "internalName": "SealedGroundsCutscene", },0x46343032: { "name": "Sealed Temple", "internalName": "", },0x46343030: { "name": "Sealed Grounds", "internalName": "BehindTheTemple", },0x46313030: { "name": "Faron Woods", "internalName": "", },0x46313031: { "name": "Deep Woods", "internalName": "", },0x44313030: { "name": "Skyview Temple", "internalName": "SkyviewTemple", },0x42313030: { "name": "Skyview Temple", "internalName": "STBossRoom", },
+0x46303031: { "name": "Knight Academy", "internalName": "", },0x46303039: { "name": "Sparring Hall", "internalName": "", },0x46303030: { "name": "Skyloft", "internalName": "", },0x44303030: { "name": "Waterfall", "internalName": "", },0x46303230: { "name": "The Sky", "internalName": "", },0x46303038: { "name": "Chamber of the Sword", "internalName": "", },0x46303231: { "name": "Sealed Grounds", "internalName": "", },0x46343031: { "name": "Sealed Grounds", "internalName": "SealedGroundsCutscene", },0x46343032: { "name": "Sealed Temple", "internalName": "", },0x46343030: { "name": "Sealed Grounds", "internalName": "BehindTheTemple", },0x46313030: { "name": "Faron Woods", "internalName": "", },0x46313031: { "name": "Deep Woods", "internalName": "", },0x44313030: { "name": "Skyview Temple", "internalName": "SkyviewTemple", },0x42313030: { "name": "Skyview Temple", "internalName": "STBossRoom", },0x00313031: { "name": "Somewhere in the sky...", "internalName": "SaveAndQuitTransition", },0x46303032: { "name": "Beedle's Airshop", "internalName": "", },0x46323030: { "name": "Eldin Volcano", "internalName": "", },0x46323130: { "name": "Eldin Volcano", "internalName": "EldinVolcanoInterior", },0x46323131: { "name": "Eldin Volcano", "internalName": "EldinThrillDigger", },
 }
 
 rpLookup = {}
@@ -32,10 +34,11 @@ for id in areas
 function Delta(mem) => prev(mem)
 
 function FileIsLoading() => IsInAreaByName("Skyloft") && (lightingState() == 0xc || lightingState() == 0x4)
+function UnlessSavingAndQuitting() => disable_when(WasInAreaByInternalName("SaveAndQuitTransition") && IsInAreaByName("Skyloft"), until = repeated(210, IsInAreaByName("Skyloft")))
 
 function WasValueJustChanged(mem, oldValue, newValue)
 {
-    return Delta(mem) == oldValue && mem == newValue
+    return Delta(mem) == oldValue && mem == newValue && UnlessSavingAndQuitting() // todo: UnlessSavingAndQuitting() needs to be moved to WasValueChangedInGame() once the RATools bug is fixed.
 }
 
 function WasValueJustChangedInGame(mem, oldValue, newValue)
@@ -76,9 +79,22 @@ function IsInAreaByInternalName(name)
     }
 }
 
-rich_presence_conditional_display(IsInArea(areaId()), "{0} • {1} ❤️",
+function WasInAreaByInternalName(name)
+{
+    for id in areas
+    {
+        if (areas[id]["internalName"] == name)
+        {
+            return prior(areaId()) == id
+        }
+    }
+}
+
+function sessionPlayTime() => dword_be(0x00577e50) / 600
+rich_presence_conditional_display(IsInArea(areaId()), "{0} • {1} ❤️ • Session time: {2}",
     rich_presence_lookup("Locations", areaId(), rpLookup, "Somewhere in the sky..."),
-    rich_presence_value("Hearts", Hearts())
+    rich_presence_value("Hearts", Hearts()),
+    rich_presence_value("Session", sessionPlayTime(), "SECS")
 )
 
 //rich_presence_conditional_display(IsOnTitleScreen(), "On the title screen...")
@@ -202,4 +218,31 @@ achievement(title = "Skyview Prayers", type = "progression", description = "Obta
 
 achievement(title = "Heartthrob", description = "Have a total of 20 hearts' worth of life energy.", points = 10,
     trigger = measured(maxHp() == 80, format = "percent") && Delta(maxHp() == 76) && WasValueJustChangedInGame(maxHp(), 76, 80)
+)
+
+achievement(title = "Defenestration Shopping", description = "Leave Beedle's Airshop without buying anything.", points = 1,
+    trigger = once(ascii_string_equals(dialogueIdAddr(), "TERY_09", 8))
+        && once(ascii_string_equals(dialogueIdAddr(), "TERY_10", 8))
+        && IsInAreaByName("Skyloft")
+)
+
+function bugNet() => bit0(0x00955e4c)
+achievement(title = "Swoosh", description = "Purchase the Bug Net.", points = 3,
+    trigger = WasBitflagJustSetInGame(bugNet())
+)
+
+function moleMitts() => bit6(0x00955e4a)
+achievement(title = "Honorary Mole Man", description = "Obtain the Mole Mitts.", points = 3, type = "progression",
+    trigger = WasBitflagJustSetInGame(moleMitts())
+)
+
+function numberOfPouchUpgrades() => (byte(0x00955eb4) & 0x1c) / 4
+achievement(title = "For Every Occasion", description = "Acquire all four Adventure Pouch upgrades.", points = 10,
+    trigger = WasValueJustChangedInGame(numberOfPouchUpgrades(), 3, 4)
+        && measured(numberOfPouchUpgrades() == 4)
+)
+
+achievement(title = "I.O.U.", description = "Pick up a Rupoor.", points = 1,
+    trigger = ascii_string_equals(dialogueIdAddr(), "ITEM_034", 9)
+        && IsInAreaByInternalName("EldinThrillDigger")
 )
