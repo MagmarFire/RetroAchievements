@@ -62,9 +62,9 @@ function SecondsToFormat(value)
     return value / 60 + ":" + leadingZero + value % 60
 }
 
-function IsLoadingSaveFile() => Delta(maxHp()) == 0 && maxHp() > 0
+function IsLoadingSaveFile() => globalPointer() != 0 && Delta(globalPointer()) == 0
 
-function IsInGame() => maxHp() > 0 && !IsInLocation("File")
+function IsInGame() => globalPointer() > 0 && !IsInLocation("File")
     && !IsInLocation("WFC") && !IsInLocation("Title")
     && !IsInLocation("Battle") && !IsInLocation("Download")
     && globalPointer() != 0
@@ -479,7 +479,9 @@ achievement(title = "Back at Ya!", points = 3, id = 143347, badge = "160093", ty
     trigger = WasBitflagSetInGame(boomerang())
 )
 
-function IsBlaazDying() => obyte(0x25f050) == 0x16
+function bossStatePointer() => tbyte(0x000e674c)
+function blaazState() => byte(bossStatePointer() - 0x83dc)
+function IsBlaazDying() => blaazState() == 0x16
 achievement(title = "Scorching Earth", points = 5, id = 143344, badge = "160090", type = "missable",
     description = "Defeat Blaaz without healing.",
     trigger = once(IsInLocation("Blaaz") && WasInLocation("TempleOfFire"))
@@ -524,7 +526,6 @@ achievement(title = "And Kablooey!", points = 3, id = 143352, badge = "160098", 
     trigger = WasBitflagSetInGame(bombs())
 )
 
-function bossStatePointer() => tbyte(0x000e674c)
 function cyclokState() => byte(bossStatePointer() - 0x9a00)
 function IsCyclokDying() => cyclokState() == 0x8
 function CyclokStarted() => once(Delta(cyclokState()) == 1 && cyclokState() == 2)
