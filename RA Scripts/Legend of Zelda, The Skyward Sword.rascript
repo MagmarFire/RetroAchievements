@@ -21,7 +21,7 @@ function lightingState() => byte(0x00593941)
 function dialogueIdAddr() => 0x005a88f4
 
 areas = {
-0x46303031: { "name": "Knight Academy", "internalName": "", },0x46303039: { "name": "Sparring Hall", "internalName": "", },0x46303030: { "name": "Skyloft", "internalName": "", },0x44303030: { "name": "Waterfall", "internalName": "", },0x46303230: { "name": "The Sky", "internalName": "", },0x46303038: { "name": "Chamber of the Sword", "internalName": "", },0x46303231: { "name": "Sealed Grounds", "internalName": "", },0x46343031: { "name": "Sealed Grounds", "internalName": "SealedGroundsCutscene", },0x46343032: { "name": "Sealed Temple", "internalName": "", },0x46343030: { "name": "Sealed Grounds", "internalName": "BehindTheTemple", },0x46313030: { "name": "Faron Woods", "internalName": "", },0x46313031: { "name": "Deep Woods", "internalName": "", },0x44313030: { "name": "Skyview Temple", "internalName": "SkyviewTemple", },0x42313030: { "name": "Skyview Temple", "internalName": "STBossRoom", },0x00313031: { "name": "Somewhere in the sky...", "internalName": "SaveAndQuitTransition", },0x46303032: { "name": "Beedle's Airshop", "internalName": "", },0x46323030: { "name": "Eldin Volcano", "internalName": "", },0x46323130: { "name": "Eldin Volcano", "internalName": "EldinVolcanoInterior", },0x46323131: { "name": "Eldin Volcano", "internalName": "EldinThrillDigger", },
+0x46303031: { "name": "Knight Academy", "internalName": "", },0x46303039: { "name": "Sparring Hall", "internalName": "", },0x46303030: { "name": "Skyloft", "internalName": "", },0x44303030: { "name": "Waterfall", "internalName": "", },0x46303230: { "name": "The Sky", "internalName": "", },0x46303038: { "name": "Chamber of the Sword", "internalName": "", },0x46303231: { "name": "Sealed Grounds", "internalName": "", },0x46343031: { "name": "Sealed Grounds", "internalName": "SealedGroundsCutscene", },0x46343032: { "name": "Sealed Temple", "internalName": "", },0x46343030: { "name": "Sealed Grounds", "internalName": "BehindTheTemple", },0x46313030: { "name": "Faron Woods", "internalName": "", },0x46313031: { "name": "Deep Woods", "internalName": "", },0x44313030: { "name": "Skyview Temple", "internalName": "SkyviewTemple", },0x42313030: { "name": "Skyview Temple", "internalName": "STBossRoom", },0x00313031: { "name": "Somewhere in the sky...", "internalName": "SaveAndQuitTransition", },0x46303032: { "name": "Beedle's Airshop", "internalName": "", },0x46323030: { "name": "Eldin Volcano", "internalName": "", },0x46323130: { "name": "Eldin Volcano", "internalName": "EldinVolcanoInterior", },0x46323131: { "name": "Eldin Volcano", "internalName": "EldinThrillDigger", },0x44323030: { "name": "Earth Temple", "internalName": "ETMain", },0x00323030: { "name": "Somewhere in the sky...", "internalName": "GameOverTransition", },0x42323030: { "name": "Earth Temple", "internalName": "ETBossRoom", },0x42323130: { "name": "Earth Spring", "internalName": "", },0x46333030: { "name": "Lanayru Mine", "internalName": "", },
 }
 
 rpLookup = {}
@@ -34,7 +34,8 @@ for id in areas
 function Delta(mem) => prev(mem)
 
 function FileIsLoading() => IsInAreaByName("Skyloft") && (lightingState() == 0xc || lightingState() == 0x4)
-function UnlessSavingAndQuitting() => disable_when(WasInAreaByInternalName("SaveAndQuitTransition") && IsInAreaByName("Skyloft"), until = repeated(210, IsInAreaByName("Skyloft")))
+function UnlessSavingAndQuitting() => disable_when(
+    (WasInAreaByInternalName("SaveAndQuitTransition") || WasInAreaByInternalName("GameOverTransition")) && IsInAreaByName("Skyloft"), until = repeated(210, IsInAreaByName("Skyloft")))
 
 function WasValueJustChanged(mem, oldValue, newValue)
 {
@@ -86,6 +87,17 @@ function WasInAreaByInternalName(name)
         if (areas[id]["internalName"] == name)
         {
             return prior(areaId()) == id
+        }
+    }
+}
+
+function WasJustInAreaByInternalName(name)
+{
+    for id in areas
+    {
+        if (areas[id]["internalName"] == name)
+        {
+            return Delta(areaId()) == id
         }
     }
 }
@@ -202,6 +214,7 @@ achievement(title = "Like a Monk", type = "missable", points = 10,
     description = "Finish off Ghirahim in Skyview Temple with projectiles (no resurrections).",
     trigger = GhirahimIBattleCheckpointReached()
         && GhirahimIBattleTriggered()
+        && never(hp() <= 0)
 )
 
 leaderboard(title = "Ghirahim I HP Remaining", description = "This leaderboard is for informative purposes only.",
@@ -245,4 +258,65 @@ achievement(title = "For Every Occasion", description = "Acquire all four Advent
 achievement(title = "I.O.U.", description = "Pick up a Rupoor.", points = 1,
     trigger = ascii_string_equals(dialogueIdAddr(), "ITEM_034", 9)
         && IsInAreaByInternalName("EldinThrillDigger")
+)
+
+function rupees() => word_be(0x00955ec2)
+function thrillDiggerRupeeValueCollected() => dword_be(0x00b6c5cc)
+function thrillDiggerRupeesCollected() => byte(0x00b6ffda)
+function thrillDiggerTotalCollectableRupees() => byte(0x00b6ffdb)
+function thrillDiggerUnpickedBombFlowers() => byte(0x00b6ffdc)
+function ThrillDiggerStarted() => once(thrillDiggerRupeesCollected() == 0 && Delta(thrillDiggerTotalCollectableRupees()) != thrillDiggerTotalCollectableRupees())
+function ThrillDiggerJustRevealedBoard() => Delta(thrillDiggerUnpickedBombFlowers()) == 0 && thrillDiggerUnpickedBombFlowers() > 0
+function ThrillDiggerJustEnded() => Delta(thrillDiggerUnpickedBombFlowers()) > 0 && thrillDiggerUnpickedBombFlowers() == 0
+function ThrillDiggerChoseBeginner() => once(Delta(rupees()) - rupees() == 30)
+function ThrillDiggerChoseIntermediate() => once(Delta(rupees()) - rupees() == 50)
+function ThrillDiggerChoseExpert() => once(Delta(rupees()) - rupees() == 70)
+achievement(title = "Greenbeard", description = "Win a game of Thrill Digger on Beginner difficulty.", points = 3,
+    trigger = ThrillDiggerStarted() && trigger_when(ThrillDiggerJustRevealedBoard() && thrillDiggerRupeesCollected() == thrillDiggerTotalCollectableRupees())
+        && ThrillDiggerChoseBeginner()
+        && never(ThrillDiggerJustEnded())
+)
+
+achievement(title = "Longbeard", description = "Win a game of Thrill Digger on Intermediate difficulty.", points = 5,
+    trigger = ThrillDiggerStarted() && trigger_when(ThrillDiggerJustRevealedBoard() && thrillDiggerRupeesCollected() == thrillDiggerTotalCollectableRupees())
+        && ThrillDiggerChoseIntermediate()
+        && never(ThrillDiggerJustEnded())
+)
+
+achievement(title = "Lord of the Deep", description = "Win a game of Thrill Digger on Expert difficulty.", points = 10,
+    trigger = ThrillDiggerStarted() && trigger_when(ThrillDiggerJustRevealedBoard() && thrillDiggerRupeesCollected() == thrillDiggerTotalCollectableRupees())
+        && ThrillDiggerChoseExpert()
+        && never(ThrillDiggerJustEnded())
+)
+
+function bombBag() => bit2(0x00955e51)
+achievement(title = "One Errant Twitch...", description = "Obtain the Bomb Bag.", points = 3, type = "progression",
+    trigger = WasBitflagJustSetInGame(bombBag())
+)
+
+function dragonSculpture() => bit7(0x00956fab)
+function boulderComplete() => bit7(0x00956fa8)
+// A "false start" in this case simply means sprinting before the cutscene starts. It's difficult to distinguish between cutscene recovery or Stamina Fruit recovery because both
+// fully recover stamina. Therefore, we need the player to jog normally up to the "starting line," so to speak.
+achievement(title = "Pace Yourself", description = "Escape the rolling boulder in the Earth Temple without recovering stamina with Stamina Fruit (no resurrections; no false starts).", points = 3,
+    type = "missable",
+    trigger = once(dragonSculpture() == 1 && Delta(dragonSculpture()) == 0 && IsInAreaByInternalName("ETMain"))
+        && trigger_when(boulderComplete() == 1)
+        && never(hp() <= 0)
+        && never(stamina() > Delta(stamina()) + 12000)
+)
+
+function ScalderaBattleCheckpointReached() => BattleCheckpointStarted(WasJustInAreaByInternalName("ETMain") && IsInAreaByInternalName("ETBossRoom"),
+    neverWhen = !IsInAreaByInternalName("ETBossRoom"))
+function scalderaHp() => byte(0x00b4dc63)
+function bombsInBombBag() => byte(0x00955ec6) * 2 + bit7(0x00955ec7)
+achievement(title = "Handle with Care", type = "missable", description = "Defeat Scaldera without pulling out more than six bombs out of your Bomb Bag (no resurrections).", points = 10,
+    trigger = ScalderaBattleCheckpointReached()
+        && trigger_when(scalderaHp() <= 0 && Delta(scalderaHp()) > 0)
+        && never(repeated(7, bombsInBombBag() < Delta(bombsInBombBag())))
+)
+
+function amberTablet() => bit3(0x00955e5a)
+achievement(title = "Earth Prayers", type = "progression", description = "Obtain the Amber Tablet.", points = 3,
+    trigger = WasBitflagJustSetInGame(amberTablet())
 )
