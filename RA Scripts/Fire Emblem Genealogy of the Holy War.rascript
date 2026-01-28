@@ -1166,10 +1166,10 @@ achievement(title = "Sellsword for Hire [m]", points = 10, id = 130709, badge = 
     trigger = chapter() == 2 && WasBitflagSetInGame(beowulfWasRecruited())
 )
 
-erin = GetGen1UnitObjectByName("Erin")
-achievement(title = "Devoted but Gullible [m]", points = 5, id = 130710, badge = "143907",
+function erinWasRecruited() => bit1(0x0052c5)
+achievement(title = "Devoted but Gullible", points = 5, id = 130710, badge = "143907", type = "missable",
     description = "Recruit Erin.",
-    trigger = chapter() == 2 && WasValueSetInGame(erin["affiliation"], 5, 0)
+    trigger = chapter() == 2 && WasBitflagSetInGame(erinWasRecruited())
 )
 
 function larceiRecruitsJohanOrJohalvier() => bit5(0x0052c5)
