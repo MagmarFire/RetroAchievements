@@ -2061,7 +2061,7 @@ xachievement(title = "Titan Paradox Title Defender", description = "Win the Tita
 
 function HadesParadoxCupCheckpointReached(when = always_true())
     => once(eventId() == 0xc4 && IsActiveInTheField() && IsInLocation("ColiseumTourney1") && JustBecameActiveInTheField() && currentRound() == 1 && when)
-    && never(IsDead()) && never(IsInLocation("UnderworldEntrance"))
+    && never(IsDead()) && never(IsInLocation("UnderworldEntrance")) && never(IsTransitioningToOrFromBattle())
 function WonTheHadesParadoxCup() => eventId() == 0xb8 && IsInLocation("ColiseumVictory") || ClearAnimationStarted()
 xachievement(title = "Hades Paradox Champion", description = "Win the Hades Paradox Cup starting from Round 1.", points = 5,
     id = 356971, badge = "402168",
