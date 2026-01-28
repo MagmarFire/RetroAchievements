@@ -62,12 +62,12 @@ function SecondsToFormat(value)
     return value / 60 + ":" + leadingZero + value % 60
 }
 
-function IsLoadingSaveFile() => globalPointer() != 0 && Delta(globalPointer()) == 0
+function IsLoadingSaveFile() => Delta(globalPointer()) == 0 && globalPointer() != 0 && maxHp() > 0
 
 function IsInGame() => globalPointer() > 0 && !IsInLocation("File")
     && !IsInLocation("WFC") && !IsInLocation("Title")
     && !IsInLocation("Battle") && !IsInLocation("Download")
-    && globalPointer() != 0
+    && maxHp() > 0
 
 // $1b7f9c: File selection menu (16-bit)
 //          0x1 = File selection
@@ -720,11 +720,9 @@ achievement(title = "Rollin', Rollin', Rollin'", points = 25, id = 143380, badge
 )
 
 cannonScoreTarget = 2640
-function CannonGameDisplayIsActive() => obyte(0x233f0c)
-function cannonGameState() => odword(0x233f1c)
-function cannonGameCountdown() => odword(0x233f18)
-function cannonGameScore() => odword(0x11f548)
-function cannonGameDisplaySize() => obyte(0x233f15)
+function cannonGameCountdown() => byte(bossStatePointer() - 0x1cf84)
+function cannonGameScore() => dword(0x11f548)
+function cannonGameDisplaySize() => byte(bossStatePointer() - 0x1cf87)
 function CannonGameStarted() => once(cannonGameCountdown() == 0x3 && Delta(cannonGameDisplaySize()) == 0x10)
 achievement(title = "Action Port", points = 10, id = 143384, badge = "160130",
     description = "Get a score of " + cannonScoreTarget + " in the cannon minigame.",
