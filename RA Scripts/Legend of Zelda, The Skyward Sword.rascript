@@ -1,6 +1,20 @@
 // The Legend of Zelda: Skyward Sword
 // #ID = 202
 
+function SecondsToFrames(value) => value * 30
+function SecondsToFormat(value)
+{
+    leadingZero = ""
+    if (value % 60 < 10)
+    {
+        leadingZero = "0"
+    }
+    return value / 60 + ":" + leadingZero + value % 60
+}
+
+function LMeasured(condition) => measured(repeated(0, condition)) // Legacy `measured` polyfill. measured(A && B) is no longer supported as of v1.10.0.
+function Delta(mem) => prev(mem)
+
 // $955E56: Sword [8-bit]
 //          
 //          0x01 = Practice Sword
@@ -14,14 +28,16 @@ function Hearts() => maxHp() / 4
 // $B7A9C4: Stamina [32-bit BE]
 function stamina() => dword_be(0xB7A9C4)
 
-function areaId() => dword_be(0x005b51e0)
+function areaIdAddr() => 0x005b51e0
+function areaId() => dword_be(areaIdAddr())
+function topAreaByte() => byte(areaIdAddr())
 
 function lightingState() => byte(0x00593941)
 
 function dialogueIdAddr() => 0x005a88f4
 
 areas = {
-0x46303031: { "name": "Knight Academy", "internalName": "", },0x46303039: { "name": "Sparring Hall", "internalName": "", },0x46303030: { "name": "Skyloft", "internalName": "", },0x44303030: { "name": "Waterfall", "internalName": "", },0x46303230: { "name": "The Sky", "internalName": "", },0x46303038: { "name": "Chamber of the Sword", "internalName": "", },0x46303231: { "name": "Sealed Grounds", "internalName": "", },0x46343031: { "name": "Sealed Grounds", "internalName": "SealedGroundsCutscene", },0x46343032: { "name": "Sealed Temple", "internalName": "", },0x46343030: { "name": "Sealed Grounds", "internalName": "BehindTheTemple", },0x46313030: { "name": "Faron Woods", "internalName": "", },0x46313031: { "name": "Deep Woods", "internalName": "", },0x44313030: { "name": "Skyview Temple", "internalName": "SkyviewTemple", },0x42313030: { "name": "Skyview Temple", "internalName": "STBossRoom", },0x00313031: { "name": "Somewhere in the sky...", "internalName": "SaveAndQuitTransition", },0x46303032: { "name": "Beedle's Airshop", "internalName": "", },0x46323030: { "name": "Eldin Volcano", "internalName": "", },0x46323130: { "name": "Eldin Volcano", "internalName": "EldinVolcanoInterior", },0x46323131: { "name": "Eldin Volcano", "internalName": "EldinThrillDigger", },0x44323030: { "name": "Earth Temple", "internalName": "ETMain", },0x00323030: { "name": "Somewhere in the sky...", "internalName": "GameOverTransition", },0x42323030: { "name": "Earth Temple", "internalName": "ETBossRoom", },0x42323130: { "name": "Earth Spring", "internalName": "", },0x46333030: { "name": "Lanayru Mine", "internalName": "", },
+0x46303031: { "name": "Knight Academy", "internalName": "", },0x46303039: { "name": "Sparring Hall", "internalName": "", },0x46303030: { "name": "Skyloft", "internalName": "", },0x44303030: { "name": "Waterfall", "internalName": "", },0x46303230: { "name": "The Sky", "internalName": "", },0x46303038: { "name": "Chamber of the Sword", "internalName": "", },0x46303231: { "name": "Sealed Grounds", "internalName": "", },0x46343031: { "name": "Sealed Grounds", "internalName": "SealedGroundsCutscene", },0x46343032: { "name": "Sealed Temple", "internalName": "", },0x46343030: { "name": "Sealed Grounds", "internalName": "BehindTheTemple", },0x46313030: { "name": "Faron Woods", "internalName": "FaronWoods", },0x46313031: { "name": "Deep Woods", "internalName": "", },0x44313030: { "name": "Skyview Temple", "internalName": "SkyviewTemple", },0x42313030: { "name": "Skyview Temple", "internalName": "STBossRoom", },0x00313031: { "name": "Somewhere in the sky...", "internalName": "SaveAndQuitTransition", },0x46303032: { "name": "Beedle's Airshop", "internalName": "", },0x46323030: { "name": "Eldin Volcano", "internalName": "", },0x46323130: { "name": "Eldin Volcano", "internalName": "EldinVolcanoInterior", },0x46323131: { "name": "Eldin Volcano", "internalName": "EldinThrillDigger", },0x44323030: { "name": "Earth Temple", "internalName": "ETMain", },0x00323030: { "name": "Somewhere in the sky...", "internalName": "GameOverTransition", },0x42323030: { "name": "Earth Temple", "internalName": "ETBossRoom", },0x42323130: { "name": "Earth Spring", "internalName": "", },0x46333030: { "name": "Lanayru Desert", "internalName": "", },0x46303034: { "name": "Bazaar", "internalName": "", },0x44333030: { "name": "Lanayru Mining Facility", "internalName": "LMFMain", },0x42333030: { "name": "Lanayru Mining Facility", "internalName": "LMFBossRoom", },0x333030: { "name": "Somewhere in the sky...", "internalName": "SaveAndQuitTransition2", },0x46303037: { "name": "Piper's House", "internalName": "", },0x46303138: { "name": "Peatrice's House", "internalName": "", },0x46303036: { "name": "Kukiel's House", "internalName": "", },0x46303134: { "name": "Bertie's House", "internalName": "", },0x46303135: { "name": "Gondo's House", "internalName": "", },0x46303133: { "name": "Sparrot's House", "internalName": "", },0x46303233: { "name": "Inside the Thunderhead", "internalName": "", },0x46303130: { "name": "Isle of Songs", "internalName": "", },0x53313030: { "name": "Farore's Silent Realm", "internalName": "FaroreSilentRealm", },
 }
 
 rpLookup = {}
@@ -31,11 +47,11 @@ for id in areas
     rpLookup[id] = areas[id]["name"]
 }
 
-function Delta(mem) => prev(mem)
+function WasTransitioningFromSaveOrQuit() => prior(topAreaByte()) == 0
 
 function FileIsLoading() => IsInAreaByName("Skyloft") && (lightingState() == 0xc || lightingState() == 0x4)
-function UnlessSavingAndQuitting() => disable_when(
-    (WasInAreaByInternalName("SaveAndQuitTransition") || WasInAreaByInternalName("GameOverTransition")) && IsInAreaByName("Skyloft"), until = repeated(210, IsInAreaByName("Skyloft")))
+function UnlessSavingAndQuitting() => disable_when(WasTransitioningFromSaveOrQuit() && IsInAreaByName("Skyloft"), until = repeated(240, IsInAreaByName("Skyloft")))
+    && never(Delta(areaId()) != areaId())
 
 function WasValueJustChanged(mem, oldValue, newValue)
 {
@@ -114,7 +130,7 @@ rich_presence_conditional_display(IsInArea(areaId()), "{0} • {1} ❤️ • Se
 rich_presence_display("Somewhere in the sky...")
 
 achievement(title = "My Body Is Ready", description = "Obtain the Training Sword.", points = 3, type = "progression",
-    trigger = IsInAreaByName("Sparring Hall") && WasBitflagJustSetInGame(equippedSword())
+    trigger = IsInAreaByName("Sparring Hall") && WasValueJustChangedInGame(equippedSword(), 0, 1)
 )
 
 function descentToTheSurfaceForTheFirstTime() => bit4(0x00955d94)
@@ -310,7 +326,9 @@ function ScalderaBattleCheckpointReached() => BattleCheckpointStarted(WasJustInA
     neverWhen = !IsInAreaByInternalName("ETBossRoom"))
 function scalderaHp() => byte(0x00b4dc63)
 function bombsInBombBag() => byte(0x00955ec6) * 2 + bit7(0x00955ec7)
-achievement(title = "Handle with Care", type = "missable", description = "Defeat Scaldera without pulling out more than six bombs out of your Bomb Bag (no resurrections).", points = 10,
+// This achievement can be done in as few as five bombs, perhaps fewer. However, hitting Scaldera's weak point can be quite finicky, and it's randomly predetermined what parts of its shell
+// will break off first, limiting predictability. May want to consider increasing the point value to 25 to make up for the considerable iteration time, too.
+achievement(title = "Handle with Care", type = "missable", description = "Defeat Scaldera without pulling more than six bombs out of your Bomb Bag (no resurrections).", points = 10,
     trigger = ScalderaBattleCheckpointReached()
         && trigger_when(scalderaHp() <= 0 && Delta(scalderaHp()) > 0)
         && never(repeated(7, bombsInBombBag() < Delta(bombsInBombBag())))
@@ -319,4 +337,117 @@ achievement(title = "Handle with Care", type = "missable", description = "Defeat
 function amberTablet() => bit3(0x00955e5a)
 achievement(title = "Earth Prayers", type = "progression", description = "Obtain the Amber Tablet.", points = 3,
     trigger = WasBitflagJustSetInGame(amberTablet())
+)
+
+function extraWalletsObtained() => byte(0x00955ec6) / 64
+achievement(title = "I Don't NEED Credit", description = "Obtain a wallet maximum of 9,900 Rupees.", points = 5,
+    trigger = always_false()
+)
+
+function hookBeetle() => bit1(0x00955e4f)
+achievement(title = "Death from Above", type = "progression", description = "Upgrade the Beetle into the Hook Beetle.", points = 3,
+    trigger = WasBitflagJustSetInGame(hookBeetle())
+)
+
+function gustBellows() => bit1(0x00955e4a)
+achievement(title = "Wonderful Rush", type = "progression", description = "Obtain the Gust Bellows.", points = 3,
+    trigger = WasBitflagJustSetInGame(gustBellows())
+)
+
+function shieldSlotIndex() => byte(0x0095a815)
+function ShieldIsEquipped() => shieldSlotIndex() != 8
+function moldarachHp() => byte(0x00b6d9e5)
+achievement(title = "Fleet-footed", description = "Defeat Moldarach in the Lanayru Mining Facility without having a shield equipped and without recovering life energy.", points = 5,
+    type = "missable",
+    trigger = BattleCheckpointStarted(WasJustInAreaByInternalName("LMFMain") && IsInAreaByInternalName("LMFBossRoom"),
+    neverWhen = !IsInAreaByInternalName("LMFBossRoom"))
+        && never(Delta(hp()) < hp())
+        && never(ShieldIsEquipped())
+        && trigger_when(moldarachHp() <= 0 && Delta(moldarachHp()) > 0)
+)
+
+function goddessHarp() => bit1(0x00955e58)
+achievement(title = "In Harmonia", type = "progression", description = "Obtain the Goddess's Harp.", points = 3,
+    trigger = WasBitflagJustSetInGame(goddessHarp())
+)
+
+function balladOfTheGoddess() => bit5(0x00955e5f)
+achievement(title = "Canon Cancrizans", description = "Learn the Ballad of the Goddess.", points = 3, type = "progression",
+    trigger = WasBitflagJustSetInGame(balladOfTheGoddess())
+)
+
+function playerSealPromptI() => bit1(0x00956f6b)
+function imprisonedBaseAddr() => 0x00b19b65
+function imprisonedIHp() => byte(imprisonedBaseAddr())
+
+function ImprisonedToeWasJustAttacked()
+{
+    trigger = always_false()
+    for i in range(1, 8)
+    {
+        toeHp = byte(imprisonedBaseAddr() + 12 * i)
+        trigger = trigger || Delta(toeHp) > toeHp
+    }
+    
+    return trigger
+}
+
+function ImprisonedICheckpointReached() => BattleCheckpointStarted(once(ascii_string_equals(dialogueIdAddr(), "CF_05", 6))
+    && once(ascii_string_equals(dialogueIdAddr(), "CF_05", 6))
+    && IsInAreaByInternalName("SealedGroundsCutscene"), neverWhen = !IsInAreaByInternalName("SealedGroundsCutscene")
+        || ascii_string_equals(dialogueIdAddr(), "CF_47", 6)) // Nonstandard game over dialogue
+achievement(title = "What Am I, A Podiatrist?", description = "Defeat the Imprisoned I without attacking its toes (no resurrections).", points = 5, type = "missable",
+    trigger = ImprisonedICheckpointReached() && never(playerSealPromptI() == 1)
+        && never(ImprisonedToeWasJustAttacked())
+        && trigger_when(imprisonedIHp() == 0 && Delta(imprisonedIHp()) == 1)
+)
+
+function faroresCourage() => bit6(0x00955e5f)
+achievement(title = "The Melody of Valor", description = "Learn Farore's Courage.", type = "progression", points = 3,
+    trigger = WasBitflagJustSetInGame(faroresCourage())
+)
+
+function tearsCollected() => byte(0x0097bbb3)
+function silentRealmTimeRemaining() => dword_be(0x0097b46c)
+function SilentRealmFrameElapsed() => silentRealmTimeRemaining() < Delta(silentRealmTimeRemaining())
+function SilentRealmFramesElapsed30FPS() => tally(0, [ SilentRealmFrameElapsed(), SilentRealmFrameElapsed() ])
+function faroreWiltlessTimeLimit() => 45
+function TearsWereReset() => Delta(tearsCollected()) > 0 && tearsCollected() == 0
+function SilentRealmCompleted() => tearsCollected() == 15 && (Delta(silentRealmTimeRemaining()) == 0 || Delta(silentRealmTimeRemaining()) == 91000) && silentRealmTimeRemaining() == 1000
+function LeftFaroresSilentRealm() => !IsInAreaByInternalName("FaroreSilentRealm")
+function FaroresSilentRealmCheckpointReached() => once(Delta(tearsCollected()) == 0 && tearsCollected() == 1)
+    && never(LeftFaroresSilentRealm())
+    && disable_when(repeated(SecondsToFrames(faroreWiltlessTimeLimit()), SilentRealmFrameElapsed()), TearsWereReset())
+
+leaderboard(title = "Wiltless Courage", description = "Complete Farore's Silent Realm while spending as little Spirit Vessel time as possible.",
+    start = FaroresSilentRealmCheckpointReached() && never(LeftFaroresSilentRealm()),
+    cancel = LeftFaroresSilentRealm(),
+    submit = SilentRealmCompleted(),
+    value = SilentRealmFramesElapsed30FPS() && never(TearsWereReset()),
+    format = "FRAMES",
+    lower_is_better = true
+)
+
+achievement(title = "Wiltless Courage", description = "Complete Farore's Silent Realm before a total of " + faroreWiltlessTimeLimit() + " seconds passes from your Spirit Vessel.", points = 25,
+    trigger = FaroresSilentRealmCheckpointReached() && trigger_when(SilentRealmCompleted())
+)
+
+function waterDragonsScale() => bit5(0x00955e4d)
+achievement(title = "Swimming Phenom", description = "Obtain the Water Dragon's Scale.", type = "progression", points = 3,
+    trigger = WasBitflagJustSetInGame(waterDragonsScale())
+)
+
+function nayrusWisdom() => bit7(0x00955e5f)
+achievement(title = "The Melody of Percipience", description = "Learn Nayru's Wisdom.", type = "progression", points = 3,
+    trigger = WasBitflagJustSetInGame(nayrusWisdom())
+)
+
+function dinsPower() => bit0(0x00955e5e)
+achievement(title = "The Melody of Might", description = "Learn Din's Power.", type = "progression", points = 3,
+    trigger = WasBitflagJustSetInGame(dinsPower())
+)
+
+function songOfTheHero() => bit4(0x00955e5e)
+achievement(title = "The Melody of Legend", description = "Learn the Song of the Hero.", type = "progression", points = 3,
+    trigger = WasBitflagJustSetInGame(songOfTheHero())
 )
