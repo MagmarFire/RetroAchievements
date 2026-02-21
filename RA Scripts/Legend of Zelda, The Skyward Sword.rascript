@@ -37,7 +37,7 @@ function lightingState() => byte(0x00593941)
 function dialogueIdAddr() => 0x005a88f4
 
 areas = {
-0x46303031: { "name": "Knight Academy", "internalName": "", },0x46303039: { "name": "Sparring Hall", "internalName": "", },0x46303030: { "name": "Skyloft", "internalName": "", },0x44303030: { "name": "Waterfall", "internalName": "", },0x46303230: { "name": "The Sky", "internalName": "", },0x46303038: { "name": "Chamber of the Sword", "internalName": "", },0x46303231: { "name": "Sealed Grounds", "internalName": "", },0x46343031: { "name": "Sealed Grounds", "internalName": "SealedGroundsCutscene", },0x46343032: { "name": "Sealed Temple", "internalName": "", },0x46343030: { "name": "Sealed Grounds", "internalName": "BehindTheTemple", },0x46313030: { "name": "Faron Woods", "internalName": "FaronWoods", },0x46313031: { "name": "Deep Woods", "internalName": "", },0x44313030: { "name": "Skyview Temple", "internalName": "SkyviewTemple", },0x42313030: { "name": "Skyview Temple", "internalName": "STBossRoom", },0x00313031: { "name": "Somewhere in the sky...", "internalName": "SaveAndQuitTransition", },0x46303032: { "name": "Beedle's Airshop", "internalName": "", },0x46323030: { "name": "Eldin Volcano", "internalName": "", },0x46323130: { "name": "Eldin Volcano", "internalName": "EldinVolcanoInterior", },0x46323131: { "name": "Eldin Volcano", "internalName": "EldinThrillDigger", },0x44323030: { "name": "Earth Temple", "internalName": "ETMain", },0x00323030: { "name": "Somewhere in the sky...", "internalName": "GameOverTransition", },0x42323030: { "name": "Earth Temple", "internalName": "ETBossRoom", },0x42323130: { "name": "Earth Spring", "internalName": "", },0x46333030: { "name": "Lanayru Desert", "internalName": "", },0x46303034: { "name": "Bazaar", "internalName": "", },0x44333030: { "name": "Lanayru Mining Facility", "internalName": "LMFMain", },0x42333030: { "name": "Lanayru Mining Facility", "internalName": "LMFBossRoom", },0x333030: { "name": "Somewhere in the sky...", "internalName": "SaveAndQuitTransition2", },0x46303037: { "name": "Piper's House", "internalName": "", },0x46303138: { "name": "Peatrice's House", "internalName": "", },0x46303036: { "name": "Kukiel's House", "internalName": "", },0x46303134: { "name": "Bertie's House", "internalName": "", },0x46303135: { "name": "Gondo's House", "internalName": "", },0x46303133: { "name": "Sparrot's House", "internalName": "", },0x46303233: { "name": "Inside the Thunderhead", "internalName": "", },0x46303130: { "name": "Isle of Songs", "internalName": "", },0x53313030: { "name": "Farore's Silent Realm", "internalName": "FaroreSilentRealm", },
+0x46303031: { "name": "Knight Academy", "internalName": "", },0x46303039: { "name": "Sparring Hall", "internalName": "", },0x46303030: { "name": "Skyloft", "internalName": "", },0x44303030: { "name": "Waterfall", "internalName": "", },0x46303230: { "name": "The Sky", "internalName": "", },0x46303038: { "name": "Chamber of the Sword", "internalName": "", },0x46303231: { "name": "Sealed Grounds", "internalName": "", },0x46343031: { "name": "Sealed Grounds", "internalName": "SealedGroundsCutscene", },0x46343032: { "name": "Sealed Temple", "internalName": "", },0x46343030: { "name": "Sealed Grounds", "internalName": "BehindTheTemple", },0x46313030: { "name": "Faron Woods", "internalName": "FaronWoods", },0x46313031: { "name": "Deep Woods", "internalName": "", },0x44313030: { "name": "Skyview Temple", "internalName": "SkyviewTemple", },0x42313030: { "name": "Skyview Temple", "internalName": "STBossRoom", },0x00313031: { "name": "Somewhere in the sky...", "internalName": "SaveAndQuitTransition", },0x46303032: { "name": "Beedle's Airshop", "internalName": "", },0x46323030: { "name": "Eldin Volcano", "internalName": "", },0x46323130: { "name": "Eldin Volcano", "internalName": "EldinVolcanoInterior", },0x46323131: { "name": "Eldin Volcano", "internalName": "EldinThrillDigger", },0x44323030: { "name": "Earth Temple", "internalName": "ETMain", },0x00323030: { "name": "Somewhere in the sky...", "internalName": "GameOverTransition", },0x42323030: { "name": "Earth Temple", "internalName": "ETBossRoom", },0x42323130: { "name": "Earth Spring", "internalName": "", },0x46333030: { "name": "Lanayru Desert", "internalName": "", },0x46303034: { "name": "Bazaar", "internalName": "", },0x44333030: { "name": "Lanayru Mining Facility", "internalName": "LMFMain", },0x42333030: { "name": "Lanayru Mining Facility", "internalName": "LMFBossRoom", },0x333030: { "name": "Somewhere in the sky...", "internalName": "SaveAndQuitTransition2", },0x46303037: { "name": "Piper's House", "internalName": "", },0x46303138: { "name": "Peatrice's House", "internalName": "", },0x46303036: { "name": "Kukiel's House", "internalName": "", },0x46303134: { "name": "Bertie's House", "internalName": "", },0x46303135: { "name": "Gondo's House", "internalName": "", },0x46303133: { "name": "Sparrot's House", "internalName": "", },0x46303233: { "name": "Inside the Thunderhead", "internalName": "", },0x46303130: { "name": "Isle of Songs", "internalName": "", },0x53313030: { "name": "Farore's Silent Realm", "internalName": "FaroreSilentRealm", },0x46313032: { "name": "Lake Floria", "internalName": "", },0x44313031: { "name": "Ancient Cistern", "internalName": "ACMain", },0x42313031: { "name": "Ancient Cistern", "internalName": "ACBossRoom", },0x53333030: { "name": "Nayru's Silent Realm", "internalName": "NayruSilentRealm", },
 }
 
 rpLookup = {}
@@ -50,7 +50,7 @@ for id in areas
 function WasTransitioningFromSaveOrQuit() => prior(topAreaByte()) == 0
 
 function FileIsLoading() => IsInAreaByName("Skyloft") && (lightingState() == 0xc || lightingState() == 0x4)
-function UnlessSavingAndQuitting() => disable_when(WasTransitioningFromSaveOrQuit() && IsInAreaByName("Skyloft"), until = repeated(240, IsInAreaByName("Skyloft")))
+function UnlessSavingAndQuitting() => disable_when(WasTransitioningFromSaveOrQuit() && IsInAreaByName("Skyloft"), until = repeated(300, IsInAreaByName("Skyloft")))
     && never(Delta(areaId()) != areaId())
 
 function WasValueJustChanged(mem, oldValue, newValue)
@@ -186,6 +186,29 @@ function JustUsedSpinAttack()
     }
     
     return trigger
+}
+
+function JustSwungSword()
+{
+    ids = [
+        0xbf, // top-right -> bottom-left
+        0xc1, // top -> bottom
+        0xc3, // top-left -> bottom-right
+        0xc5, // left -> right
+        0xc7, // bottom -> top
+        0xc9, // bottom-right -> top-left
+        0xcb, // right -> left
+        0xcf // bottom-left -> top-right
+    ]
+    
+    trigger = always_false()
+    
+    for id in ids
+    {
+        trigger = trigger || Delta(animationId()) != id && animationId() == id
+    }
+    
+    return trigger || JustUsedSpinAttack()
 }
 
 function beetleChestAppeared() => bit6(0x00956f78)
@@ -437,9 +460,136 @@ achievement(title = "Swimming Phenom", description = "Obtain the Water Dragon's 
     trigger = WasBitflagJustSetInGame(waterDragonsScale())
 )
 
+function tripleStalfosVictory() => bit0(0x00956f87)
+function TripleStalfosCheckpointReached() => BattleCheckpointStarted(xCoordinate() == 0.0 && yCoordinate() == 150.0 && zCoordinate() == -1600.0 && prior(animationId()) == 0x12d
+    && animationId() == 0x12 && tripleStalfosVictory() == 0 && waterDragonsScale() == 1,
+    neverWhen = !IsInAreaByInternalName("STBossRoom"))
+achievement(title = "Respect for the Undead", type = "missable", points = 5,
+    description = "Defeat the Stalfos trio in the Skyview Temple without pulling out a bomb (no resurrections).",
+    trigger = TripleStalfosCheckpointReached()
+        && trigger_when(WasBitflagJustSet(tripleStalfosVictory()))
+        && never(bombsInBombBag() < Delta(bombsInBombBag()))
+)
+
+function CreateChain(permutation, predicate = a => a)
+{
+    trigger = always_true()
+    
+    for condition in permutation
+    {
+        trigger = predicate(trigger && condition)
+    }
+    
+    return trigger
+}
+
+function guardState() => byte(0x00b7689b)
+function ShieldHitboxWasJustActive() => Delta(guardState()) == 0x49
+function JustSuccessfullyParried() => ShieldHitboxWasJustActive() && guardState() != Delta(guardState()) && animationId() == 0xe1
+function JustUsedAttack(id) => animationId() == id && Delta(animationId()) != animationId()
+function always_truthy() => byte(0) == 0x53
+
+neverUsedAttackTrigger = always_false()
+attackIds = [
+    0xbf, // top-right -> bottom-left
+    0xc1, // top -> bottom
+    0xc3, // top-left -> bottom-right
+    0xc5, // left -> right
+    0xc7, // bottom -> top
+    0xc9, // bottom-right -> top-left
+    0xcb, // right -> left
+    0xcf, // bottom-left -> top-right
+    0x4f, // Horizontal, counterclockwise
+    0x50, // Horizontal, clockwise
+    0x51, // Vertical, downward
+    0x52, // Vertical, upward
+    0xd1 // Stab
+]
+
+for id in attackIds
+{
+    neverUsedAttackTrigger = neverUsedAttackTrigger || never(CreateChain([ repeated(90, always_truthy() && never(JustSuccessfullyParried())), JustUsedAttack(id), always_true() ]))
+}
+
+function stalmasterVictoryAncientCistern() => bit1(0x00956f94)
+achievement(title = "Stunlocked in Combat", points = 10,
+    description = "Defeat the Stalmaster in the Ancient Cistern using only follow-up attacks within three seconds of a parry (no resurrections).", type = "missable",
+    trigger = BattleCheckpointStarted(xCoordinate() == 0.0 && yCoordinate() == -2250.0 && zCoordinate() == 350.0 && prior(animationId()) == 0x12d
+            && animationId() == 0x12 && stalmasterVictoryAncientCistern() == 0,
+            neverWhen = !IsInAreaByInternalName("ACMain"))
+        && trigger_when(stalmasterVictoryAncientCistern() == 1)
+        && neverUsedAttackTrigger
+)
+
+function whip() => bit4(0x00955e57)
+achievement(title = "You Can Whip It!", description = "Obtain the Whip.", type = "progression", points = 3,
+    trigger = WasBitflagJustSetInGame(whip())
+)
+
+function koloktosVictory() => bit4(0x00956f90)
+function JustUsedTheWhip()
+{
+    trigger = always_false()
+    drawIds = [
+        0xf7,
+        0xf8, // From top
+        0xf9, // From top-left
+        0xfa, // From left
+        0xfb, // From bottom
+        0xfc,
+        0xfd
+    ]
+    
+    for id in drawIds
+    {
+        trigger = trigger || Delta(animationId()) == id && animationId() != Delta(animationId())
+    }
+    
+    return trigger
+}
+
+achievement(title = "Getting Right to the Stabbing", type = "missable", description = "Defeat Koloktos without whipping more than eight times (no resurrections).", points = 5,
+    trigger = BattleCheckpointStarted(xCoordinate() == 0.0 && yCoordinate() == 150.0 && zCoordinate() == 850.0 && prior(animationId()) == 0x26
+            && animationId() == 0x12 && koloktosVictory() == 0,
+            neverWhen = !IsInAreaByInternalName("ACBossRoom"))
+        && trigger_when(koloktosVictory() == 1)
+        && never(repeated(9, JustUsedTheWhip()))
+)
+
+function goddessLongsword() => bit1(0x00955e48)
+achievement(title = "Towards Mastery", type = "progression", points = 3, description = "Forge the Goddess Longsword.",
+    trigger = WasBitflagJustSetInGame(goddessLongsword())
+)
+
 function nayrusWisdom() => bit7(0x00955e5f)
 achievement(title = "The Melody of Percipience", description = "Learn Nayru's Wisdom.", type = "progression", points = 3,
     trigger = WasBitflagJustSetInGame(nayrusWisdom())
+)
+
+// My record: 1:42.50
+function LeftNayrusSilentRealm() => !IsInAreaByInternalName("NayruSilentRealm")
+function nayruWiltlessTimeLimit() => 110
+function NayrusSilentRealmCheckpointReached() => once(Delta(tearsCollected()) == 0 && tearsCollected() == 1)
+    && never(LeftNayrusSilentRealm())
+    && disable_when(repeated(SecondsToFrames(nayruWiltlessTimeLimit()), SilentRealmFrameElapsed()), TearsWereReset())
+
+leaderboard(title = "Wiltless Wisdom", description = "Complete Nayru's Silent Realm while spending as little Spirit Vessel time as possible.",
+    start = NayrusSilentRealmCheckpointReached() && never(LeftNayrusSilentRealm()),
+    cancel = LeftNayrusSilentRealm(),
+    submit = SilentRealmCompleted(),
+    value = SilentRealmFramesElapsed30FPS() && never(TearsWereReset()),
+    format = "FRAMES",
+    lower_is_better = true
+)
+
+achievement(title = "Wiltless Wisdom", description = "Complete Nayru's Silent Realm before a total of " + SecondsToFormat(nayruWiltlessTimeLimit())
+    + " passes from your Spirit Vessel.", points = 25,
+    trigger = NayrusSilentRealmCheckpointReached() && trigger_when(SilentRealmCompleted())
+)
+
+function clawshots() => bit5(0x00955e48)
+achievement(title = "Skulltula-Man", description = "Obtain the Clawshots.", type = "progression", points = 3,
+    trigger = WasBitflagJustSetInGame(clawshots())
 )
 
 function dinsPower() => bit0(0x00955e5e)
