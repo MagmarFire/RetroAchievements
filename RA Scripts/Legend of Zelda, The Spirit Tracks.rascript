@@ -17,14 +17,15 @@ spanishOffset = 0x380
 //          0x380 = Spanish
 function GetGlobalOffset() => word(0x25f584) - englishOffset
 
-function obit0(addr) => bit0(addr + GetGlobalOffset())
-function obit1(addr) => bit1(addr + GetGlobalOffset())
-function obit2(addr) => bit2(addr + GetGlobalOffset())
-function obit3(addr) => bit3(addr + GetGlobalOffset())
-function obit4(addr) => bit4(addr + GetGlobalOffset())
-function obit5(addr) => bit5(addr + GetGlobalOffset())
-function obit6(addr) => bit6(addr + GetGlobalOffset())
-function obit7(addr) => bit7(addr + GetGlobalOffset())
+function obit(index, addr) => bit(index, addr + GetGlobalOffset())
+function obit0(addr) => obit(0, addr)
+function obit1(addr) => obit(1, addr)
+function obit2(addr) => obit(2, addr)
+function obit3(addr) => obit(3, addr)
+function obit4(addr) => obit(4, addr)
+function obit5(addr) => obit(5, addr)
+function obit6(addr) => obit(6, addr)
+function obit7(addr) => obit(7, addr)
 
 function obyte(addr) => byte(addr + GetGlobalOffset())
 function oword(addr) => word(addr + GetGlobalOffset())
@@ -50,17 +51,17 @@ function SecondsToFormat(value)
 }
 
 // $3ffc3c: (32-bit) System timer. Increments by one every frame.
-function framesCounter() => dword(0x3ffc3c)
+function framesCounter() => odword(0x3ffc3c)
 
 function frameIncremented() => prev(framesCounter()) != framesCounter()
 
 function SecondsToFrames(seconds) => seconds * 60 // Assuming a 60 FPS framerate
 
 // $04e5ee: 0x1 = makes top screen white during transitions
-function topScreenTransitionState() => byte(0x04e5f0)
+function topScreenTransitionState() => obyte(0x04e5f0)
 
-// $04e5ef: 0xff = makes the top screen black if the previous byte is not 0.
-function IsTopScreenBlack() => byte(0x04e5ef) == 0xff
+// $04e5ef: 0xff = makes the top screen black if the previous obyte is not 0.
+function IsTopScreenBlack() => obyte(0x04e5ef) == 0xff
 
 function IsTransitioningInBlack() => IsTopScreenBlack() && topScreenTransitionState() == 1
 
@@ -78,30 +79,30 @@ function timeRemainingInFinalExam() => word(0x0BB584)
 //          0x3 = Guard is attacking
 //          0x4 = Game over
 //          0x5 = Post game over
-function trainingGameState() => byte(0x1227f8)
+function trainingGameState() => obyte(0x1227f8)
 
 // $12280c: Training minigame - Hits remaining
-function trainingGameHitsRemaining() => word(0x12280c)
+function trainingGameHitsRemaining() => oword(0x12280c)
 
 // $12280e: Training minigame - Points in current game
-function trainingGameScore() => word(0x12280e)
+function trainingGameScore() => oword(0x12280e)
 
 // $15b184: Whip Race - state:
 //          0x1 = countdown
 //          0x2 = race in progress
 //          0x3 = finish
 //          0x4 = after finish
-function whipRaceState() => byte(0x15b184)
+function whipRaceState() => obyte(0x15b184)
 
 // $15b188: Whip race - current time (16-bit)
-function whipRaceTime() => word(0x15b188)
+function whipRaceTime() => oword(0x15b188)
 
 // $15b194: Determines how the whip race ended.
 //
 //          0x1 = timeout
 //          0x2 = forfeit
 //          any other value = complete
-function reasonWhipRaceEnded() => byte(0x15b194)
+function reasonWhipRaceEnded() => obyte(0x15b194)
 
 // $163fe0: Pirate Hideout minigame state
 //
@@ -110,25 +111,25 @@ function reasonWhipRaceEnded() => byte(0x15b194)
 //          0x2 = Stage 1
 //          0x3 = Stage 2
 //          0x5 = captured
-function pirateHideoutState() => byte(0x163fe0)
+function pirateHideoutState() => obyte(0x163fe0)
 
 // $164224: Pirate Hideout minigame score
-function pirateHideoutScore() => word(0x164224)
+function pirateHideoutScore() => oword(0x164224)
 
 // $17e428: Take 'Em All On! state:
 //
 //          0x1 = counting down
 //          0x2 = in progress
-function gauntletState() => byte(0x17e428)
+function gauntletState() => obyte(0x17e428)
 
 // $17e42c: Gauntlet time (assumes 30fps) (32-bit)
-function gauntletTime() => dword(0x17e42c)
+function gauntletTime() => odword(0x17e42c)
 
 // $25ff90: 0x1 = paused
-function IsPaused() => byte(0x25ff90) == 1
+function IsPaused() => obyte(0x25ff90) == 1
 
 // $261640: Current location (US)
-function currentLocation() => word(0x261640)
+function currentLocation() => oword(0x261640)
 
 locationInfo = {
 0x2f: { "id": 0x2f, "name": "In Aboda Village", "code": "Aboda", },
@@ -229,7 +230,7 @@ function IsInLocationWithCode(code)
 }
 
 // RICH PRESENCE
-function CurrentFloor() => byte(0x260008) + 1
+function CurrentFloor() => obyte(0x260008) + 1
 function GetFloorlessLocationList()
 {
     list = {}
@@ -257,24 +258,23 @@ function IsInGame()
     boot = GetLocationByCode("Boot")
     title = GetLocationByCode("Title")
     battle = GetLocationByCode("Battle")
-    isInEnglish = word(0x25f584) == 0x300
-    return currentLocation() != boot["id"] && currentLocation() != title["id"] && currentLocation() != battle["id"] && isInEnglish
+    return currentLocation() != boot["id"] && currentLocation() != title["id"] && currentLocation() != battle["id"]
 }
 
 // $261654: Current location (US) (changes when level is done loading)
-function currentLocationAfterLoad() => word(0x261654)
+function currentLocationAfterLoad() => oword(0x261654)
 
 // $262060: Current Location (EU)
 // $262074: Location that will load (EU)
 
 // $26479C: Current HP
-function currentHP() => byte(0x26479C)
+function currentHP() => obyte(0x26479C)
 
 // $26479D: Max HP
-function maxHP() => byte(0x26479D)
+function maxHP() => obyte(0x26479D)
 
 // $2648F8: Currently equipped item
-function currentlyEquippedItem() => byte(0x2648F8)
+function currentlyEquippedItem() => obyte(0x2648F8)
 
 // $264900: Bit 0: Whirlwind
 //          Bit 1: Boomerang
@@ -285,13 +285,13 @@ function currentlyEquippedItem() => byte(0x2648F8)
 // $264902: Bit 1: Recruit's Sword
 //          Bit 7: Spirit Flute
 
-function hasRecruitSword() => bit1(0x264902)
+function hasRecruitSword() => obit1(0x264902)
 
 // $264908: Rupees
-function rupees() => word(0x264908)
+function rupees() => oword(0x264908)
 
 // $264912: Arrows in inventory
-function arrows() => byte(0x264912)
+function arrows() => obyte(0x264912)
 
 // $264914: Potion slot 1:
 //          
@@ -309,71 +309,71 @@ function arrows() => byte(0x264912)
 //          Bit 5: Snow Temple
 //          Bit 6: Ocean Temple
 //          Bit 7: Fire Temple
-function forestTempleClear() => bit4(0x264CF4)
-function snowTempleClear() => bit5(0x264CF4)
-function oceanTempleClear() => bit6(0x264CF4)
-function fireTempleClear() => bit7(0x264CF4)
+function forestTempleClear() => obit4(0x264CF4)
+function snowTempleClear() => obit5(0x264CF4)
+function oceanTempleClear() => obit6(0x264CF4)
+function fireTempleClear() => obit7(0x264CF4)
 
 // $264d00: Bit 2: Snow Realm Rocktite defeated
 //          Bit 4: Purchased Mega Ice for the first time
-function snowRealmRocktiteDefeated() => bit2(0x264d00)
-function purchasedMegaIceForFirstTime() => bit4(0x264d00)
+function snowRealmRocktiteDefeated() => obit2(0x264d00)
+function purchasedMegaIceForFirstTime() => obit4(0x264d00)
 
 // $264d0a: Bit 4: Started duet with Gage
 
 // $264d4b: Bit 1: Opened chest for Champion Course at Slippery Station
-function openedChampionChest() => bit1(0x264d4b)
+function openedChampionChest() => obit1(0x264d4b)
 
 // $264CF5: Bit 0: Completed duet with Gage
 //          Bit 1: Completed duet with Steem
 //          Bit 7: Forest Railmap
-function startedDuetWithGage() => bit4(0x264d0a)
+function startedDuetWithGage() => obit4(0x264d0a)
 
-function completedDuetWithGage() => bit0(0x264CF5)
-function completedDuetWithSteem() => bit1(0x264CF5)
-function completedDuetWithCarben() => bit2(0x264CF5)
-function completedDuetWithEmbrose() => bit3(0x264CF5)
-function completedDuetWithRael() => bit4(0x264cf5)
+function completedDuetWithGage() => obit0(0x264CF5)
+function completedDuetWithSteem() => obit1(0x264CF5)
+function completedDuetWithCarben() => obit2(0x264CF5)
+function completedDuetWithEmbrose() => obit3(0x264CF5)
+function completedDuetWithRael() => obit4(0x264cf5)
 
-function hasForestRailmap() => bit7(0x264CF5)
+function hasForestRailmap() => obit7(0x264CF5)
 
 // $264CF7: Bit 0: Engineer Certificate
 
 // $264CFB: Bit 0: Postman introduction (first time)
-function wasPostmanIntroducedForTheFirstTime() => bit0(0x264CFB)
+function wasPostmanIntroducedForTheFirstTime() => obit0(0x264CFB)
 
 // $264D05: Bit 4: Rolled into the tree (ow...)
 // $264D0E: Bit 0: Sand Temple
 //          Bit 6: Rabbit Net
-function sandTempleClear() => bit0(0x264D0E)
+function sandTempleClear() => obit0(0x264D0E)
 
 // $264D18: Bit 5: Reward for rolling into the tree (ow...)
 // $264D19: Bit 1: Stamp Book
 //          Bit 5: Compass of Light
-function hasCompassOfLight() => bit5(0x264D19)
+function hasCompassOfLight() => obit5(0x264D19)
 
 // $264d25: Bit 6: Silver Card
 //          Bit 7: Gold Card
-function silverCardObtained() => bit6(0x264d25)
+function silverCardObtained() => obit6(0x264d25)
 
-function goldCardObtained() => bit7(0x264d25)
+function goldCardObtained() => obit7(0x264d25)
 
 // $264D26: Bit 0: Platinum Card (if Bit 4 is 1)
 //          Bit 1: Diamond Card (if Bit 4 is 1)
 //          Bit 2: Freebie Card
 //          Bit 3: Quintuple Points Card
 //          Bit 4: Club Card
-function platinumCardObtained() => bit0(0x264d26)
+function platinumCardObtained() => obit0(0x264d26)
 
-function diamondCardObtained() => bit1(0x264d26)
+function diamondCardObtained() => obit1(0x264d26)
 
-function clubCardObtained() => bit4(0x264d26)
+function clubCardObtained() => obit4(0x264d26)
 
 // $2651BC: Current HP (EU)
 // $2651BD: Max HP (EU)
 // $2685E0: Demon Fossil count
 demonFossilCountAddr = 0x2685e0
-function demonFossilCount() => word(demonFossilCountAddr)
+function demonFossilCount() => oword(demonFossilCountAddr)
 
 // $2685E2: Stalfos Skull count
 // $2685E4: Star Fragment count
@@ -399,17 +399,17 @@ function demonFossilCount() => word(demonFossilCountAddr)
 //          Bit 5: Cole appears for the first time
 //          Bit 6: Zelda's guard is out of the way
 //          Bit 7: Cole has let the guard pass and is at the ceremony
-function hasSnowRailmap() => bit0(0x264cf6)
-function hasOceanRailmap() => bit1(0x264cf6)
-function hasFireRailmap() => bit2(0x264cf6)
+function hasSnowRailmap() => obit0(0x264cf6)
+function hasOceanRailmap() => obit1(0x264cf6)
+function hasFireRailmap() => obit2(0x264cf6)
 
-function trainedWithTheRoyalGuard() => bit4(0x264cf6)
+function trainedWithTheRoyalGuard() => obit4(0x264cf6)
 
 // $04a04c: 0x1 = transitioning into game mode after clicking Adventure or Battle
 function isLoadingSaveFile() => byte(0x04a04c) != 0
 
 // $264d06: Bit 1: Zelda possessed a Phantom for the first time
-function possessedAPhantomForTheFirstTime() => bit1(0x264d06)
+function possessedAPhantomForTheFirstTime() => obit1(0x264d06)
 
 // $268590: Bit 0: Song of Awakening
 //          Bit 1: Song of Healing
@@ -417,23 +417,23 @@ function possessedAPhantomForTheFirstTime() => bit1(0x264d06)
 //          Bit 3: Song of Light
 //          Bit 4: Song of Discovery
 songAddr = 0x268590
-function learnedSongOfAwakening() => bit0(songAddr)
-function learnedSongOfHealing() => bit1(songAddr)
-function learnedSongOfBirds() => bit2(songAddr)
-function learnedSongOfLight() => bit3(songAddr)
-function learnedSongOfDiscovery() => bit4(songAddr)
+function learnedSongOfAwakening() => obit0(songAddr)
+function learnedSongOfHealing() => obit1(songAddr)
+function learnedSongOfBirds() => obit2(songAddr)
+function learnedSongOfLight() => obit3(songAddr)
+function learnedSongOfDiscovery() => obit4(songAddr)
 
 // $2d3260: Whistles performed for a pod of dolphins (Ocean Realm only).
 //          Loops back to 0 when enough whistles have been made to get a heart from them. (dynamic?)
-function whistlesMadeForDolphins() => byte(0x2d3260)
+function whistlesMadeForDolphins() => obyte(0x2d3260)
 
 // $2d35f0: Number of times a Squiddy is struck with the cannon.
 //          Resets to 0 whenever 8 strikes are reached and increments the Squiddy counter by 1.
-function squiddyStrikes() => byte(0x2d35f0)
+function squiddyStrikes() => obyte(0x2d35f0)
 
 // $2d35f1: Squiddy counter. Increments by 1 whenever a Squiddy splits off from the primary
 //          and decreases by 1 whenever a Squiddy despawns.
-function squiddyInstances() => byte(0x2d35f1)
+function squiddyInstances() => obyte(0x2d35f1)
 
 // This function allows the creation of achievements with built-in save protection that deal with a collection of bits being set
 // throughout the game. The schemas for both parameters are as follows:
@@ -453,7 +453,7 @@ function GenerateSaveProtectedAchievementFromBits(cheevo, bits)
 
     for addr in bits
     {
-        relevantBit = bit(addr["bit"], addr["addr"])
+        relevantBit = obit(addr["bit"], addr["addr"])
         array_push(bitSet, once(relevantBit == 1))
     
         // We want to reset the hit counts each time a bit is set in order
@@ -479,7 +479,7 @@ function GenerateSaveProtectedAchievementFromBits(cheevo, bits)
 hyruleField = GetLocationByCode("ForestRealm")
 castleTown = GetLocationByCode("CastleTown")
 Aboda = GetLocationByCode("Aboda")
-achievement(title = "Extra Credit [m]", description = "Starting in Aboda Village, pass your final exam with at least 128 seconds left on the clock.", points = 1,
+achievement(title = "Extra Credit", description = "Starting in Aboda Village, pass your final exam with at least 128 seconds left on the clock.", points = 1, type = "missable",
     id = 110291, badge = "120385",
     trigger = once(Delta(currentLocation()) == Aboda["id"] && currentLocation() == hyruleField["id"])
         && never(timeRemainingInFinalExam() < 128)
@@ -489,57 +489,57 @@ achievement(title = "Extra Credit [m]", description = "Starting in Aboda Village
 )
 
 // "Fresh from the Academy"
-achievement(title = "Fresh from the Academy", id = 110292, badge = "120387",
+achievement(title = "Fresh from the Academy", id = 110292, badge = "120387", type = "progression",
     description = "Acquire the Recruit's Sword and train under Russell, the Captain of the Guard.", points = 1,
     trigger = WasBitflagSetInGame(trainedWithTheRoyalGuard())
         && IsInLocationWithCode("Castle")
 )
 
 // Teamwork Makes the Dream Work
-achievement(title = "Teamwork Makes the Dream Work", id = 110293, badge = "120388",
+achievement(title = "Teamwork Makes the Dream Work", id = 110293, badge = "120388", type = "progression",
     description = "Have Zelda possess a Phantom for the first time.", points = 1,
     trigger = WasBitflagSetInGame(possessedAPhantomForTheFirstTime())
         && IsInLocationWithCode("TowerDungeon")
 )
 
 // Forest Mapper
-achievement(title = "Forest Mapper", id = 110295, badge = "120389",
+achievement(title = "Forest Mapper", id = 110295, badge = "120389", type = "progression",
     description = "Obtain the Forest Railmap.", points = 3,
     trigger = WasBitflagSetInGame(hasForestRailmap())
         && IsInLocationWithCode("TowerDungeon")
 )
 
 // Snow Mapper
-achievement(title = "Snow Mapper", id = 110301, badge = "120396",
+achievement(title = "Snow Mapper", id = 110301, badge = "120396", type = "progression",
     description = "Obtain the Snow Railmap.", points = 3,
     trigger = WasBitflagSetInGame(hasSnowRailmap())
         && IsInLocationWithCode("TowerDungeon")
 )
 
 // Ocean Mapper
-achievement(title = "Ocean Mapper", id = 110388, badge = "120418",
+achievement(title = "Ocean Mapper", id = 110388, badge = "120418", type = "progression",
     description = "Obtain the Ocean Railmap.", points = 3,
     trigger = WasBitflagSetInGame(hasOceanRailmap())
         && IsInLocationWithCode("TowerDungeon")
 )
 
 // Fire Mapper
-achievement(title = "Fire Mapper", id = 110393, badge = "120423",
+achievement(title = "Fire Mapper", id = 110393, badge = "120423", type = "progression",
     description = "Obtain the Fire Railmap.", points = 3,
     trigger = WasBitflagSetInGame(hasFireRailmap())
         && IsInLocationWithCode("TowerDungeon")
 )
 
 // "The Tunnel at the End of the Light"
-function darkRealmRevealed() => bit5(0x264cf5)
-achievement(title = "The Tunnel at the End of the Light", id = 110444, badge = "120544",
+function darkRealmRevealed() => obit5(0x264cf5)
+achievement(title = "The Tunnel at the End of the Light", id = 110444, badge = "120544", type = "progression",
     description = "Obtain the Compass of Light and reveal the location of the Dark Realm.", points = 3,
     trigger = WasBitflagSetInGame(darkRealmRevealed())
         && IsInLocationWithCode("TowerDungeon")
 )
 
 // "Up-and-Coming Musician"
-achievement(title = "Up-and-Coming Musician",
+achievement(title = "Up-and-Coming Musician", type = "progression",
     description = "Learn a song on the Spirit Flute.", points = 1, id = 110296, badge = "120390",
     trigger = never(!IsInGame())
         && (WasBitflagSetInGame(learnedSongOfAwakening())
@@ -550,7 +550,7 @@ achievement(title = "Up-and-Coming Musician",
 )
 
 // "Duet with the Cellist"
-achievement(title = "Duet with the Cellist",
+achievement(title = "Duet with the Cellist", type = "progression",
     description = "Complete your duet with Gage and open the path to the Forest Temple.",
     points = 3, id = 110298, badge = "120392",
     trigger = WasBitflagSetInGame(completedDuetWithGage())
@@ -558,7 +558,7 @@ achievement(title = "Duet with the Cellist",
 )
 
 // "Duet with the Lutenist"
-achievement(title = "Duet with the Lutenist",
+achievement(title = "Duet with the Lutenist", type = "progression", id = 110383, badge = "120414",
     description = "Complete your duet with Steem and open the path to the Snow Temple.",
     points = 3,
     trigger = WasBitflagSetInGame(completedDuetWithSteem())
@@ -566,7 +566,7 @@ achievement(title = "Duet with the Lutenist",
 )
 
 // "Duet with the Flautist"
-achievement(title = "Duet with the Flautist",
+achievement(title = "Duet with the Flautist", type = "progression", id = 110390, badge = "120420",
     description = "Complete your duet with Carben and open the path to the Ocean Temple.",
     points = 3,
     trigger = WasBitflagSetInGame(completedDuetWithCarben())
@@ -574,7 +574,7 @@ achievement(title = "Duet with the Flautist",
 )
 
 // "Duet with the Timpanist"
-achievement(title = "Duet with the Timpanist",
+achievement(title = "Duet with the Timpanist", type = "progression", id = 110404, badge = "120435",
     description = "Complete your duet with Embrose and open the path to the Fire Temple.",
     points = 3,
     trigger = WasBitflagSetInGame(completedDuetWithEmbrose())
@@ -582,7 +582,7 @@ achievement(title = "Duet with the Timpanist",
 )
 
 // "Duet with the Shawmist"
-achievement(title = "Duet with the Shawmist",
+achievement(title = "Duet with the Shawmist", type = "progression", id = 110412, badge = "120456",
     description = "Complete your duet with Rael and open the path to the Sand Temple.",
     points = 3,
     trigger = WasBitflagSetInGame(completedDuetWithRael())
@@ -590,16 +590,16 @@ achievement(title = "Duet with the Shawmist",
 )
 
 // "Duet with the Divine"
-achievement(title = "Duet with the Divine",
+achievement(title = "Duet with the Divine", type = "progression", id = 110446, badge = "120547",
     description = "Complete your duet with Zelda and reveal Malladus's weak point.",
     points = 3,
     trigger = WasInLocationWithCode("Duet") && IsInLocationWithCode("Malladus2")
 )
 
 // "Shoo, Fly, Shoo"
-function IsStagnoxDying() => byte(0x31f538) == 0x15
+function IsStagnoxDying() => obyte(0x31f538) == 0x15
 
-function stagnoxHP() => byte(0x31f534)
+function stagnoxHP() => obyte(0x31f534)
 
 forestTemple = GetLocationByCode("ForestTemple")
 gauntlet1 = GetLocationByCode("Gauntlet1")
@@ -607,7 +607,7 @@ gauntlet2 = GetLocationByCode("Gauntlet2")
 gauntlet3 = GetLocationByCode("Gauntlet3")
 
 achievement(title = "Shoo, Fly, Shoo",
-    description = "Defeat Stagnox without taking damage.", points = 10,
+    description = "Defeat Stagnox without taking damage.", points = 10, id = 110299, badge = "120394",
     trigger = IsStagnoxDying()
         && never(Delta(currentHP()) > currentHP())
         && (
@@ -632,7 +632,7 @@ achievement(title = "Shoo, Fly, Shoo",
 )
 
 // "Whispers from the Forest"
-achievement(title = "Whispers from the Forest", points = 5,
+achievement(title = "Whispers from the Forest", points = 5, id = 110300, badge = "120395",
     description = "Clear the Forest Temple.",
     trigger = WasBitflagSetInGame(forestTempleClear())
         && IsInLocationWithCode("Stagnox")
@@ -648,11 +648,11 @@ for i in range(0, 4) // 0-4 maps to each Spirit Flute song.
     {
         if (j != i) // We want each alt to deal with each song.
         {
-            alt = alt && bit(j, songAddr) == 1
+            alt = alt && obit(j, songAddr) == 1
         }
         else
         {
-            alt = alt && WasBitflagSetInGame(bit(j, songAddr))
+            alt = alt && WasBitflagSetInGame(obit(j, songAddr))
         }
     }
     
@@ -670,7 +670,7 @@ achievement(title = "Syrinx Sage",
 // $26857f: ID of stamp on the last stamp page (0xff when there's no stamp)
 function firstStampAddr() => 0x26856c
 
-function stampPageByNumber(pageNo) => byte(firstStampAddr() + pageNo - 1)
+function stampPageByNumber(pageNo) => obyte(firstStampAddr() + pageNo - 1)
 
 function PageNumberIsStamped(pageNo)
 {
@@ -731,11 +731,11 @@ function RabbitRescueState(index)
 {
     if (index >= 0 && index < 32)
     {
-        return bit(index, 0x261610)
+        return obit(index, 0x261610)
     }
     else if (index >= 32 && index < 50)
     {
-        return bit(index - 32, 0x261614)
+        return obit(index - 32, 0x261614)
     }
 }
 
@@ -842,13 +842,13 @@ for cheevo in rabbitTypeAchievements
 }
 
 // "Quick Draw"
-function IsFraazRezzing() => byte(0x324f78) == 0x17
-function IsFraazGoingToPhase3() => byte(0x324f78) == 0x5
-function IsFraazDying() => byte(0x324f78) == 0x3
+function IsFraazRezzing() => obyte(0x324f78) == 0x17
+function IsFraazGoingToPhase3() => obyte(0x324f78) == 0x5
+function IsFraazDying() => obyte(0x324f78) == 0x3
 
 snowTemple = GetLocationByCode("SnowTemple")
 gauntletStagnox = GetLocationByCode("GauntletStagnox")
-achievement(title = "Quick Draw",
+achievement(title = "Quick Draw", id = 110385, badge = "120416",
     description = "Proceed to Fraaz's third phase before either Fraaz Jr. has a chance to resurrect the other or run away.",
     points = 3,
     trigger = IsFraazGoingToPhase3() && never(IsFraazRezzing()) &&
@@ -871,7 +871,7 @@ achievement(title = "Quick Draw",
 )
 
 // "Howls from the Tundra"
-achievement(title = "Howls from the Tundra", points = 5,
+achievement(title = "Howls from the Tundra", points = 5, type = "progression", id = 110384, badge = "120415",
     description = "Clear the Snow Temple.",
     trigger = WasBitflagSetInGame(snowTempleClear())
         && IsInLocationWithCode("Fraaz")
@@ -886,7 +886,7 @@ function ScoreIncreasedInTrainingGame()
     return Delta(trainingGameScore()) < trainingGameScore()
 }
 
-achievement(title = "Third Intention", points = 10,
+achievement(title = "Third Intention", points = 10, id = 110387, badge = "120417",
     description = "Score a total of 90 single hits in a row during training without getting hit yourself.",
     trigger = never(StartedTrainingGame()) && never(GotHitInTrainingGame())
         && repeated(90, ScoreIncreasedInTrainingGame()) && never(!IsInLocationWithCode("Castle"))
@@ -956,7 +956,7 @@ oceanTemple = GetLocationByCode("OceanTemple")
 gauntletFraaz = GetLocationByCode("GauntletFraaz")
 timeLimit = 135
 frameLimit = SecondsToFrames(timeLimit)
-function phytopsState() => byte(0x31fdb8)
+function phytopsState() => obyte(0x31fdb8)
 function PhytopsIsNotFighting() => phytopsState() == 0x0 || phytopsState() == 0x2 || phytopsState() == 0x3
 function PhytopsIsDying() => phytopsState() == 0xe
 
@@ -980,7 +980,7 @@ achievement(title = "Guide My Hand",
 )
 
 // "Roars from the Sea"
-achievement(title = "Roars from the Sea", points = 5,
+achievement(title = "Roars from the Sea", points = 5, type = "progression", id = 110392, badge = "120425",
     description = "Clear the Ocean Temple.",
     trigger = WasBitflagSetInGame(oceanTempleClear())
         && IsInLocationWithCode("Phytops")
@@ -994,14 +994,14 @@ function WhipRaceIsOver() => whipRaceState() == 0x4
 function WhipRaceVictory() => reasonWhipRaceEnded() != 0x1 && reasonWhipRaceEnded() != 0x2
 timeLimit = 65
 
-achievement(title = "Whip It Good", points = 25,
+achievement(title = "Whip It Good", points = 25, id = 110394, badge = "120424",
     description = "Finish the whip race within " + SecondsToFormat(timeLimit) + ".",
     trigger = IsInLocationWithCode("WhittletonWilds") && whipRaceTime() <= timeLimit * framesPerSecond
         && once(WhipRaceJustEnded()) && WhipRaceIsOver() && never(StartedWhipRace())
         && WhipRaceVictory()
 )
 
-leaderboard(title = "Whip Race",
+leaderboard(title = "Whip Race", id = 8008, // Tee-hee
     description = "Swing to the end of the course in the fastest time you can!",
     start = IsInLocationWithCode("WhittletonWilds") && WhipRaceCountingDown(),
     cancel = !WhipRaceVictory() && WhipRaceIsOver(),
@@ -1050,21 +1050,21 @@ for cheevo in forceGemAchievements
 function GauntletCountingDown() => gauntletState() == 0x1
 function StartedGauntlet() => gauntletState() == 0x2
 function ForfeitedGauntlet() => gauntletState() == 0x4
-function GauntletLevel1DoorState() => bit3(0x264d17)
-function GauntletLevel2DoorState() => bit4(0x264d17)
-function GauntletLevel3DoorState() => bit5(0x264d17)
+function GauntletLevel1DoorState() => obit3(0x264d17)
+function GauntletLevel2DoorState() => obit4(0x264d17)
+function GauntletLevel3DoorState() => obit5(0x264d17)
 
 gauntletLevels = [
-    { "level": 1, "doorAddr": GauntletLevel1DoorState(), "timeLimit": 370, "name": "Blitz upon the Few", "points": 5, "leaderboardId": 8024 },
-    { "level": 2, "doorAddr": GauntletLevel2DoorState(), "timeLimit": 730, "name": "Blitz upon the Many", "points": 10, "leaderboardId": 8025 },
-    { "level": 3, "doorAddr": GauntletLevel3DoorState(), "timeLimit": 1650, "name": "Blitz upon All", "points": 25, "leaderboardId": 8122 }
+    { "level": 1, "doorAddr": GauntletLevel1DoorState(), "timeLimit": 370, "name": "Blitz upon the Few", "points": 5, "leaderboardId": 8024, "achievementId": 110436, "badge": "120538" },
+    { "level": 2, "doorAddr": GauntletLevel2DoorState(), "timeLimit": 730, "name": "Blitz upon the Many", "points": 10, "leaderboardId": 8025, "achievementId": 110437, "badge": "120537" },
+    { "level": 3, "doorAddr": GauntletLevel3DoorState(), "timeLimit": 1650, "name": "Blitz upon All", "points": 25, "leaderboardId": 8122, "achievementId": 110438, "badge": "120535" }
 ]
 
 function GauntletIsComplete() => Delta(gauntletState()) == 0x2 && gauntletState() == 0x0
 
 for level in gauntletLevels
 {
-    achievement(title = level["name"], points = level["points"],
+    achievement(title = level["name"], points = level["points"], id = level["achievementId"], badge = level["badge"],
         description = "Complete Level " + level["level"] +
             " of Take 'Em All On! with an in-game time of " + SecondsToFormat(level["timeLimit"]) + " or less.",
         trigger = level["doorAddr"] == 0x1 && GauntletIsComplete()
@@ -1081,7 +1081,7 @@ for level in gauntletLevels
 }
 
 // "Walk It Off"
-achievement(title = "Walk It Off", points = 10,
+achievement(title = "Walk It Off", points = 10, id = 110439, badge = "120539",
     description = "Complete Level 3 of Take 'Em All On! without recovering any life energy.",
     trigger = GauntletLevel3DoorState() == 0x1 && GauntletIsComplete()
         && once(WasInLocationWithCode("CastleTown") && IsInLocationWithCode("Gauntlet2"))
@@ -1089,9 +1089,9 @@ achievement(title = "Walk It Off", points = 10,
 )
 
 // "Enemy Without"
-function darkLinkState() => byte(0x326e18)
+function darkLinkState() => obyte(0x326e18)
 function DarkLinkIsDead() => darkLinkState() == 0x15
-achievement(title = "Enemy Without", points = 5,
+achievement(title = "Enemy Without", points = 5, id = 110440, badge = "120540",
     description = "Defeat Dark Link.",
     trigger = IsInLocationWithCode("Gauntlet5") && DarkLinkIsDead()
         || GauntletLevel3DoorState() == 0x1 && GauntletIsComplete() // Adding this as a contingency measure, in case the Dark Link addresses are dynamic.
@@ -1105,7 +1105,7 @@ allTreasureRegistered = always_true()
 
 for i in range(0, totalTreasureTypes - 1)
 {
-    treasureCount = word(demonFossilCountAddr + i * 2)
+    treasureCount = oword(demonFossilCountAddr + i * 2)
     treasureTypeRegistered = treasureCount != 0xffff
     treasureTypeWasUnregistered = Delta(treasureCount) == 0xffff
     allTreasureRegistered = allTreasureRegistered && treasureTypeRegistered
@@ -1129,12 +1129,12 @@ achievement(title = "Treasure Hunter", description = "Obtain one of every type o
 )
 
 // "Plus Shipping and Handling"
-function freightCount() => word(0x264bbc)
-function firstLavaPlumeCooled() => bit4(0x264d15)
-function freightType() => byte(0x264bb8)
+function freightCount() => oword(0x264bbc)
+function firstLavaPlumeCooled() => obit4(0x264d15)
+function freightType() => obyte(0x264bb8)
 iceMax = 20
 iceLossLimit = 7
-achievement(title = "Plus Shipping and Handling [m]", points = 5,
+achievement(title = "Plus Shipping and Handling", points = 5, type = "missable", id = 110403, badge = "120434",
     description = "Deliver your first batch of Mega Ice to Goron Village from Wellspring Station without losing more than "
                 + iceLossLimit + " lots of ice.",
     trigger = once(WasInLocationWithCode("Wellspring") && IsInLocationWithCode("SnowRealm") && freightCount() == iceMax)
@@ -1149,11 +1149,11 @@ achievement(title = "Kiss and Cry", points = 10, id = 110405, badge = "120436",
 )
 
 // "Be Efficient"
-function IsCragmaDying() => byte(0x3222c8) == 0xc
-function IsGauntletCragmaDying() => byte(0x3222e8) == 0xc
+function IsCragmaDying() => obyte(0x3222c8) == 0xc
+function IsGauntletCragmaDying() => obyte(0x3222e8) == 0xc
 arrowLimit = 20
 
-achievement(title = "Be Efficient", points = 25,
+achievement(title = "Be Efficient", points = 25, id = 110406, badge = "120450",
     description = "Defeat Cragma without using any more than " + arrowLimit + " arrows.",
     trigger = never(repeated(arrowLimit + 1, Delta(arrows()) > arrows()))
         && (
@@ -1168,18 +1168,18 @@ achievement(title = "Be Efficient", points = 25,
 )
 
 // "Rumbles from the Volcano"
-achievement(title = "Rumbles from the Volcano", points = 5,
+achievement(title = "Rumbles from the Volcano", points = 5, type = "progression", id = 110407, badge = "120451",
     description = "Clear the Fire Temple.",
     trigger = WasBitflagSetInGame(fireTempleClear())
         && IsInLocationWithCode("Cragma")
 )
 
 // "A Swift Dispatching"
-function byrneState() => byte(0x33f378)
+function byrneState() => obyte(0x33f378)
 function IsByrneDying() => byrneState() == 0x21
 timeLimit = 108
 transitionFrames = 50 // We need to take into account transition time between when the boss room loads and the cutscene starts.
-achievement(title = "A Swift Dispatching [m]", points = 10,
+achievement(title = "A Swift Dispatching", points = 10, type = "missable", id = 110408, badge = "120452",
     description = "Defeat Byrne within " + SecondsToFormat(timeLimit) + ".",
     trigger = once(WasInLocationWithCode("TowerDungeon") && IsInLocationWithCode("Byrne"))
         && IsByrneDying()
@@ -1190,13 +1190,13 @@ achievement(title = "A Swift Dispatching [m]", points = 10,
 
 // "Fourteen High Tons"
 targetScore = 2100
-function goronTargetRangeState() => byte(0x178520)
-function goronTargetRangeScore() => word(0x178534)
+function goronTargetRangeState() => obyte(0x178520)
+function goronTargetRangeScore() => oword(0x178534)
 function IsGoronTargetRangeGameComplete() => goronTargetRangeState() == 0x5
 function IsGoronTargetRangeCountingDown() => goronTargetRangeState() == 0x3
 function IsGoronTargetRangeInProgress() => goronTargetRangeState() == 0x4
 function IsGoronTargetRangeOver() => goronTargetRangeState() == 0x6
-achievement(title = "Fourteen High Tons", points = 25,
+achievement(title = "Fourteen High Tons", points = 25, id = 110409, badge = "120453",
     description = "Get a score of " + targetScore + " or higher at the Goron Target Range.",
     trigger = once(IsInLocationWithCode("TargetRangeGame") && WasInLocationWithCode("TargetRange"))
         && goronTargetRangeScore() >= targetScore
@@ -1204,7 +1204,7 @@ achievement(title = "Fourteen High Tons", points = 25,
         && never(!IsInLocationWithCode("TargetRangeGame"))
 )
 
-leaderboard(title = "Goron Target Range",
+leaderboard(title = "Goron Target Range", id = 8115,
     description = "Get the highest score you can!",
     start = IsInLocationWithCode("TargetRangeGame") && IsGoronTargetRangeCountingDown(),
     cancel = once(Delta(goronTargetRangeState()) == 0x4 && IsGoronTargetRangeOver()) && never(IsGoronTargetRangeCountingDown()),
@@ -1214,9 +1214,9 @@ leaderboard(title = "Goron Target Range",
 
 // "Sharpshooter"
 comboTarget = 35
-function pirateHideoutComboLength() => byte(0x16422a)
-function pirateHideoutMultiplier() => byte(0x164228)
-achievement(title = "Sharpshooter", points = 10,
+function pirateHideoutComboLength() => obyte(0x16422a)
+function pirateHideoutMultiplier() => obyte(0x164228)
+achievement(title = "Sharpshooter", points = 10, id = 110410, badge = "120454",
     description = "Get a combo of " + comboTarget + " or more in the Pirate Hideout minigame.",
     trigger = repeated(comboTarget, Delta(pirateHideoutComboLength()) != pirateHideoutComboLength())
         && never(Delta(pirateHideoutMultiplier()) > pirateHideoutMultiplier())
@@ -1225,17 +1225,17 @@ achievement(title = "Sharpshooter", points = 10,
 
 // "Keep Both Eyes Open"
 scoreTarget = 4500
-function pirateHideoutResult() => byte(0x163fe4)
+function pirateHideoutResult() => obyte(0x163fe4)
 function PirateHideoutIsCountingDown() => pirateHideoutState() == 0x1
 function DidLosePirateHideout() => pirateHideoutResult() == 0x2 || pirateHideoutResult() == 0x1
 function PirateHideoutIsOver() => pirateHideoutState() == 0x5
-achievement(title = "Keep Both Eyes Open", points = 10,
+achievement(title = "Keep Both Eyes Open", points = 10, id = 110411, badge = "120455",
     description = "Get a score of " + scoreTarget + " or more in the Pirate Hideout minigame.",
     trigger = IsInLocationWithCode("PirateMinigame") && PirateHideoutIsOver()
         && never(DidLosePirateHideout()) && pirateHideoutScore() >= scoreTarget
 )
 
-leaderboard(title = "Pirate Hideout",
+leaderboard(title = "Pirate Hideout", id = 8119,
     description = "Get the highest score you can!",
     start = IsInLocationWithCode("PirateMinigame") && PirateHideoutIsCountingDown(),
     cancel = DidLosePirateHideout() && PirateHideoutIsOver(),
@@ -1244,7 +1244,7 @@ leaderboard(title = "Pirate Hideout",
 )
 
 // "Echoes from the Desert"
-achievement(title = "Echoes from the Desert", points = 5,
+achievement(title = "Echoes from the Desert", points = 5, type = "progression", id = 110413, badge = "120457",
     description = "Clear the Sand Temple.",
     trigger = IsInLocationWithCode("Skeldritch") && WasBitflagSetInGame(sandTempleClear())
 )
@@ -1306,8 +1306,8 @@ GenerateSaveProtectedAchievementFromBits({
 ])
 
 // "Armed to the Teeth"
-function quiverUpgradesObtained() => byte(0x264910)
-function bombUpgradesObtained() => byte(0x264911)
+function quiverUpgradesObtained() => obyte(0x264910)
+function bombUpgradesObtained() => obyte(0x264911)
 achievement(title = "Armed to the Teeth", points = 5, id = 110445, badge = "120545",
     description = "Acquire all bow and bomb upgrades.",
     trigger = never(isLoadingSaveFile()) && IsInGame() && quiverUpgradesObtained() == 2 && bombUpgradesObtained() == 2
@@ -1315,9 +1315,9 @@ achievement(title = "Armed to the Teeth", points = 5, id = 110445, badge = "1205
 )
 
 // "By Steam Alone"
-function potionSlot1() => byte(0x264914)
-function potionSlot2() => byte(0x264915)
-achievement(title = "By Steam Alone", points = 5,
+function potionSlot1() => obyte(0x264914)
+function potionSlot2() => obyte(0x264915)
+achievement(title = "By Steam Alone", points = 5, id = 110447, badge = "120548",
     description = "Defeat Malladus's final phase without using any potions.",
     trigger = once(WasInLocationWithCode("Duet") && IsInLocationWithCode("Malladus2")) // Checkpoint
         && IsInLocationWithCode("Malladus") // Defeated Malladus after checkpoint
@@ -1343,7 +1343,7 @@ GenerateSaveProtectedAchievementFromBits({
 ])
 
 // "From a Railway Carriage"/"Night Mail"
-achievement(title = "The Tracks Go On", points = 25,
+achievement(title = "The Tracks Go On", points = 25, type = "win_condition", id = 110449, badge = "120550",
     description = "Save New Hyrule from the resurrection of Malladus.",
     trigger = WasInLocationWithCode("Malladus") && IsInLocationWithCode("Castle")
 )

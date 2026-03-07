@@ -711,7 +711,7 @@ function TetraPlatformTimerFrozen() => byte(tetraPlatformPointer() + 0x1c0 + 0x8
 function TetraPlatformTimeElapsed() => (tetraPlatformMaxTime - tetraPlatformTimeRemaining()) * 2
 function WithinPlatformTimeLimit() => TetraPlatformTimeElapsed() <= SecondsToFrames(niko1TimeLimit)
 function TetraPlatformsAreUp() => bit0(tetraPlatformPointer() + 0x1bb + 0x80000000) == 1
-function NinjaWarriorChallengeActive() => TetraPlatformsAreUp() && enteredCorrectPassword() == 0
+function NinjaWarriorChallengeActive() => TetraPlatformsAreUp() && enteredCorrectPassword() == 0 && tetraPlatformPointer() != 0
 function CompletedFirstObstacleCourse() => bit4(0x003ccb5b) == 1
 achievement(title = "Ninja Warrior I", points = 10, description = "Complete Niko's obstacle course within " + SecondsToFormat(niko1TimeLimit) + ".", id = 402395, type = "missable",
     badge = "500804",
@@ -1019,7 +1019,7 @@ function IsLTargeting() => lLetterboxState() == 2 && lTargetingState() == 1
 function xItem() => byte(0x003cc539)
 function yItem() => byte(0x003cc53a)
 function zItem() => byte(0x003cc53b)
-function EmptyBottleIsEquipped() => 
+function BottleIsEquipped() => 
     xItem() == 0xe || yItem() == 0xe || zItem() == 0xe
     || xItem() == 0xf || yItem() == 0xf || zItem() == 0xf
     || xItem() == 0x10 || yItem() == 0x10 || zItem() == 0x10
@@ -1028,11 +1028,11 @@ function EmptyBottleIsEquipped() =>
 function IsItemEquipped(id) => xItem() == id || yItem() == id || zItem() == id
 
 function hp() => word_be(0x003cc532)
-achievement(title = "Eyes off the Prize", description = "Defeat Phantom Ganon in the Forsaken Fortress without L-Targeting or equipping an empty bottle, and without being resurrected.",
+achievement(title = "Eyes off the Prize", description = "Defeat Phantom Ganon in the Forsaken Fortress without L-Targeting or equipping a bottle, and without being resurrected.",
     points = 5,
     id = 439041, badge = "500830", type = "missable",
     trigger = PhantomGanonCheckpointReached() && trigger_when(PhantomGanonDefeated()) && never(IsLTargeting())
-        && never(EmptyBottleIsEquipped())
+        && never(BottleIsEquipped())
         && never(hp() <= 0)
         && never(IsTransitioningToAreaByInternalName("sea_T"))
 )
@@ -1056,7 +1056,7 @@ GenerateCheevoFromBufferBits(name = "Pirate Wannabe", description = "Claim the t
 )
 
 function bowSlot() => byte(0x003cc578)
-achievement(title = "Diametrically Opposed", description = "Obtain the Fire and Ice Arrows.", points = 3, id = 439044, badge = "502206",
+achievement(title = "Diametrically Opposed", description = "Obtain the Fire and Ice Arrows.", points = 3, id = 439044, badge = "502206", type = "progression",
     trigger = WasValueSetInGame(bowSlot(), 0x27, 0x35)
 )
 
@@ -1100,7 +1100,7 @@ function LetterFromMoeWasJustRemovedFromBag()
 }
 
 function ironBootsSlot() => byte(0x003cc575)
-achievement(title = "Anchors Aweigh!", description = "Obtain the Iron Boots.", points = 3, id = 439217, badge = "500837",
+achievement(title = "In Irons", description = "Obtain the Iron Boots.", points = 3, id = 439217, badge = "500837", type = "progression",
     trigger = WasValueSetInGame(ironBootsSlot(), 0xff, 0x29)
 )
 

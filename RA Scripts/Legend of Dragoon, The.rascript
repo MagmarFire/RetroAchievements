@@ -584,6 +584,7 @@ achievement(
               ((never(byte(0x06E62C) > 0x00) && never(byte(0x06E630) > 0x00) && never(byte(0x06E634) > 0x00) && 
                 unless(byte(0x06E62C) == 0x28) && unless(byte(0x06E630) == 0x2C) && unless(byte(0x06E634) == 0x30) && always_false()) ||
                (prev(word(0x0BC95C)) == 0x1B58 && word(0x0BC95C) == 0x0000))
+               && never(mapId() != 0x145)
 )
 
 achievement(

@@ -944,12 +944,12 @@ achievement(title = "The Key to Mastery", points = 5, id = 130731, badge = "1439
 
 achievement(title = "The Culmination of Years of Training!", points = 5, badge = "143910", id = 130713,
     description = "Change a unit's class.",
-    trigger = gen1UnitChangedClass || gen2UnitChangedClass
+    trigger = never(IsBooting()) && (gen1UnitChangedClass || gen2UnitChangedClass)
 )
 
-achievement(title = "That Special Someone", points = 5,
+achievement(title = "That Special Someone", points = 5, badge = "143922", id = 130725,
     description = "Have two units fall in love with each other, excluding predetermined romances.",
-    trigger = gen1OptionalUnitFellInLove || gen2UnitFellInLove
+    trigger = never(IsBooting()) && (gen1OptionalUnitFellInLove || gen2UnitFellInLove)
 )
 
 achievement(title = "Gladiator", description = "Max out a unit's arena level.", id = 130704, badge = "143901",
@@ -1166,10 +1166,10 @@ achievement(title = "Sellsword for Hire [m]", points = 10, id = 130709, badge = 
     trigger = chapter() == 2 && WasBitflagSetInGame(beowulfWasRecruited())
 )
 
-erin = GetGen1UnitObjectByName("Erin")
-achievement(title = "Devoted but Gullible [m]", points = 5, id = 130710, badge = "143907",
+function erinWasRecruited() => bit1(0x0052c5)
+achievement(title = "Devoted but Gullible", points = 5, id = 130710, badge = "143907", type = "missable",
     description = "Recruit Erin.",
-    trigger = chapter() == 2 && WasValueSetInGame(erin["affiliation"], 5, 0)
+    trigger = chapter() == 2 && WasBitflagSetInGame(erinWasRecruited())
 )
 
 function larceiRecruitsJohanOrJohalvier() => bit5(0x0052c5)
@@ -1249,12 +1249,27 @@ achievement(title = "Consolation Loot [m]", points = 10, id = 130718, badge = "1
     trigger = chapter() == 3 && IsBitflagSetInGame(dewReceivedWindSword())
 )
 
+function WasValueSetInGameFromAny(mem, newValue)
+{
+    return once(Delta(mem) != mem && mem == newValue) && never(IsLoadingSaveFile())
+}
+
+function UnitJustReceivedItemById(inventoryCountBaseAddr, itemId)
+{
+    count = byte(inventoryCountBaseAddr)
+    itemAddr = inventoryCountBaseAddr + count + 3
+    return Delta(count) != count && WasValueSetInGameFromAny(byte(itemAddr), itemId)
+}
+
 earthSwordId = 0x22
 function raquesisRetrievedEarthSword() => bit7(0x0052c4)
 function eldiganWasKilled() => bit2(0x0052c6)
-achievement(title = "Siblings' Last Quarrel [m]", points = 10, id = 130715, badge = "143912",
-    description = "Receive the Earth Sword from Eldigan in Chapter 3.",
+function raquesisInventoryCountAddr2() => byte(0x003b7f)
+achievement(title = "Siblings' Last Quarrel", points = 10, id = 130715, badge = "143912", type = "missable",
+    description = "Receive the Earth Sword from Eldigan in Chapter 3 (Raquesis must have inventory space).",
     trigger = chapter() == 3 && WasBitflagSetInGame(raquesisRetrievedEarthSword()) && eldiganWasKilled() == 0
+        && (UnitJustReceivedItemById(raquesisInventoryCountAddr(), earthSwordId)
+        || UnitJustReceivedItemById(raquesisInventoryCountAddr2(), earthSwordId)) // Raquesis's inventory count may be in a different address in some scenarios.
 )
 
 achievement(title = "Arden's Resolve [m]", points = 3, id = 130730, badge = "143927",
@@ -1334,9 +1349,11 @@ achievement(title = "The Same Loving Smile [m]", points = 5, id = 130758, badge 
 )
 
 function altenaConvincesArion() => bit5(0x0052c9)
-achievement(title = "Reason Before Pride [m]", points = 5, id = 130763, badge = "143961",
-    description = "Convince Arion to take up arms against Julius in the final chapter.",
+function juliusDefeatCutscenePlayed() => bit7(0x0052c4)
+achievement(title = "Reason Before Pride", points = 5, id = 130763, badge = "143961", type = "missable",
+    description = "Convince Arion to take up arms before Julius's defeat in the final chapter.",
     trigger = chapter() == 11 && IsBitflagSetInGame(altenaConvincesArion())
+        && never(juliusDefeatCutscenePlayed() == 1)
 )
 
 function GetTacticsRankConditions()

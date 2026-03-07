@@ -1278,6 +1278,7 @@ function deepSpaceTerraStoryEntry() => bit7(0x1f28524)
 xachievement(title = "For but a Moment", points = 3, id = 187065, badge = "207952", type = "progression", shouldRender = IsCore(),
     description = "Complete Deep Space as Terra.",
     trigger = WasBitflagSetInGame(deepSpaceTerraStoryEntry()) && IsInLocation("WorldMap")
+        && never(!IsPlayingAsTerra())
 )
 
 function UsedAnyUniqueCommandsGivenNumberOfTimes(usableCommands, usages)
