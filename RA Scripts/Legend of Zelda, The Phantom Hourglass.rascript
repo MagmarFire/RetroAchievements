@@ -689,12 +689,13 @@ achievement(title = "The Phantombuster", points = 5, id = 143391, badge = "16013
     trigger = WasBitflagSetInGame(phantomSword())
 )
 
-function salvageArmHealth() => obyte(0x1f56e0) // May be dynamic
-function salvageArmSpeedMode() => obyte(0x1f56ec)
+function salvageMinigamePointer() => tbyte(0x00076778)
+function salvageArmHealth() => byte(salvageMinigamePointer() + 0x336e0)
+function salvageArmSpeedMode() => byte(salvageMinigamePointer() + 0x336ec)
+function salvageMinigameState() => byte(salvageMinigamePointer() + 0x336dc)
 
 // Starts at rising, normal before going straight to diving, normal.
 function StartedSalvageMinigame() => once(Delta(salvageArmSpeedMode()) == 0x0 && salvageArmSpeedMode() == 0x3)
-function salvageMinigameState() => obyte(0x1f56dc)
 function PrematurelyReturningFromMinigame() => salvageMinigameState() == 0x4
 achievement(title = "Be the Crane", points = 5, id = 143378, badge = "160124", type = "missable",
     description = "Salvage treasure without damaging the Salvage Arm.",
