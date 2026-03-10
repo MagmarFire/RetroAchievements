@@ -253,13 +253,7 @@ function WasInLocationWithCode(code)
     return Delta(currentLocation()) == location["id"]
 }
 
-function IsInGame()
-{
-    boot = GetLocationByCode("Boot")
-    title = GetLocationByCode("Title")
-    battle = GetLocationByCode("Battle")
-    return currentLocation() != boot["id"] && currentLocation() != title["id"] && currentLocation() != battle["id"]
-}
+function IsInGame() => currentLocation() <= 80 && currentLocation() > 0
 
 // $261654: Current location (US) (changes when level is done loading)
 function currentLocationAfterLoad() => oword(0x261654)
