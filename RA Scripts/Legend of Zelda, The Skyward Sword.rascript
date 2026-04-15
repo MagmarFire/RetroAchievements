@@ -37,7 +37,7 @@ function lightingState() => byte(0x00593941)
 function dialogueIdAddr() => 0x005a88f4
 
 areas = {
-0x46303031: { "name": "Knight Academy", "internalName": "", },0x46303039: { "name": "Sparring Hall", "internalName": "", },0x46303030: { "name": "Skyloft", "internalName": "", },0x44303030: { "name": "Waterfall", "internalName": "", },0x46303230: { "name": "The Sky", "internalName": "", },0x46303038: { "name": "Chamber of the Sword", "internalName": "", },0x46303231: { "name": "Sealed Grounds", "internalName": "", },0x46343031: { "name": "Sealed Grounds", "internalName": "SealedGroundsCutscene", },0x46343032: { "name": "Sealed Temple", "internalName": "", },0x46343030: { "name": "Sealed Grounds", "internalName": "BehindTheTemple", },0x46313030: { "name": "Faron Woods", "internalName": "FaronWoods", },0x46313031: { "name": "Deep Woods", "internalName": "", },0x44313030: { "name": "Skyview Temple", "internalName": "SkyviewTemple", },0x42313030: { "name": "Skyview Temple", "internalName": "STBossRoom", },0x00313031: { "name": "Somewhere in the sky...", "internalName": "SaveAndQuitTransition", },0x46303032: { "name": "Beedle's Airshop", "internalName": "", },0x46323030: { "name": "Eldin Volcano", "internalName": "", },0x46323130: { "name": "Eldin Volcano", "internalName": "EldinVolcanoInterior", },0x46323131: { "name": "Eldin Volcano", "internalName": "EldinThrillDigger", },0x44323030: { "name": "Earth Temple", "internalName": "ETMain", },0x00323030: { "name": "Somewhere in the sky...", "internalName": "GameOverTransition", },0x42323030: { "name": "Earth Temple", "internalName": "ETBossRoom", },0x42323130: { "name": "Earth Spring", "internalName": "", },0x46333030: { "name": "Lanayru Desert", "internalName": "", },0x46303034: { "name": "Bazaar", "internalName": "", },0x44333030: { "name": "Lanayru Mining Facility", "internalName": "LMFMain", },0x42333030: { "name": "Lanayru Mining Facility", "internalName": "LMFBossRoom", },0x333030: { "name": "Somewhere in the sky...", "internalName": "SaveAndQuitTransition2", },0x46303037: { "name": "Piper's House", "internalName": "", },0x46303138: { "name": "Peatrice's House", "internalName": "", },0x46303036: { "name": "Kukiel's House", "internalName": "", },0x46303134: { "name": "Bertie's House", "internalName": "", },0x46303135: { "name": "Gondo's House", "internalName": "", },0x46303133: { "name": "Sparrot's House", "internalName": "", },0x46303233: { "name": "Inside the Thunderhead", "internalName": "", },0x46303130: { "name": "Isle of Songs", "internalName": "", },0x53313030: { "name": "Farore's Silent Realm", "internalName": "FaroreSilentRealm", },0x46313032: { "name": "Lake Floria", "internalName": "", },0x44313031: { "name": "Ancient Cistern", "internalName": "ACMain", },0x42313031: { "name": "Ancient Cistern", "internalName": "ACBossRoom", },0x53333030: { "name": "Nayru's Silent Realm", "internalName": "NayruSilentRealm", },0x46333033: { "name": "Lanayru Caves", "internalName": "", },0x46333031: { "name": "Lanayru Sand Sea", "internalName": "", },0x44333031: { "name": "Sandship", "internalName": "SMain", },0x42333031: { "name": "Sandship", "internalName": "SBossRoom", },0x53323030: { "name": "Din's Silent Realm", "internalName": "DinSilentRealm", },0x46323031: { "name": "Volcano Summit", "internalName": "", },
+0x46303031: { "name": "Knight Academy", "internalName": "", },0x46303039: { "name": "Sparring Hall", "internalName": "", },0x46303030: { "name": "Skyloft", "internalName": "", },0x44303030: { "name": "Waterfall", "internalName": "", },0x46303230: { "name": "The Sky", "internalName": "", },0x46303038: { "name": "Chamber of the Sword", "internalName": "", },0x46303231: { "name": "Sealed Grounds", "internalName": "", },0x46343031: { "name": "Sealed Grounds", "internalName": "SealedGroundsCutscene", },0x46343032: { "name": "Sealed Temple", "internalName": "", },0x46343030: { "name": "Sealed Grounds", "internalName": "BehindTheTemple", },0x46313030: { "name": "Faron Woods", "internalName": "FaronWoods", },0x46313031: { "name": "Deep Woods", "internalName": "", },0x44313030: { "name": "Skyview Temple", "internalName": "SkyviewTemple", },0x42313030: { "name": "Skyview Temple", "internalName": "STBossRoom", },0x00313031: { "name": "Somewhere in the sky...", "internalName": "SaveAndQuitTransition", },0x46303032: { "name": "Beedle's Airshop", "internalName": "", },0x46323030: { "name": "Eldin Volcano", "internalName": "", },0x46323130: { "name": "Eldin Volcano", "internalName": "EldinVolcanoInterior", },0x46323131: { "name": "Eldin Volcano", "internalName": "EldinThrillDigger", },0x44323030: { "name": "Earth Temple", "internalName": "ETMain", },0x00323030: { "name": "Somewhere in the sky...", "internalName": "GameOverTransition", },0x42323030: { "name": "Earth Temple", "internalName": "ETBossRoom", },0x42323130: { "name": "Earth Spring", "internalName": "", },0x46333030: { "name": "Lanayru Desert", "internalName": "", },0x46303034: { "name": "Bazaar", "internalName": "", },0x44333030: { "name": "Lanayru Mining Facility", "internalName": "LMFMain", },0x42333030: { "name": "Lanayru Mining Facility", "internalName": "LMFBossRoom", },0x333030: { "name": "Somewhere in the sky...", "internalName": "SaveAndQuitTransition2", },0x46303037: { "name": "Piper's House", "internalName": "", },0x46303138: { "name": "Peatrice's House", "internalName": "", },0x46303036: { "name": "Kukiel's House", "internalName": "", },0x46303134: { "name": "Bertie's House", "internalName": "", },0x46303135: { "name": "Gondo's House", "internalName": "", },0x46303133: { "name": "Sparrot's House", "internalName": "", },0x46303233: { "name": "Inside the Thunderhead", "internalName": "", },0x46303130: { "name": "Isle of Songs", "internalName": "", },0x53313030: { "name": "Farore's Silent Realm", "internalName": "FaroreSilentRealm", },0x46313032: { "name": "Lake Floria", "internalName": "", },0x44313031: { "name": "Ancient Cistern", "internalName": "ACMain", },0x42313031: { "name": "Ancient Cistern", "internalName": "ACBossRoom", },0x53333030: { "name": "Nayru's Silent Realm", "internalName": "NayruSilentRealm", },0x46333033: { "name": "Lanayru Caves", "internalName": "", },0x46333031: { "name": "Lanayru Sand Sea", "internalName": "", },0x44333031: { "name": "Sandship", "internalName": "SMain", },0x42333031: { "name": "Sandship", "internalName": "SBossRoom", },0x53323030: { "name": "Din's Silent Realm", "internalName": "DinSilentRealm", },0x46323031: { "name": "Volcano Summit", "internalName": "", },0x44323031: { "name": "Fire Sanctuary", "internalName": "", },0x42323031: { "name": "Fire Sanctuary", "internalName": "FSBossRoom", },
 }
 
 rpLookup = {}
@@ -607,7 +607,7 @@ achievement(title = "Piercer", description = "Obtain the Bow.", type = "progress
 
 function arrowsInQuiver() => byte(0x00955ec7) & 0x7f
 function tentalusVictory() => bit2(0x00956ff3)
-achievement(title = "Eyecupuncture", description = "Defeat Tentalus using ten arrows or fewer (new resurrections).", type = "missable", points = 10,
+achievement(title = "Eyecupuncture", description = "Defeat Tentalus using ten arrows or fewer (no resurrections).", type = "missable", points = 10,
     trigger = BattleCheckpointStarted(Delta(animationId()) != 0xe && animationId() == 0xe && tentalusVictory() == 0,
             neverWhen = !IsInAreaByInternalName("SBossRoom"))
         && trigger_when(tentalusVictory() == 1)
@@ -648,6 +648,32 @@ achievement(title = "Wiltless Power", description = "Complete Din's Silent Realm
 function fireshieldEarrings() => bit5(0x00955e57)
 achievement(title = "Fireproof", description = "Obtain the Fireshield Earrings.", points = 3, type = "progression",
     trigger = WasBitflagJustSetInGame(fireshieldEarrings())
+)
+
+function mogmaMitts() => bit1(0x00955e50)
+achievement(title = "Tunnel Rat", description = "Obtain the Mogma Mitts.", points = 3, type = "progression",
+    trigger = WasBitflagJustSetInGame(mogmaMitts())
+)
+
+function guardianPotionTimeLeft() => word_be(0x0095a760)
+function guardianPotionPlusTimeLeft() => word_be(0x0095a762)
+function AnyGuardianPotionEffectIsActive() => guardianPotionTimeLeft() > 0 || guardianPotionPlusTimeLeft() > 0
+function ghirahimIIDefeated() => bit5(0x00956fc6)
+function ghirahimIIHp() => word_be(0x00b6c10a)
+achievement(title = "Bee Stings", type = "missable", points = 5,
+    description = "Defeat Ghirahim in the Fire Sanctuary without getting hit by his swords (no resurrections; no Guardian Potions).",
+    trigger = BattleCheckpointStarted(xCoordinate() == 0.0 && yCoordinate() == 150.0 && zCoordinate() == 900.0 && prior(animationId()) == 0x1bb
+            && animationId() == 0x12,
+            neverWhen = !IsInAreaByInternalName("FSBossRoom"))
+        && trigger_when(ghirahimIIDefeated() == 1)
+        && never(Delta(hp()) - hp() > 2)
+        && never(Delta(ghirahimIIDefeated()) == 1)
+)
+
+function masterSword() => bit2(0x00955e48)
+achievement(title = "The Predecessor", type = "progression", points = 3,
+    description = "Forge the Master Sword.",
+    trigger = WasBitflagJustSetInGame(masterSword())
 )
 
 function songOfTheHero() => bit4(0x00955e5e)
