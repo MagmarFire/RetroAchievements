@@ -499,7 +499,7 @@ achievement(
 )
 
 achievement(
-    title = "Tectonic Dominion", description = "Acquire the Dragoon Spirit of the Golden Dragon.", points = 5,
+    title = "Tectonic Dominion", description = "Acquire the Dragoon Spirit of the Golden Dragon.", points = 5, type = "missable",
     id = 95426, badge = "106701", published = "1/20/2020 4:00:36 AM", modified = "2/3/2020 2:34:27 AM",
     trigger = ((word(0x052C30) == 0x008D && prev(bit3(0x0BAD64)) == 0x0 && bit3(0x0BAD64) == 0x1) ||
                (word(0x052C30) == 0x0266 && prev(bit3(0x0BAD64)) == 0x0 && bit3(0x0BAD64) == 0x1))

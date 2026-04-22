@@ -62,7 +62,7 @@ function SecondsToFormat(value)
     return value / 60 + ":" + leadingZero + value % 60
 }
 
-function IsLoadingSaveFile() => Delta(globalPointer()) == 0 && globalPointer() != 0 && maxHp() > 0
+function IsLoadingSaveFile() => Delta(globalPointer()) != 0 && Delta(maxHp()) <= 0
 
 function IsInGame() => globalPointer() > 0 && !IsInLocation("File")
     && !IsInLocation("WFC") && !IsInLocation("Title")
