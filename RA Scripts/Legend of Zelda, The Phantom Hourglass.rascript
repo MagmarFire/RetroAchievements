@@ -62,7 +62,7 @@ function SecondsToFormat(value)
     return value / 60 + ":" + leadingZero + value % 60
 }
 
-function IsLoadingSaveFile() => Delta(globalPointer()) == 0 && globalPointer() != 0 && maxHp() > 0
+function IsLoadingSaveFile() => Delta(globalPointer()) != 0 && Delta(maxHp()) <= 0
 
 function IsInGame() => globalPointer() > 0 && !IsInLocation("File")
     && !IsInLocation("WFC") && !IsInLocation("Title")
@@ -732,18 +732,21 @@ achievement(title = "Action Port", points = 10, id = 143384, badge = "160130",
         && cannonGameScore() >= cannonScoreTarget
 )
 
-function trainingPointsInCurrentGame() => oword(0x267164)
-function trainingTimesHitInCurrentGame() => obyte(0x26716a)
+function trainingMinigamePointer() => tbyte(0x000e9c2c)
+function trainingPointsInCurrentGame() => word(trainingMinigamePointer() + 0xadc)
+function trainingTimesHitInCurrentGame() => byte(trainingMinigamePointer() + 0xae2)
 achievement(title = "Second Intention", points = 5, id = 143383, badge = "160129",
     description = "Score a total of 90 hits in a row during training without getting hit yourself.",
     trigger = never(!IsInLocation("Traveler2")) && never(Delta(trainingTimesHitInCurrentGame()) < trainingTimesHitInCurrentGame())
         && repeated(90, Delta(trainingPointsInCurrentGame()) < trainingPointsInCurrentGame()) && never(trainingPointsInCurrentGame() == 0)
+        && never(trainingMinigamePointer() == 0)
 )
 
 achievement(title = "Double Hero", points = 3, id = 143387, badge = "160133",
     description = "Score more than 200 hits during training.",
     trigger = never(!IsInLocation("Traveler2")) && trainingPointsInCurrentGame() > 200
         && trainingTimesHitInCurrentGame() < 3
+        && never(trainingMinigamePointer() == 0)
 )
 
 comboTarget = 25

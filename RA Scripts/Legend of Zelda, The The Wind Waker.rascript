@@ -678,6 +678,7 @@ achievement(title = "Ready for Hunting", points = 3, description = "Obtain the B
 function rupees() => word_be(0x003cc534)
 achievement(title = "Birthday Fine", points = 1, description = "Destroy the pot Sue-Belle's carrying and pay the full fine.", id = 402392, type = "missable", badge = "500801",
     trigger = once(DisplayingMessageWithId(2207)) && Delta(rupees()) == rupees() + 10
+        && never(Delta(messageId()) != 2207)
 )
 
 function crawlingStatus() => bit3(0x3d21f8)
