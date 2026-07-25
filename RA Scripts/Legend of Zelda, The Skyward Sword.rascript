@@ -37,7 +37,7 @@ function lightingState() => byte(0x00593941)
 function dialogueIdAddr() => 0x005a88f4
 
 areas = {
-0x46303031: { "name": "Knight Academy", "internalName": "", },0x46303039: { "name": "Sparring Hall", "internalName": "", },0x46303030: { "name": "Skyloft", "internalName": "", },0x44303030: { "name": "Waterfall", "internalName": "", },0x46303230: { "name": "The Sky", "internalName": "", },0x46303038: { "name": "Chamber of the Sword", "internalName": "", },0x46303231: { "name": "Sealed Grounds", "internalName": "", },0x46343031: { "name": "Sealed Grounds", "internalName": "SealedGroundsCutscene", },0x46343032: { "name": "Sealed Temple", "internalName": "", },0x46343030: { "name": "Sealed Grounds", "internalName": "BehindTheTemple", },0x46313030: { "name": "Faron Woods", "internalName": "FaronWoods", },0x46313031: { "name": "Deep Woods", "internalName": "", },0x44313030: { "name": "Skyview Temple", "internalName": "SkyviewTemple", },0x42313030: { "name": "Skyview Temple", "internalName": "STBossRoom", },0x00313031: { "name": "Somewhere in the sky...", "internalName": "SaveAndQuitTransition", },0x46303032: { "name": "Beedle's Airshop", "internalName": "", },0x46323030: { "name": "Eldin Volcano", "internalName": "", },0x46323130: { "name": "Eldin Volcano", "internalName": "EldinVolcanoInterior", },0x46323131: { "name": "Eldin Volcano", "internalName": "EldinThrillDigger", },0x44323030: { "name": "Earth Temple", "internalName": "ETMain", },0x00323030: { "name": "Somewhere in the sky...", "internalName": "GameOverTransition", },0x42323030: { "name": "Earth Temple", "internalName": "ETBossRoom", },0x42323130: { "name": "Earth Spring", "internalName": "", },0x46333030: { "name": "Lanayru Desert", "internalName": "", },0x46303034: { "name": "Bazaar", "internalName": "", },0x44333030: { "name": "Lanayru Mining Facility", "internalName": "LMFMain", },0x42333030: { "name": "Lanayru Mining Facility", "internalName": "LMFBossRoom", },0x333030: { "name": "Somewhere in the sky...", "internalName": "SaveAndQuitTransition2", },0x46303037: { "name": "Piper's House", "internalName": "", },0x46303138: { "name": "Peatrice's House", "internalName": "", },0x46303036: { "name": "Kukiel's House", "internalName": "", },0x46303134: { "name": "Bertie's House", "internalName": "", },0x46303135: { "name": "Gondo's House", "internalName": "", },0x46303133: { "name": "Sparrot's House", "internalName": "", },0x46303233: { "name": "Inside the Thunderhead", "internalName": "", },0x46303130: { "name": "Isle of Songs", "internalName": "", },0x53313030: { "name": "Farore's Silent Realm", "internalName": "FaroreSilentRealm", },0x46313032: { "name": "Lake Floria", "internalName": "", },0x44313031: { "name": "Ancient Cistern", "internalName": "ACMain", },0x42313031: { "name": "Ancient Cistern", "internalName": "ACBossRoom", },0x53333030: { "name": "Nayru's Silent Realm", "internalName": "NayruSilentRealm", },0x46333033: { "name": "Lanayru Caves", "internalName": "", },0x46333031: { "name": "Lanayru Sand Sea", "internalName": "", },0x44333031: { "name": "Sandship", "internalName": "SMain", },0x42333031: { "name": "Sandship", "internalName": "SBossRoom", },0x53323030: { "name": "Din's Silent Realm", "internalName": "DinSilentRealm", },0x46323031: { "name": "Volcano Summit", "internalName": "", },0x44323031: { "name": "Fire Sanctuary", "internalName": "", },0x42323031: { "name": "Fire Sanctuary", "internalName": "FSBossRoom", },0x46343037: { "name": "Sealed Temple", "internalName": "GoTCutscene", },0x46343034: { "name": "Temple of Hylia", "internalName": "", },0x46303131: { "name": "The Lumpy Pumpkin", "internalName": "", },0x46313033: { "name": "Faron Woods", "internalName": "FaronWoodsFlooded", },
+0x46303031: { "name": "Knight Academy", "internalName": "", },0x46303039: { "name": "Sparring Hall", "internalName": "", },0x46303030: { "name": "Skyloft", "internalName": "", },0x44303030: { "name": "Waterfall", "internalName": "", },0x46303230: { "name": "The Sky", "internalName": "", },0x46303038: { "name": "Chamber of the Sword", "internalName": "", },0x46303231: { "name": "Sealed Grounds", "internalName": "", },0x46343031: { "name": "Sealed Grounds", "internalName": "SealedGroundsCutscene", },0x46343032: { "name": "Sealed Temple", "internalName": "", },0x46343030: { "name": "Sealed Grounds", "internalName": "BehindTheTemple", },0x46313030: { "name": "Faron Woods", "internalName": "FaronWoods", },0x46313031: { "name": "Deep Woods", "internalName": "", },0x44313030: { "name": "Skyview Temple", "internalName": "SkyviewTemple", },0x42313030: { "name": "Skyview Temple", "internalName": "STBossRoom", },0x00313031: { "name": "Somewhere in the sky...", "internalName": "SaveAndQuitTransition", },0x46303032: { "name": "Beedle's Airshop", "internalName": "", },0x46323030: { "name": "Eldin Volcano", "internalName": "", },0x46323130: { "name": "Eldin Volcano", "internalName": "EldinVolcanoInterior", },0x46323131: { "name": "Eldin Volcano", "internalName": "EldinThrillDigger", },0x44323030: { "name": "Earth Temple", "internalName": "ETMain", },0x00323030: { "name": "Somewhere in the sky...", "internalName": "GameOverTransition", },0x42323030: { "name": "Earth Temple", "internalName": "ETBossRoom", },0x42323130: { "name": "Earth Spring", "internalName": "", },0x46333030: { "name": "Lanayru Desert", "internalName": "", },0x46303034: { "name": "Bazaar", "internalName": "", },0x44333030: { "name": "Lanayru Mining Facility", "internalName": "LMFMain", },0x42333030: { "name": "Lanayru Mining Facility", "internalName": "LMFBossRoom", },0x333030: { "name": "Somewhere in the sky...", "internalName": "SaveAndQuitTransition2", },0x46303037: { "name": "Piper's House", "internalName": "", },0x46303138: { "name": "Peatrice's House", "internalName": "", },0x46303036: { "name": "Kukiel's House", "internalName": "", },0x46303134: { "name": "Bertie's House", "internalName": "", },0x46303135: { "name": "Gondo's House", "internalName": "", },0x46303133: { "name": "Sparrot's House", "internalName": "", },0x46303233: { "name": "Inside the Thunderhead", "internalName": "", },0x46303130: { "name": "Isle of Songs", "internalName": "", },0x53313030: { "name": "Farore's Silent Realm", "internalName": "FaroreSilentRealm", },0x46313032: { "name": "Lake Floria", "internalName": "", },0x44313031: { "name": "Ancient Cistern", "internalName": "ACMain", },0x42313031: { "name": "Ancient Cistern", "internalName": "ACBossRoom", },0x53333030: { "name": "Nayru's Silent Realm", "internalName": "NayruSilentRealm", },0x46333033: { "name": "Lanayru Caves", "internalName": "", },0x46333031: { "name": "Lanayru Sand Sea", "internalName": "", },0x44333031: { "name": "Sandship", "internalName": "SMain", },0x42333031: { "name": "Sandship", "internalName": "SBossRoom", },0x53323030: { "name": "Din's Silent Realm", "internalName": "DinSilentRealm", },0x46323031: { "name": "Volcano Summit", "internalName": "", },0x44323031: { "name": "Fire Sanctuary", "internalName": "", },0x42323031: { "name": "Fire Sanctuary", "internalName": "FSBossRoom", },0x46343037: { "name": "Sealed Temple", "internalName": "GoTCutscene", },0x46343034: { "name": "Temple of Hylia", "internalName": "", },0x46303131: { "name": "The Lumpy Pumpkin", "internalName": "", },0x46313033: { "name": "Faron Woods", "internalName": "FaronWoodsFlooded", },0x46323032: { "name": "Eldin Volcano", "internalName": "EldinVolcanoStealth", },0x46323231: { "name": "Volcano Summit", "internalName": "VolcanoSummitFarRight", },0x46333032: { "name": "Lanayru Gorge", "internalName": "", },0x53303030: { "name": "The Goddess's Silent Realm", "internalName": "HyliaSilentRealm", },0x44303033: { "name": "Sky Keep", "internalName": "", },0x46343036: { "name": "Sealed Grounds", "internalName": "SealedGroundsTriforceCutscene", },0x46343033: { "name": "Hylia's Realm", "internalName": "SealedGroundsPast", },
 }
 
 rpLookup = {}
@@ -748,4 +748,73 @@ achievement(title = "For Display Only", description = "Defeat the Imprisoned III
 function songOfTheHero() => bit4(0x00955e5e)
 achievement(title = "The Melody of Legend", description = "Learn the Song of the Hero.", type = "progression", points = 3,
     trigger = WasBitflagJustSetInGame(songOfTheHero())
+)
+
+// My record: 0:53.06
+function LeftHyliasSilentRealm() => !IsInAreaByInternalName("HyliaSilentRealm")
+function hyliaWiltlessTimeLimit() => 63
+function HyliasSilentRealmCheckpointReached() => once(Delta(tearsCollected()) == 0 && tearsCollected() == 1)
+    && never(LeftHyliasSilentRealm())
+    && disable_when(repeated(SecondsToFrames(hyliaWiltlessTimeLimit()), SilentRealmFrameElapsed()), TearsWereReset())
+
+leaderboard(title = "Wiltless Light", description = "Complete the Goddess's Silent Realm while spending as little Spirit Vessel time as possible.",
+    start = HyliasSilentRealmCheckpointReached() && never(LeftHyliasSilentRealm()),
+    cancel = LeftHyliasSilentRealm(),
+    submit = SilentRealmCompleted(),
+    value = SilentRealmFramesElapsed30FPS() && never(TearsWereReset()),
+    format = "FRAMES",
+    lower_is_better = true
+)
+
+achievement(title = "Wiltless Light", description = "Complete the Goddess's Silent Realm before a total of " + SecondsToFormat(hyliaWiltlessTimeLimit())
+    + " passes from your Spirit Vessel.", points = 25,
+    trigger = HyliasSilentRealmCheckpointReached() && trigger_when(SilentRealmCompleted())
+)
+
+function stoneOfTrials() => bit4(0x00955e5a)
+achievement(title = "The Key to Divinity", description = "Obtain the Stone of Trials.", points = 3, type = "progression",
+    trigger = WasBitflagJustSetInGame(stoneOfTrials())
+)
+
+function triforceOfPower() => bit6(0x00955e51)
+function triforceOfWisdom() => bit7(0x00955e51)
+function triforceOfCourage() => bit5(0x00955e51)
+function TriforcePiecesEarned(number) => tally(number, [once(triforceOfPower() == 1), once(triforceOfWisdom() == 1), once(triforceOfCourage() == 1)])
+achievement(title = "The Old Gods' Favor", description = "Claim the Triforce.", points = 3,
+    trigger = measured(TriforcePiecesEarned(3), IsInAreaByName("Sky Keep")) && never(FileIsLoading())
+        && (WasBitflagJustSetInGame(triforceOfPower()) || WasBitflagJustSetInGame(triforceOfWisdom()) || WasBitflagJustSetInGame(triforceOfCourage()))
+)
+
+function timeIsFrozen() => bit4(0x00576a03)
+function IsPaused() => timeIsFrozen() == 1
+function kumiteTimeLimit() => 240
+function TimeElapsedInFrames(frames, when = always_true()) => repeated(frames, when)
+function kumiteStarted() => bit1(0x00955d71)
+function kumiteVictory() => bit4(0x00955d54)
+function FrameAdvancedDuringKumite() => kumiteStarted() == 1 && !IsPaused()
+function KumiteCheckpointReached() => BattleCheckpointStarted(Delta(kumiteStarted()) == 0 && kumiteStarted() == 1)
+achievement(title = "Cold Efficiency", description = "Interrupt Ghirahim's resurrection ritual within " + SecondsToFormat(kumiteTimeLimit()) + ".", points = 5, type = "missable",
+    trigger = KumiteCheckpointReached() && never(TimeElapsedInFrames(SecondsToFrames(kumiteTimeLimit() * 2), FrameAdvancedDuringKumite()))
+        && trigger_when(kumiteVictory() == 1)
+        && never(!IsInAreaByInternalName("SealedGroundsPast"))
+)
+
+leaderboard(title = "Cold Efficiency", description = "Interrupt Ghirahim's resurrection ritual as quickly as you can.",
+    start = KumiteCheckpointReached() && never(!IsInAreaByInternalName("SealedGroundsPast")),
+    cancel = !IsInAreaByInternalName("SealedGroundsPast"),
+    submit = kumiteVictory() == 1,
+    value = tally(0, FrameAdvancedDuringKumite()),
+    format = "FRAMES",
+    lower_is_better = true
+)
+
+function hitsOnGhirahimIIIPhase1() => byte(0x00b6b42d)
+function cameraLeftRightYaw() => float_be(0x00590b38)
+function cameraForwardBackwardYaw() => float_be(0x00590b40)
+achievement(title = "Impenetrable", type = "missable", description = "Finish Ghirahim III's first phase without a shield and without the camera looking northwest (no resurrections).", points = 5,
+    trigger = BattleCheckpointStarted(once(DialogueIdIs("BOSS_10_", false) && !DialogueIdIs("BOSS_10_", false, x => Delta(x))) && IsInAreaByName("Hylia's Realm"),
+            neverWhen = !IsInAreaByName("Hylia's Realm"))
+        && trigger_when(hitsOnGhirahimIIIPhase1() == 3 && Delta(hitsOnGhirahimIIIPhase1()) == 2)
+        && never(ShieldIsEquipped())
+        && never(cameraForwardBackwardYaw() > 0.5 && cameraForwardBackwardYaw() < 0.85 && cameraLeftRightYaw() < 0.85 && cameraLeftRightYaw() > 0.5)
 )
