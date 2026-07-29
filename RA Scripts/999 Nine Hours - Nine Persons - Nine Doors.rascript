@@ -60,6 +60,9 @@ function bottomScreenId() => word(0x206352)
 // $20AC52: (J) Bottom screen ID
 function bottomScreenIdJP() => word(0x20AC52)
 
+function menuEnabled() => byte(0x001e06ec)
+function menuEnabledJP() => byte(0x1E51CC)
+
 LocationLookup = {
     0x3294: "the third-class cabin",
     0x7c6e: "the first-class cabin",
@@ -92,11 +95,9 @@ achievement(
 achievement(
     title = "Garns's Inferno", description = "Solve the sudoku puzzle in the incinerator.", points = 1,
     id = 100492, badge = "109636", published = "2/23/2020 6:41:42 PM", modified = "2/24/2020 5:05:21 AM",
-    trigger = always_true() &&
-              ((prev(escapeRoomId()) == 0xE382 && escapeRoomId() == 0x5AA7 && escapeRoomCleared() == 0x01 && 
-                escapeRoomCleared() == prev(escapeRoomCleared())) ||
-               (prev(escapeRoomIdJP()) == 0xE382 && escapeRoomIdJP() == 0x5AA7 && escapeRoomClearedJP() == 0x01 && 
-                escapeRoomClearedJP() == prev(escapeRoomClearedJP())))
+    trigger = always_true()
+        && (prev(escapeRoomId()) == 0xE382 && escapeRoomId() == 0x5AA7 && menuEnabled() == 0
+          || prev(escapeRoomIdJP()) == 0xE382 && escapeRoomIdJP() == 0x5AA7 && menuEnabledJP() == 0)
 )
 
 achievement(
