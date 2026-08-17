@@ -37,7 +37,7 @@ function lightingState() => byte(0x00593941)
 function dialogueIdAddr() => 0x005a88f4
 
 areas = {
-0x46303031: { "name": "Knight Academy", "internalName": "", },0x46303039: { "name": "Sparring Hall", "internalName": "", },0x46303030: { "name": "Skyloft", "internalName": "", },0x44303030: { "name": "Waterfall", "internalName": "", },0x46303230: { "name": "The Sky", "internalName": "", },0x46303038: { "name": "Chamber of the Sword", "internalName": "", },0x46303231: { "name": "Sealed Grounds", "internalName": "", },0x46343031: { "name": "Sealed Grounds", "internalName": "SealedGroundsCutscene", },0x46343032: { "name": "Sealed Temple", "internalName": "", },0x46343030: { "name": "Sealed Grounds", "internalName": "BehindTheTemple", },0x46313030: { "name": "Faron Woods", "internalName": "FaronWoods", },0x46313031: { "name": "Deep Woods", "internalName": "", },0x44313030: { "name": "Skyview Temple", "internalName": "SkyviewTemple", },0x42313030: { "name": "Skyview Temple", "internalName": "STBossRoom", },0x00313031: { "name": "Somewhere in the sky...", "internalName": "SaveAndQuitTransition", },0x46303032: { "name": "Beedle's Airshop", "internalName": "", },0x46323030: { "name": "Eldin Volcano", "internalName": "", },0x46323130: { "name": "Eldin Volcano", "internalName": "EldinVolcanoInterior", },0x46323131: { "name": "Eldin Volcano", "internalName": "EldinThrillDigger", },0x44323030: { "name": "Earth Temple", "internalName": "ETMain", },0x00323030: { "name": "Somewhere in the sky...", "internalName": "GameOverTransition", },0x42323030: { "name": "Earth Temple", "internalName": "ETBossRoom", },0x42323130: { "name": "Earth Spring", "internalName": "", },0x46333030: { "name": "Lanayru Desert", "internalName": "", },0x46303034: { "name": "Bazaar", "internalName": "", },0x44333030: { "name": "Lanayru Mining Facility", "internalName": "LMFMain", },0x42333030: { "name": "Lanayru Mining Facility", "internalName": "LMFBossRoom", },0x333030: { "name": "Somewhere in the sky...", "internalName": "SaveAndQuitTransition2", },0x46303037: { "name": "Piper's House", "internalName": "", },0x46303138: { "name": "Peatrice's House", "internalName": "", },0x46303036: { "name": "Kukiel's House", "internalName": "", },0x46303134: { "name": "Bertie's House", "internalName": "", },0x46303135: { "name": "Gondo's House", "internalName": "", },0x46303133: { "name": "Sparrot's House", "internalName": "", },0x46303233: { "name": "Inside the Thunderhead", "internalName": "", },0x46303130: { "name": "Isle of Songs", "internalName": "", },0x53313030: { "name": "Farore's Silent Realm", "internalName": "FaroreSilentRealm", },0x46313032: { "name": "Lake Floria", "internalName": "", },0x44313031: { "name": "Ancient Cistern", "internalName": "ACMain", },0x42313031: { "name": "Ancient Cistern", "internalName": "ACBossRoom", },0x53333030: { "name": "Nayru's Silent Realm", "internalName": "NayruSilentRealm", },0x46333033: { "name": "Lanayru Caves", "internalName": "", },0x46333031: { "name": "Lanayru Sand Sea", "internalName": "", },0x44333031: { "name": "Sandship", "internalName": "SMain", },0x42333031: { "name": "Sandship", "internalName": "SBossRoom", },0x53323030: { "name": "Din's Silent Realm", "internalName": "DinSilentRealm", },0x46323031: { "name": "Volcano Summit", "internalName": "", },0x44323031: { "name": "Fire Sanctuary", "internalName": "", },0x42323031: { "name": "Fire Sanctuary", "internalName": "FSBossRoom", },0x46343037: { "name": "Sealed Temple", "internalName": "GoTCutscene", },0x46343034: { "name": "Temple of Hylia", "internalName": "", },0x46303131: { "name": "The Lumpy Pumpkin", "internalName": "", },0x46313033: { "name": "Faron Woods", "internalName": "FaronWoodsFlooded", },0x46323032: { "name": "Eldin Volcano", "internalName": "EldinVolcanoStealth", },0x46323231: { "name": "Volcano Summit", "internalName": "VolcanoSummitFarRight", },0x46333032: { "name": "Lanayru Gorge", "internalName": "", },0x53303030: { "name": "The Goddess's Silent Realm", "internalName": "HyliaSilentRealm", },0x44303033: { "name": "Sky Keep", "internalName": "", },0x46343036: { "name": "Sealed Grounds", "internalName": "SealedGroundsTriforceCutscene", },0x46343033: { "name": "Hylia's Realm", "internalName": "SealedGroundsPast", },
+0x46303031: { "name": "Knight Academy", "internalName": "", },0x46303039: { "name": "Sparring Hall", "internalName": "", },0x46303030: { "name": "Skyloft", "internalName": "", },0x44303030: { "name": "Waterfall", "internalName": "", },0x46303230: { "name": "The Sky", "internalName": "", },0x46303038: { "name": "Chamber of the Sword", "internalName": "", },0x46303231: { "name": "Sealed Grounds", "internalName": "", },0x46343031: { "name": "Sealed Grounds", "internalName": "SealedGroundsCutscene", },0x46343032: { "name": "Sealed Temple", "internalName": "SealedTemplePresent", },0x46343030: { "name": "Sealed Grounds", "internalName": "BehindTheTemple", },0x46313030: { "name": "Faron Woods", "internalName": "FaronWoods", },0x46313031: { "name": "Deep Woods", "internalName": "", },0x44313030: { "name": "Skyview Temple", "internalName": "SkyviewTemple", },0x42313030: { "name": "Skyview Temple", "internalName": "STBossRoom", },0x00313031: { "name": "Somewhere in the sky...", "internalName": "SaveAndQuitTransition", },0x46303032: { "name": "Beedle's Airshop", "internalName": "", },0x46323030: { "name": "Eldin Volcano", "internalName": "", },0x46323130: { "name": "Eldin Volcano", "internalName": "EldinVolcanoInterior", },0x46323131: { "name": "Eldin Volcano", "internalName": "EldinThrillDigger", },0x44323030: { "name": "Earth Temple", "internalName": "ETMain", },0x00323030: { "name": "Somewhere in the sky...", "internalName": "GameOverTransition", },0x42323030: { "name": "Earth Temple", "internalName": "ETBossRoom", },0x42323130: { "name": "Earth Spring", "internalName": "", },0x46333030: { "name": "Lanayru Desert", "internalName": "", },0x46303034: { "name": "Bazaar", "internalName": "", },0x44333030: { "name": "Lanayru Mining Facility", "internalName": "LMFMain", },0x42333030: { "name": "Lanayru Mining Facility", "internalName": "LMFBossRoom", },0x333030: { "name": "Somewhere in the sky...", "internalName": "SaveAndQuitTransition2", },0x46303037: { "name": "Piper's House", "internalName": "", },0x46303138: { "name": "Peatrice's House", "internalName": "", },0x46303036: { "name": "Kukiel's House", "internalName": "", },0x46303134: { "name": "Bertie's House", "internalName": "", },0x46303135: { "name": "Gondo's House", "internalName": "", },0x46303133: { "name": "Sparrot's House", "internalName": "", },0x46303233: { "name": "Inside the Thunderhead", "internalName": "", },0x46303130: { "name": "Isle of Songs", "internalName": "", },0x53313030: { "name": "Farore's Silent Realm", "internalName": "FaroreSilentRealm", },0x46313032: { "name": "Lake Floria", "internalName": "", },0x44313031: { "name": "Ancient Cistern", "internalName": "ACMain", },0x42313031: { "name": "Ancient Cistern", "internalName": "ACBossRoom", },0x53333030: { "name": "Nayru's Silent Realm", "internalName": "NayruSilentRealm", },0x46333033: { "name": "Lanayru Caves", "internalName": "", },0x46333031: { "name": "Lanayru Sand Sea", "internalName": "", },0x44333031: { "name": "Sandship", "internalName": "SMain", },0x42333031: { "name": "Sandship", "internalName": "SBossRoom", },0x53323030: { "name": "Din's Silent Realm", "internalName": "DinSilentRealm", },0x46323031: { "name": "Volcano Summit", "internalName": "", },0x44323031: { "name": "Fire Sanctuary", "internalName": "", },0x42323031: { "name": "Fire Sanctuary", "internalName": "FSBossRoom", },0x46343037: { "name": "Sealed Temple", "internalName": "GoTCutscene", },0x46343034: { "name": "Temple of Hylia", "internalName": "", },0x46303131: { "name": "The Lumpy Pumpkin", "internalName": "", },0x46313033: { "name": "Faron Woods", "internalName": "FaronWoodsFlooded", },0x46323032: { "name": "Eldin Volcano", "internalName": "EldinVolcanoStealth", },0x46323231: { "name": "Volcano Summit", "internalName": "VolcanoSummitFarRight", },0x46333032: { "name": "Lanayru Gorge", "internalName": "", },0x53303030: { "name": "The Goddess's Silent Realm", "internalName": "HyliaSilentRealm", },0x44303033: { "name": "Sky Keep", "internalName": "", },0x46343036: { "name": "Sealed Grounds", "internalName": "SealedGroundsTriforceCutscene", },0x46343033: { "name": "Hylia's Realm", "internalName": "SealedGroundsPast", },0x42343030: { "name": "Demise's Battlefield", "internalName": "", },0x44656d6f: { "name": "Credits", "internalName": "Credits", },
 }
 
 rpLookup = {}
@@ -793,15 +793,19 @@ function kumiteStarted() => bit1(0x00955d71)
 function kumiteVictory() => bit4(0x00955d54)
 function FrameAdvancedDuringKumite() => kumiteStarted() == 1 && !IsPaused()
 function KumiteCheckpointReached() => BattleCheckpointStarted(Delta(kumiteStarted()) == 0 && kumiteStarted() == 1)
-achievement(title = "Cold Efficiency", description = "Interrupt Ghirahim's resurrection ritual within " + SecondsToFormat(kumiteTimeLimit()) + ".", points = 5, type = "missable",
+function staminaPotionTimeRemaining() => word_be(0x0095a75c)
+function staminaPotionPlusTimeRemaining() => word_be(0x0095a75e)
+function KumiteIsInvalid() => !IsInAreaByInternalName("SealedGroundsPast") || staminaPotionTimeRemaining() > 0 || staminaPotionPlusTimeRemaining() > 0
+achievement(title = "Cold Efficiency", description = "Interrupt Ghirahim's resurrection ritual within " + SecondsToFormat(kumiteTimeLimit()) + " (no Stamina Potions).",
+    points = 5, type = "missable",
     trigger = KumiteCheckpointReached() && never(TimeElapsedInFrames(SecondsToFrames(kumiteTimeLimit() * 2), FrameAdvancedDuringKumite()))
         && trigger_when(kumiteVictory() == 1)
-        && never(!IsInAreaByInternalName("SealedGroundsPast"))
+        && never(KumiteIsInvalid())
 )
 
-leaderboard(title = "Cold Efficiency", description = "Interrupt Ghirahim's resurrection ritual as quickly as you can.",
+leaderboard(title = "Cold Efficiency", description = "Interrupt Ghirahim's resurrection ritual as quickly as you can (no Stamina Potions).",
     start = KumiteCheckpointReached() && never(!IsInAreaByInternalName("SealedGroundsPast")),
-    cancel = !IsInAreaByInternalName("SealedGroundsPast"),
+    cancel = KumiteIsInvalid(),
     submit = kumiteVictory() == 1,
     value = tally(0, FrameAdvancedDuringKumite()),
     format = "FRAMES",
@@ -811,10 +815,218 @@ leaderboard(title = "Cold Efficiency", description = "Interrupt Ghirahim's resur
 function hitsOnGhirahimIIIPhase1() => byte(0x00b6b42d)
 function cameraLeftRightYaw() => float_be(0x00590b38)
 function cameraForwardBackwardYaw() => float_be(0x00590b40)
+function FinishedGhirahimIIIPhase1() => hitsOnGhirahimIIIPhase1() == 3 && Delta(hitsOnGhirahimIIIPhase1()) == 2
 achievement(title = "Impenetrable", type = "missable", description = "Finish Ghirahim III's first phase without a shield and without the camera looking northwest (no resurrections).", points = 5,
     trigger = BattleCheckpointStarted(once(DialogueIdIs("BOSS_10_", false) && !DialogueIdIs("BOSS_10_", false, x => Delta(x))) && IsInAreaByName("Hylia's Realm"),
             neverWhen = !IsInAreaByName("Hylia's Realm"))
-        && trigger_when(hitsOnGhirahimIIIPhase1() == 3 && Delta(hitsOnGhirahimIIIPhase1()) == 2)
+        && trigger_when(FinishedGhirahimIIIPhase1())
         && never(ShieldIsEquipped())
         && never(cameraForwardBackwardYaw() > 0.5 && cameraForwardBackwardYaw() < 0.85 && cameraLeftRightYaw() < 0.85 && cameraLeftRightYaw() > 0.5)
 )
+
+function topAdventurePouchItemSlotAddr() => 0x00955c24
+class PouchItem
+{
+    baseAddr = 0
+    
+    function quantity() => word_be(this.baseAddr)
+    function id() => word_be(this.baseAddr + 2)
+}
+
+function PouchItemAtSlot(slotId)
+{
+    baseAddr = topAdventurePouchItemSlotAddr()
+    return PouchItem(baseAddr + slotId * 4)
+}
+
+function AllPouchItemsWhere(where = item => {})
+{
+    baseAddr = topAdventurePouchItemSlotAddr()
+    trigger = always_false()
+    for i in range(0, 7)
+    {
+        item = PouchItem(baseAddr + i * 4)
+        trigger = trigger || where(item)
+    }
+    
+    return trigger
+}
+
+function hylianShieldId() => 0x7d
+function ShieldDamageWasJustTaken() => AllPouchItemsWhere(item => item.id() >= 0x74 && item.id() < hylianShieldId() && Delta(item.quantity()) > item.quantity())
+function ghirahimIIIPhase2HP() => word_be(0x00b670fe)
+function ghirahimIIIPhase3HP() => word_be(0x00b6578a)
+achievement(title = "Skilled Sentinel", type = "missable", description = "Defeat Ghirahim III's post-first phases without taking shield damage (no resurrections; no Hylian Shield).", points = 5,
+    trigger = BattleCheckpointStarted(FinishedGhirahimIIIPhase1() && IsInAreaByName("Hylia's Realm"),
+            neverWhen = !IsInAreaByName("Hylia's Realm"))
+        && never(ShieldDamageWasJustTaken())
+        && never(PouchItemAtSlot(shieldSlotIndex()).id() == hylianShieldId())
+        && trigger_when(ghirahimIIIPhase2HP() == 0 && ghirahimIIIPhase3HP() == 0 && Delta(ghirahimIIIPhase3HP()) > 0)
+)
+
+achievement(title = "The Agahnim Gambit", description = "Defeat Demise without preparing a Skyward Strike (no resurrections).", points = 5,
+    trigger = BattleCheckpointStarted(once(DialogueIdIs("BOSS_11_", false) && !DialogueIdIs("BOSS_11_", false, x => Delta(x))) && IsInAreaByName("Demise's Battlefield"),
+            neverWhen = !IsInAreaByName("Demise's Battlefield"))
+        && never(animationId() == 0x195)
+        && trigger_when(repeated(330, animationId() == 0x11f && never(animationId() == 0x120)))
+)
+
+achievement(title = "By Your Own Hand", type = "win_condition", description = "Defeat Demise and restore peace to the sky and the surface.", points = 25,
+    trigger = repeated(270, once(WasJustInAreaByInternalName("SealedTemplePresent")) && IsInAreaByName("Credits"))
+        && never(!IsInAreaByName("Credits"))
+)
+
+// BEGINNING OF BITFLAG AGGREGATION REGION
+
+// Dictionary elements must have "addr" and "bit" fields.
+// Returns a result like the following:
+// {
+//    <address>: [ <bit indices> ]
+// }
+function AggregateBitsFromAddressBits(dict)
+{
+    ret = {}
+    for i in dict
+    {
+        element = dict[i]
+        
+        if (element["addr"] != -1)
+        {
+            if (dictionary_contains_key(ret, element["addr"]))
+            {
+                arr = ret[element["addr"]]
+                array_push(arr, element["bit"])
+                ret[element["addr"]] = arr
+            }
+            else
+            {
+                ret[element["addr"]] = [ element["bit"] ]
+            }
+        }
+    }
+    
+    return ret
+}
+
+// Converts an aggregate dictionary to an array of objects like the following:
+// {
+//    "type": "bitX"/"byte"
+//    "mem": <memory accessor>
+//    "address": <memory address>
+// }
+function ConvertBitAggregatesToBitCountableMemoryAccessors(aggregates)
+{
+    accessors = []
+    for address in aggregates
+    {
+        agg = aggregates[address]
+        if (length(agg) == 8)
+        {
+            array_push(accessors, { "type": "byte", "mem": byte(address), "address": address })
+        }
+        else
+        {
+            // Simply return each bit instead, since we can't use bitcount() on anything but bytes.
+            for bit in agg
+            {
+                if (bit != -1 && address != -1)
+                {
+                    array_push(accessors, { "type": "bit", "mem": bit(bit, address), "address": address })
+                }
+            }
+        }
+    }
+    
+    return accessors
+}
+
+function GetCountableAccessorArrayFromAddressBits(dict)
+{
+    return ConvertBitAggregatesToBitCountableMemoryAccessors(AggregateBitsFromAddressBits(dict))
+}
+
+function GenerateBitcountFromCountableObjects(addresses)
+{
+    finalBitcount = 0
+    for address in addresses
+    {
+        if (address["type"] == "byte")
+        {
+            finalBitcount = finalBitcount + bitcount(address["address"])
+        }
+        else
+        {
+            finalBitcount = finalBitcount + address["mem"]
+        }
+    }
+    return finalBitcount
+}
+
+function BitcountOfAddressBits(dict)
+{
+    return GenerateBitcountFromCountableObjects(GetCountableAccessorArrayFromAddressBits(dict))
+}
+
+// END OF BITFLAG AGGREGATION REGION
+
+goddessCubes = {
+    0: { "addr": 0x955D62, "bit": 5 }, // First Goddess Cube (Unlocks ability to skyward strike Goddess Cubes)
+    1: { "addr": 0x955D62, "bit": 6 }, // Goddess Cube near Skyview Entrance
+    2: { "addr": 0x955D62, "bit": 7 }, // Goddess Cube near Volcano Entry Statue
+    3: { "addr": 0x955D64, "bit": 0 }, // Goddess Cube in Skipper's Retreat
+    4: { "addr": 0x955D64, "bit": 1 }, // Goddess Cube near Life Tree in Lanayru Gorge
+    5: { "addr": 0x955D64, "bit": 2 }, // Goddess Cube inside Volcano Summit
+    6: { "addr": 0x955D64, "bit": 3 }, // Goddess Cube on Branch in Faron
+    7: { "addr": 0x955D64, "bit": 4 }, // Goddess Cube on Sand Slide
+    8: { "addr": 0x955D64, "bit": 5 }, // Goddess Cube in Pirate Stronghold
+    9: { "addr": 0x955D64, "bit": 6 }, // Goddess Cube on top of Skyview Temple
+    10: { "addr": 0x955D64, "bit": 7 }, // Goddess Cube behind boulder near Eldin Temple Entrance
+    11: { "addr": 0x955D65, "bit": 0 }, // Goddess Cube in Sand Oasis in Lanayru
+    12: { "addr": 0x955D65, "bit": 1 }, // Goddess Cube near clawshot target in Faron Woods
+    13: { "addr": 0x955D65, "bit": 4 }, // Goddess Cube near Digging Mitts Cave entrance
+    14: { "addr": 0x955D65, "bit": 5 }, // Goddess Cube in Lanayru Mines behind Tower
+    15: { "addr": 0x955D65, "bit": 6 }, // Goddess Cube near Faron Trial
+    16: { "addr": 0x955D65, "bit": 7 }, // Goddess Cube near Eldin Temple Entrance
+    17: { "addr": 0x955D66, "bit": 0 }, // Goddess Cube in Lake Floria
+    18: { "addr": 0x955D66, "bit": 1 }, // Goddess Cube inside Digging Mitts Cave
+    19: { "addr": 0x955D66, "bit": 2 }, // Goddess Cube in Ancient Harbour
+    20: { "addr": 0x955D67, "bit": 0 }, // Goddess Cube on clawshot target ledge in Lanayru Desert
+    21: { "addr": 0x955D67, "bit": 1 }, // Goddess Cube near Hook Beetle cage
+    22: { "addr": 0x955D67, "bit": 2 }, // Goddess Cube near Fire Sanctuary Entrance
+    23: { "addr": 0x955D67, "bit": 3 }, // Goddess Cube outside Ancient Cistern
+    24: { "addr": 0x955D67, "bit": 4 }, // Goddess Cube in Skyview Spring
+    25: { "addr": 0x955D67, "bit": 5 }, // Goddess Cube in Waterfall Area in Volcano Summit
+    26: { "addr": 0x955D67, "bit": 6 }, // Goddess Cube in ToT area Minekart Ride in Lanayru
+}
+
+goddessCubeAchievements = [
+    { "title": "Rookie Cubist", "points": 3, "threshold": 3 },
+    { "title": "Regular Cubist", "points": 5, "threshold": 7 },
+    { "title": "Veteran Cubist", "points": 10, "threshold": 14 },
+    { "title": "Legendary Cubist", "points": 25, "threshold": 27 },
+]
+
+for i in goddessCubeAchievements
+{
+    achievement(title = i["title"], points = i["points"], description = "Activate " + i["threshold"] + " Goddess Cubes.",
+        trigger = BitcountOfAddressBits(goddessCubes) >= i["threshold"] && Delta(BitcountOfAddressBits(goddessCubes)) < i["threshold"]
+            && never(FileIsLoading())
+    )
+}
+
+function goddessChestsOpened() => byte(0x80955DF0) & 0x7 * 4 + byte(0x80955DF0) / 32
+
+goddessChestAchievements = [
+    { "title": "Rookie Rogue", "points": 3, "threshold": 3 },
+    { "title": "Regular Rogue", "points": 5, "threshold": 7 },
+    { "title": "Veteran Rogue", "points": 10, "threshold": 14 },
+    { "title": "Legendary Rogue", "points": 25, "threshold": 27 },
+]
+
+for i in goddessChestAchievements
+{
+    achievement(title = i["title"], points = i["points"], description = "Open " + i["threshold"] + " Goddess Chests.",
+        trigger = BitcountOfAddressBits(goddessCubes) >= i["threshold"] && Delta(BitcountOfAddressBits(goddessCubes)) < i["threshold"]
+            && never(FileIsLoading())
+    )
+}
