@@ -37,7 +37,7 @@ function lightingState() => byte(0x00593941)
 function dialogueIdAddr() => 0x005a88f4
 
 areas = {
-0x46303031: { "name": "Knight Academy", "internalName": "", },0x46303039: { "name": "Sparring Hall", "internalName": "", },0x46303030: { "name": "Skyloft", "internalName": "", },0x44303030: { "name": "Waterfall", "internalName": "", },0x46303230: { "name": "The Sky", "internalName": "", },0x46303038: { "name": "Chamber of the Sword", "internalName": "", },0x46303231: { "name": "Sealed Grounds", "internalName": "", },0x46343031: { "name": "Sealed Grounds", "internalName": "SealedGroundsCutscene", },0x46343032: { "name": "Sealed Temple", "internalName": "SealedTemplePresent", },0x46343030: { "name": "Sealed Grounds", "internalName": "BehindTheTemple", },0x46313030: { "name": "Faron Woods", "internalName": "FaronWoods", },0x46313031: { "name": "Deep Woods", "internalName": "", },0x44313030: { "name": "Skyview Temple", "internalName": "SkyviewTemple", },0x42313030: { "name": "Skyview Temple", "internalName": "STBossRoom", },0x00313031: { "name": "Somewhere in the sky...", "internalName": "SaveAndQuitTransition", },0x46303032: { "name": "Beedle's Airshop", "internalName": "", },0x46323030: { "name": "Eldin Volcano", "internalName": "", },0x46323130: { "name": "Eldin Volcano", "internalName": "EldinVolcanoInterior", },0x46323131: { "name": "Eldin Volcano", "internalName": "EldinThrillDigger", },0x44323030: { "name": "Earth Temple", "internalName": "ETMain", },0x00323030: { "name": "Somewhere in the sky...", "internalName": "GameOverTransition", },0x42323030: { "name": "Earth Temple", "internalName": "ETBossRoom", },0x42323130: { "name": "Earth Spring", "internalName": "", },0x46333030: { "name": "Lanayru Desert", "internalName": "", },0x46303034: { "name": "Bazaar", "internalName": "", },0x44333030: { "name": "Lanayru Mining Facility", "internalName": "LMFMain", },0x42333030: { "name": "Lanayru Mining Facility", "internalName": "LMFBossRoom", },0x333030: { "name": "Somewhere in the sky...", "internalName": "SaveAndQuitTransition2", },0x46303037: { "name": "Piper's House", "internalName": "", },0x46303138: { "name": "Peatrice's House", "internalName": "", },0x46303036: { "name": "Kukiel's House", "internalName": "", },0x46303134: { "name": "Bertie's House", "internalName": "", },0x46303135: { "name": "Gondo's House", "internalName": "", },0x46303133: { "name": "Sparrot's House", "internalName": "", },0x46303233: { "name": "Inside the Thunderhead", "internalName": "", },0x46303130: { "name": "Isle of Songs", "internalName": "", },0x53313030: { "name": "Farore's Silent Realm", "internalName": "FaroreSilentRealm", },0x46313032: { "name": "Lake Floria", "internalName": "", },0x44313031: { "name": "Ancient Cistern", "internalName": "ACMain", },0x42313031: { "name": "Ancient Cistern", "internalName": "ACBossRoom", },0x53333030: { "name": "Nayru's Silent Realm", "internalName": "NayruSilentRealm", },0x46333033: { "name": "Lanayru Caves", "internalName": "", },0x46333031: { "name": "Lanayru Sand Sea", "internalName": "", },0x44333031: { "name": "Sandship", "internalName": "SMain", },0x42333031: { "name": "Sandship", "internalName": "SBossRoom", },0x53323030: { "name": "Din's Silent Realm", "internalName": "DinSilentRealm", },0x46323031: { "name": "Volcano Summit", "internalName": "", },0x44323031: { "name": "Fire Sanctuary", "internalName": "", },0x42323031: { "name": "Fire Sanctuary", "internalName": "FSBossRoom", },0x46343037: { "name": "Sealed Temple", "internalName": "GoTCutscene", },0x46343034: { "name": "Temple of Hylia", "internalName": "", },0x46303131: { "name": "The Lumpy Pumpkin", "internalName": "", },0x46313033: { "name": "Faron Woods", "internalName": "FaronWoodsFlooded", },0x46323032: { "name": "Eldin Volcano", "internalName": "EldinVolcanoStealth", },0x46323231: { "name": "Volcano Summit", "internalName": "VolcanoSummitFarRight", },0x46333032: { "name": "Lanayru Gorge", "internalName": "", },0x53303030: { "name": "The Goddess's Silent Realm", "internalName": "HyliaSilentRealm", },0x44303033: { "name": "Sky Keep", "internalName": "", },0x46343036: { "name": "Sealed Grounds", "internalName": "SealedGroundsTriforceCutscene", },0x46343033: { "name": "Hylia's Realm", "internalName": "SealedGroundsPast", },0x42343030: { "name": "Demise's Battlefield", "internalName": "", },0x44656d6f: { "name": "Credits", "internalName": "Credits", },
+0x46303031: { "name": "Knight Academy", "internalName": "", },0x46303039: { "name": "Sparring Hall", "internalName": "", },0x46303030: { "name": "Skyloft", "internalName": "", },0x44303030: { "name": "Waterfall", "internalName": "", },0x46303230: { "name": "The Sky", "internalName": "", },0x46303038: { "name": "Chamber of the Sword", "internalName": "", },0x46303231: { "name": "Sealed Grounds", "internalName": "", },0x46343031: { "name": "Sealed Grounds", "internalName": "SealedGroundsCutscene", },0x46343032: { "name": "Sealed Temple", "internalName": "SealedTemplePresent", },0x46343030: { "name": "Sealed Grounds", "internalName": "BehindTheTemple", },0x46313030: { "name": "Faron Woods", "internalName": "FaronWoods", },0x46313031: { "name": "Deep Woods", "internalName": "", },0x44313030: { "name": "Skyview Temple", "internalName": "SkyviewTemple", },0x42313030: { "name": "Skyview Temple", "internalName": "STBossRoom", },0x00313031: { "name": "Somewhere in the sky...", "internalName": "SaveAndQuitTransition", },0x46303032: { "name": "Beedle's Airshop", "internalName": "", },0x46323030: { "name": "Eldin Volcano", "internalName": "", },0x46323130: { "name": "Eldin Volcano", "internalName": "EldinVolcanoInterior", },0x46323131: { "name": "Eldin Volcano", "internalName": "EldinThrillDigger", },0x44323030: { "name": "Earth Temple", "internalName": "ETMain", },0x00323030: { "name": "Somewhere in the sky...", "internalName": "GameOverTransition", },0x42323030: { "name": "Earth Temple", "internalName": "ETBossRoom", },0x42323130: { "name": "Earth Spring", "internalName": "", },0x46333030: { "name": "Lanayru Desert", "internalName": "", },0x46303034: { "name": "Bazaar", "internalName": "", },0x44333030: { "name": "Lanayru Mining Facility", "internalName": "LMFMain", },0x42333030: { "name": "Lanayru Mining Facility", "internalName": "LMFBossRoom", },0x333030: { "name": "Somewhere in the sky...", "internalName": "SaveAndQuitTransition2", },0x46303037: { "name": "Piper's House", "internalName": "", },0x46303138: { "name": "Peatrice's House", "internalName": "", },0x46303036: { "name": "Kukiel's House", "internalName": "", },0x46303134: { "name": "Bertie's House", "internalName": "", },0x46303135: { "name": "Gondo's House", "internalName": "", },0x46303133: { "name": "Sparrot's House", "internalName": "", },0x46303233: { "name": "Inside the Thunderhead", "internalName": "", },0x46303130: { "name": "Isle of Songs", "internalName": "", },0x53313030: { "name": "Farore's Silent Realm", "internalName": "FaroreSilentRealm", },0x46313032: { "name": "Lake Floria", "internalName": "", },0x44313031: { "name": "Ancient Cistern", "internalName": "ACMain", },0x42313031: { "name": "Ancient Cistern", "internalName": "ACBossRoom", },0x53333030: { "name": "Nayru's Silent Realm", "internalName": "NayruSilentRealm", },0x46333033: { "name": "Lanayru Caves", "internalName": "", },0x46333031: { "name": "Lanayru Sand Sea", "internalName": "", },0x44333031: { "name": "Sandship", "internalName": "SMain", },0x42333031: { "name": "Sandship", "internalName": "SBossRoom", },0x53323030: { "name": "Din's Silent Realm", "internalName": "DinSilentRealm", },0x46323031: { "name": "Volcano Summit", "internalName": "", },0x44323031: { "name": "Fire Sanctuary", "internalName": "", },0x42323031: { "name": "Fire Sanctuary", "internalName": "FSBossRoom", },0x46343037: { "name": "Sealed Temple", "internalName": "GoTCutscene", },0x46343034: { "name": "Temple of Hylia", "internalName": "", },0x46303131: { "name": "The Lumpy Pumpkin", "internalName": "", },0x46313033: { "name": "Faron Woods", "internalName": "FaronWoodsFlooded", },0x46323032: { "name": "Eldin Volcano", "internalName": "EldinVolcanoStealth", },0x46323231: { "name": "Volcano Summit", "internalName": "VolcanoSummitFarRight", },0x46333032: { "name": "Lanayru Gorge", "internalName": "", },0x53303030: { "name": "The Goddess's Silent Realm", "internalName": "HyliaSilentRealm", },0x44303033: { "name": "Sky Keep", "internalName": "", },0x46343036: { "name": "Sealed Grounds", "internalName": "SealedGroundsTriforceCutscene", },0x46343033: { "name": "Hylia's Realm", "internalName": "SealedGroundsPast", },0x42343030: { "name": "Demise's Battlefield", "internalName": "", },0x44656d6f: { "name": "Credits", "internalName": "Credits", },0x46303132: { "name": "Batreaux's House", "internalName": "", },0x46303035: { "name": "Orielle and Parrow's House", "internalName": "", },0x46303137: { "name": "Rupin's House", "internalName": "", },0x46303139: { "name": "Bamboo Island", "internalName": "", },
 }
 
 rpLookup = {}
@@ -297,6 +297,11 @@ achievement(title = "Swoosh", description = "Purchase the Bug Net.", points = 3,
     trigger = WasBitflagJustSetInGame(bugNet())
 )
 
+function bigBugNet() => bit1(0x00955e56)
+achievement(title = "Swooooosh", description = "Upgrade the Bug Net to the Big Bug Net.", points = 3,
+    trigger = WasBitflagJustSetInGame(bigBugNet())
+)
+
 function moleMitts() => bit6(0x00955e4a)
 achievement(title = "Honorary Mole Man", description = "Obtain the Mole Mitts.", points = 3, type = "progression",
     trigger = WasBitflagJustSetInGame(moleMitts())
@@ -377,13 +382,29 @@ achievement(title = "Earth Prayers", type = "progression", description = "Obtain
 )
 
 function extraWalletsObtained() => byte(0x00955ec6) / 64
+function mediumWallet() => bit2(0x00955e53)
+function bigWallet() => bit3(0x00955e53)
+function giantWallet() => bit4(0x00955e53)
+function tycoonWallet() => bit5(0x00955e53)
+function totalWalletsObtained() => mediumWallet() + bigWallet() + giantWallet() + tycoonWallet() + extraWalletsObtained()
 achievement(title = "I Don't NEED Credit", description = "Obtain a wallet maximum of 9,900 Rupees.", points = 5,
-    trigger = always_false()
+    trigger = measured(totalWalletsObtained() >= 7) && Delta(totalWalletsObtained()) < 7
+            && never(FileIsLoading()) && UnlessSavingAndQuitting()
 )
 
 function hookBeetle() => bit1(0x00955e4f)
 achievement(title = "Death from Above", type = "progression", description = "Upgrade the Beetle into the Hook Beetle.", points = 3,
     trigger = WasBitflagJustSetInGame(hookBeetle())
+)
+
+function quickHookBeetle() => bit2(0x00955e4f)
+achievement(title = "The Blackbeetle", description = "Upgrade the Hook Beetle into the Quick Beetle.", points = 3,
+    trigger = WasBitflagJustSetInGame(quickHookBeetle())
+)
+
+function toughHookBeetle() => bit3(0x00955e4f)
+achievement(title = "The Little Beetle That Could", description = "Upgrade the Quick Beetle into the Tough Beetle.", points = 3,
+    trigger = WasBitflagJustSetInGame(toughHookBeetle())
 )
 
 function gustBellows() => bit1(0x00955e4a)
@@ -617,6 +638,16 @@ achievement(title = "Piercer", description = "Obtain the Bow.", type = "progress
     trigger = WasBitflagJustSetInGame(bow())
 )
 
+function ironBow() => bit0(0x00955e51)
+achievement(title = "Perforator", description = "Upgrade the Bow into the Iron Bow.", points = 3,
+    trigger = WasBitflagJustSetInGame(ironBow())
+)
+
+function sacredBow() => bit1(0x00955e51)
+achievement(title = "Smiter", description = "Upgrade the Iron Bow into the Sacred Bow.", points = 3,
+    trigger = WasBitflagJustSetInGame(sacredBow())
+)
+
 function arrowsInQuiver() => byte(0x00955ec7) & 0x7f
 function tentalusVictory() => bit2(0x00956ff3)
 achievement(title = "Eyecupuncture", description = "Defeat Tentalus using ten arrows or fewer (no resurrections).", type = "missable", points = 10,
@@ -780,7 +811,7 @@ function triforceOfPower() => bit6(0x00955e51)
 function triforceOfWisdom() => bit7(0x00955e51)
 function triforceOfCourage() => bit5(0x00955e51)
 function TriforcePiecesEarned(number) => tally(number, [once(triforceOfPower() == 1), once(triforceOfWisdom() == 1), once(triforceOfCourage() == 1)])
-achievement(title = "The Old Gods' Favor", description = "Claim the Triforce.", points = 3,
+achievement(title = "The Old Gods' Favor", description = "Claim the Triforce.", points = 3, type = "progression",
     trigger = measured(TriforcePiecesEarned(3), IsInAreaByName("Sky Keep")) && never(FileIsLoading())
         && (WasBitflagJustSetInGame(triforceOfPower()) || WasBitflagJustSetInGame(triforceOfWisdom()) || WasBitflagJustSetInGame(triforceOfCourage()))
 )
@@ -969,36 +1000,46 @@ function BitcountOfAddressBits(dict)
 
 // END OF BITFLAG AGGREGATION REGION
 
-goddessCubes = {
-    0: { "addr": 0x955D62, "bit": 5 }, // First Goddess Cube (Unlocks ability to skyward strike Goddess Cubes)
-    1: { "addr": 0x955D62, "bit": 6 }, // Goddess Cube near Skyview Entrance
-    2: { "addr": 0x955D62, "bit": 7 }, // Goddess Cube near Volcano Entry Statue
-    3: { "addr": 0x955D64, "bit": 0 }, // Goddess Cube in Skipper's Retreat
-    4: { "addr": 0x955D64, "bit": 1 }, // Goddess Cube near Life Tree in Lanayru Gorge
-    5: { "addr": 0x955D64, "bit": 2 }, // Goddess Cube inside Volcano Summit
-    6: { "addr": 0x955D64, "bit": 3 }, // Goddess Cube on Branch in Faron
-    7: { "addr": 0x955D64, "bit": 4 }, // Goddess Cube on Sand Slide
-    8: { "addr": 0x955D64, "bit": 5 }, // Goddess Cube in Pirate Stronghold
-    9: { "addr": 0x955D64, "bit": 6 }, // Goddess Cube on top of Skyview Temple
-    10: { "addr": 0x955D64, "bit": 7 }, // Goddess Cube behind boulder near Eldin Temple Entrance
-    11: { "addr": 0x955D65, "bit": 0 }, // Goddess Cube in Sand Oasis in Lanayru
-    12: { "addr": 0x955D65, "bit": 1 }, // Goddess Cube near clawshot target in Faron Woods
-    13: { "addr": 0x955D65, "bit": 4 }, // Goddess Cube near Digging Mitts Cave entrance
-    14: { "addr": 0x955D65, "bit": 5 }, // Goddess Cube in Lanayru Mines behind Tower
-    15: { "addr": 0x955D65, "bit": 6 }, // Goddess Cube near Faron Trial
-    16: { "addr": 0x955D65, "bit": 7 }, // Goddess Cube near Eldin Temple Entrance
-    17: { "addr": 0x955D66, "bit": 0 }, // Goddess Cube in Lake Floria
-    18: { "addr": 0x955D66, "bit": 1 }, // Goddess Cube inside Digging Mitts Cave
-    19: { "addr": 0x955D66, "bit": 2 }, // Goddess Cube in Ancient Harbour
-    20: { "addr": 0x955D67, "bit": 0 }, // Goddess Cube on clawshot target ledge in Lanayru Desert
-    21: { "addr": 0x955D67, "bit": 1 }, // Goddess Cube near Hook Beetle cage
-    22: { "addr": 0x955D67, "bit": 2 }, // Goddess Cube near Fire Sanctuary Entrance
-    23: { "addr": 0x955D67, "bit": 3 }, // Goddess Cube outside Ancient Cistern
-    24: { "addr": 0x955D67, "bit": 4 }, // Goddess Cube in Skyview Spring
-    25: { "addr": 0x955D67, "bit": 5 }, // Goddess Cube in Waterfall Area in Volcano Summit
-    26: { "addr": 0x955D67, "bit": 6 }, // Goddess Cube in ToT area Minekart Ride in Lanayru
+function ToKeyedDict(array)
+{
+    ret = {}
+    for i in range(0, length(array) - 1)
+    {
+        ret[i] = array[i]
+    }
+    
+    return ret
 }
 
+goddessCubes = ToKeyedDict([
+    { "addr": 0x955D62, "bit": 5 }, // First Goddess Cube (Unlocks ability to skyward strike Goddess Cubes)
+    { "addr": 0x955D62, "bit": 6 }, // Goddess Cube near Skyview Entrance
+    { "addr": 0x955D62, "bit": 7 }, // Goddess Cube near Volcano Entry Statue
+    { "addr": 0x955D64, "bit": 0 }, // Goddess Cube in Skipper's Retreat
+    { "addr": 0x955D64, "bit": 1 }, // Goddess Cube near Life Tree in Lanayru Gorge
+    { "addr": 0x955D64, "bit": 2 }, // Goddess Cube inside Volcano Summit
+    { "addr": 0x955D64, "bit": 3 }, // Goddess Cube on Branch in Faron
+    { "addr": 0x955D64, "bit": 4 }, // Goddess Cube on Sand Slide
+    { "addr": 0x955D64, "bit": 5 }, // Goddess Cube in Pirate Stronghold
+    { "addr": 0x955D64, "bit": 6 }, // Goddess Cube on top of Skyview Temple
+    { "addr": 0x955D64, "bit": 7 }, // Goddess Cube behind boulder near Eldin Temple Entrance
+    { "addr": 0x955D65, "bit": 0 }, // Goddess Cube in Sand Oasis in Lanayru
+    { "addr": 0x955D65, "bit": 1 }, // Goddess Cube near clawshot target in Faron Woods
+    { "addr": 0x955D65, "bit": 4 }, // Goddess Cube near Digging Mitts Cave entrance
+    { "addr": 0x955D65, "bit": 5 }, // Goddess Cube in Lanayru Mines behind Tower
+    { "addr": 0x955D65, "bit": 6 }, // Goddess Cube near Faron Trial
+    { "addr": 0x955D65, "bit": 7 }, // Goddess Cube near Eldin Temple Entrance
+    { "addr": 0x955D66, "bit": 0 }, // Goddess Cube in Lake Floria
+    { "addr": 0x955D66, "bit": 1 }, // Goddess Cube inside Digging Mitts Cave
+    { "addr": 0x955D66, "bit": 2 }, // Goddess Cube in Ancient Harbour
+    { "addr": 0x955D67, "bit": 0 }, // Goddess Cube on clawshot target ledge in Lanayru Desert
+    { "addr": 0x955D67, "bit": 1 }, // Goddess Cube near Hook Beetle cage
+    { "addr": 0x955D67, "bit": 2 }, // Goddess Cube near Fire Sanctuary Entrance
+    { "addr": 0x955D67, "bit": 3 }, // Goddess Cube outside Ancient Cistern
+    { "addr": 0x955D67, "bit": 4 }, // Goddess Cube in Skyview Spring
+    { "addr": 0x955D67, "bit": 5 }, // Goddess Cube in Waterfall Area in Volcano Summit
+    { "addr": 0x955D67, "bit": 6 }, // Goddess Cube in ToT area Minekart Ride in Lanayru
+])
 goddessCubeAchievements = [
     { "title": "Rookie Cubist", "points": 3, "threshold": 3 },
     { "title": "Regular Cubist", "points": 5, "threshold": 7 },
@@ -1009,12 +1050,12 @@ goddessCubeAchievements = [
 for i in goddessCubeAchievements
 {
     achievement(title = i["title"], points = i["points"], description = "Activate " + i["threshold"] + " Goddess Cubes.",
-        trigger = BitcountOfAddressBits(goddessCubes) >= i["threshold"] && Delta(BitcountOfAddressBits(goddessCubes)) < i["threshold"]
-            && never(FileIsLoading())
+        trigger = measured(BitcountOfAddressBits(goddessCubes) >= i["threshold"]) && Delta(BitcountOfAddressBits(goddessCubes)) < i["threshold"]    
+            && never(FileIsLoading()) && UnlessSavingAndQuitting()
     )
 }
 
-function goddessChestsOpened() => byte(0x80955DF0) & 0x7 * 4 + byte(0x80955DF0) / 32
+function goddessChestsOpened(modifier = x => x) => modifier(byte(0x0955DF0) & 0x7) * 4 + modifier(byte(0x0955DF1)) / 64
 
 goddessChestAchievements = [
     { "title": "Rookie Rogue", "points": 3, "threshold": 3 },
@@ -1026,7 +1067,134 @@ goddessChestAchievements = [
 for i in goddessChestAchievements
 {
     achievement(title = i["title"], points = i["points"], description = "Open " + i["threshold"] + " Goddess Chests.",
-        trigger = BitcountOfAddressBits(goddessCubes) >= i["threshold"] && Delta(BitcountOfAddressBits(goddessCubes)) < i["threshold"]
-            && never(FileIsLoading())
+        trigger = measured(goddessChestsOpened() >= i["threshold"]) && goddessChestsOpened(x => Delta(x)) < i["threshold"]
+            && never(FileIsLoading()) && UnlessSavingAndQuitting()
     )
 }
+
+function gratitudeCrystals(modifier = x => x) => modifier(byte(0x00955eb4) & 0x3) * 32 + modifier(byte(0x00955eb5)) / 8
+
+gratitudeCrystalAchievements = [
+    { "title": "Rookie Altruist", "points": 3, "threshold": 10 },
+    { "title": "Regular Altruist", "points": 5, "threshold": 25 },
+    { "title": "Veteran Altruist", "points": 10, "threshold": 40 },
+    { "title": "Legendary Altruist", "points": 25, "threshold": 80 },
+]
+
+for i in gratitudeCrystalAchievements
+{
+    achievement(title = i["title"], points = i["points"], description = "Collect " + i["threshold"] + " Gratitude Crystals.",
+        trigger = measured(gratitudeCrystals() >= i["threshold"]) && gratitudeCrystals(x => Delta(x)) < i["threshold"]
+            && never(FileIsLoading()) && UnlessSavingAndQuitting()
+    )
+}
+
+function highDiverWinnings() => dword_be(0x00af64a0)
+function highDiverRings() => byte(0x00afc8e1)
+function highDiverMultiplier() => byte(0x00afc8e0)
+function linkLaunchedInHighDive() => byte(0x00afc8dc)
+function linkInFreefallInHighDive() => byte(0x00afc8dd)
+achievement(title = "Let's Go Gambling!", description = "Land on the 50-Rupee space in Dodoh's High Dive without going through any rings.", points = 25,
+    trigger = once(linkLaunchedInHighDive() == 1 && linkInFreefallInHighDive() == 1 && Delta(linkInFreefallInHighDive()) == 0)
+        && trigger_when(highDiverWinnings() == 50 && linkInFreefallInHighDive() == 0 && Delta(linkInFreefallInHighDive()) == 1)
+        && never(highDiverMultiplier() != 1)
+        && never(highDiverRings() > 0)
+        && never(highDiverWinnings() != 50 && highDiverWinnings() != 0)
+)
+
+function dialogueIndex() => byte(0x0097e69f)
+function cameraLeftRightYawBinary() => dword_be(0x00590b38)
+achievement(title = "Golden Thoughts", description = "Read Zelda's journal.", points = 1,
+    trigger = once(DialogueIdIs("ZEL_14_0", false) && dialogueIndex() == 4 && Delta(cameraLeftRightYawBinary()) == 0xbf20f98c) && cameraLeftRightYawBinary() != 0xbf20f98c
+        && never(!IsInAreaByName("Knight Academy"))
+)
+
+function letterGivenToKarane() => bit4(0x955D86)
+function letterGivenToGhost() => bit1(0x955D86)
+function cawlinRanAwayLikeALittleSissyBaby() => bit3(0x955D86) // Thank you, Gamechamp.
+achievement(title = "Best Served Wet", description = "Give Cawlin's Letter to the ghost in the toilet and see his reaction.", points = 1, type = "missable",
+    trigger = letterGivenToGhost() == 1 && WasBitflagJustSetInGame(cawlinRanAwayLikeALittleSissyBaby())
+)
+
+achievement(title = "I Object!", description = "Give Cawlin's Letter to Karane and see the outcome.", points = 1, type = "missable",
+    trigger = letterGivenToKarane() == 1 && WasBitflagJustSetInGame(cawlinRanAwayLikeALittleSissyBaby())
+)
+
+function BugHeavenChoseBeginner() => once(Delta(rupees()) - rupees() == 20)
+function BugHeavenChoseWrangler() => ThrillDiggerChoseIntermediate()
+function BugHeavenStarted() => bugHeavenStartState() == 1 && IsInAreaByName("Inside the Thunderhead")
+function PumpkinShootingStarted() => bugHeavenStartState() == 1 && IsInAreaByName("Skyloft")
+function bugHeavenStartState() => bit3(0x955D6C) // This value is used for both Bug Heaven and the pumpkin shooting minigame.
+function bugHeavenFinishState() => bit4(0x955D6C)
+function BugHeavenFinished() => Delta(bugHeavenFinishState()) == 0 && bugHeavenFinishState() == 1
+function BugHeavenCanceled() => bit5(0x955D6C) == 1
+function BugHeavenCleanedUp() => Delta(bugHeavenFinishState()) == 1 && bugHeavenFinishState() == 0
+function BugHeavenTime() => dword_be(0x00af0240) / 10 - 7 // The timer is off by approximately 70ms
+achievement(title = "Overachieving Bug Catcher", description = "Complete the Bug Beginner level in Bug Heaven within two minutes.", points = 5,
+    trigger = BugHeavenStarted() && trigger_when(BugHeavenFinished()) && BugHeavenTime() <= 12000
+        && BugHeavenChoseBeginner()
+        && never(BugHeavenCanceled())
+)
+
+achievement(title = "Professional Bug Catcher", description = "Complete the Bug Beginner level in Bug Heaven within one minute.", points = 10,
+    trigger = BugHeavenStarted() && trigger_when(BugHeavenFinished()) && BugHeavenTime() <= 6000
+        && BugHeavenChoseBeginner()
+        && never(BugHeavenCanceled())
+)
+
+achievement(title = "Overachieving Bug Wrangler", description = "Complete the Bug Wrangler level in Bug Heaven within two minutes.", points = 10,
+    trigger = BugHeavenStarted() && trigger_when(BugHeavenFinished()) && BugHeavenTime() <= 12000
+        && BugHeavenChoseWrangler()
+        && never(BugHeavenCanceled())
+)
+
+function wranglerTimeLimit() => 105
+achievement(title = "Professional Bug Wrangler", description = "Complete the Bug Wrangler level in Bug Heaven within " + SecondsToFormat(wranglerTimeLimit()) + ".", points = 25,
+    trigger = BugHeavenStarted() && trigger_when(BugHeavenFinished()) && BugHeavenTime() <= wranglerTimeLimit() * 100
+        && BugHeavenChoseWrangler()
+        && never(BugHeavenCanceled())
+)
+
+function cleanCutScore() => dword_be(0x00972aac)
+function cleanCutState() => bit1(0x955D63)
+function CleanCutStarted() => cleanCutState() == 1
+function CleanCutFinished() => bit2(0x955D63) == 1
+function FinishedCleanCutWithScoreOfAtLeast(threshold) =>
+    once(CleanCutStarted()) && trigger_when(CleanCutFinished() && cleanCutScore() >= threshold)
+        && never(!IsInAreaByName("Bamboo Island"))
+        && never(Delta(cleanCutState()) == 0 && CleanCutStarted())
+        && never(Delta(cleanCutState()) == 0 && CleanCutFinished())
+achievement(title = "Overachieving Shizansha", description = "Get a score of 20 or higher in Clean Cut.", points = 3,
+    trigger = FinishedCleanCutWithScoreOfAtLeast(20)
+)
+
+achievement(title = "Professional Shizansha", description = "Get a score of 28 or higher in Clean Cut.", points = 5,
+    trigger = FinishedCleanCutWithScoreOfAtLeast(28)
+)
+
+achievement(title = "Orphean Charm", description = "Earn 50 Rupees from a duet with Kina.", points = 5,
+    trigger = IsInAreaByName("The Lumpy Pumpkin") && Delta(rupees()) + 50 == rupees()
+)
+
+achievement(title = "The Great Pumpkin Shooter", description = "Earn 750 points or more in Pumpkin Pull.", points = 25,
+    trigger = PumpkinShootingStarted() && trigger_when(BugHeavenFinished() && cleanCutScore() >= 750)
+        && never(BugHeavenCanceled())
+)
+
+leaderboard(title = "Bug Heaven - Beginner", description = "Complete the Bug Beginner course for Bug Heaven as quickly as you can.",
+    start = BugHeavenStarted() && BugHeavenChoseBeginner() && never(BugHeavenCanceled()) && never(BugHeavenCleanedUp()),
+    cancel = BugHeavenCanceled(),
+    submit = BugHeavenFinished() && never(BugHeavenCleanedUp()),
+    value = max_of(BugHeavenTime(), 0),
+    lower_is_better = true,
+    format = "MILLISECS"
+)
+
+leaderboard(title = "Bug Heaven - Wrangler", description = "Complete the Bug Wrangler course for Bug Heaven as quickly as you can.",
+    start = BugHeavenStarted() && BugHeavenChoseWrangler() && never(BugHeavenCanceled()) && never(BugHeavenCleanedUp()),
+    cancel = BugHeavenCanceled() && never(BugHeavenCanceled()),
+    submit = BugHeavenFinished() && never(BugHeavenCleanedUp()),
+    value = max_of(BugHeavenTime(), 0),
+    lower_is_better = true,
+    format = "MILLISECS"
+)
