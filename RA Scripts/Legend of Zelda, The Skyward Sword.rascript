@@ -14,11 +14,50 @@ function SecondsToFormat(value)
 
 function LMeasured(condition) => measured(repeated(0, condition)) // Legacy `measured` polyfill. measured(A && B) is no longer supported as of v1.10.0.
 function Delta(mem) => prev(mem)
+function Rshift(left, right)
+{
+    result = left
+    
+    for i in range(0, right - 1)
+    {
+        result = result / 2
+    }
+    
+    return result
+}
 
 // $955E56: Sword [8-bit]
 //          
 //          0x01 = Practice Sword
 function equippedSword() => byte(0x955E56)
+
+function topAdventurePouchItemSlotAddr() => 0x00955c24
+class PouchItem
+{
+    baseAddr = 0
+    
+    function quantity() => word_be(this.baseAddr)
+    function id() => word_be(this.baseAddr + 2)
+}
+
+function PouchItemAtSlot(slotId)
+{
+    baseAddr = topAdventurePouchItemSlotAddr()
+    return PouchItem(baseAddr + slotId * 4)
+}
+
+function AllPouchItemsWhere(where = item => {})
+{
+    baseAddr = topAdventurePouchItemSlotAddr()
+    trigger = always_false()
+    for i in range(0, 7)
+    {
+        item = PouchItem(baseAddr + i * 4)
+        trigger = trigger || where(item)
+    }
+    
+    return trigger
+}
 
 function hp() => word_be(0x0095a76a)
 function maxHp() => word_be(0x0095a766)
@@ -37,7 +76,7 @@ function lightingState() => byte(0x00593941)
 function dialogueIdAddr() => 0x005a88f4
 
 areas = {
-0x46303031: { "name": "Knight Academy", "internalName": "", },0x46303039: { "name": "Sparring Hall", "internalName": "", },0x46303030: { "name": "Skyloft", "internalName": "", },0x44303030: { "name": "Waterfall", "internalName": "", },0x46303230: { "name": "The Sky", "internalName": "", },0x46303038: { "name": "Chamber of the Sword", "internalName": "", },0x46303231: { "name": "Sealed Grounds", "internalName": "", },0x46343031: { "name": "Sealed Grounds", "internalName": "SealedGroundsCutscene", },0x46343032: { "name": "Sealed Temple", "internalName": "SealedTemplePresent", },0x46343030: { "name": "Sealed Grounds", "internalName": "BehindTheTemple", },0x46313030: { "name": "Faron Woods", "internalName": "FaronWoods", },0x46313031: { "name": "Deep Woods", "internalName": "", },0x44313030: { "name": "Skyview Temple", "internalName": "SkyviewTemple", },0x42313030: { "name": "Skyview Temple", "internalName": "STBossRoom", },0x00313031: { "name": "Somewhere in the sky...", "internalName": "SaveAndQuitTransition", },0x46303032: { "name": "Beedle's Airshop", "internalName": "", },0x46323030: { "name": "Eldin Volcano", "internalName": "", },0x46323130: { "name": "Eldin Volcano", "internalName": "EldinVolcanoInterior", },0x46323131: { "name": "Eldin Volcano", "internalName": "EldinThrillDigger", },0x44323030: { "name": "Earth Temple", "internalName": "ETMain", },0x00323030: { "name": "Somewhere in the sky...", "internalName": "GameOverTransition", },0x42323030: { "name": "Earth Temple", "internalName": "ETBossRoom", },0x42323130: { "name": "Earth Spring", "internalName": "", },0x46333030: { "name": "Lanayru Desert", "internalName": "", },0x46303034: { "name": "Bazaar", "internalName": "", },0x44333030: { "name": "Lanayru Mining Facility", "internalName": "LMFMain", },0x42333030: { "name": "Lanayru Mining Facility", "internalName": "LMFBossRoom", },0x333030: { "name": "Somewhere in the sky...", "internalName": "SaveAndQuitTransition2", },0x46303037: { "name": "Piper's House", "internalName": "", },0x46303138: { "name": "Peatrice's House", "internalName": "", },0x46303036: { "name": "Kukiel's House", "internalName": "", },0x46303134: { "name": "Bertie's House", "internalName": "", },0x46303135: { "name": "Gondo's House", "internalName": "", },0x46303133: { "name": "Sparrot's House", "internalName": "", },0x46303233: { "name": "Inside the Thunderhead", "internalName": "", },0x46303130: { "name": "Isle of Songs", "internalName": "", },0x53313030: { "name": "Farore's Silent Realm", "internalName": "FaroreSilentRealm", },0x46313032: { "name": "Lake Floria", "internalName": "", },0x44313031: { "name": "Ancient Cistern", "internalName": "ACMain", },0x42313031: { "name": "Ancient Cistern", "internalName": "ACBossRoom", },0x53333030: { "name": "Nayru's Silent Realm", "internalName": "NayruSilentRealm", },0x46333033: { "name": "Lanayru Caves", "internalName": "", },0x46333031: { "name": "Lanayru Sand Sea", "internalName": "", },0x44333031: { "name": "Sandship", "internalName": "SMain", },0x42333031: { "name": "Sandship", "internalName": "SBossRoom", },0x53323030: { "name": "Din's Silent Realm", "internalName": "DinSilentRealm", },0x46323031: { "name": "Volcano Summit", "internalName": "", },0x44323031: { "name": "Fire Sanctuary", "internalName": "", },0x42323031: { "name": "Fire Sanctuary", "internalName": "FSBossRoom", },0x46343037: { "name": "Sealed Temple", "internalName": "GoTCutscene", },0x46343034: { "name": "Temple of Hylia", "internalName": "", },0x46303131: { "name": "The Lumpy Pumpkin", "internalName": "", },0x46313033: { "name": "Faron Woods", "internalName": "FaronWoodsFlooded", },0x46323032: { "name": "Eldin Volcano", "internalName": "EldinVolcanoStealth", },0x46323231: { "name": "Volcano Summit", "internalName": "VolcanoSummitFarRight", },0x46333032: { "name": "Lanayru Gorge", "internalName": "", },0x53303030: { "name": "The Goddess's Silent Realm", "internalName": "HyliaSilentRealm", },0x44303033: { "name": "Sky Keep", "internalName": "", },0x46343036: { "name": "Sealed Grounds", "internalName": "SealedGroundsTriforceCutscene", },0x46343033: { "name": "Hylia's Realm", "internalName": "SealedGroundsPast", },0x42343030: { "name": "Demise's Battlefield", "internalName": "", },0x44656d6f: { "name": "Credits", "internalName": "Credits", },0x46303132: { "name": "Batreaux's House", "internalName": "", },0x46303035: { "name": "Orielle and Parrow's House", "internalName": "", },0x46303137: { "name": "Rupin's House", "internalName": "", },0x46303139: { "name": "Bamboo Island", "internalName": "", },
+0x46303031: { "name": "Knight Academy", "internalName": "", },0x46303039: { "name": "Sparring Hall", "internalName": "", },0x46303030: { "name": "Skyloft", "internalName": "", },0x44303030: { "name": "Waterfall", "internalName": "", },0x46303230: { "name": "The Sky", "internalName": "", },0x46303038: { "name": "Chamber of the Sword", "internalName": "", },0x46303231: { "name": "Sealed Grounds", "internalName": "", },0x46343031: { "name": "Sealed Grounds", "internalName": "SealedGroundsCutscene", },0x46343032: { "name": "Sealed Temple", "internalName": "SealedTemplePresent", },0x46343030: { "name": "Sealed Grounds", "internalName": "BehindTheTemple", },0x46313030: { "name": "Faron Woods", "internalName": "FaronWoods", },0x46313031: { "name": "Deep Woods", "internalName": "", },0x44313030: { "name": "Skyview Temple", "internalName": "SkyviewTemple", },0x42313030: { "name": "Skyview Temple", "internalName": "STBossRoom", },0x00313031: { "name": "Somewhere in the sky...", "internalName": "SaveAndQuitTransition", },0x46303032: { "name": "Beedle's Airshop", "internalName": "", },0x46323030: { "name": "Eldin Volcano", "internalName": "", },0x46323130: { "name": "Eldin Volcano", "internalName": "EldinVolcanoInterior", },0x46323131: { "name": "Eldin Volcano", "internalName": "EldinThrillDigger", },0x44323030: { "name": "Earth Temple", "internalName": "ETMain", },0x00323030: { "name": "Somewhere in the sky...", "internalName": "GameOverTransition", },0x42323030: { "name": "Earth Temple", "internalName": "ETBossRoom", },0x42323130: { "name": "Earth Spring", "internalName": "", },0x46333030: { "name": "Lanayru Desert", "internalName": "", },0x46303034: { "name": "Bazaar", "internalName": "", },0x44333030: { "name": "Lanayru Mining Facility", "internalName": "LMFMain", },0x42333030: { "name": "Lanayru Mining Facility", "internalName": "LMFBossRoom", },0x333030: { "name": "Somewhere in the sky...", "internalName": "SaveAndQuitTransition2", },0x46303037: { "name": "Piper's House", "internalName": "", },0x46303138: { "name": "Peatrice's House", "internalName": "", },0x46303036: { "name": "Kukiel's House", "internalName": "", },0x46303134: { "name": "Bertie's House", "internalName": "", },0x46303135: { "name": "Gondo's House", "internalName": "", },0x46303133: { "name": "Sparrot's House", "internalName": "", },0x46303233: { "name": "Inside the Thunderhead", "internalName": "", },0x46303130: { "name": "Isle of Songs", "internalName": "", },0x53313030: { "name": "Farore's Silent Realm", "internalName": "FaroreSilentRealm", },0x46313032: { "name": "Lake Floria", "internalName": "", },0x44313031: { "name": "Ancient Cistern", "internalName": "ACMain", },0x42313031: { "name": "Ancient Cistern", "internalName": "ACBossRoom", },0x53333030: { "name": "Nayru's Silent Realm", "internalName": "NayruSilentRealm", },0x46333033: { "name": "Lanayru Caves", "internalName": "", },0x46333031: { "name": "Lanayru Sand Sea", "internalName": "", },0x44333031: { "name": "Sandship", "internalName": "SMain", },0x42333031: { "name": "Sandship", "internalName": "SBossRoom", },0x53323030: { "name": "Din's Silent Realm", "internalName": "DinSilentRealm", },0x46323031: { "name": "Volcano Summit", "internalName": "", },0x44323031: { "name": "Fire Sanctuary", "internalName": "", },0x42323031: { "name": "Fire Sanctuary", "internalName": "FSBossRoom", },0x46343037: { "name": "Sealed Temple", "internalName": "GoTCutscene", },0x46343034: { "name": "Temple of Hylia", "internalName": "", },0x46303131: { "name": "The Lumpy Pumpkin", "internalName": "", },0x46313033: { "name": "Faron Woods", "internalName": "FaronWoodsFlooded", },0x46323032: { "name": "Eldin Volcano", "internalName": "EldinVolcanoStealth", },0x46323231: { "name": "Volcano Summit", "internalName": "VolcanoSummitFarRight", },0x46333032: { "name": "Lanayru Gorge", "internalName": "", },0x53303030: { "name": "The Goddess's Silent Realm", "internalName": "HyliaSilentRealm", },0x44303033: { "name": "Sky Keep", "internalName": "", },0x46343036: { "name": "Sealed Grounds", "internalName": "SealedGroundsTriforceCutscene", },0x46343033: { "name": "Hylia's Realm", "internalName": "SealedGroundsPast", },0x42343030: { "name": "Demise's Battlefield", "internalName": "DemiseBF", },0x44656d6f: { "name": "Credits", "internalName": "Credits", },0x46303132: { "name": "Batreaux's House", "internalName": "", },0x46303035: { "name": "Orielle and Parrow's House", "internalName": "", },0x46303137: { "name": "Rupin's House", "internalName": "", },0x46303139: { "name": "Bamboo Island", "internalName": "", },
 }
 
 rpLookup = {}
@@ -53,14 +92,14 @@ function FileIsLoading() => IsInAreaByName("Skyloft") && (lightingState() == 0xc
 function UnlessSavingAndQuitting() => disable_when(WasTransitioningFromSaveOrQuit() && IsInAreaByName("Skyloft"), until = repeated(300, IsInAreaByName("Skyloft")))
     && never(Delta(areaId()) != areaId())
 
-function WasValueJustChanged(mem, oldValue, newValue)
+function WasValueJustChanged(mem, oldValue, newValue, deltaMod = mem => Delta(mem))
 {
-    return Delta(mem) == oldValue && mem == newValue && UnlessSavingAndQuitting() // todo: UnlessSavingAndQuitting() needs to be moved to WasValueChangedInGame() once the RATools bug is fixed.
+    return deltaMod(mem) == oldValue && mem == newValue && UnlessSavingAndQuitting() // todo: UnlessSavingAndQuitting() needs to be moved to WasValueChangedInGame() once the RATools bug is fixed.
 }
 
-function WasValueJustChangedInGame(mem, oldValue, newValue)
+function WasValueJustChangedInGame(mem, oldValue, newValue, deltaMod = mem => Delta(mem))
 {
-    return WasValueJustChanged(mem, oldValue, newValue) && !FileIsLoading()
+    return WasValueJustChanged(mem, oldValue, newValue, deltaMod) && !FileIsLoading()
 }
 
 function WasBitflagJustSet(mem)
@@ -272,8 +311,8 @@ achievement(title = "Skyview Prayers", type = "progression", description = "Obta
     trigger = WasBitflagJustSetInGame(rubyTablet())
 )
 
-achievement(title = "Heartthrob", description = "Have a total of 20 hearts' worth of life energy.", points = 10,
-    trigger = measured(maxHp() == 80, format = "percent") && Delta(maxHp() == 76) && WasValueJustChangedInGame(maxHp(), 76, 80)
+achievement(title = "Heartthrob", description = "Obtain or complete 12 Heart Containers.", points = 10,
+    trigger = measured(maxHp() == 72, format = "percent") && WasValueJustChangedInGame(maxHp(), 68, 72)
 )
 
 function DialogueIdIs(id, includeNullTerminator = true, callback = x => x)
@@ -711,6 +750,7 @@ achievement(title = "Bee Stings", type = "missable", points = 5,
         && trigger_when(ghirahimIIDefeated() == 1)
         && never(Delta(hp()) - hp() > 2)
         && never(Delta(ghirahimIIDefeated()) == 1)
+        && never(AnyGuardianPotionEffectIsActive())
 )
 
 function masterSword() => bit2(0x00955e48)
@@ -855,38 +895,11 @@ achievement(title = "Impenetrable", type = "missable", description = "Finish Ghi
         && never(cameraForwardBackwardYaw() > 0.5 && cameraForwardBackwardYaw() < 0.85 && cameraLeftRightYaw() < 0.85 && cameraLeftRightYaw() > 0.5)
 )
 
-function topAdventurePouchItemSlotAddr() => 0x00955c24
-class PouchItem
-{
-    baseAddr = 0
-    
-    function quantity() => word_be(this.baseAddr)
-    function id() => word_be(this.baseAddr + 2)
-}
-
-function PouchItemAtSlot(slotId)
-{
-    baseAddr = topAdventurePouchItemSlotAddr()
-    return PouchItem(baseAddr + slotId * 4)
-}
-
-function AllPouchItemsWhere(where = item => {})
-{
-    baseAddr = topAdventurePouchItemSlotAddr()
-    trigger = always_false()
-    for i in range(0, 7)
-    {
-        item = PouchItem(baseAddr + i * 4)
-        trigger = trigger || where(item)
-    }
-    
-    return trigger
-}
-
 function hylianShieldId() => 0x7d
 function ShieldDamageWasJustTaken() => AllPouchItemsWhere(item => item.id() >= 0x74 && item.id() < hylianShieldId() && Delta(item.quantity()) > item.quantity())
 function ghirahimIIIPhase2HP() => word_be(0x00b670fe)
 function ghirahimIIIPhase3HP() => word_be(0x00b6578a)
+function ghirahimIIIDefeated() => bit4(0x955d80)
 achievement(title = "Skilled Sentinel", type = "missable", description = "Defeat Ghirahim III's post-first phases without taking shield damage (no resurrections; no Hylian Shield).", points = 5,
     trigger = BattleCheckpointStarted(FinishedGhirahimIIIPhase1() && IsInAreaByName("Hylia's Realm"),
             neverWhen = !IsInAreaByName("Hylia's Realm"))
@@ -1155,6 +1168,24 @@ achievement(title = "Professional Bug Wrangler", description = "Complete the Bug
         && never(BugHeavenCanceled())
 )
 
+leaderboard(title = "Bug Heaven - Beginner", description = "Complete the Bug Beginner course for Bug Heaven as quickly as you can.",
+    start = BugHeavenStarted() && BugHeavenChoseBeginner() && never(BugHeavenCanceled()) && never(BugHeavenCleanedUp()),
+    cancel = BugHeavenCanceled(),
+    submit = BugHeavenFinished() && never(BugHeavenCleanedUp()),
+    value = max_of(BugHeavenTime(), 0),
+    lower_is_better = true,
+    format = "MILLISECS"
+)
+
+leaderboard(title = "Bug Heaven - Wrangler", description = "Complete the Bug Wrangler course for Bug Heaven as quickly as you can.",
+    start = BugHeavenStarted() && BugHeavenChoseWrangler() && never(BugHeavenCanceled()) && never(BugHeavenCleanedUp()),
+    cancel = BugHeavenCanceled() && never(BugHeavenCanceled()),
+    submit = BugHeavenFinished() && never(BugHeavenCleanedUp()),
+    value = max_of(BugHeavenTime(), 0),
+    lower_is_better = true,
+    format = "MILLISECS"
+)
+
 function cleanCutScore() => dword_be(0x00972aac)
 function cleanCutState() => bit1(0x955D63)
 function CleanCutStarted() => cleanCutState() == 1
@@ -1181,20 +1212,167 @@ achievement(title = "The Great Pumpkin Shooter", description = "Earn 750 points 
         && never(BugHeavenCanceled())
 )
 
-leaderboard(title = "Bug Heaven - Beginner", description = "Complete the Bug Beginner course for Bug Heaven as quickly as you can.",
-    start = BugHeavenStarted() && BugHeavenChoseBeginner() && never(BugHeavenCanceled()) && never(BugHeavenCleanedUp()),
-    cancel = BugHeavenCanceled(),
-    submit = BugHeavenFinished() && never(BugHeavenCleanedUp()),
-    value = max_of(BugHeavenTime(), 0),
-    lower_is_better = true,
-    format = "MILLISECS"
+function silentRealmTimeTrialState() => bit0(0x955D87)
+function SilentRealmTimeTrialStarted() => once(Delta(silentRealmTimeTrialState()) == 0 && silentRealmTimeTrialState() == 1 && IsInAreaByName("Lanayru Gorge"))
+function SilentRealmTimeTrialJustEnded() => Delta(silentRealmTimeTrialState()) == 1 && silentRealmTimeTrialState() == 0
+function silentRealmPointer() => tbyte_be(0x005772b9)
+function SilentRealmTimeTrialTimeElapsed() => dword_be(silentRealmPointer() + 0x7d8)
+function WonSilentRealmWithinTimeInSeconds(silentRealmInternalName, timeLimit) => SilentRealmTimeTrialStarted()
+        && trigger_when(SilentRealmCompleted() && SilentRealmTimeTrialTimeElapsed() <= timeLimit * 1000)
+        && IsInAreaByInternalName(silentRealmInternalName)
+        && never(SilentRealmTimeTrialJustEnded())
+
+function CreateSilentRealmTimeTrialAchievement(title, points, areaInternalName, timeLimit, areaDisplayName)
+{
+    achievement(title = title, description = format("Get a time of {0} or lower in {1} for the Thunder Dragon's Lightning Round.", SecondsToFormat(timeLimit), areaDisplayName), points = points,
+        trigger = WonSilentRealmWithinTimeInSeconds(areaInternalName, timeLimit)
+    )
+}
+
+CreateSilentRealmTimeTrialAchievement(title = "Silver Runner - Farore", points = 5, timeLimit = 180, areaInternalName = "FaroreSilentRealm", areaDisplayName = "Farore's Silent Realm")
+
+CreateSilentRealmTimeTrialAchievement(title = "Gold Runner - Farore", points = 10, timeLimit = 165, areaInternalName = "FaroreSilentRealm", areaDisplayName = "Farore's Silent Realm")
+
+CreateSilentRealmTimeTrialAchievement(title = "Silver Runner - Nayru", points = 5, timeLimit = 255, areaInternalName = "NayruSilentRealm", areaDisplayName = "Nayru's Silent Realm")
+
+CreateSilentRealmTimeTrialAchievement(title = "Gold Runner - Nayru", points = 10, timeLimit = 225, areaInternalName = "NayruSilentRealm", areaDisplayName = "Nayru's Silent Realm")
+
+CreateSilentRealmTimeTrialAchievement(title = "Silver Runner - Din", points = 5, timeLimit = 360, areaInternalName = "DinSilentRealm", areaDisplayName = "Din's Silent Realm")
+
+CreateSilentRealmTimeTrialAchievement(title = "Gold Runner - Din", points = 10, timeLimit = 290, areaInternalName = "DinSilentRealm", areaDisplayName = "Din's Silent Realm")
+
+CreateSilentRealmTimeTrialAchievement(title = "Silver Runner - Hylia", points = 5, timeLimit = 240, areaInternalName = "HyliaSilentRealm", areaDisplayName = "the Goddess's Silent Realm")
+
+CreateSilentRealmTimeTrialAchievement(title = "Gold Runner - Hylia", points = 10, timeLimit = 205, areaInternalName = "HyliaSilentRealm", areaDisplayName = "the Goddess's Silent Realm")
+
+// My record: 2:39.43
+leaderboard(title = "Farore's Silent Realm Time Trial", description = "Complete Farore's Silent Realm in the Thunder Dragon's Lightning Round as quickly as you can.",
+    start = SilentRealmTimeTrialStarted() && never(SilentRealmTimeTrialJustEnded()) && IsInAreaByInternalName("FaroreSilentRealm"),
+    cancel = SilentRealmTimeTrialJustEnded(),
+    submit = SilentRealmCompleted(),
+    value = SilentRealmTimeTrialTimeElapsed() / 10,
+    format = "MILLISECS",
+    lower_is_better = true
 )
 
-leaderboard(title = "Bug Heaven - Wrangler", description = "Complete the Bug Wrangler course for Bug Heaven as quickly as you can.",
-    start = BugHeavenStarted() && BugHeavenChoseWrangler() && never(BugHeavenCanceled()) && never(BugHeavenCleanedUp()),
-    cancel = BugHeavenCanceled() && never(BugHeavenCanceled()),
-    submit = BugHeavenFinished() && never(BugHeavenCleanedUp()),
-    value = max_of(BugHeavenTime(), 0),
-    lower_is_better = true,
-    format = "MILLISECS"
+// My record: 3:25.46
+leaderboard(title = "Nayru's Silent Realm Time Trial", description = "Complete Nayru's Silent Realm in the Thunder Dragon's Lightning Round as quickly as you can.",
+    start = SilentRealmTimeTrialStarted() && never(SilentRealmTimeTrialJustEnded()) && IsInAreaByInternalName("NayruSilentRealm"),
+    cancel = SilentRealmTimeTrialJustEnded(),
+    submit = SilentRealmCompleted(),
+    value = SilentRealmTimeTrialTimeElapsed() / 10,
+    format = "MILLISECS",
+    lower_is_better = true
 )
+
+// My record: 4:29.79
+leaderboard(title = "Din's Silent Realm Time Trial", description = "Complete Din's Silent Realm in the Thunder Dragon's Lightning Round as quickly as you can.",
+    start = SilentRealmTimeTrialStarted() && never(SilentRealmTimeTrialJustEnded()) && IsInAreaByInternalName("DinSilentRealm"),
+    cancel = SilentRealmTimeTrialJustEnded(),
+    submit = SilentRealmCompleted(),
+    value = SilentRealmTimeTrialTimeElapsed() / 10,
+    format = "MILLISECS",
+    lower_is_better = true
+)
+
+// My record: 3:09.13
+leaderboard(title = "The Goddess's Silent Realm Time Trial", description = "Complete the Goddess's Silent Realm in the Thunder Dragon's Lightning Round as quickly as you can.",
+    start = SilentRealmTimeTrialStarted() && never(SilentRealmTimeTrialJustEnded()) && IsInAreaByInternalName("HyliaSilentRealm"),
+    cancel = SilentRealmTimeTrialJustEnded(),
+    submit = SilentRealmCompleted(),
+    value = SilentRealmTimeTrialTimeElapsed() / 10,
+    format = "MILLISECS",
+    lower_is_better = true
+)
+
+function obtainedHylianShield() => bit6(0x955D85)
+achievement(title = "The Dragons' Aegis", description = "Obtain the Hylian Shield.", points = 10,
+    trigger = WasBitflagJustSetInGame(obtainedHylianShield())
+)
+
+function currentRoundInBossRush() => byte(0x0097ce4b)
+function numberOfBossRushBattlesRemaining() => byte(0x0097ce4f)
+function BossRushStarted() => once(DialogueIdIs("BATTLE_08", false) && !DialogueIdIs("BATTLE_08", false, x => Delta(x)))
+function BossRushCanceled() => DialogueIdIs("BATTLE_21", false)
+function WonBossRush() => IsInAreaByName("Lanayru Gorge") && currentRoundInBossRush() == 13 && numberOfBossRushBattlesRemaining() == 0
+achievement(title = "The One They Fear", description = "Defeat all 12 bosses in the Thunder Dragon's Lightning Round.", points = 50,
+    trigger = once(BossRushStarted()) && trigger_when(WonBossRush()) && never(hp() <= 0) && never(BossRushCanceled())
+)
+
+achievement(title = "Scars of War", description = "Defeat all 12 bosses in the Thunder Dragon's Lightning Round without potion effects ever being active at any point.", points = 100,
+    trigger = once(BossRushStarted()) && trigger_when(WonBossRush()) && never(hp() <= 0) && never(BossRushCanceled())
+        && never(AnyGuardianPotionEffectIsActive())
+        && never(word_be(0x0095a75c) > 0) && never(word_be(0x0095a75e) > 0) // Stamina Potion variants
+        && never(word_be(0x0095a758) > 0) && never(word_be(0x0095a75a) > 0) // Air Potion variants
+)
+
+function isDoingBossTimeTrial() => bit7(0x955D84)
+function defeatedBossInBossRush() => bit3(0x00955d88)
+function BossTimeTrialStarted(prereq) => once(isDoingBossTimeTrial() == 1 && IsInAreaByName("Lanayru Gorge") && prereq)
+function BossJustDefeatedInBossRush() => Delta(defeatedBossInBossRush()) == 0 && defeatedBossInBossRush() == 1
+function BossTimeTrialCompleted(prereq) => BattleCheckpointStarted(BossTimeTrialStarted(prereq) && IsInAreaByName("Lanayru Gorge")) && BossJustDefeatedInBossRush()
+function WonBossTimeTrialWithinTimeInSeconds(areaInternalName, timeLimit, prereq) => BossTimeTrialStarted(prereq)
+        && trigger_when(BossTimeTrialCompleted(prereq)) && SilentRealmTimeTrialTimeElapsed() <= timeLimit * 1000
+        && IsInAreaByInternalName(areaInternalName) && never(hp() <= 0)
+
+function CreateBossRushTimeTrialAchievementAndLeaderboard(title, points, areaInternalName, timeLimit, bossDisplayName, prereq = always_true(), alsoOnce = always_true())
+{   
+    achievement(title = title, description = format("Defeat {0} within {1} in the Thunder Dragon's Lightning Round.", bossDisplayName, SecondsToFormat(timeLimit)), points = points,
+        trigger = WonBossTimeTrialWithinTimeInSeconds(areaInternalName, timeLimit, prereq) && once(alsoOnce) && never(isDoingBossTimeTrial() == 0)
+    )
+    
+    leaderboard(title = title, description = format("Defeat {0} in the Thunder Dragon's Lightning Round as quickly as you can.", bossDisplayName),
+        start = BossTimeTrialStarted(prereq) && never(BossJustDefeatedInBossRush()) && once(alsoOnce) && never(!prereq) && never(hp() <= 0) && IsInAreaByInternalName(areaInternalName),
+        cancel = hp() <= 0,
+        submit = BossTimeTrialCompleted(prereq),
+        value = SilentRealmTimeTrialTimeElapsed() / 10,
+        format = "MILLISECS",
+        lower_is_better = true
+    )
+}
+
+// My record: 0:41.23
+CreateBossRushTimeTrialAchievementAndLeaderboard(title = "Evil's Bane - Ghirahim I", points = 10, areaInternalName = "STBossRoom", timeLimit = 50, bossDisplayName = "Ghirahim I")
+
+// My record: 0:51.53
+CreateBossRushTimeTrialAchievementAndLeaderboard(title = "Evil's Bane - Scaldera", points = 10, areaInternalName = "ETBossRoom", timeLimit = 80, bossDisplayName = "Scaldera")
+
+// My record: 1:06.93
+CreateBossRushTimeTrialAchievementAndLeaderboard(title = "Evil's Bane - Moldarach", points = 10, areaInternalName = "LMFBossRoom", timeLimit = 90, bossDisplayName = "Moldarach")
+
+function imprisonedIDefeated() => bit1(0x00955d54)
+function imprisonedIIDefeated() => bit2(0x00955d54)
+function imprisonedIIIDefeated() => bit3(0x00955d54)
+
+// My record: 1:30.89
+CreateBossRushTimeTrialAchievementAndLeaderboard(title = "Evil's Bane - Imprisoned I", points = 10, areaInternalName = "SealedGroundsCutscene", timeLimit = 120, bossDisplayName = "the Imprisoned I",
+    prereq = imprisonedIDefeated() == 0)
+
+// My record: 2:28.59
+CreateBossRushTimeTrialAchievementAndLeaderboard(title = "Evil's Bane - Koloktos", points = 10, areaInternalName = "ACBossRoom", timeLimit = 60, bossDisplayName = "Koloktos")
+
+// My record: 2:58.36
+CreateBossRushTimeTrialAchievementAndLeaderboard(title = "Evil's Bane - Tentalus", points = 10, areaInternalName = "SBossRoom", timeLimit = 210, bossDisplayName = "Tentalus")
+
+// My record: 2:02.06
+CreateBossRushTimeTrialAchievementAndLeaderboard(title = "Evil's Bane - Imprisoned II", points = 25, areaInternalName = "SealedGroundsCutscene", timeLimit = 150,
+    bossDisplayName = "the Imprisoned II", prereq = imprisonedIIDefeated() == 0)
+    
+// My record: 0:33.49
+CreateBossRushTimeTrialAchievementAndLeaderboard(title = "Evil's Bane - Ghirahim II", points = 10, areaInternalName = "FSBossRoom", timeLimit = 55, bossDisplayName = "Ghirahim II")
+
+// My record: 1:26.43
+CreateBossRushTimeTrialAchievementAndLeaderboard(title = "Evil's Bane - Imprisoned III", points = 25, areaInternalName = "SealedGroundsCutscene", timeLimit = 130,
+    bossDisplayName = "the Imprisoned III", prereq = imprisonedIIIDefeated() == 0)
+
+// My record: 2:41.09
+CreateBossRushTimeTrialAchievementAndLeaderboard(title = "Evil's Bane - Horde", points = 10, areaInternalName = "SealedGroundsPast", timeLimit = 180, bossDisplayName = "the horde",
+    prereq = ghirahimIIIDefeated() == 0, alsoOnce = yCoordinate() >= 7750.375 && yCoordinate() <= 7750.4 && SilentRealmTimeTrialTimeElapsed() == 0)
+
+// My record: 2:05.99
+CreateBossRushTimeTrialAchievementAndLeaderboard(title = "Evil's Bane - Ghirahim III", points = 10, areaInternalName = "SealedGroundsPast", timeLimit = 160, bossDisplayName = "Ghirahim III",
+    prereq = ghirahimIIIDefeated() == 0, alsoOnce = yCoordinate() == 4650.0 && SilentRealmTimeTrialTimeElapsed() == 0)
+
+// My record: 1:17.83
+CreateBossRushTimeTrialAchievementAndLeaderboard(title = "Evil's Bane - Demise", points = 25, areaInternalName = "DemiseBF", timeLimit = 90, bossDisplayName = "Demise")
+
