@@ -920,6 +920,12 @@ achievement(title = "By Your Own Hand", type = "win_condition", description = "D
         && never(!IsInAreaByName("Credits"))
 )
 
+function HeroModeActive() => bit3(0x00955d62) == 1
+achievement(title = "Ward of the Sky", description = "Complete the game on Hero Mode.", points = 25, type = "missable",
+    trigger = repeated(270, once(WasJustInAreaByInternalName("SealedTemplePresent")) && IsInAreaByName("Credits")) && HeroModeActive()
+        && never(!IsInAreaByName("Credits"))
+)
+
 // BEGINNING OF BITFLAG AGGREGATION REGION
 
 // Dictionary elements must have "addr" and "bit" fields.
@@ -1215,10 +1221,10 @@ achievement(title = "The Great Pumpkin Shooter", description = "Earn 750 points 
 function silentRealmTimeTrialState() => bit0(0x955D87)
 function SilentRealmTimeTrialStarted() => once(Delta(silentRealmTimeTrialState()) == 0 && silentRealmTimeTrialState() == 1 && IsInAreaByName("Lanayru Gorge"))
 function SilentRealmTimeTrialJustEnded() => Delta(silentRealmTimeTrialState()) == 1 && silentRealmTimeTrialState() == 0
-function silentRealmPointer() => tbyte_be(0x005772b9)
-function SilentRealmTimeTrialTimeElapsed() => dword_be(silentRealmPointer() + 0x7d8)
+function timerPointer() => tbyte_be(0x005772b9)
+function TimeElapsedInMinigame() => dword_be(timerPointer() + 0x7d8)
 function WonSilentRealmWithinTimeInSeconds(silentRealmInternalName, timeLimit) => SilentRealmTimeTrialStarted()
-        && trigger_when(SilentRealmCompleted() && SilentRealmTimeTrialTimeElapsed() <= timeLimit * 1000)
+        && trigger_when(SilentRealmCompleted() && TimeElapsedInMinigame() <= timeLimit * 1000)
         && IsInAreaByInternalName(silentRealmInternalName)
         && never(SilentRealmTimeTrialJustEnded())
 
@@ -1250,7 +1256,7 @@ leaderboard(title = "Farore's Silent Realm Time Trial", description = "Complete 
     start = SilentRealmTimeTrialStarted() && never(SilentRealmTimeTrialJustEnded()) && IsInAreaByInternalName("FaroreSilentRealm"),
     cancel = SilentRealmTimeTrialJustEnded(),
     submit = SilentRealmCompleted(),
-    value = SilentRealmTimeTrialTimeElapsed() / 10,
+    value = TimeElapsedInMinigame() / 10,
     format = "MILLISECS",
     lower_is_better = true
 )
@@ -1260,7 +1266,7 @@ leaderboard(title = "Nayru's Silent Realm Time Trial", description = "Complete N
     start = SilentRealmTimeTrialStarted() && never(SilentRealmTimeTrialJustEnded()) && IsInAreaByInternalName("NayruSilentRealm"),
     cancel = SilentRealmTimeTrialJustEnded(),
     submit = SilentRealmCompleted(),
-    value = SilentRealmTimeTrialTimeElapsed() / 10,
+    value = TimeElapsedInMinigame() / 10,
     format = "MILLISECS",
     lower_is_better = true
 )
@@ -1270,7 +1276,7 @@ leaderboard(title = "Din's Silent Realm Time Trial", description = "Complete Din
     start = SilentRealmTimeTrialStarted() && never(SilentRealmTimeTrialJustEnded()) && IsInAreaByInternalName("DinSilentRealm"),
     cancel = SilentRealmTimeTrialJustEnded(),
     submit = SilentRealmCompleted(),
-    value = SilentRealmTimeTrialTimeElapsed() / 10,
+    value = TimeElapsedInMinigame() / 10,
     format = "MILLISECS",
     lower_is_better = true
 )
@@ -1280,7 +1286,7 @@ leaderboard(title = "The Goddess's Silent Realm Time Trial", description = "Comp
     start = SilentRealmTimeTrialStarted() && never(SilentRealmTimeTrialJustEnded()) && IsInAreaByInternalName("HyliaSilentRealm"),
     cancel = SilentRealmTimeTrialJustEnded(),
     submit = SilentRealmCompleted(),
-    value = SilentRealmTimeTrialTimeElapsed() / 10,
+    value = TimeElapsedInMinigame() / 10,
     format = "MILLISECS",
     lower_is_better = true
 )
@@ -1299,7 +1305,7 @@ achievement(title = "The One They Fear", description = "Defeat all 12 bosses in 
     trigger = once(BossRushStarted()) && trigger_when(WonBossRush()) && never(hp() <= 0) && never(BossRushCanceled())
 )
 
-achievement(title = "Scars of War", description = "Defeat all 12 bosses in the Thunder Dragon's Lightning Round without potion effects ever being active at any point.", points = 100,
+achievement(title = "Scars of War", description = "Complete all 12 battle events in the Thunder Dragon's Lightning Round without potion effects ever being active at any point.", points = 100,
     trigger = once(BossRushStarted()) && trigger_when(WonBossRush()) && never(hp() <= 0) && never(BossRushCanceled())
         && never(AnyGuardianPotionEffectIsActive())
         && never(word_be(0x0095a75c) > 0) && never(word_be(0x0095a75e) > 0) // Stamina Potion variants
@@ -1312,12 +1318,13 @@ function BossTimeTrialStarted(prereq) => once(isDoingBossTimeTrial() == 1 && IsI
 function BossJustDefeatedInBossRush() => Delta(defeatedBossInBossRush()) == 0 && defeatedBossInBossRush() == 1
 function BossTimeTrialCompleted(prereq) => BattleCheckpointStarted(BossTimeTrialStarted(prereq) && IsInAreaByName("Lanayru Gorge")) && BossJustDefeatedInBossRush()
 function WonBossTimeTrialWithinTimeInSeconds(areaInternalName, timeLimit, prereq) => BossTimeTrialStarted(prereq)
-        && trigger_when(BossTimeTrialCompleted(prereq)) && SilentRealmTimeTrialTimeElapsed() <= timeLimit * 1000
+        && trigger_when(BossTimeTrialCompleted(prereq)) && TimeElapsedInMinigame() <= timeLimit * 1000
         && IsInAreaByInternalName(areaInternalName) && never(hp() <= 0)
 
-function CreateBossRushTimeTrialAchievementAndLeaderboard(title, points, areaInternalName, timeLimit, bossDisplayName, prereq = always_true(), alsoOnce = always_true())
+function CreateBossRushTimeTrialAchievementAndLeaderboard(title, points, areaInternalName, timeLimit, bossDisplayName, prereq = always_true(), alsoOnce = always_true(), type = "")
 {   
     achievement(title = title, description = format("Defeat {0} within {1} in the Thunder Dragon's Lightning Round.", bossDisplayName, SecondsToFormat(timeLimit)), points = points,
+        type = type,
         trigger = WonBossTimeTrialWithinTimeInSeconds(areaInternalName, timeLimit, prereq) && once(alsoOnce) && never(isDoingBossTimeTrial() == 0)
     )
     
@@ -1325,7 +1332,7 @@ function CreateBossRushTimeTrialAchievementAndLeaderboard(title, points, areaInt
         start = BossTimeTrialStarted(prereq) && never(BossJustDefeatedInBossRush()) && once(alsoOnce) && never(!prereq) && never(hp() <= 0) && IsInAreaByInternalName(areaInternalName),
         cancel = hp() <= 0,
         submit = BossTimeTrialCompleted(prereq),
-        value = SilentRealmTimeTrialTimeElapsed() / 10,
+        value = TimeElapsedInMinigame() / 10,
         format = "MILLISECS",
         lower_is_better = true
     )
@@ -1367,12 +1374,58 @@ CreateBossRushTimeTrialAchievementAndLeaderboard(title = "Evil's Bane - Imprison
 
 // My record: 2:41.09
 CreateBossRushTimeTrialAchievementAndLeaderboard(title = "Evil's Bane - Horde", points = 10, areaInternalName = "SealedGroundsPast", timeLimit = 180, bossDisplayName = "the horde",
-    prereq = ghirahimIIIDefeated() == 0, alsoOnce = yCoordinate() >= 7750.375 && yCoordinate() <= 7750.4 && SilentRealmTimeTrialTimeElapsed() == 0)
+    prereq = ghirahimIIIDefeated() == 0, alsoOnce = yCoordinate() >= 7750.375 && yCoordinate() <= 7750.4 && TimeElapsedInMinigame() == 0)
 
 // My record: 2:05.99
 CreateBossRushTimeTrialAchievementAndLeaderboard(title = "Evil's Bane - Ghirahim III", points = 10, areaInternalName = "SealedGroundsPast", timeLimit = 160, bossDisplayName = "Ghirahim III",
-    prereq = ghirahimIIIDefeated() == 0, alsoOnce = yCoordinate() == 4650.0 && SilentRealmTimeTrialTimeElapsed() == 0)
+    prereq = ghirahimIIIDefeated() == 0, alsoOnce = yCoordinate() == 4650.0 && TimeElapsedInMinigame() == 0, type = "missable")
 
 // My record: 1:17.83
-CreateBossRushTimeTrialAchievementAndLeaderboard(title = "Evil's Bane - Demise", points = 25, areaInternalName = "DemiseBF", timeLimit = 90, bossDisplayName = "Demise")
+CreateBossRushTimeTrialAchievementAndLeaderboard(title = "Evil's Bane - Demise", points = 25, areaInternalName = "DemiseBF", timeLimit = 90, bossDisplayName = "Demise", type = "missable")
 
+function rcScaryTimeLimit() => 30
+function rcHeartPoundingTimeLimit() => 65
+function CoasterStarted() => once(ricketyCoasterStartState() == 1 && Delta(ricketyCoasterStartState()) == 0)
+function ricketyCoasterStartState() => bit3(0x955D82)
+function ricketyCoasterFinishState() => bit4(0x955D82)
+function ricketyCoasterDifficulty() => bit6(0x955D84)
+function RicketyCoasterChoseScary() => ricketyCoasterDifficulty() == 0
+function RicketyCoasterChoseHeartStopping() => ricketyCoasterDifficulty() == 1
+function RicketyCoasterFinished() => Delta(ricketyCoasterFinishState()) == 0 && ricketyCoasterFinishState() == 1
+function RicketyCoasterCanceled() => bit4(0x00955d8c) == 1
+function RicketyCoasterCleanedUp() => Delta(ricketyCoasterFinishState()) == 1 && ricketyCoasterFinishState() == 0
+
+// My record: 0:29.53
+achievement(title = "Overachieving Karter", description = "Complete the Scary track in Rickety Coaster within " + SecondsToFormat(rcScaryTimeLimit()) + ".", points = 5,
+    trigger = CoasterStarted() && trigger_when(RicketyCoasterFinished()) && TimeElapsedInMinigame() <= rcScaryTimeLimit() * 1000
+        && RicketyCoasterChoseScary()
+        && never(RicketyCoasterCanceled())
+        && never(RicketyCoasterCleanedUp())
+        && never(!IsInAreaByName("Lanayru Sand Sea"))
+)
+
+leaderboard(title = "Overachieving Karter", description = "Complete the Scary track for Rickety Coaster as quickly as you can.",
+    start = CoasterStarted() && RicketyCoasterChoseScary() && never(RicketyCoasterCanceled()) && never(RicketyCoasterCleanedUp()) && never(!IsInAreaByName("Lanayru Sand Sea")),
+    cancel = RicketyCoasterCanceled(),
+    submit = RicketyCoasterFinished() && never(RicketyCoasterCleanedUp()),
+    value = TimeElapsedInMinigame() / 10,
+    lower_is_better = true,
+    format = "MILLISECS"
+)
+
+achievement(title = "Professional Karter", description = "Complete the Heart-stopping track in Rickety Coaster within " + SecondsToFormat(rcHeartPoundingTimeLimit()) + ".", points = 10,
+    trigger = CoasterStarted() && trigger_when(RicketyCoasterFinished()) && TimeElapsedInMinigame() <= rcHeartPoundingTimeLimit() * 1000
+        && RicketyCoasterChoseHeartStopping()
+        && never(RicketyCoasterCanceled())
+        && never(RicketyCoasterCleanedUp())
+        && never(!IsInAreaByName("Lanayru Sand Sea"))
+)
+
+leaderboard(title = "Professional Karter", description = "Complete the Heart-pounding track for Rickety Coaster as quickly as you can.",
+    start = CoasterStarted() && RicketyCoasterChoseHeartStopping() && never(RicketyCoasterCanceled()) && never(RicketyCoasterCleanedUp()) && never(!IsInAreaByName("Lanayru Sand Sea")),
+    cancel = RicketyCoasterCanceled(),
+    submit = RicketyCoasterFinished() && never(RicketyCoasterCleanedUp()),
+    value = TimeElapsedInMinigame() / 10,
+    lower_is_better = true,
+    format = "MILLISECS"
+)
