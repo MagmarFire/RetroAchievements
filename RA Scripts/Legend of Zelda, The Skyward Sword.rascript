@@ -158,7 +158,7 @@ function WasJustInAreaByInternalName(name)
 }
 
 function sessionPlayTime() => dword_be(0x00577e50) / 600
-rich_presence_conditional_display(IsInArea(areaId()), "{0} • {1} ❤️ • Session time: {2}",
+rich_presence_conditional_display(IsInArea(areaId()), "{0} • {1} ❤️",
     rich_presence_lookup("Locations", areaId(), rpLookup, "Somewhere in the sky..."),
     rich_presence_value("Hearts", Hearts()),
     rich_presence_value("Session", sessionPlayTime(), "SECS")
@@ -1428,4 +1428,20 @@ leaderboard(title = "Professional Karter", description = "Complete the Heart-pou
     value = TimeElapsedInMinigame() / 10,
     lower_is_better = true,
     format = "MILLISECS"
+)
+
+function peatriceSidequestComplete() => bit5(0x00955d8a)
+function acceptedPeatrice() => bit6(0x00955d8a)
+function rejectedPeatrice() => bit1(0x00955d8d)
+achievement(title = "The Thousand-Year Itch", description = "Accept Peatrice's affections and see Fi's reaction.", points = 1, type = "missable",
+    trigger = acceptedPeatrice() == 1 && !DialogueIdIs("KEN5_208_2", false) && DialogueIdIs("KEN5_208_2", false, x => Delta(x))
+)
+
+achievement(title = "The Virtue of Fidelity", description = "Reject Peatrice's affections and inform her father.", points = 1, type = "missable",
+    trigger = rejectedPeatrice() == 1 && WasBitflagJustSetInGame(rejectedPeatrice())
+)
+
+function batreauxIsHuman() => bit6(0x00955d70)
+achievement(title = "I'm a Real Boy!", description = "Give 80 Gratitude Crystals to Batreaux.", points = 5,
+    trigger = WasBitflagJustSetInGame(batreauxIsHuman())
 )
