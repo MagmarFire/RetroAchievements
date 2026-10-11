@@ -88,9 +88,10 @@ for id in areas
 
 function WasTransitioningFromSaveOrQuit() => prior(topAreaByte()) == 0
 
-function FileIsLoading() => IsInAreaByName("Skyloft") && (lightingState() == 0xc || lightingState() == 0x4)
-function UnlessSavingAndQuitting() => disable_when(WasTransitioningFromSaveOrQuit() && IsInAreaByName("Skyloft"), until = repeated(300, IsInAreaByName("Skyloft")))
-    && never(Delta(areaId()) != areaId())
+function gameState() => byte(0x00b7773c)
+function FileIsLoading() => gameState() == 1
+function UnlessSavingAndQuitting() => always_true()//disable_when(WasTransitioningFromSaveOrQuit() && IsInAreaByName("Skyloft"), until = repeated(300, IsInAreaByName("Skyloft")))
+    //&& never(Delta(areaId()) != areaId())
 
 function WasValueJustChanged(mem, oldValue, newValue, deltaMod = mem => Delta(mem))
 {
@@ -1139,6 +1140,22 @@ achievement(title = "I Object!", description = "Give Cawlin's Letter to Karane a
     trigger = letterGivenToKarane() == 1 && WasBitflagJustSetInGame(cawlinRanAwayLikeALittleSissyBaby())
 )
 
+function peatriceSidequestComplete() => bit5(0x00955d8a)
+function acceptedPeatrice() => bit6(0x00955d8a)
+function rejectedPeatrice() => bit1(0x00955d8d)
+achievement(title = "The Thousand-Year Itch", description = "Accept Peatrice's affections and see Fi's reaction.", points = 1, type = "missable",
+    trigger = acceptedPeatrice() == 1 && !DialogueIdIs("KEN5_208_2", false) && DialogueIdIs("KEN5_208_2", false, x => Delta(x))
+)
+
+achievement(title = "The Virtue of Fidelity", description = "Reject Peatrice's affections and inform her father.", points = 1, type = "missable",
+    trigger = rejectedPeatrice() == 1 && WasBitflagJustSetInGame(rejectedPeatrice())
+)
+
+function batreauxIsHuman() => bit6(0x00955d70)
+achievement(title = "I'm a Real Boy!", description = "Give 80 Gratitude Crystals to Batreaux.", points = 5,
+    trigger = WasBitflagJustSetInGame(batreauxIsHuman())
+)
+
 function BugHeavenChoseBeginner() => once(Delta(rupees()) - rupees() == 20)
 function BugHeavenChoseWrangler() => ThrillDiggerChoseIntermediate()
 function BugHeavenStarted() => bugHeavenStartState() == 1 && IsInAreaByName("Inside the Thunderhead")
@@ -1209,6 +1226,55 @@ achievement(title = "Professional Shizansha", description = "Get a score of 28 o
     trigger = FinishedCleanCutWithScoreOfAtLeast(28)
 )
 
+function rcScaryTimeLimit() => 30
+function rcHeartPoundingTimeLimit() => 65
+function CoasterStarted() => once(ricketyCoasterStartState() == 1 && Delta(ricketyCoasterStartState()) == 0)
+function ricketyCoasterStartState() => bit3(0x955D82)
+function ricketyCoasterFinishState() => bit4(0x955D82)
+function ricketyCoasterDifficulty() => bit6(0x955D84)
+function RicketyCoasterChoseScary() => ricketyCoasterDifficulty() == 0
+function RicketyCoasterChoseHeartStopping() => ricketyCoasterDifficulty() == 1
+function RicketyCoasterFinished() => Delta(ricketyCoasterFinishState()) == 0 && ricketyCoasterFinishState() == 1
+function RicketyCoasterCanceled() => bit4(0x00955d8c) == 1
+function RicketyCoasterCleanedUp() => Delta(ricketyCoasterFinishState()) == 1 && ricketyCoasterFinishState() == 0
+function timerPointer() => tbyte_be(0x005772b9)
+function TimeElapsedInMinigame() => dword_be(timerPointer() + 0x7d8)
+
+// My record: 0:29.53
+achievement(title = "Overachieving Karter", description = "Complete the Scary track in Rickety Coaster within " + SecondsToFormat(rcScaryTimeLimit()) + ".", points = 5,
+    trigger = CoasterStarted() && trigger_when(RicketyCoasterFinished()) && TimeElapsedInMinigame() <= rcScaryTimeLimit() * 1000
+        && RicketyCoasterChoseScary()
+        && never(RicketyCoasterCanceled())
+        && never(RicketyCoasterCleanedUp())
+        && never(!IsInAreaByName("Lanayru Sand Sea"))
+)
+
+leaderboard(title = "Overachieving Karter", description = "Complete the Scary track for Rickety Coaster as quickly as you can.",
+    start = CoasterStarted() && RicketyCoasterChoseScary() && never(RicketyCoasterCanceled()) && never(RicketyCoasterCleanedUp()) && never(!IsInAreaByName("Lanayru Sand Sea")),
+    cancel = RicketyCoasterCanceled(),
+    submit = RicketyCoasterFinished() && never(RicketyCoasterCleanedUp()),
+    value = TimeElapsedInMinigame() / 10,
+    lower_is_better = true,
+    format = "MILLISECS"
+)
+
+achievement(title = "Professional Karter", description = "Complete the Heart-stopping track in Rickety Coaster within " + SecondsToFormat(rcHeartPoundingTimeLimit()) + ".", points = 10,
+    trigger = CoasterStarted() && trigger_when(RicketyCoasterFinished()) && TimeElapsedInMinigame() <= rcHeartPoundingTimeLimit() * 1000
+        && RicketyCoasterChoseHeartStopping()
+        && never(RicketyCoasterCanceled())
+        && never(RicketyCoasterCleanedUp())
+        && never(!IsInAreaByName("Lanayru Sand Sea"))
+)
+
+leaderboard(title = "Professional Karter", description = "Complete the Heart-pounding track for Rickety Coaster as quickly as you can.",
+    start = CoasterStarted() && RicketyCoasterChoseHeartStopping() && never(RicketyCoasterCanceled()) && never(RicketyCoasterCleanedUp()) && never(!IsInAreaByName("Lanayru Sand Sea")),
+    cancel = RicketyCoasterCanceled(),
+    submit = RicketyCoasterFinished() && never(RicketyCoasterCleanedUp()),
+    value = TimeElapsedInMinigame() / 10,
+    lower_is_better = true,
+    format = "MILLISECS"
+)
+
 achievement(title = "Orphean Charm", description = "Earn 50 Rupees from a duet with Kina.", points = 5,
     trigger = IsInAreaByName("The Lumpy Pumpkin") && Delta(rupees()) + 50 == rupees()
 )
@@ -1221,8 +1287,6 @@ achievement(title = "The Great Pumpkin Shooter", description = "Earn 750 points 
 function silentRealmTimeTrialState() => bit0(0x955D87)
 function SilentRealmTimeTrialStarted() => once(Delta(silentRealmTimeTrialState()) == 0 && silentRealmTimeTrialState() == 1 && IsInAreaByName("Lanayru Gorge"))
 function SilentRealmTimeTrialJustEnded() => Delta(silentRealmTimeTrialState()) == 1 && silentRealmTimeTrialState() == 0
-function timerPointer() => tbyte_be(0x005772b9)
-function TimeElapsedInMinigame() => dword_be(timerPointer() + 0x7d8)
 function WonSilentRealmWithinTimeInSeconds(silentRealmInternalName, timeLimit) => SilentRealmTimeTrialStarted()
         && trigger_when(SilentRealmCompleted() && TimeElapsedInMinigame() <= timeLimit * 1000)
         && IsInAreaByInternalName(silentRealmInternalName)
@@ -1382,66 +1446,3 @@ CreateBossRushTimeTrialAchievementAndLeaderboard(title = "Evil's Bane - Ghirahim
 
 // My record: 1:17.83
 CreateBossRushTimeTrialAchievementAndLeaderboard(title = "Evil's Bane - Demise", points = 25, areaInternalName = "DemiseBF", timeLimit = 90, bossDisplayName = "Demise", type = "missable")
-
-function rcScaryTimeLimit() => 30
-function rcHeartPoundingTimeLimit() => 65
-function CoasterStarted() => once(ricketyCoasterStartState() == 1 && Delta(ricketyCoasterStartState()) == 0)
-function ricketyCoasterStartState() => bit3(0x955D82)
-function ricketyCoasterFinishState() => bit4(0x955D82)
-function ricketyCoasterDifficulty() => bit6(0x955D84)
-function RicketyCoasterChoseScary() => ricketyCoasterDifficulty() == 0
-function RicketyCoasterChoseHeartStopping() => ricketyCoasterDifficulty() == 1
-function RicketyCoasterFinished() => Delta(ricketyCoasterFinishState()) == 0 && ricketyCoasterFinishState() == 1
-function RicketyCoasterCanceled() => bit4(0x00955d8c) == 1
-function RicketyCoasterCleanedUp() => Delta(ricketyCoasterFinishState()) == 1 && ricketyCoasterFinishState() == 0
-
-// My record: 0:29.53
-achievement(title = "Overachieving Karter", description = "Complete the Scary track in Rickety Coaster within " + SecondsToFormat(rcScaryTimeLimit()) + ".", points = 5,
-    trigger = CoasterStarted() && trigger_when(RicketyCoasterFinished()) && TimeElapsedInMinigame() <= rcScaryTimeLimit() * 1000
-        && RicketyCoasterChoseScary()
-        && never(RicketyCoasterCanceled())
-        && never(RicketyCoasterCleanedUp())
-        && never(!IsInAreaByName("Lanayru Sand Sea"))
-)
-
-leaderboard(title = "Overachieving Karter", description = "Complete the Scary track for Rickety Coaster as quickly as you can.",
-    start = CoasterStarted() && RicketyCoasterChoseScary() && never(RicketyCoasterCanceled()) && never(RicketyCoasterCleanedUp()) && never(!IsInAreaByName("Lanayru Sand Sea")),
-    cancel = RicketyCoasterCanceled(),
-    submit = RicketyCoasterFinished() && never(RicketyCoasterCleanedUp()),
-    value = TimeElapsedInMinigame() / 10,
-    lower_is_better = true,
-    format = "MILLISECS"
-)
-
-achievement(title = "Professional Karter", description = "Complete the Heart-stopping track in Rickety Coaster within " + SecondsToFormat(rcHeartPoundingTimeLimit()) + ".", points = 10,
-    trigger = CoasterStarted() && trigger_when(RicketyCoasterFinished()) && TimeElapsedInMinigame() <= rcHeartPoundingTimeLimit() * 1000
-        && RicketyCoasterChoseHeartStopping()
-        && never(RicketyCoasterCanceled())
-        && never(RicketyCoasterCleanedUp())
-        && never(!IsInAreaByName("Lanayru Sand Sea"))
-)
-
-leaderboard(title = "Professional Karter", description = "Complete the Heart-pounding track for Rickety Coaster as quickly as you can.",
-    start = CoasterStarted() && RicketyCoasterChoseHeartStopping() && never(RicketyCoasterCanceled()) && never(RicketyCoasterCleanedUp()) && never(!IsInAreaByName("Lanayru Sand Sea")),
-    cancel = RicketyCoasterCanceled(),
-    submit = RicketyCoasterFinished() && never(RicketyCoasterCleanedUp()),
-    value = TimeElapsedInMinigame() / 10,
-    lower_is_better = true,
-    format = "MILLISECS"
-)
-
-function peatriceSidequestComplete() => bit5(0x00955d8a)
-function acceptedPeatrice() => bit6(0x00955d8a)
-function rejectedPeatrice() => bit1(0x00955d8d)
-achievement(title = "The Thousand-Year Itch", description = "Accept Peatrice's affections and see Fi's reaction.", points = 1, type = "missable",
-    trigger = acceptedPeatrice() == 1 && !DialogueIdIs("KEN5_208_2", false) && DialogueIdIs("KEN5_208_2", false, x => Delta(x))
-)
-
-achievement(title = "The Virtue of Fidelity", description = "Reject Peatrice's affections and inform her father.", points = 1, type = "missable",
-    trigger = rejectedPeatrice() == 1 && WasBitflagJustSetInGame(rejectedPeatrice())
-)
-
-function batreauxIsHuman() => bit6(0x00955d70)
-achievement(title = "I'm a Real Boy!", description = "Give 80 Gratitude Crystals to Batreaux.", points = 5,
-    trigger = WasBitflagJustSetInGame(batreauxIsHuman())
-)
