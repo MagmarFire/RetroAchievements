@@ -561,7 +561,8 @@ achievement(title = "A Bowyer's Pride", points = 3, id = 143358, badge = "160104
     trigger = WasBitflagSetInGame(bow())
 )
 
-function IsCraykDying() => obyte(0x259f00) == 0x1e
+function craykState() => byte(bossStatePointer() - 0x82bc)
+function IsCraykDying() => craykState() == 0x1e
 achievement(title = "Minimalist", points = 10, id = 143359, badge = "160105", type = "missable",
     description = "Defeat Crayk using at most one arrow.",
     trigger = once(IsInLocation("Crayk") && WasInLocation("TempleOfCourage")) && never(!IsInLocation("Crayk"))
