@@ -506,14 +506,14 @@ function GetCountableAccessorArrayFromAddressBits(dict)
 
 function woodsOfLightTeensieCage() => bit0(0x2249f1)
 achievement(
-    title = "Royal Confusion", description = "Complete the Woods of Light.", points = 1,
+    title = "Royal Confusion", description = "Complete the Woods of Light.", points = 1, type = "progression",
     id = 71511, badge = "165863", published = "2/5/2019 4:38:34 AM", modified = "4/5/2021 3:03:33 PM",
     trigger = WasBitflagSetInGame(woodsOfLightTeensieCage()) && CreateHitTargetedAndNextChain([IsInArea("WoodsOfLight"), IsInArea("None"), IsInArea("HallOfDoors")])
 )
 
 function canGrabPurpleLums() => bit6(0x224a10)
 achievement(
-    title = "The Gift of Swing", description = "Obtain the power to swing.", points = 3,
+    title = "The Gift of Swing", description = "Obtain the power to swing.", points = 3, type = "progression",
     id = 71512, badge = "165864", published = "2/5/2019 4:38:38 AM", modified = "4/5/2021 3:03:35 PM",
     trigger = WasBitflagSetInGame(canGrabPurpleLums())
 )
@@ -565,7 +565,7 @@ GenerateCheevoFromConditions(name = "Colder than Ice", description = "Find all Y
 
 function waterMask() => bit7(0x224a12)
 achievement(
-    title = "Water and Ice", description = "Defeat the Guardian Axel and obtain the first mask.", points = 5,
+    title = "Water and Ice", description = "Defeat the Guardian Axel and obtain the first mask.", points = 5, type = "progression",
     id = 71513, badge = "165865", published = "2/5/2019 4:38:40 AM", modified = "4/5/2021 3:03:48 PM",
     trigger = WasBitflagSetInGame(waterMask())
 )
@@ -573,7 +573,7 @@ achievement(
 function IsCutscenePlaying() => byte(0x22494e) == 0xc
 function cameraXCoords() => word(0x17691E)
 achievement(
-    title = "Jour de la Cupidite [m]", description = "Accept Jano's offer for treasure.", points = 1,
+    title = "Jour de la Cupidite", description = "Accept Jano's offer for treasure.", points = 1, type = "missable",
     id = 71514, badge = "165867", published = "2/5/2019 4:38:42 AM", modified = "4/5/2021 3:03:50 PM",
     trigger = repeated(200, cameraXCoords() == 65516)
               && never(!IsCutscenePlaying()) && never(!IsInArea("BadDreamsArea2"))
@@ -637,7 +637,7 @@ GenerateCheevoFromConditions(
 function earthMask() => bit0(0x224a13)
 function CompletedSanctuaryOfStoneAndFireForTheFirstTime() => CreateHitTargetedAndNextChain([IsInArea("SosAFArea6"), IsInArea("None"), IsInArea("Polokus")])
 achievement(
-    title = "Stone and Fire", description = "Defeat the Guardian Umber and obtain the second mask.", points = 5,
+    title = "Stone and Fire", description = "Defeat the Guardian Umber and obtain the second mask.", points = 5, type = "progression",
     id = 71517, badge = "165870", published = "2/5/2019 4:38:47 AM", modified = "4/5/2021 3:03:59 PM",
     trigger = WasBitflagSetInGame(earthMask())
 )
@@ -646,8 +646,8 @@ achievement(
 // if the fists were still there when you completed the level.
 function HasGoldenFists() => byte(0x0c8ca1) == 1
 achievement(
-    title = "The Midas Touch [m]", description = "Finish the Sanctuary of Stone and Fire for the first time with the Golden Fists still in your possession.", points = 10,
-    id = 71960, badge = "165892", published = "2/14/2019 11:54:54 PM", modified = "4/5/2021 3:05:28 PM",
+    title = "The Midas Touch", description = "Finish the Sanctuary of Stone and Fire for the first time with the Golden Fists still in your possession.", points = 10,
+    id = 71960, badge = "165892", published = "2/14/2019 11:54:54 PM", modified = "4/5/2021 3:05:28 PM", type = "missable",
     // We need to check both the Sanctuary and Polokus's dream in order to have the challenge indicator show up properly.
     trigger = trigger_when(WasBitflagSetInGame(earthMask())) && HasGoldenFists() && (IsInLocation("Sanctuary of Stone and Fire") || IsInArea("Polokus"))
         && never(IsInLocation("Hall of Doors"))
@@ -679,7 +679,7 @@ function EnteredEchoingCaves() => CreateHitTargetedAndNextChain([IsInArea("Echoi
 function FrameAdvancedWhilePlaying() => FrameAdvanced() && EnteredEchoingCaves() && !IsCutscenePlaying() && !IsPausing()
 
 achievement(
-    title = "Rayman the Handyman", description = "Open the main door in the Echoing Caves within " + SecondsToFormat(echoingCavesTimeLimit()) + ".", points = 10,
+    title = "Rayman the Handyman", description = "Open the main door and submit a leaderboard entry in the Echoing Caves within " + SecondsToFormat(echoingCavesTimeLimit()) + ".", points = 10,
     id = 71534, badge = "207544", published = "2/5/2019 4:39:15 AM", modified = "4/5/2021 3:05:38 PM",
     trigger = never(repeated(SecondsToFrames(echoingCavesTimeLimit()) + echoingCavesFrameBuffer(), FrameAdvancedWhilePlaying()))
         && trigger_when(RaymanIsCelebrating()) && EnteredEchoingCaves() && never(!IsInLocation("Echoing Caves") && !IsInLocation("None"))
@@ -715,7 +715,7 @@ GenerateCheevoFromConditions(
 
 function fireMask() => bit1(0x224a13)
 achievement(
-    title = "Rock and Lava", description = "Defeat the Guardian Foutch and obtain the third mask.", points = 5,
+    title = "Rock and Lava", description = "Defeat the Guardian Foutch and obtain the third mask.", points = 5, type = "progression",
     id = 71518, badge = "165871", published = "2/5/2019 4:38:49 AM", modified = "4/5/2021 3:04:12 PM",
     trigger = WasBitflagSetInGame(fireMask())
 )
@@ -743,7 +743,7 @@ GenerateCheevoFromConditions(
 
 function windMask() => bit2(0x224a13)
 achievement(
-    title = "Wind and Clouds", description = "Save Globox's and Uglette's children and obtain the final mask.", points = 5,
+    title = "Wind and Clouds", description = "Save Globox's and Uglette's children and obtain the final mask.", points = 5, type = "progression",
     id = 71520, badge = "165873", published = "2/5/2019 4:38:52 AM", modified = "4/5/2021 3:04:19 PM",
     trigger = WasBitflagSetInGame(windMask())
 )
@@ -756,7 +756,7 @@ GenerateCheevoFromConditions(
 )
 
 achievement(
-    title = "The Great Escape", description = "Defeat Admiral Razorbeard.", points = 25,
+    title = "The Great Escape", description = "Defeat Admiral Razorbeard.", points = 25, type = "win_condition",
     id = 71521, badge = "165874", published = "2/5/2019 4:38:53 AM", modified = "4/5/2021 3:04:26 PM",
     trigger = CreateHitTargetedAndNextChain([IsInArea("CrowNest"), IsInArea("None"), IsInArea("FinalCutscene")]) && IsCutscenePlaying()
         && never(IsInLocation("Hall of Doors"))
@@ -817,7 +817,7 @@ achievement(
 function bonusTimeLimit() => 2177
 
 achievement(
-    title = "Fairy Speedster", description = "Beat the bonus stage in 21.77 seconds or less.", points = 10,
+    title = "Fairy Speedster", description = "Complete and submit a leaderboard entry for the bonus stage in 21.77 seconds or less.", points = 10,
     id = 71531, badge = "165884", published = "2/5/2019 4:39:11 AM", modified = "4/5/2021 3:05:33 PM",
     trigger = WonBonusRace() && never(BonusRaceCanceled()) && never(TimeElapsedInMilliseconds(bonusTimeLimit()))
 )
@@ -832,7 +832,7 @@ leaderboard(title = "Bonus Stage", description = "Get a better time in the race 
     format = "MILLISECS"
 )
 
-function walkOfLifeTimer() => dword(0x5E9AC0) // todo: actually a float
+function walkOfLifeTimer() => float(0x5E9AC0)
 function StartedWalkOfLife() => IsInLocation("Walk of Life") && Delta(walkOfLifeTimer()) == 0 && walkOfLifeTimer() > 0
 function CanceledWalkOfLife() => !IsInLocation("Walk of Life") || Delta(walkOfLifeTimer()) > 0 && walkOfLifeTimer() == 0
 function FinishedWalkOfLife() => RaymanIsCelebrating()
@@ -840,7 +840,7 @@ function AbleToAdvanceTimeInWalkOfLife() => walkOfLifeTimer() > 0 && !IsPausing(
 achievement(
     title = "Sprint of Life", description = "Complete the Walk of Life within 1:45.98.", points = 5,
     id = 71532, badge = "165885", published = "2/5/2019 4:39:12 AM", modified = "4/5/2021 3:05:36 PM",
-    trigger = once(StartedWalkOfLife()) && trigger_when(FinishedWalkOfLife()) && never(TimeElapsedInMilliseconds(10599, AbleToAdvanceTimeInWalkOfLife()))
+    trigger = once(StartedWalkOfLife()) && trigger_when(FinishedWalkOfLife()) && never(walkOfLifeTimer() > 105980.0)
         && never(CanceledWalkOfLife())
 )
 
@@ -848,10 +848,12 @@ leaderboard(title = "Walk of Life", description = "Complete the Walk of Life as 
     start = StartedWalkOfLife(),
     cancel = CanceledWalkOfLife(),
     submit = FinishedWalkOfLife(),
-    value = measured(TimeElapsedInMilliseconds(onlyWhen = AbleToAdvanceTimeInWalkOfLife()))
+    value = walkOfLifeTimer() / 10,
+    lower_is_better = true,
+    format = "MILLISECS"
 )
 
-function walkOfPowerTimer() => dword(0x5ECF34) // todo: actually a float
+function walkOfPowerTimer() => float(0x5ECF34)
 function StartedWalkOfPower() => IsInLocation("Walk of Power") && Delta(walkOfPowerTimer()) == 0 && walkOfPowerTimer() > 0 && IsInGame()
 function CanceledWalkOfPower() => !IsInLocation("Walk of Power") || Delta(walkOfPowerTimer()) > 0 && walkOfPowerTimer() == 0
 function FinishedWalkOfPower() => RaymanIsCelebrating()
@@ -859,7 +861,7 @@ function AbleToAdvanceTimeInWalkOfPower() => walkOfPowerTimer() > 0 && !IsPausin
 achievement(
     title = "Sprint of Power", description = "Complete the Walk of Power within 1:35.23.", points = 10,
     id = 71533, badge = "165886", published = "2/5/2019 4:39:14 AM", modified = "4/5/2021 3:05:37 PM",
-    trigger = once(StartedWalkOfPower()) && trigger_when(FinishedWalkOfPower()) && never(TimeElapsedInMilliseconds(9524, AbleToAdvanceTimeInWalkOfPower()))
+    trigger = once(StartedWalkOfPower()) && trigger_when(FinishedWalkOfPower()) && never(walkOfPowerTimer() > 95230.0)
         && never(CanceledWalkOfPower())
 )
 
@@ -867,7 +869,9 @@ leaderboard(title = "Walk of Power", description = "Complete the Walk of Power a
     start = StartedWalkOfPower(),
     cancel = CanceledWalkOfPower(),
     submit = FinishedWalkOfPower(),
-    value = measured(TimeElapsedInMilliseconds(onlyWhen = AbleToAdvanceTimeInWalkOfPower()))
+    value = walkOfPowerTimer() / 10,
+    lower_is_better = true,
+    format = "MILLISECS"
 )
 
 function ammoState() => byte(0x5F01BF)
