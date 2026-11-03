@@ -396,8 +396,8 @@ function dragonSculpture() => bit7(0x00956fab)
 function boulderComplete() => bit7(0x00956fa8)
 // A "false start" in this case simply means sprinting before the cutscene starts. It's difficult to distinguish between cutscene recovery or Stamina Fruit recovery because both
 // fully recover stamina. Therefore, we need the player to jog normally up to the "starting line," so to speak.
-achievement(title = "Pace Yourself", description = "Escape the rolling boulder in the Earth Temple without recovering stamina with Stamina Fruit (no resurrections; no false starts).", points = 3,
-    type = "missable",
+achievement(title = "Pace Yourself", description = "Escape the rolling boulder on your first attempt in the Earth Temple without recovering stamina with Stamina Fruit (no resurrections; no false starts).",
+    points = 3, type = "missable",
     trigger = once(dragonSculpture() == 1 && Delta(dragonSculpture()) == 0 && IsInAreaByInternalName("ETMain"))
         && trigger_when(boulderComplete() == 1)
         && never(hp() <= 0)
@@ -888,12 +888,12 @@ function hitsOnGhirahimIIIPhase1() => byte(0x00b6b42d)
 function cameraLeftRightYaw() => float_be(0x00590b38)
 function cameraForwardBackwardYaw() => float_be(0x00590b40)
 function FinishedGhirahimIIIPhase1() => hitsOnGhirahimIIIPhase1() == 3 && Delta(hitsOnGhirahimIIIPhase1()) == 2
-achievement(title = "Impenetrable", type = "missable", description = "Finish Ghirahim III's first phase without a shield and without the camera looking northwest (no resurrections).", points = 5,
+achievement(title = "Impenetrable", type = "missable", description = "Finish Ghirahim III's first phase without a shield and without him slipping behind you (no resurrections).", points = 5,
     trigger = BattleCheckpointStarted(once(DialogueIdIs("BOSS_10_", false) && !DialogueIdIs("BOSS_10_", false, x => Delta(x))) && IsInAreaByName("Hylia's Realm"),
             neverWhen = !IsInAreaByName("Hylia's Realm"))
         && trigger_when(FinishedGhirahimIIIPhase1())
         && never(ShieldIsEquipped())
-        && never(cameraForwardBackwardYaw() > 0.5 && cameraForwardBackwardYaw() < 0.85 && cameraLeftRightYaw() < 0.85 && cameraLeftRightYaw() > 0.5)
+        && never(animationId() == 0x167)
 )
 
 function hylianShieldId() => 0x7d
