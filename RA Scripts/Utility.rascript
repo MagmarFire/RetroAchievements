@@ -238,6 +238,36 @@ function AggregateBitsFromAddressBits(dict)
 
 // BEGINNING OF BITFLAG AGGREGATION REGION
 
+// Dictionary elements must have "addr" and "bit" fields.
+// Returns a result like the following:
+// {
+//    <address>: [ <bit indices> ]
+// }
+function AggregateBitsFromAddressBits(dict)
+{
+    ret = {}
+    for i in dict
+    {
+        element = dict[i]
+        
+        if (element["addr"] != -1)
+        {
+            if (dictionary_contains_key(ret, element["addr"]))
+            {
+                arr = ret[element["addr"]]
+                array_push(arr, element["bit"])
+                ret[element["addr"]] = arr
+            }
+            else
+            {
+                ret[element["addr"]] = [ element["bit"] ]
+            }
+        }
+    }
+    
+    return ret
+}
+
 // Converts an aggregate dictionary to an array of objects like the following:
 // {
 //    "type": "bitX"/"byte"
@@ -290,6 +320,11 @@ function GenerateBitcountFromCountableObjects(addresses)
         }
     }
     return finalBitcount
+}
+
+function BitcountOfAddressBits(dict)
+{
+    return GenerateBitcountFromCountableObjects(GetCountableAccessorArrayFromAddressBits(dict))
 }
 
 // END OF BITFLAG AGGREGATION REGION
