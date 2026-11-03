@@ -2355,12 +2355,12 @@ achievement(
     trigger = DefeatedCheckpointedEncounterWithId(rikuIIReverseRebirthEncounterId(), FALSE) && IsInReverseRebirth()
 )
 
-function IsInDarkMode() => rikuBattleState() == 0x20
-achievement(title = "To the Shadow Realm with You! [m]", points = 5, id = 160401, badge = "180260",
+function IsTransitioningIntoDarkMode() => rikuBattleState() == 0x20
+function IsRevertingFromDarkMode() => rikuBattleState() == 0x22
+achievement(title = "To the Shadow Realm with You!", points = 5, id = 160401, badge = "180260", type = "missable",
     description = "Finish off the Riku replica on Floor B2 in Dark Mode (13 AP max).",
     trigger = DefeatedCheckpointedEncounterWithId(rikuIIReverseRebirthEncounterId(), TRUE) && IsInReverseRebirth() && attackPoints() <= 13
-        && trigger_when(once(IsInDarkMode()))
-        && disable_when(rikuBattleState() == 0x22, IsInDarkMode())
+        && trigger_when(once(IsTransitioningIntoDarkMode() && never(IsRevertingFromDarkMode())))
 )
 
 function ansemIIEncounterId() => 0xb1
