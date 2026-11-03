@@ -1882,7 +1882,7 @@ achievement(title = "I Am the New God", description = "Earn a Star rank against 
     trigger = IsAtLeastOnDifficulty("Proud") && Level() <= 5 && never(!IsInLocation("DestinyStorm")) && BossScoreIsDisplayedAndAtLeast(40000) && never(HPCheatIsBeingUsed())
 )
 
-soraSidescrollStateOffset = 0x2d32
+soraSidescrollStateOffset = 0x2d52
 function soraSidescrollingState() => byte(minigameStatePointer() + soraSidescrollStateOffset)
 function JustFellOrGotCaughtInSidescrollingStages() => soraSidescrollingState() == 0x6 && Delta(soraSidescrollingState()) != soraSidescrollingState()
 function IsAlwaysInTraverseTownKeyhole() => never(!IsInLocation("TraverseKeyholeFirst") && !IsInLocation("TraverseKeyholeSecond")
